@@ -1,3 +1,14 @@
 # microservice specific routes
 
-GET        /hello-world             uk.gov.hmrc.investmenttaxreliefsubmission.controllers.HelloWorld.helloWorld
+GET         /assets/*file            controllers.Assets.at(path="/public", file)
+
+#Start route
+########################################################
+GET         /                        controllers.StartController.start
+########################################################
+
+
+GET        /hello-world                             controllers.HelloWorld.helloWorld
+GET        /                                        controllers.StartController.start
+GET        /introduction                            controllers.IntroductionController.show
+POST       /introduction                            controllers.IntroductionController.submit
