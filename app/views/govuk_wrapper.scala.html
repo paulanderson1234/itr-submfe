@@ -1,4 +1,4 @@
-@(appConfig: uk.gov.hmrc.investmenttaxreliefsubmission.AppConfig,
+@(appConfig: config.AppConfig,
   title: String,
   mainClass: Option[String] = None,
   mainDataAttributes: Option[Html] = None,
@@ -22,13 +22,13 @@
 }
 
 @headerNavLinks = {
-  <li><a id="homeNavHref" href="http://www.google.com"
+  <li><a id="homeNavHref" href="/investment-tax-relief/introduction"
          data-journey-click="primary-navigation:Click:Home">Home</a></li>
 }
 
 @insideHeader = {
     @uiLayouts.header_nav(
-      navTitle = Some("investment-tax-relief-submission-frontend"),
+      navTitle = Some("Get tax relief for your investors"),
       navTitleLink = None,
       showBetaLink = false,
       navLinks = Some(headerNavLinks))

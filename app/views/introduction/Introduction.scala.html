@@ -1,0 +1,45 @@
+@()(implicit request: Request[_])
+
+@import helpers._
+@import uk.gov.hmrc.play.views.html._
+
+@views.html.main_template(title = Messages("page.introduction.welcome.title"), bodyClasses = None) {
+
+@backButton()
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <header class="page-header">
+            <div>
+                <h1>@Messages("page.introduction.welcome.heading")</h1>
+            </div>
+        </header>
+        <p id="description-one">@Messages("page.introduction.welcome.description.one")</p>
+        <ul class="list list-bullet">
+            <li id="ct">@Messages("page.introduction.welcome.bullet.learn")</li>
+            <li id="vat">@Messages("page.introduction.welcome.bullet.eligible")</li>
+            <li id="paye">@Messages("page.introduction.welcome.bullet.certify")</li>
+        </ul>
+
+        <details>
+            <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">Help</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p>@Messages("page.introduction.welcome.helpFirst")</p>
+                <p>@Messages("page.introduction.welcome.helpSecond")</p>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <button class="button-get-started" role="button" id="next">@Messages("common.button.start")</button>
+        </div>
+    </div>
+
+    <div class="column-one-third">
+        <aside class="related">
+            <h3 class="heading-medium">Read more</h3>
+            <p><a rel=external href="https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction" target="_blank">@Messages("page.introduction.welcome.schemeGuidance")</a></p>
+        </aside>
+    </div>
+</div>
+
+}
