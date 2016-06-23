@@ -1,7 +1,11 @@
 @()(implicit request: Request[_])
 
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import controllers.routes._
 @import helpers._
-@import uk.gov.hmrc.play.views.html._
+
+
+@import config.FrontendAppConfig
 
 @views.html.main_template(title = Messages("page.introduction.welcome.title"), bodyClasses = None) {
 
@@ -30,7 +34,9 @@
         </details>
 
         <div class="form-group">
-            <button class="button-get-started" role="button" id="next">@Messages("common.button.start")</button>
+            @form(action = controllers.routes.IntroductionController.submit()) {
+                <button class="button-get-started" role="button" id="next">@Messages("common.button.start")</button>
+            }
         </div>
     </div>
 

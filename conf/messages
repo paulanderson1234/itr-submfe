@@ -15,6 +15,38 @@ common.signInOut=Sign in/out
 common.feedbackFirst=This is a new service – your
 common.feedbackSecond=will help us to improve it.
 common.feedbackLinkText=feedback
+common.readMore = Read more
+common.error.fieldRequired = This field is required
+common.error.summary.heading=This page has errors
+common.base.yes=Yes
+common.base.no=No
+
+## Common date Messages ##
+common.date.fields.day=Day
+common.date.fields.month=Month
+common.date.fields.year=Year
+common.date.hint=For example, 4 9 2016
+common.date.error.invalidDate=Enter a valid date
+
+
+
+#validation errors
+validation.error.countrypostcode=Only one of country or postcode should be entered
+validation.error.optionaladdresssline=Address line must be no more than 27 valid characters if entered
+validation.error.mandatoryaddresssline=Address line must be entered and no more than 27 characters
+validation.error.linefouraddresssline=Address line must be no more than 17 valid characters if entered
+validation.error.postcode=Please enter a valid postcode
+validation.error.postcodelookup=Please enter a valid postcode
+validation.error.country=Country must be no more than 20 valid characters if entered
+validaton.error.postcode=Please enter a valid postcode
+validation.error.email=Enter a valid email address
+validation.error.crn=Please enter a valid CRN
+validation.error.invalidDate=Please enter a valid date
+validation.common.error.fieldRequired = This field is required
+
+## Session Timeout message ##
+session.timeout.message=Your session has ended
+session.timeout.startAgain=Start again
 
 #Welcome page
 page.introduction.welcome.title=Welcome
@@ -29,4 +61,29 @@ page.introduction.welcome.helpFirst=You will not be able to save your applicatio
 page.introduction.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
 page.introduction.welcome.schemeGuidance=scheme guidance
 
+
+#examples pages (to be deleted later)
+page.examples.CompanyAddress.title=Company address details
+page.examples.CompanyAddress.description=Please provide the following information
+page.examples.CompanyAddress.addressline1.label=Address line 1
+page.examples.CompanyAddress.addressline2.label=Address line 2
+page.examples.CompanyAddress.addressline3.label=Address line 3 (optional)
+page.examples.CompanyAddress.addressline4.label=Address line 4 (optional)
+page.examples.CompanyAddress.postcode.label=Postcode
+page.examples.CompanyAddress.country.label=Country (optional)
+page.examples.ContactDetails.title=Contact details
+page.examples.ContactDetails.heading=Contact details
+page.examples.DateFirstSale.heading=Date of first sale
+page.examples.DateFirstSale.title=Date of first sale
+page.examples.DateFirstSale.question=When was the date of first commercial sale for the company?
+page.examples.ContactDetails.description=Please provide the following information
+page.examples.ContactDetails.forename.label=Forename
+page.examples.ContactDetails.surname.label=Surname
+page.examples.ContactDetails.email.label=Email address
+validation.error.DateOfFirstSale.Future=Date of first sale cannot be a future date
+page.examples.DoSubmission.question=Do you want to submit your application?
+page.examples.DoSubmission.title=Submit application?
+page.examples.DoSubmission.helptext=You can downlaod your application and email it to HMRC
+page.examples.Confirmation.title=Confirmation
+page.examples.Confirmation.heading=Confirmation
 

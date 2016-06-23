@@ -17,28 +17,19 @@
 package controllers
 
 import java.util.UUID
+import views.html.warnings._
 import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{SessionKeys, HeaderCarrier}
-import uk.gov.hmrc.play.http.logging.SessionId
-import views.html.introduction._
+import scala.concurrent.{Future}
 
 import scala.concurrent.Future
 
-object StartController extends StartController
+object TimeoutController extends TimeoutController
 
-trait StartController extends FrontendController {
+trait TimeoutController extends FrontendController {
 
-  implicit val hc = new HeaderCarrier()
-
-  def start:Action[AnyContent] = Action.async { implicit request =>
-    if (request.session.get(SessionKeys.sessionId).isEmpty) {
-      val sessionId = UUID.randomUUID.toString
-      Future.successful(Redirect(routes.IntroductionController.show()).withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
-    }
-    else {
-      Future.successful(Redirect(routes.IntroductionController.show()))
-    }
+  def timeout:Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(sessionTimeout()))
   }
-
 }
