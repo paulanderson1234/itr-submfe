@@ -3,12 +3,35 @@
 GET         /assets/*file            controllers.Assets.at(path="/public", file)
 
 #Start route
-########################################################
+#####################################################################################################################
 GET         /                        controllers.StartController.start
-########################################################
+#####################################################################################################################
 
 
 GET        /hello-world                             controllers.HelloWorld.helloWorld
 GET        /                                        controllers.StartController.start
 GET        /introduction                            controllers.IntroductionController.show
 POST       /introduction                            controllers.IntroductionController.submit
+
+
+#Session examples routes - to be removed later
+#####################################################################################################################
+GET        /examples-address                          controllers.examples.CompanyAddressController.show
+POST       /examples-address                          controllers.examples.CompanyAddressController.submit
+
+GET        /examples-contact                          controllers.examples.ContactDetailsController.show
+POST       /examples-contact                          controllers.examples.ContactDetailsController.submit
+
+GET        /examples-date-first-sale                   controllers.examples.DateOfFirstSaleController.show
+POST       /examples-date-first-sale                   controllers.examples.DateOfFirstSaleController.submit
+
+GET        /examples-do-submission                   controllers.examples.DoSubmissionController.show
+POST       /examples-do-submission                   controllers.examples.DoSubmissionController.submit
+
+GET        /examples-confirmation                     controllers.examples.ConfirmationController.show
+
+#Session Timeout route
+#####################################################################################################################
+GET         /session-timeout         controllers.TimeoutController.timeout
+GET         /restart                 controllers.IntroductionController.restart
+#####################################################################################################################

@@ -27,6 +27,8 @@ private object AppDependencies {
   private val playAuthorisedFrontendVersion = "5.0.0"
   private val playConfigVersion = "2.0.1"
   private val hmrcTestVersion = "1.6.0"
+  private val cachingClientVersion = "5.3.0"
+  private val mongoCachingVersion = "3.2.0"
   
   val compile = Seq(
     ws,
@@ -37,7 +39,9 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
     "uk.gov.hmrc" %% "govuk-template" % govukTemplateVersion,
     "uk.gov.hmrc" %% "play-health" % playHealthVersion,
-    "uk.gov.hmrc" %% "play-ui" % playUiVersion
+    "uk.gov.hmrc" %% "play-ui" % playUiVersion,
+    "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
+    "uk.gov.hmrc" %% "mongo-caching" % mongoCachingVersion
   )
 
   trait TestDependencies {
@@ -50,8 +54,8 @@ private object AppDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
-        "org.pegdown" % "pegdown" % "1.5.0" % scope,
-        "org.jsoup" % "jsoup" % "1.7.3" % scope,
+        "org.pegdown" % "pegdown" % "1.6.0" % scope,
+        "org.jsoup" % "jsoup" % "1.8.3" % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test
