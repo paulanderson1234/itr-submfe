@@ -1,0 +1,47 @@
+@()(implicit request: Request[_])
+
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import controllers.routes._
+@import helpers._
+
+
+@import config.FrontendAppConfig
+
+@views.html.main_template(title = Messages("page.introduction.HowToApply.title"), bodyClasses = None) {
+
+@backButton()
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <header class="page-header">
+            <div>
+                <h1>@Messages("page.introduction.HowToApply.heading")</h1>
+            </div>
+        </header>
+
+        <ul class="list list-number">
+            <li class ="heading-medium">@Messages("page.introduction.HowToApply.number.fillOut")
+                <p>@Messages("page.introduction.HowToApply.fillOut.description")</p></li>
+            <li class ="heading-medium">@Messages("page.introduction.HowToApply.number.send")
+                <p>@Messages("page.introduction.HowToApply.send.descriptionOne")</p>
+                <p>@Messages("page.introduction.HowToApply.send.descriptionTwo")</p>
+                <ul class ="list list-bullet">
+                    <li>@Messages("page.introduction.HowToApply.number.sendOne")
+                    <li>@Messages("page.introduction.HowToApply.number.sendTwo")
+                    <li>@Messages("page.introduction.HowToApply.number.sendThree")
+
+                </ul></li>
+            <li class ="heading-medium">@Messages("page.introduction.HowToApply.number.receive")
+                <p>@Messages("page.introduction.HowToApply.receive.description")</p></li>
+        </ul>
+        <p>@Messages("page.introduction.HowToApply.notBinding")</p>
+
+        <div class="form-group">
+            @form(action = controllers.routes.HowToApplyController.submit()) {
+            <button class="button-get-started" role="button" id="next">@Messages("common.button.continue")</button>
+            }
+        </div>
+    </div>
+</div>
+
+}

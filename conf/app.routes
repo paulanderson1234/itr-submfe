@@ -35,3 +35,6 @@ GET        /examples-confirmation                     controllers.examples.Confi
 GET         /session-timeout         controllers.TimeoutController.timeout
 GET         /restart                 controllers.IntroductionController.restart
 #####################################################################################################################
+
+GET        /how-to-apply                            controllers.HowToApplyController.show
+POST       /how-to-apply                            controllers.HowToApplyController.submit

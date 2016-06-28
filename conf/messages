@@ -1,5 +1,6 @@
 #common
 common.button.next=Next
+common.button.continue=Continue
 common.button.continueNextSection=continue to next section
 common.button.snc=Save and continue
 common.button.sign-in=Sign in
@@ -60,6 +61,21 @@ page.introduction.welcome.apply.link.link=How to apply
 page.introduction.welcome.helpFirst=You will not be able to save your application.
 page.introduction.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
 page.introduction.welcome.schemeGuidance=scheme guidance
+
+#How To Apply page
+page.introduction.HowToApply.title=How to apply
+page.introduction.HowToApply.heading=How to apply
+page.introduction.HowToApply.number.fillOut= Fill out an application for an assurance letter
+page.introduction.HowToApply.number.send= Send your application and supporting documents to us
+page.introduction.HowToApply.number.receive= We’ll send your assurance letter
+page.introduction.HowToApply.fillOut.description= Assurance letters show potential investors that they may get tax relief by buying shares in your company.
+page.introduction.HowToApply.receive.description=If your application’s successful we’ll post your assurance letter to you or someone you nominate. You can then show it to potential investors.
+page.introduction.HowToApply.notBinding=Assurance letters aren’t guarantees or legally binding.
+page.introduction.HowToApply.send.descriptionOne=You can do this by email or post.
+page.introduction.HowToApply.send.descriptionTwo=When you send your application you'll need to include your:
+page.introduction.HowToApply.number.sendOne=company accounts
+page.introduction.HowToApply.number.sendTwo=memorandum and articles of association
+page.introduction.HowToApply.number.sendThree=documents like prospectuses that you’ll use to attract investment
 
 
 #examples pages (to be deleted later)
