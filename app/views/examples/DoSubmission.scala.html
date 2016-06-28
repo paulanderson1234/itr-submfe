@@ -10,7 +10,7 @@
 
     @errorSummary(doSubmissionForm, "examples-do-submission")
 
-    <h1 class="heading-large">@Messages("page.examples.DoSubmission.title")</h1>
+    <h1 class="heading-large" id="main-heading">@Messages("page.examples.DoSubmission.title")</h1>
 
         @form(action = controllers.examples.routes.DoSubmissionController.submit()) {
 
@@ -24,7 +24,7 @@
                 '_helpText -> Messages("page.examples.DoSubmission.helptext"),
                 '_labelAfter -> true,
                 '_labelClass -> "block-label",
-                '_legendID -> "isVulnerable",
+                '_legendID -> "doSubmissionLegendId",
                 '_groupClass -> "inline"
             )
         </div>
