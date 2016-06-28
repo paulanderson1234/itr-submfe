@@ -9,15 +9,13 @@
 
 @views.html.main_template(title = Messages("page.introduction.HowToApply.title"), bodyClasses = None) {
 
-@backButton()
 
 <div class="grid-row">
     <div class="column-two-thirds">
-        <header class="page-header">
-            <div>
-                <h1>@Messages("page.introduction.HowToApply.heading")</h1>
-            </div>
-        </header>
+
+        <a id="back-link" class="back-link" href="@controllers.routes.HowToApplyController.show()">@Messages("common.button.back")</a>
+
+        <h1 class="heading-xlarge" id="main-heading">@Messages("page.introduction.HowToApply.heading")</h1>
 
         <ul class="list list-number">
             <li class ="heading-medium">@Messages("page.introduction.HowToApply.number.fillOut")
@@ -38,7 +36,7 @@
 
         <div class="form-group">
             @form(action = controllers.routes.HowToApplyController.submit()) {
-            <button class="button-get-started" role="button" id="next">@Messages("common.button.continue")</button>
+            <button class="button" role="button" id="next">@Messages("common.button.continue")</button>
             }
         </div>
     </div>

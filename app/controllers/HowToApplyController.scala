@@ -37,6 +37,6 @@ trait HowToApplyController extends FrontendController with ValidActiveSession{
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Ok("the form was posted successfully"))
+    Future.successful(Redirect(routes.HowToApplyController.show()))
   }
 }
