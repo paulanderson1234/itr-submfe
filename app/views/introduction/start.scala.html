@@ -1,0 +1,68 @@
+@()(implicit request: Request[_])
+
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import controllers.routes._
+@import helpers._
+
+
+@import config.FrontendAppConfig
+
+<!--<style>-->
+    <!--.related {-->
+    <!--float: left;-->
+    <!--width: 33.33333%;-->
+    <!--border-top-width: 10px;-->
+    <!--border-top-style: solid;-->
+    <!--border-top-color: #005ea5;);-->
+    <!--}-->
+<!--</style>-->
+
+@sidebar = {
+
+<!-- related -->
+<div>
+    <aside class="related" id="related">
+        <div class="inner group related-subsection">
+            <h2 id="parent-subsection">Read more</h2>
+            <nav role="navigation" aria-labelledby="parent-subsection">
+                <ul>
+                    <li>
+                        <a href="/investment-tax-relief/howToApply">How to apply</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+</div>
+}
+
+@views.html.main_template(title = Messages("page.start.welcome.title"), sidebarLinks = Some(sidebar)) {
+
+
+<div class="grid-column">
+    <div class="column-two-thirds">
+        <header class="page-header">
+            <div>
+                <h1>@Messages("page.start.welcome.heading")</h1>
+            </div>
+        </header>
+                <p id="description-one">@Messages("page.start.welcome.description.one")</p>
+
+        <p>@Messages("page.start.welcome.description.two")</p>
+        <ul class="list list-bullet">
+            <li id="learn">@Messages("page.start.welcome.bullet.learn")</li>
+            <li id="eligible">@Messages("page.start.welcome.bullet.eligible")</li>
+            <li id="certify">@Messages("page.start.welcome.bullet.certify")</li>
+            <li id="claim">@Messages("page.start.welcome.bullet.claim")</li>
+        </ul>
+            <br>
+        <div class="form-group">
+            @form(action = controllers.routes.IntroductionController.submit()) {
+                <button class="button-get-started" role="button" id="next">@Messages("common.button.start")</button>
+            }
+        </div>
+    </div>
+</div>
+
+
+}

@@ -49,17 +49,20 @@ session.timeout.message=Your session has ended
 session.timeout.startAgain=Start again
 
 #Welcome page
-page.introduction.welcome.title=Welcome
-page.introduction.welcome.heading=Get tax relief for your investors
-page.introduction.welcome.description.one=If you have a small or medium-sized company the government can help it grow by offering tax relief to your investors.
-page.introduction.welcome.description.two=This service lets you:
-page.introduction.welcome.bullet.learn=learn about tax relief schemes
-page.introduction.welcome.bullet.eligible=find out if your company’s eligible for them
-page.introduction.welcome.bullet.certify=prove to potential investors that they’ll get tax relief
-page.introduction.welcome.apply.link.link=How to apply
-page.introduction.welcome.helpFirst=You will not be able to save your application.
-page.introduction.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
-page.introduction.welcome.schemeGuidance=scheme guidance
+page.start.welcome.title=Welcome
+page.start.welcome.heading=Get tax relief for your investors
+page.start.welcome.description.one=If you have a small or medium-sized company the government can help it grow by offering tax relief to your investors.
+page.start.welcome.description.two=This service lets you:
+page.start.welcome.bullet.learn=learn about tax relief schemes
+page.start.welcome.bullet.eligible=find out if your company’s eligible for them
+page.start.welcome.bullet.certify=prove to potential investors that they’ll get tax relief
+page.start.welcome.bullet.claim=help your investors claim tax relief
+page.start.welcome.apply.link=How to apply
+page.start.welcome.helpFirst=You will not be able to save your application.
+page.start.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
+page.start.welcome.schemeGuidance=scheme guidance
+
+
 
 
 #examples pages (to be deleted later)
