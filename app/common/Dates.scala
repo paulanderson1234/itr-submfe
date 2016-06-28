@@ -18,6 +18,7 @@ package common
 
 import java.text.SimpleDateFormat
 import java.util.{Calendar, Date}
+import org.joda.time.DateTime
 
 object Dates {
 
@@ -26,19 +27,21 @@ object Dates {
   val datePageFormatNoZero = new SimpleDateFormat("d MMMM yyyy")
   val nowDate = new Date();
 
+  DateTime.now
+
   def constructDate (day: Int, month: Int, year: Int): Date = {
     sf.parse(s"$day/$month/$year")
   }
 
   def dateInFuture (date: Date): Boolean = {
-    date.after(nowDate)
+    date.after(DateTime.now.toDate)
   }
 
   def dateNotInFuture (day: Int, month: Int, year: Int): Boolean = {
-    !constructDate(day, month, year).after(nowDate)
+    !constructDate(day, month, year).after(DateTime.now.toDate)
   }
 
   def dateIsFuture (day: Int, month: Int, year: Int): Boolean = {
-    constructDate(day, month, year).after(nowDate)
+    constructDate(day, month, year).after(DateTime.now.toDate)
   }
 }
