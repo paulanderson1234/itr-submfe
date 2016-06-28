@@ -26,8 +26,8 @@ import play.api.i18n.Messages
 object DateOfFirstSaleForm {
   val dateOfFirstSaleForm = Form(
     mapping(
-      "dateOfFirstSaleDay" -> number(max = 31),
-      "dateOfFirstSaleMonth" -> number(max = 12),
+      "dateOfFirstSaleDay" -> number(min = 1, max = 31),
+      "dateOfFirstSaleMonth" -> number(min = 1, max = 12),
       "dateOfFirstSaleYear" -> number (min=1000, max = 9999)
     )(DateOfFirstSaleModel.apply)(DateOfFirstSaleModel.unapply)
       .verifying(Messages("common.date.error.invalidDate"), fields =>

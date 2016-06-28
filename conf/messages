@@ -99,6 +99,7 @@ page.examples.ContactDetails.email.label=Email address
 validation.error.DateOfFirstSale.Future=Date of first sale cannot be a future date
 page.examples.DoSubmission.question=Do you want to submit your application?
 page.examples.DoSubmission.title=Submit application?
+page.examples.DoSubmission.heading=Submit application?
 page.examples.DoSubmission.helptext=You can downlaod your application and email it to HMRC
 page.examples.Confirmation.title=Confirmation
 page.examples.Confirmation.heading=Confirmation
