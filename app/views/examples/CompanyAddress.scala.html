@@ -6,7 +6,7 @@
 @import helpers._
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 
-@main_template(title = Messages("page.examples.CompanyAddress.title")) {
+@main_template(Messages("page.examples.CompanyAddress.title"), backLink = Some(controllers.routes.IntroductionController.show().toString)) {
 
 <div class="grid-row">
     <div class="column-two-thirds">

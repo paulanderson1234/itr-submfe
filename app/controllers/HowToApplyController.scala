@@ -16,12 +16,10 @@
 
 package controllers
 
-import controllers.examples.routes
 import controllers.predicates.ValidActiveSession
-import forms.ContactDetailsForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import views.html.examples
+
 import scala.concurrent.Future
 
 object HowToApplyController extends HowToApplyController

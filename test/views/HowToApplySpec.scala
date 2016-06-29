@@ -58,7 +58,7 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
       document.title() shouldBe Messages("page.introduction.HowToApply.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.introduction.HowToApply.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show.toString()
       document.getElementById("number-fill-out").text() should include (Messages("page.introduction.HowToApply.number.fillOut"))
       document.getElementById("number-send").text() should include (Messages("page.introduction.HowToApply.number.send"))
       document.getElementById("number-receive").text() should include (Messages("page.introduction.HowToApply.number.receive"))
