@@ -1,0 +1,53 @@
+
+.related
+{
+    border-top: 10px solid #005ea5;
+    padding-top: 5px;
+}
+
+related li a {
+    background-position: 0 -287px;
+    background-repeat: no-repeat;
+    display: block;
+    line-height: 1.25em;
+    orphans: 2;
+}
+
+related h2 {
+    font-size: 24px;
+    line-height: 1.25;
+    font-family: "nta", Arial, sans-serif;
+    font-weight: 400;
+    text-transform: none;
+    font-weight: 600;
+    color: #0b0c0c;
+    margin-top: 0.3em;
+    margin-bottom: 0.5em;
+    position: relative;
+}
+
+.related ul {
+    font-size: 16px;
+}
+
+related ul {
+    font-family: "nta", Arial, sans-serif;
+    font-weight: 400;
+    text-transform: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.related-container {
+    float: left;
+    padding: 0 15px;
+    box-sizing: border-box;
+    margin-top: 40px;
+    width: 33.33333%;
+}
+
+.phase-banner  {
+@include phase-banner(alpha);
+}

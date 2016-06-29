@@ -50,12 +50,12 @@ trait IntroductionController extends FrontendController with ValidActiveSession{
     else {
       //TODO: if there is any data (i.e. a model passed to this form) retrive from session skeystore (fetchAndGet)
       // and pass it to the form..
-      Future.successful(Ok(Introduction()))
+      Future.successful(Ok(start()))
       }
     }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Ok("the form was posted successfully"))
+    Future.successful(Redirect(routes.StartController.start()))
   }
 
   // this method is called on any restart - e.g. on session timeout

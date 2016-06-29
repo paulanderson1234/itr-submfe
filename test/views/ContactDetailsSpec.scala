@@ -90,27 +90,4 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   }
 
-  //  "Verify that AgentView page contains the correct elements when an empty ContactDetailsModel is passed" in new SetupPage {
-//    val document : Document = {
-//      val userId = s"user-${UUID.randomUUID}"
-//      AuthBuilder.mockAuthorisedUser(userId, mockAuthConnector)
-//      when(mockS4LConnector.fetchAndGet[ContactDetailsModel](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(Option(emptyContactDetailsModel)))
-//      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
-//      Jsoup.parse(contentAsString(result))
-//    }
-//
-//    document.title() shouldBe Messages("page.reg.companyDetails.title")
-//    document.getElementById("main-heading").text() shouldBe Messages("page.reg.companyDetails.heading")
-//    document.getElementById("takeoverBusinessLabel").text() shouldBe Messages("page.reg.companyDetails.takeover.label")
-//    document.select("#takeover-yes").size() shouldBe 1
-//    document.select("#takeover-no").size() shouldBe 1
-//    document.getElementById("companyMemberGroupLabel").text() shouldBe Messages("page.reg.companyDetails.group.label")
-//    document.select("#group-yes").size() shouldBe 1
-//    document.select("#group-no").size() shouldBe 1
-//    document.getElementById("companyCharityLabel").text() shouldBe Messages("page.reg.companyDetails.charity.label")
-//    document.select("#charity-yes").size() shouldBe 1
-//    document.select("#charity-no").size() shouldBe 1
-//    document.getElementById("next").text() shouldBe Messages("common.button.save")
-//  }
 }
