@@ -1,30 +1,58 @@
+@import config.FrontendAppConfig
 @(title: String,
-  sidebarLinks: Option[Html] = None,
-  contentHeader: Option[Html] = None,
-  bodyClasses: Option[String] = None,
-  mainClass: Option[String] = None,
-  scriptElem: Option[Html] = None)(mainContent: Html)(implicit request : Request[_])
+sidebarLinks: Option[Html] = None,
+contentHeader: Option[Html] = None,
+bodyClasses: Option[String] = None,
+mainClass: Option[String] = None,
+scriptElem: Option[Html] = None,
+articleLayout: Boolean = true,
+backLink: Option[String] = None,
+sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Request[_])
+
 
 @import uk.gov.hmrc.play.views.html.layouts
 
 
 @serviceInfoContent = {}
 
-@sidebar = {
-    @if(sidebarLinks.isDefined) {
-        @layouts.sidebar(sidebarLinks.get, Some("sidebar"))
-    }
+
+@sidebarContent = {
+<div class="service-info">
+    <h2 id="read-more-heading" class="heading-medium">@Messages("common.readMore")</h2>
+    @sidebarLinks.get
+</div>
 }
 
+@sidebar = {
+@if(sidebarLinks.isDefined) {
+@layouts.sidebar(sidebarContent, Some("sidebar"))
+}
+}
+
+@contentLayout = {
+@if(articleLayout) {
+@layouts.article(mainContent)
+} else {
+@mainContent
+}
+}
+
+@contentHeader = {
+@if(backLink.isDefined) {
+<a id="back-link" class="back-link" href="@backLink.get">@Messages("common.button.back")</a>
+@if(sectionProgress.isDefined) {
+<span id="progress-section" class="form-hint-breadcrumb">&nbsp;@sectionProgress.get</span>
+}
+}
+}
 
 @govuk_wrapper(appConfig = config.FrontendAppConfig,
-               title = title,
-               mainClass = mainClass,
-               bodyClasses = bodyClasses,
-               sidebar = sidebar,
-               contentHeader = contentHeader,
-               mainContent = layouts.article(mainContent),
-               serviceInfoContent = serviceInfoContent,
-               scriptElem = scriptElem
+title = title,
+mainClass = mainClass,
+bodyClasses = bodyClasses,
+sidebar = sidebar,
+contentHeader = Some(contentHeader),
+mainContent = layouts.article(mainContent),
+serviceInfoContent = serviceInfoContent,
+scriptElem = scriptElem
 )
-

@@ -16,10 +16,10 @@ common.signInOut=Sign in/out
 common.feedbackFirst=This is a new service – your
 common.feedbackSecond=will help us to improve it.
 common.feedbackLinkText=feedback
-common.readMore = Read more
-common.howToApply = How to apply
+common.readMore=Read more
 common.error.fieldRequired = This field is required
 common.error.summary.heading=This page has errors
+common.readMore=Read more
 common.base.yes=Yes
 common.base.no=No
 
@@ -28,6 +28,7 @@ common.date.fields.day=Day
 common.date.fields.month=Month
 common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
+common.externalLink = opens in a new window
 common.date.error.invalidDate=Enter a valid date
 
 
@@ -63,7 +64,6 @@ page.start.welcome.apply.link=How to apply
 page.start.welcome.helpFirst=You will not be able to save your application.
 page.start.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
 page.start.welcome.schemeGuidance=scheme guidance
-
 
 
 #How To Apply page

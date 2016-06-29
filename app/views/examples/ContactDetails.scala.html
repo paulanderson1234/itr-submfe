@@ -6,12 +6,11 @@
 @import models.ContactDetailsModel
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 
-@main_template(title = Messages("page.examples.ContactDetails.title")) {
+@main_template(Messages("page.examples.ContactDetails.title"), backLink = Some(controllers.examples.routes.CompanyAddressController.show().toString),
+sectionProgress=Some("Section 2 of 5: Company Details")) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
-        <a id="back-link" class="back-link" href="@controllers.examples.routes.CompanyAddressController.show()">@Messages("common.button.back")</a>
-
         @errorSummary(
         Messages("common.errorSummary.label"), contactDetailsForm
         )
