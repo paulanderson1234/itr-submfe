@@ -1,30 +1,22 @@
-@()(implicit request: Request[_])
-
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import controllers.routes._
-@import helpers._
 
+@import views.html.helpers._
 
 @import config.FrontendAppConfig
 
+@()(implicit request: Request[_])
 @sidebar = {
-<div>
-    <aside class="related" id="related">
-        <div class="inner group related-subsection">
-            <h2 id="parent-subsection">Read more</h2>
-            <nav role="navigation" aria-labelledby="parent-subsection">
-                <ul>
-                    <li>
-                        <a id="how-to-apply" href="/investment-tax-relief/howToApply">How to apply</a>
-                    </li>
-                </ul>
-            </nav>
-        </div>
-    </aside>
-</div>
+<ul>
+    <li>
+        <a id="how-to-apply" href="@controllers.routes.HowToApplyController.show()">
+            @Messages("page.start.welcome.apply.link")
+        </a>
+    </li>
+</ul>
 }
 
-@views.html.main_template(title = Messages("page.start.welcome.title"), sidebarLinks = Some(sidebar)) {
+@main_template(title = Messages("page.start.welcome.title"), sidebarLinks = Some(sidebar)) {
 
 <div class="grid-column">
     <div class="column-two-thirds">

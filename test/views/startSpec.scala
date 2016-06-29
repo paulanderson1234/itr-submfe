@@ -64,8 +64,8 @@ class startSpec extends UnitSpec with WithFakeApplication with MockitoSugar with
       document.body.getElementById("certify").text() shouldEqual Messages("page.start.welcome.bullet.certify")
       document.body.getElementById("claim")text() shouldEqual Messages("page.start.welcome.bullet.claim")
       document.body.getElementById("next").text() shouldEqual Messages("common.button.start")
-      document.body.getElementById("parent-subsection").text() shouldEqual Messages("common.readMore")
-      document.body.getElementById("how-to-apply").text() shouldEqual Messages("common.howToApply")
+      document.body.getElementById("read-more-heading").text() shouldEqual Messages("common.readMore")
+      document.body.getElementById("how-to-apply").text() shouldEqual Messages("page.start.welcome.apply.link")
 
     }
   }

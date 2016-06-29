@@ -17,6 +17,7 @@
 package controllers.examples
 
 import connectors.KeystoreConnector
+import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.DoSubmissionModel
@@ -24,7 +25,7 @@ import common._
 import views.html._
 import forms.DoSubmissionForm._
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
+
 
 object DoSubmissionController extends DoSubmissionController
 {
