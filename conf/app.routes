@@ -10,8 +10,8 @@ GET         /                        controllers.StartController.start
 
 GET        /hello-world                             controllers.HelloWorld.helloWorld
 GET        /                                        controllers.StartController.start
-GET        /introduction                            controllers.IntroductionController.show
-POST       /introduction                            controllers.IntroductionController.submit
+GET        /start                                   controllers.IntroductionController.show
+POST       /start                                   controllers.IntroductionController.submit
 
 
 #Session examples routes - to be removed later

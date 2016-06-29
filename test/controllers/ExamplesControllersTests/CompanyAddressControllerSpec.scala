@@ -140,4 +140,3 @@ class CompanyAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
 }
-
