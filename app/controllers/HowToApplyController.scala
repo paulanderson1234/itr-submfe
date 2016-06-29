@@ -16,10 +16,6 @@
 
 package controllers
 
-/**
-  * Created by davidg on 27/06/16.
-  */
-
 import controllers.examples.routes
 import controllers.predicates.ValidActiveSession
 import forms.ContactDetailsForm._
@@ -27,7 +23,6 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import views.html.examples
 import scala.concurrent.Future
-//import views.html._
 
 object HowToApplyController extends HowToApplyController
 

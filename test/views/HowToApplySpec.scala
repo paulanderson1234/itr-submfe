@@ -42,7 +42,6 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
   class SetupPage {
 
     val controller = new HowToApplyController{
-      //val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 
@@ -60,6 +59,18 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
       document.getElementById("main-heading").text() shouldBe Messages("page.introduction.HowToApply.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.getElementById("number-fill-out").text() should include (Messages("page.introduction.HowToApply.number.fillOut"))
+      document.getElementById("number-send").text() should include (Messages("page.introduction.HowToApply.number.send"))
+      document.getElementById("number-receive").text() should include (Messages("page.introduction.HowToApply.number.receive"))
+      document.getElementById("fill-out-description").text() shouldBe (Messages("page.introduction.HowToApply.fillOut.description"))
+      document.getElementById("send-description-one").text() shouldBe (Messages("page.introduction.HowToApply.send.descriptionOne"))
+      document.getElementById("send-description-two").text() shouldBe (Messages("page.introduction.HowToApply.send.descriptionTwo"))
+      document.getElementById("number-send-one").text() should include (Messages("page.introduction.HowToApply.number.sendOne"))
+      document.getElementById("number-send-two").text() shouldBe (Messages("page.introduction.HowToApply.number.sendTwo"))
+      document.getElementById("number-send-three").text() shouldBe (Messages("page.introduction.HowToApply.number.sendThree"))
+      document.getElementById("receive-description").text() shouldBe (Messages("page.introduction.HowToApply.receive-description"))
+      document.getElementById("not-binding").text() shouldBe (Messages("page.introduction.HowToApply.notBinding"))
+
     }
   }
 }
