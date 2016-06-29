@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package forms
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
+import models.YourCompanyNeedModel
+import play.api.data.Form
+import play.api.data.Forms._
+
+object YourCompanyNeedForm {
+  val yourCompanyNeedForm = Form(
+    mapping(
+      "needAAorCS" -> nonEmptyText
+    )(YourCompanyNeedModel.apply)(YourCompanyNeedModel.unapply)
+  )
 }

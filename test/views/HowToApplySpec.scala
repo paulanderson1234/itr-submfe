@@ -68,7 +68,7 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
       document.getElementById("number-send-one").text() should include (Messages("page.introduction.HowToApply.number.sendOne"))
       document.getElementById("number-send-two").text() shouldBe (Messages("page.introduction.HowToApply.number.sendTwo"))
       document.getElementById("number-send-three").text() shouldBe (Messages("page.introduction.HowToApply.number.sendThree"))
-      document.getElementById("receive-description").text() shouldBe (Messages("page.introduction.HowToApply.receive-description"))
+      document.getElementById("receive-description").text() shouldBe (Messages("page.introduction.HowToApply.receive.description"))
       document.getElementById("not-binding").text() shouldBe (Messages("page.introduction.HowToApply.notBinding"))
 
     }
