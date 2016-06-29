@@ -4,11 +4,9 @@
 
 @(yourCompanyNeedForm: Form[YourCompanyNeedModel])(implicit request: Request[_])
 
-@main_template(Messages("page.introduction.YourCompanyNeed.title")) {
+@main_template(Messages("page.introduction.YourCompanyNeed.title"), bodyClasses = None, backLink = Some(controllers.routes.IntroductionController.show().toString)) {
 
-<a id="back-link" class="back-link" href="@controllers.routes.IntroductionController.show()">@Messages("common.button.back")</a>
-
-@errorSummary(yourCompanyNeedForm, "examples-do-submission")
+@errorSummary(yourCompanyNeedForm, "introduction-company-need")
 
 <h1 class="heading-large" id="main-heading">@Messages("page.introduction.YourCompanyNeed.heading")</h1>
 
