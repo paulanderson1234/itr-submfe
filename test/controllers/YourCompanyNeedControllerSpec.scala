@@ -54,6 +54,12 @@ class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication wi
     }
   }
 
+  "CompanyAddressController" should {
+    "use the correct save4later connector" in {
+      YourCompanyNeedController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
   // GET Tests
   "Calling the YourCompanyNeed.show" when {
 
@@ -75,29 +81,6 @@ class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication wi
           charset(result) shouldBe Some("utf-8")
         }
 
-        "have the title 'Your company need'" in {
-          document.title shouldEqual Messages("page.introduction.YourCompanyNeed.title")
-        }
-
-        "have the correct heading" in {
-          document.body.getElementsByTag("h1").text shouldEqual Messages("page.introduction.YourCompanyNeed.heading")
-        }
-
-        s"have a 'Back' link to ${routes.YourCompanyNeedController.show()}" in {
-          document.body.getElementById("back-link").text shouldEqual Messages("common.button.back")
-          document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show.toString()
-        }
-
-        "display a radio button with the option 'A letter to show to potential investors'" in {
-          document.body.getElementById("needAAorCS-aaLabel").parent.text should include (Messages("page.introduction.YourCompanyNeed.advancedAssurance"))
-        }
-        "display a radio button with the option 'A reference number so investors can claim relief'" in {
-          document.body.getElementById("needAAorCS-csLabel").parent.text should include(Messages("page.introduction.YourCompanyNeed.complianceStatement"))
-        }
-
-        "display a 'Continue' button " in {
-          document.body.getElementById("next").text shouldEqual Messages("common.button.continue")
-        }
       }
     }
 

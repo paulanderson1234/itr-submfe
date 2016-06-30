@@ -1,0 +1,24 @@
+@import models.DateOfIncorporationModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+
+@(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_])
+
+@main_template(Messages("page.companyDetails.DateOfIncorporation.title")) {
+
+<a id="back-link" class="back-link" href="@controllers.routes.DateOfIncorporationController.show()">@Messages("common.button.back")</a>
+
+@errorSummary(dateOfIncorporationForm, "examples-date-first-sale", "dateOfIncorporation")
+
+<h1 class="heading-large">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
+
+@form(action = controllers.routes.DateOfIncorporationController.submit()) {
+
+@formInlineDateInput(dateOfIncorporationForm, "dateOfIncorporation", Messages(""))
+
+<div class="form-group">
+    <button class="btn button" id="next">@Messages("common.button.continue")</button>
+</div>
+
+}
+}

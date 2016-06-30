@@ -113,3 +113,8 @@ page.introduction.YourCompanyNeed.title=Your company need
 page.introduction.YourCompanyNeed.heading=What does your company need?
 page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potential investors
 page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
+
+#Date of incorporation page
+validation.error.DateOfIncorporation.Future=Date of first sale cannot be a future date
+page.companyDetails.DateOfIncorporation.title= Date of incorporation
+page.companyDetails.DateOfIncorporation.heading= When was your company incorporated?
