@@ -81,4 +81,3 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
   }
 
 }
-
