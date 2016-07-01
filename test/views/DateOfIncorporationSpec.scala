@@ -68,6 +68,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
       document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
+      document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
     }
@@ -91,10 +92,9 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
       document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
-      document.body.getElementById("company-house-db").href() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
+      document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
-      //document.getElementById("error-summary-display-d")
     }
 
   }
