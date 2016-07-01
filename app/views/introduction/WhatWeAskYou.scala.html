@@ -29,6 +29,8 @@
             <li id="spent-r-and-d">@Messages("page.introduction.WhatWeAskYou.bullet.spentRAndD")</li>
         </ul>
 
+        <br>
+
         <h2 class="heading-medium" id="heading-two">@Messages("page.introduction.WhatWeAskYou.heading.two")</h2>
         <hr>
         <ul class="list list-bullet">
@@ -38,6 +40,8 @@
             <li id="name-schemes">@Messages("page.introduction.WhatWeAskYou.bullet.nameSchemes")</li>
         </ul>
 
+        <br>
+
         <h2 class="heading-medium" id="heading-three">@Messages("page.introduction.WhatWeAskYou.heading.three")</h2>
         <hr>
         <ul class="list list-bullet">
@@ -45,12 +49,16 @@
             <li id="amount-to-raise">@Messages("page.introduction.WhatWeAskYou.bullet.amountToRaise")</li>
         </ul>
 
+        <br>
+
         <h2 class="heading-medium" id="heading-four">@Messages("page.introduction.WhatWeAskYou.heading.four")</h2>
         <hr>
         <ul class="list list-bullet">
             <li id="who-to-contact">@Messages("page.introduction.WhatWeAskYou.bullet.whoToContact")</li>
             <li id="contact-details">@Messages("page.introduction.WhatWeAskYou.bullet.contactDetails")</li>
         </ul>
+
+        <br>
 
         <h2 class="heading-medium" id="heading-five">@Messages("page.introduction.WhatWeAskYou.heading.five")</h2>
         <hr>
@@ -61,7 +69,15 @@
             <li id="prospectuses">@Messages("page.introduction.WhatWeAskYou.bullet.prospectuses")</li>
         </ul>
 
+        <br>
         <hr>
+        <br>
+
+        <div class = "form-group">
+            <p><a id="printThisPage" onClick="window.print()" href="">Print this page</a></p>
+        </div>
+
+        <br>
 
         <div class="form-group">
             @form(action = controllers.routes.WhatWeAskYouController.submit()) {
