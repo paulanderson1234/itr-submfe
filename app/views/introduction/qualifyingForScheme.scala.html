@@ -1,0 +1,62 @@
+@()(implicit request: Request[_])
+
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import controllers.routes._
+@import helpers._
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.introduction.qualifyingForScheme.title"), bodyClasses = None, backLink = Some(controllers.routes.QualifyingForSchemeController.show().toString)) {
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <header id="title" class="page-header">
+            <div>
+                <h1>@Messages("page.introduction.qualifyingForScheme.title")</h1>
+            </div>
+        </header>
+        <p id="description-one">@Messages("page.introduction.qualifyingForScheme.description.one")</p>
+        <p id="description-two">@Messages("page.introduction.qualifyingForScheme.description.two")</p>
+
+        <ul class="list list-bullet">
+            <li id="uk-base">@Messages("page.introduction.qualifyingForScheme.bullet.UKbase")</li>
+            <li id="listed">@Messages("page.introduction.qualifyingForScheme.bullet.listed")</li>
+            <li id="num-employees">@Messages("page.introduction.qualifyingForScheme.bullet.numEmployees")</li>
+        </ul>
+
+        <p id="description-three">@Messages("page.introduction.qualifyingForScheme.description.three")
+            <a id="link-text-one" rel="external" href="https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction">
+                @Messages("page.introduction.qualifyingForScheme.link.schemeGuidance")
+            </a>
+         .</p>
+
+        <br>
+
+        <h2 id="heading-one" class="heading-medium">@Messages("page.introduction.qualifyingForScheme.heading.one")</h2>
+
+        <p id="description-four">@Messages("page.introduction.qualifyingForScheme.description.four")</p>
+
+        <ul class="list list-bullet">
+            <li id="farming">@Messages("page.introduction.qualifyingForScheme.bullet.farming")</li>
+            <li id="legal">@Messages("page.introduction.qualifyingForScheme.bullet.legal")</li>
+            <li id="property">@Messages("page.introduction.qualifyingForScheme.bullet.property")</li>
+            <li id="hotels">@Messages("page.introduction.qualifyingForScheme.bullet.hotels")</li>
+            <li id="electricity">@Messages("page.introduction.qualifyingForScheme.bullet.electricity")</li>
+        </ul>
+
+        <p id="description-five">@Messages("page.introduction.qualifyingForScheme.description.five")
+            <a id="link-text-two" rel="external" href="https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm3000">
+                @Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")
+            </a>
+        </p>
+
+        <br>
+
+        <div class="form-group">
+            @form(action = controllers.routes.QualifyingForSchemeController.submit()) {
+                <button class="button" role="button" id="continue">@Messages("common.button.continue")</button>
+            }
+        </div>
+    </div>
+</div>
+}

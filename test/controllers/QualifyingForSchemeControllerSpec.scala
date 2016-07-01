@@ -19,65 +19,50 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import connectors.KeystoreConnector
-import controllers.HowToApplyController
-import controllers.examples.{ContactDetailsController, routes}
-import models._
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.{FakeApplication, FakeRequest}
+import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
+class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = HowToApplyController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = QualifyingForSchemeController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = HowToApplyController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = QualifyingForSchemeController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
   implicit val hc = HeaderCarrier()
 
-
-  "Sending a GET request to HowToApplyController" should {
+  "Sending a GET request to QualifyingForSchemeController" should {
     "return a 200" in {
       showWithSession(
-        result => status(result) shouldBe OK
+        result => status(result) shouldBe 200
       )
     }
 
   }
 
-
-  ""
-
-  "Posting to the HowToApplyController" should {
-    "redirect to 'What does your company need' page" in {
+  "Posting to the QualifyingForSchemeController" should {
+    "redirect to 'What we'll ask you' page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody()
 
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-to-apply")
+      submitWithSession(request)(result => {
+          status(result) shouldBe 303
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
         }
       )
     }
   }
-
 }

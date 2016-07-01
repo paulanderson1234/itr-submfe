@@ -83,6 +83,24 @@ page.introduction.HowToApply.number.sendOne=company accounts
 page.introduction.HowToApply.number.sendTwo=memorandum and articles of association
 page.introduction.HowToApply.number.sendThree=documents like prospectuses that you’ll use to attract investment
 
+#Qualifying for Scheme page
+page.introduction.qualifyingForScheme.title=Qualifying for the scheme
+page.introduction.qualifyingForScheme.heading.one=Business areas that don't qualify
+page.introduction.qualifyingForScheme.description.one=Your company must have issued shares in the past 2 years.
+page.introduction.qualifyingForScheme.description.two=When it issued shares it must also have:
+page.introduction.qualifyingForScheme.description.three=You can find other conditions in the
+page.introduction.qualifyingForScheme.description.four=You can’t apply if your company’s involved in:
+page.introduction.qualifyingForScheme.description.five=There are also
+page.introduction.qualifyingForScheme.bullet.UKbase=had a permanent UK base
+page.introduction.qualifyingForScheme.bullet.listed=not been listed on a stock exchange, or had plans to be listed
+page.introduction.qualifyingForScheme.bullet.numEmployees=had fewer than 250 employees, or 500 if you’ve spent a certain amount of your operating costs on research and development
+page.introduction.qualifyingForScheme.bullet.farming=farming
+page.introduction.qualifyingForScheme.bullet.legal=legal or financial services
+page.introduction.qualifyingForScheme.bullet.property=buying or selling property or land
+page.introduction.qualifyingForScheme.bullet.hotels=running hotels or rental accommodation
+page.introduction.qualifyingForScheme.bullet.electricity=generating or exporting electricity
+page.introduction.qualifyingForScheme.link.schemeGuidance=scheme guidance
+page.introduction.qualifyingForScheme.link.unqualifiedBusiness=other business areas that don't qualify
 
 #examples pages (to be deleted later)
 page.examples.CompanyAddress.title=Company address details
@@ -117,5 +135,9 @@ page.companyDetails.utr.question.hint=If your UTR is 13 digits long, only enter 
 page.companyDetails.utr.help.text=You can usually find it in letters we’ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
 page.companyDetails.utr.help.link=Where can you find this?
 
-
+#Your company need page
+page.introduction.YourCompanyNeed.title=Your company need
+page.introduction.YourCompanyNeed.heading=What does your company need?
+page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potential investors
+page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
 
