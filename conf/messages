@@ -142,8 +142,6 @@ page.introduction.YourCompanyNeed.heading=What does your company need?
 page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potential investors
 page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
 
-<<<<<<< HEAD
-=======
 #What we'll ask you page
 page.introduction.WhatWeAskYou.title=What we''ll ask you
 page.introduction.WhatWeAskYou.heading.one=Section 1: Company details
@@ -171,4 +169,4 @@ page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other co
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
->>>>>>> 009a97f613caa9dab25d581eb0ed1c7387d69059
+
