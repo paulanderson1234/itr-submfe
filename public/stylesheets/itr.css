@@ -51,3 +51,8 @@ related ul {
 .phase-banner  {
 @include phase-banner(alpha);
 }
+
+#progress-section
+{
+    padding-left:1.3em;
+}

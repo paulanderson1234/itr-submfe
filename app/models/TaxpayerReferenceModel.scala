@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package models
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
+import play.api.libs.json.Json
+
+case class TaxpayerReferenceModel(utr : String)
+
+object TaxpayerReferenceModel {
+  implicit val format = Json.format[TaxpayerReferenceModel]
+  implicit val writes = Json.writes[TaxpayerReferenceModel]
 }
