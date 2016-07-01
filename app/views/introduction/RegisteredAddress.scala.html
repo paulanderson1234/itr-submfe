@@ -1,0 +1,36 @@
+@()(implicit request: Request[_])
+
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import controllers.routes._
+@import helpers._
+
+@import config.FrontendAppConfig
+
+@main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None, backLink = Some(controllers.routes.RegisteredAddressController.show().toString)) {
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <h1 id="title" class="form-title heading-xlarge">What's your company's registered address?</h1>
+
+        <div class="form-group">
+            <fieldset class="inline" style="width: 50%;">
+                <legend class="visuallyhidden">What's your company's registered address?</legend>
+
+                {% include "includes/address_pattern.html" %}
+
+            </fieldset>
+
+        </div>
+        <details>
+            <summary><span class="summary">Enter the address yourself</span></summary>
+        </details>
+        <br>
+        <div class="form-group">
+            <button class="btn button" type="next">Continue</button>
+        </div>
+
+    </div>
+</div>
+
+}

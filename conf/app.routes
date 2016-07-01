@@ -46,3 +46,6 @@ POST       /your-company-need                       controllers.YourCompanyNeedC
 
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
+
+GET        /registered-address                      controllers.RegisteredAddressController.show
+POST       /registered-address                      controllers.RegisteredAddressController.submit
