@@ -41,6 +41,10 @@ GET         /restart                 controllers.IntroductionController.restart
 GET        /how-to-apply                            controllers.HowToApplyController.show
 POST       /how-to-apply                            controllers.HowToApplyController.submit
 
+GET        /taxpayer-reference                       controllers.TaxpayerReferenceController.show
+POST       /taxpayer-reference                       controllers.TaxpayerReferenceController.submit
+
+
 GET        /your-company-need                       controllers.YourCompanyNeedController.show
 POST       /your-company-need                       controllers.YourCompanyNeedController.submit
 

@@ -32,7 +32,8 @@ common.date.hint=For example, 4 9 2016
 common.externalLink = opens in a new window
 common.date.error.invalidDate=Enter a valid date
 
-
+##common section headings##
+common.section.progress.company.details.one=Section 1 of 5: Company details
 
 #validation errors
 validation.error.countrypostcode=Only one of country or postcode should be entered
@@ -46,6 +47,7 @@ validaton.error.postcode=Please enter a valid postcode
 validation.error.email=Enter a valid email address
 validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=Please enter a valid date
+validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
 
 ## Session Timeout message ##
@@ -127,12 +129,21 @@ page.examples.DoSubmission.helptext=You can download your application and email 
 page.examples.Confirmation.title=Confirmation
 page.examples.Confirmation.heading=Confirmation
 
+#Utr page
+page.companyDetails.utr.heading=What's your Company Unique Taxpayer Reference?
+page.companyDetails.utr.title=What's your Company Unique Taxpayer Reference?
+page.companyDetails.utr.question.hint=If your UTR is 13 digits long, only enter the last 10
+page.companyDetails.utr.help.text=You can usually find it in letters we’ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
+page.companyDetails.utr.help.link=Where can you find this?
+
 #Your company need page
 page.introduction.YourCompanyNeed.title=Your company need
 page.introduction.YourCompanyNeed.heading=What does your company need?
 page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potential investors
 page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
 
+<<<<<<< HEAD
+=======
 #What we'll ask you page
 page.introduction.WhatWeAskYou.title=What we''ll ask you
 page.introduction.WhatWeAskYou.heading.one=Section 1: Company details
@@ -160,3 +171,4 @@ page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other co
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
+>>>>>>> 009a97f613caa9dab25d581eb0ed1c7387d69059
