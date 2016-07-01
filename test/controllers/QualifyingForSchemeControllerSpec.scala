@@ -60,7 +60,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
       submitWithSession(request)(result => {
           status(result) shouldBe 303
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/what-we-ask-you")
         }
       )
     }

@@ -40,6 +40,6 @@ trait QualifyingForSchemeController extends FrontendController with ValidActiveS
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.QualifyingForSchemeController.show()))
+    Future.successful(Redirect(routes.WhatWeAskYouController.show()))
   }
 }
