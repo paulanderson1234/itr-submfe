@@ -2,6 +2,7 @@
 common.button.next=Next
 common.button.continue=Continue
 common.button.continueNextSection=continue to next section
+common.button.continueFirstSection=Continue to first section
 common.button.snc=Save and continue
 common.button.sign-in=Sign in
 common.button.back=Back
@@ -158,3 +159,4 @@ page.introduction.WhatWeAskYou.bullet.companyAccounts=Your company accounts
 page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other companies that your business owns or controls
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
+page.introduction.WhatWeAskYou.print.text=Print this page

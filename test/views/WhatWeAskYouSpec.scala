@@ -19,7 +19,7 @@ package views
 import java.util.UUID
 
 import controllers.WhatWeAskYouController
-import controllers.examples.routes
+import controllers.routes
 import controllers.helpers.{FakeRequestHelper}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -47,32 +47,33 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       document.title() shouldBe Messages("page.introduction.WhatWeAskYou.title")
-      document.getElementById("heading-one").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.one")
-      document.getElementById("heading-two").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.two")
-      document.getElementById("heading-three").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.three")
-      document.getElementById("heading-four").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.four")
-      document.getElementById("heading-five").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.five")
-      document.getElementById("description-one").text() shouldBe Messages("page.introduction.WhatWeAskYou.description.one")
-      document.getElementById("description-two").text() shouldBe Messages("page.introduction.WhatWeAskYou.description.two")
-      document.getElementById("comp-incorporated").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.compIncorporated")
-      document.getElementById("comp-do").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.compDo")
-      document.getElementById("sold-commercially").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.soldCommercially")
-      document.getElementById("owns-controls-comp").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.ownsControlsComp")
-      document.getElementById("spent-r-and-d").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.spentRAndD")
-      document.getElementById("prev-tax-relief").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prevTaxRelief")
-      document.getElementById("invest-raised").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.investRaised")
-      document.getElementById("shares-issued").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.sharesIssued")
-      document.getElementById("name-schemes").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.nameSchemes")
-      document.getElementById("how-use-invest").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.howUseInvest")
-      document.getElementById("amount-to-raise").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.amountToRaise")
-      document.getElementById("who-to-contact").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.whoToContact")
-      document.getElementById("contact-details").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.contactDetails")
-      document.getElementById("company-accounts").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.companyAccounts")
-      document.getElementById("other-comp-accounts").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.otherCompAccounts")
-      document.getElementById("memorandum").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.memorandum")
-      document.getElementById("prospectuses").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prospectuses")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.body.getElementById("heading-one").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.one")
+      document.body.getElementById("heading-two").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.two")
+      document.body.getElementById("heading-three").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.three")
+      document.body.getElementById("heading-four").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.four")
+      document.body.getElementById("heading-five").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.five")
+      document.body.getElementById("description-one").text() shouldBe Messages("page.introduction.WhatWeAskYou.description.one")
+      document.body.getElementById("description-two").text() shouldBe Messages("page.introduction.WhatWeAskYou.description.two")
+      document.body.getElementById("comp-incorporated").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.compIncorporated")
+      document.body.getElementById("comp-do").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.compDo")
+      document.body.getElementById("sold-commercially").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.soldCommercially")
+      document.body.getElementById("owns-controls-comp").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.ownsControlsComp")
+      document.body.getElementById("spent-r-and-d").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.spentRAndD")
+      document.body.getElementById("prev-tax-relief").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prevTaxRelief")
+      document.body.getElementById("invest-raised").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.investRaised")
+      document.body.getElementById("shares-issued").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.sharesIssued")
+      document.body.getElementById("name-schemes").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.nameSchemes")
+      document.body.getElementById("how-use-invest").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.howUseInvest")
+      document.body.getElementById("amount-to-raise").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.amountToRaise")
+      document.body.getElementById("who-to-contact").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.whoToContact")
+      document.body.getElementById("contact-details").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.contactDetails")
+      document.body.getElementById("company-accounts").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.companyAccounts")
+      document.body.getElementById("other-comp-accounts").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.otherCompAccounts")
+      document.body.getElementById("memorandum").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.memorandum")
+      document.body.getElementById("prospectuses").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prospectuses")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.QualifyingForSchemeController.show().toString()
+      document.body.getElementById("print-this-page").text() shouldBe Messages("page.introduction.WhatWeAskYou.print.text")
+      document.body.getElementById("next").text() shouldBe Messages("common.button.continueFirstSection")
 
     }
   }

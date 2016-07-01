@@ -6,7 +6,7 @@
 
 @import config.FrontendAppConfig
 
-@main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None, backLink = Some(controllers.routes.WhatWeAskYouController.show().toString)) {
+@main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None, backLink = Some(controllers.routes.QualifyingForSchemeController.show().toString)) {
 
 <div class="grid-row">
     <div class="column-two-thirds">
@@ -74,14 +74,14 @@
         <br>
 
         <div class = "form-group">
-            <p><a id="printThisPage" onClick="window.print()" href="">Print this page</a></p>
+            <p><a id="print-this-page" onClick="window.print()" href="">@Messages("page.introduction.WhatWeAskYou.print.text")</a></p>
         </div>
 
         <br>
 
         <div class="form-group">
             @form(action = controllers.routes.WhatWeAskYouController.submit()) {
-            <button class="button" role="button" id="next">@Messages("common.button.continue")</button>
+            <button class="button" role="button" id="next">@Messages("common.button.continueFirstSection")</button>
             }
         </div>
     </div>
