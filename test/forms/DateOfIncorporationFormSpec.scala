@@ -56,6 +56,67 @@ class DateOfIncorporationFormSpec extends UnitSpec {
       form.hasErrors shouldBe true
     }
 
+
+    "return a None if a model with a single digit year is supplied using .bind" in {
+      val map = Map(("incorporationDay", "2"), ("incorporationMonth", "2"), ("incorporationYear", "2"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a double digit year is supplied using .bind" in {
+      val map = Map(("incorporationDay", "2"), ("incorporationMonth", "2"), ("incorporationYear", "22"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a triple digit year is supplied using .bind" in {
+      val map = Map(("incorporationDay", "2"), ("incorporationMonth", "2"), ("incorporationYear", "222"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a day of 32 is supplied using .bind" in {
+      val map = Map(("incorporationDay", "32"), ("incorporationMonth", "3"), ("incorporationYear", "1980"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a 29th Feb in a non leap year is supplied using .bind" in {
+      val map = Map(("incorporationDay", "29"), ("incorporationMonth", "2"), ("incorporationYear", "1981"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a Some if a model with a 29th Feb in a leap year is supplied using .bind" in {
+      val map = Map(("incorporationDay", "29"), ("incorporationMonth", "2"), ("incorporationYear", "2004"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe false
+    }
+
+    "return a None if a model with a 31st june is supplied using .bind" in {
+      val map = Map(("incorporationDay", "31"), ("incorporationMonth", "6"), ("incorporationYear", "1981"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a 31st september is supplied using .bind" in {
+      val map = Map(("incorporationDay", "31"), ("incorporationMonth", "9"), ("incorporationYear", "1981"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a 31st November is supplied using .bind" in {
+      val map = Map(("incorporationDay", "31"), ("incorporationMonth", "11"), ("incorporationYear", "1981"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with a 31st April is supplied using .bind" in {
+      val map = Map(("incorporationDay", "31"), ("incorporationMonth", "4"), ("incorporationYear", "1981"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
     "return a None if a model with a non-valid date input is supplied using .bind" in {
       val map = Map(("incorporationDay", "32"), ("incorporationMonth", "4"), ("incorporationYear", "2016"))
       val form = dateOfIncorporationForm.bind(map)
