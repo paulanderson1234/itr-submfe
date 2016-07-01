@@ -16,27 +16,23 @@
 
 package controllers
 
-import java.util.UUID
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.http.logging.SessionId
 import play.api.mvc._
 
-
 import scala.concurrent.Future
-import views.html.introduction._
 
-object QualifyingForSchemeController extends QualifyingForSchemeController
+
+object WhatWeAskYouController extends WhatWeAskYouController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait QualifyingForSchemeController extends FrontendController with ValidActiveSession {
+trait WhatWeAskYouController extends FrontendController with ValidActiveSession {
 
   val show = ValidateSession.async { implicit request =>
-    Future.successful(Ok(views.html.introduction.qualifyingForScheme()))
+    Future.successful(Ok(views.html.introduction.WhatWeAskYou()))
   }
 
   val submit = Action.async { implicit request =>

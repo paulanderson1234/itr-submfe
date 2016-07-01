@@ -43,3 +43,6 @@ POST       /how-to-apply                            controllers.HowToApplyContro
 
 GET        /your-company-need                       controllers.YourCompanyNeedController.show
 POST       /your-company-need                       controllers.YourCompanyNeedController.submit
+
+GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
+POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit

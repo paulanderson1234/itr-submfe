@@ -19,50 +19,53 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import org.scalatest.mock.MockitoSugar
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
-import org.scalatest.mock.MockitoSugar
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
+class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = QualifyingForSchemeController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = WhatWeAskYouController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = QualifyingForSchemeController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = WhatWeAskYouController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
   implicit val hc = HeaderCarrier()
 
-  "Sending a GET request to QualifyingForSchemeController" should {
+
+  "Sending a GET request to WhatWeAskYouController" should {
     "return a 200" in {
       showWithSession(
-        result => status(result) shouldBe 200
+        result => status(result) shouldBe OK
       )
     }
 
   }
 
-  "Posting to the QualifyingForSchemeController" should {
+  "Posting to the WhatWeAskYouController" should {
     "redirect to 'What we'll ask you' page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody()
 
-      submitWithSession(request)(result => {
-          status(result) shouldBe 303
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/what-we-ask-you")
         }
       )
     }
   }
+
 }
