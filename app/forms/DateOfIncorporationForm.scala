@@ -27,9 +27,9 @@ object DateOfIncorporationForm {
 
   val dateOfIncorporationForm = Form(
     mapping(
-      "dayOfIncorporation" -> number(min = 1, max = 31),
-      "monthOfIncorporation" -> number(min = 1, max = 12),
-      "yearOfIncorporation" -> number(min = 1000, max = 9999)
+      "incorporationDay" -> number,
+      "incorporationMonth" -> number,
+      "incorporationYear" -> number
     )(DateOfIncorporationModel.apply)(DateOfIncorporationModel.unapply)
       .verifying(Messages("common.date.error.invalidDate"), fields =>
         isValidDate(fields.day, fields.month, fields.year))

@@ -4,17 +4,26 @@
 
 @(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.DateOfIncorporation.title")) {
+@main_template(Messages("page.companyDetails.DateOfIncorporation.title"), backLink = Some(controllers.routes.DateOfIncorporationController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
-<a id="back-link" class="back-link" href="@controllers.routes.DateOfIncorporationController.show()">@Messages("common.button.back")</a>
+@errorSummary(dateOfIncorporationForm, "date-of-incorporation", "incorporationDay")
 
-@errorSummary(dateOfIncorporationForm, "examples-date-first-sale", "dateOfIncorporation")
 
-<h1 class="heading-large">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
+<h1 class="heading-large" id="main-heading">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
 
 @form(action = controllers.routes.DateOfIncorporationController.submit()) {
 
-@formInlineDateInput(dateOfIncorporationForm, "dateOfIncorporation", Messages(""))
+@formInlineDateInput(dateOfIncorporationForm, "incorporation", None, Some(Messages("date.hint.dateOfIncorporation")))
+
+<details>
+    <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">@Messages("page.companyDetails.DateOfIncorporation.whereToFind")</span></summary>
+    <div class="panel panel-indent panel-border-narrow">
+        <p id = "date-of-incorporation-where-to-find">@Messages("page.companyDetails.DateOfIncorporation.location") <a id="company-house-db" href= @Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link") >
+            @Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
+        </a></p>
+    </div>
+</details>
 
 <div class="form-group">
     <button class="btn button" id="next">@Messages("common.button.continue")</button>

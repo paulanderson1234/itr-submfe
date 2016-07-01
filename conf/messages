@@ -30,8 +30,7 @@ common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
 common.externalLink = opens in a new window
 common.date.error.invalidDate=Enter a valid date
-
-
+common.section.progress.company.details.one=Section 1 of 5: Company details
 
 #validation errors
 validation.error.countrypostcode=Only one of country or postcode should be entered
@@ -118,3 +117,9 @@ page.introduction.YourCompanyNeed.complianceStatement=A reference number so inve
 validation.error.DateOfIncorporation.Future=Date of first sale cannot be a future date
 page.companyDetails.DateOfIncorporation.title= Date of incorporation
 page.companyDetails.DateOfIncorporation.heading= When was your company incorporated?
+page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
+date.hint.dateOfIncorporation= For example, 31 3 1980
+page.companyDetails.DateOfIncorporation.whereToFind=Where can you find this?
+page.companyDetails.DateOfIncorporation.location= It’s on your certificate of registration. You can also find it by searching for your company on the
+page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
+page.companyDetails.DateOfIncorporation.companiesHouse.link = https://www.gov.uk/get-information-about-a-company
