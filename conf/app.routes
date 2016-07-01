@@ -48,5 +48,9 @@ POST       /taxpayer-reference                       controllers.TaxpayerReferen
 GET        /your-company-need                       controllers.YourCompanyNeedController.show
 POST       /your-company-need                       controllers.YourCompanyNeedController.submit
 
+GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
+POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
+
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
+

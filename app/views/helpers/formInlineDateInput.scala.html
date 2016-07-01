@@ -1,4 +1,4 @@
-@(formItem:Form[_], fieldName: String, questionText: String, args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+@(formItem:Form[_], fieldName: String, questionText: Option[String], hintText: Option[String], args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
 
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import play.api.i18n._
@@ -21,7 +21,10 @@
         }
     }
 
-    <span class="form-hint">@Messages("common.date.hint")</span>
+    @hintText match {
+    case Some(hintText) => { <span class="form-hint">@hintText</span> }
+    case None => { }
+    }
 
     @simpleNoErrorInput(
         formItem(s"${fieldName}Day"),

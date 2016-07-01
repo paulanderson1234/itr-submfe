@@ -169,7 +169,10 @@ object Validation {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
       fmt.parse(s"${day}/${month}/${year}")
-      true
+      year match {
+        case year if year < 1000 => false
+        case _ => true
+      }
     } catch {
 
       case e: Exception =>{
