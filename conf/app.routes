@@ -13,6 +13,8 @@ GET        /                                        controllers.StartController.
 GET        /start                                   controllers.IntroductionController.show
 POST       /start                                   controllers.IntroductionController.submit
 
+GET        /qualifying-for-scheme                   controllers.QualifyingForSchemeController.show
+POST       /qualifying-for-scheme                   controllers.QualifyingForSchemeController.submit
 
 #Session examples routes - to be removed later
 #####################################################################################################################
