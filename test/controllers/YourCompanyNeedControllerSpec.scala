@@ -54,8 +54,9 @@ class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication wi
     }
   }
 
-  "CompanyAddressController" should {
-    "use the correct save4later connector" in {
+
+  "YourCompanyNeedController" should {
+    "use the correct keystore connector" in {
       YourCompanyNeedController.keyStoreConnector shouldBe KeystoreConnector
     }
   }

@@ -31,28 +31,28 @@ sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Re
 
 @contentLayout = {
 @if(articleLayout) {
-@layouts.article(mainContent)
-} else {
-@mainContent
-}
+    @layouts.article(mainContent)
+    } else {
+        @mainContent
+    }
 }
 
 @contentHeader = {
 @if(backLink.isDefined) {
-<a id="back-link" class="back-link" href="@backLink.get">@Messages("common.button.back")</a>
-@if(sectionProgress.isDefined) {
-<span id="progress-section" class="form-hint-breadcrumb">&nbsp;@sectionProgress.get</span>
-}
-}
+    <a id="back-link" class="back-link" href="@backLink.get">@Messages("common.button.back")</a>
+    @if(sectionProgress.isDefined) {
+        <span id="progress-section" class="form-hint-breadcrumb leftPadding">@sectionProgress.get</span>
+        }
+    }
 }
 
 @govuk_wrapper(appConfig = config.FrontendAppConfig,
-title = title,
-mainClass = mainClass,
-bodyClasses = bodyClasses,
-sidebar = sidebar,
-contentHeader = Some(contentHeader),
-mainContent = layouts.article(mainContent),
-serviceInfoContent = serviceInfoContent,
-scriptElem = scriptElem
+    title = title,
+    mainClass = mainClass,
+    bodyClasses = bodyClasses,
+    sidebar = sidebar,
+    contentHeader = Some(contentHeader),
+    mainContent = layouts.article(mainContent),
+    serviceInfoContent = serviceInfoContent,
+    scriptElem = scriptElem
 )

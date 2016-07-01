@@ -13,6 +13,8 @@ GET        /                                        controllers.StartController.
 GET        /start                                   controllers.IntroductionController.show
 POST       /start                                   controllers.IntroductionController.submit
 
+GET        /qualifying-for-scheme                   controllers.QualifyingForSchemeController.show
+POST       /qualifying-for-scheme                   controllers.QualifyingForSchemeController.submit
 
 #Session examples routes - to be removed later
 #####################################################################################################################
@@ -39,8 +41,16 @@ GET         /restart                 controllers.IntroductionController.restart
 GET        /how-to-apply                            controllers.HowToApplyController.show
 POST       /how-to-apply                            controllers.HowToApplyController.submit
 
+GET        /taxpayer-reference                       controllers.TaxpayerReferenceController.show
+POST       /taxpayer-reference                       controllers.TaxpayerReferenceController.submit
+
+
 GET        /your-company-need                       controllers.YourCompanyNeedController.show
 POST       /your-company-need                       controllers.YourCompanyNeedController.submit
 
 GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
 POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
+
+GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
+POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
+

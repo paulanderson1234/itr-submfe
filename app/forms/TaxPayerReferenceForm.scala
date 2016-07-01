@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package forms
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
+import models.TaxpayerReferenceModel
+import play.api.data.Form
+import play.api.data.Forms._
 
+object TaxPayerReferenceForm {
+  val taxPayerReferenceForm = Form(
+    mapping(
+      "utr" -> utils.Validation.utrTenCharCheck
+    )(TaxpayerReferenceModel.apply)(TaxpayerReferenceModel.unapply)
+  )
 }

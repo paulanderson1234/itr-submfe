@@ -16,41 +16,43 @@
 
 package controllers
 
-import common.KeystoreKeys
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
-import forms.DateOfIncorporationForm._
-import models.DateOfIncorporationModel
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.companyDetails.DateOfIncorporation
+import play.api.mvc._
+import models.TaxpayerReferenceModel
+import common._
+import views.html._
+import forms.TaxPayerReferenceForm._
 
 import scala.concurrent.Future
+import controllers.predicates.ValidActiveSession
+import views.html.companyDetails.TaxpayerReference
 
-
-object DateOfIncorporationController extends DateOfIncorporationController{
+object TaxpayerReferenceController extends TaxpayerReferenceController
+{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
+trait TaxpayerReferenceController extends FrontendController with ValidActiveSession{
 
-trait DateOfIncorporationController extends FrontendController with ValidActiveSession{
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-   keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
-     case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
-     case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
-   }
+    keyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference).map {
+      case Some(data) => Ok(TaxpayerReference(taxPayerReferenceForm.fill(data)))
+      case None => Ok(TaxpayerReference(taxPayerReferenceForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
-    val response = dateOfIncorporationForm.bindFromRequest().fold(
+    val response = taxPayerReferenceForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(DateOfIncorporation(formWithErrors))
+        BadRequest(TaxpayerReference(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        Redirect(routes.DateOfIncorporationController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
+        // TODO: chane to registered company adress page when present
+        Redirect(routes.HowToApplyController.show)
       }
     )
     Future.successful(response)
