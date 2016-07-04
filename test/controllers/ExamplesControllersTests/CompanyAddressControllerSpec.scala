@@ -21,7 +21,6 @@ import java.util.UUID
 import builders.SessionBuilder
 import connectors.KeystoreConnector
 import controllers.examples.CompanyAddressController
-import controllers.examples.{ContactDetailsController, routes}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -32,7 +31,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier}
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 

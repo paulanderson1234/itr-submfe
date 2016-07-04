@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package forms
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
-  val isKnowledgeIntensive = "companyDetails:isKnowledgeIntensive"
+import models.IsKnowledgeIntensiveModel
+import play.api.data.Form
+import play.api.data.Forms._
 
+object IsKnowledgeIntensiveForm {
+  val isKnowledgeIntensiveForm = Form(
+    mapping(
+      "isKnowledgeIntensive" -> nonEmptyText
+    )(IsKnowledgeIntensiveModel.apply)(IsKnowledgeIntensiveModel.unapply)
+  )
 }

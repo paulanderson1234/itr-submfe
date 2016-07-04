@@ -17,24 +17,13 @@
 package controllers
 
 import java.util.UUID
-
 import builders.SessionBuilder
-import connectors.KeystoreConnector
-import controllers.HowToApplyController
-import controllers.examples.{ContactDetailsController, routes}
-import models._
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.{FakeApplication, FakeRequest}
+import play.api.test.{FakeRequest}
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier}
 import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import org.scalatest.mock.MockitoSugar
-
 import scala.concurrent.Future
 
 class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
@@ -62,9 +51,6 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
     }
 
   }
-
-
-  ""
 
   "Posting to the HowToApplyController" should {
     "redirect to 'What does your company need' page" in {

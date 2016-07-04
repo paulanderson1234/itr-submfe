@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package models
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
-  val isKnowledgeIntensive = "companyDetails:isKnowledgeIntensive"
+import play.api.libs.json.Json
 
+case class IsKnowledgeIntensiveModel (isKnowledgeIntensive: String)
+
+object IsKnowledgeIntensiveModel {
+  implicit val format = Json.format[IsKnowledgeIntensiveModel]
+  implicit val writes = Json.writes[IsKnowledgeIntensiveModel]
 }

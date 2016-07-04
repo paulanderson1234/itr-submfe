@@ -54,3 +54,7 @@ POST       /date-of-incorporation                   controllers.DateOfIncorporat
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 
+GET        /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.show
+POST       /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.submit
+
+
