@@ -5,7 +5,7 @@
 @import models.NatureOfBusinessModel
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 
-@main_template(Messages("page.companyDetails.natureofbusiness.title"), backLink = Some(controllers.routes.HowToApplyController.show().toString),
+@main_template(Messages("page.companyDetails.natureofbusiness.title"), backLink = Some(controllers.routes.DateOfIncorporationController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
     @errorSummary(

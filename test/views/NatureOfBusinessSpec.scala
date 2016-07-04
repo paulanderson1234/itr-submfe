@@ -72,7 +72,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
@@ -100,7 +100,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
 
     }
