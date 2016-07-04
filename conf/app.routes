@@ -54,3 +54,6 @@ POST       /date-of-incorporation                   controllers.DateOfIncorporat
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 
+GET        /nature-of-business                      controllers.NatureOfBusinessController.show
+POST       /nature-of-business                      controllers.NatureOfBusinessController.submit
+

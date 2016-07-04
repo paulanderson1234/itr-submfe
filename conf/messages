@@ -30,7 +30,7 @@ common.date.fields.month=Month
 common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
 common.externalLink = opens in a new window
-common.date.error.invalidDate=Enter a valid date
+common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
 common.section.progress.company.details.one=Section 1 of 5: Company details
@@ -143,7 +143,7 @@ page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potentia
 page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
 
 #Date of incorporation page
-validation.error.DateOfIncorporation.Future=Date of first sale cannot be a future date
+validation.error.DateOfIncorporation.Future=Date of incorporation cannot be a future date
 page.companyDetails.DateOfIncorporation.title= Date of incorporation
 page.companyDetails.DateOfIncorporation.heading= When was your company incorporated?
 page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
@@ -180,4 +180,13 @@ page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other co
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
+
+#nature of business page
+page.companyDetails.natureofbusiness.heading=What does your company do?
+page.companyDetails.natureofbusiness.title=What does your company do?
+page.companyDetails.natureofbusiness.question.hint=Suggested limit: 15 words
+page.companyDetails.natureofbusiness.example.text=For example
+page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
+page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
+page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
 
