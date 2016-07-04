@@ -74,7 +74,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-to-apply")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/your-company-need")
         }
       )
     }
