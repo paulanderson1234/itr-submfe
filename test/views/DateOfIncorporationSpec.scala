@@ -71,6 +71,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
     "Verify that the date of incorporation page contains the correct elements when an invalid DateOfIncorporationModel is passed" in new SetupPage {
@@ -79,7 +80,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
       }
 
@@ -95,6 +96,8 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
   }

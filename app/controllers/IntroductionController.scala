@@ -55,7 +55,7 @@ trait IntroductionController extends FrontendController with ValidActiveSession{
     }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.StartController.start()))
+    Future.successful(Redirect(routes.YourCompanyNeedController.show()))
   }
 
   // this method is called on any restart - e.g. on session timeout

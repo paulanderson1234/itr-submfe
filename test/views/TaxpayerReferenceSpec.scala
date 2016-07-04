@@ -80,7 +80,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
 
         when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyTaxpayerReferenceModel)))
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.companyDetails.utr.title")
