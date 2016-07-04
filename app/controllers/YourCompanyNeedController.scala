@@ -49,7 +49,7 @@ trait YourCompanyNeedController extends FrontendController with ValidActiveSessi
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
-        Redirect(routes.YourCompanyNeedController.show)
+        Redirect(routes.QualifyingForSchemeController.show)
       }
     )
     Future.successful(response)
