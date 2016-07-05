@@ -1,44 +1,24 @@
-@(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
-
 @import models.RegisteredAddressModel
 @import controllers._
 @import forms._
 @import helpers._
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.form
 
+@(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.RegisteredAddressController.show().toString)) {
+@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.RegisteredAddressController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
 <div class="form-group">
     <div class="column-two-thirds">
 
-        <!--This automatically renders the errors collection for any validation errors on the form -->
-        @errorSummary(
-        Messages("common.errorSummary.label"), registeredAddressForm
-        )
+        @errorSummary(registeredAddressForm, "registered-address", "postcode")
 
         <h1 id="title" class="form-title heading-xlarge">@Messages("page.companyDetails.RegisteredAddress.title")</h1>
 
         @form(action = controllers.routes.RegisteredAddressController.submit()) {
 
-            <div class="form-group">
-
-                <fieldset>
-                    <div class="inline">
-
-                        @input(
-                        registeredAddressForm("postcode"),
-                        '_divClass -> "inline",
-                        '_labelId -> "label-postcode",
-                        '_label -> Messages("page.companyDetails.RegisteredAddress.postcode"),
-                        '_labelClass -> "inline-block",
-                        '_inputClass -> "input--small"
-                        )
-                        &nbsp;<a id="uk-address" class="button btn">@Messages("page.companyDetails.RegisteredAddress.findUKAddress")</a>
-                    </div>
-                </fieldset>
-
-            </div>
+            @formInlinePostcodeInput(registeredAddressForm, "postcode", None, None)
 
             <br>
 

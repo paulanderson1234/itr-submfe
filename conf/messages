@@ -185,7 +185,7 @@ page.introduction.WhatWeAskYou.print.text=Print this page
 page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
 page.companyDetails.RegisteredAddress.postcode=Postcode
 page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
-page.companyDetails.RegisteredAddress.description.one=Enter the address yourself
+page.companyDetails.RegisteredAddress.description.one=Enter the address manually
 
 #nature of business page
 page.companyDetails.natureofbusiness.heading=What does your company do?
