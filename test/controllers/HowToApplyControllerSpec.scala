@@ -17,7 +17,6 @@
 package controllers
 
 import java.util.UUID
-
 import builders.SessionBuilder
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -25,7 +24,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import org.scalatest.mock.MockitoSugar
-
 import scala.concurrent.Future
 
 class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{

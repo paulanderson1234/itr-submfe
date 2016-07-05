@@ -106,7 +106,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
         }
       )
     }

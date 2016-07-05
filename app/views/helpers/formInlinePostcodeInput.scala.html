@@ -1,0 +1,34 @@
+@(formItem:Form[_], fieldName: String, questionText: Option[String], hintText: Option[String], args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+
+@import play.api.i18n._
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import java.text.SimpleDateFormat
+
+@fieldsetClasses = @{if(formItem.hasErrors && (formItem.errors.find(_.key == "").isDefined)) "form-field--error" else "" }
+
+<fieldset class="form-group inline @fieldsetClasses" id="@fieldName-fieldset">
+
+    <legend>
+        @questionText
+    </legend>
+
+    @if(formItem.hasErrors) {
+        @formItem.errors.filter(_.key == "").map { error => <span class="error-notification">@error.message</span>}
+        @if(formItem.errors.find(_.key != "").isDefined) {
+            <span class="error-notification">@Messages("validation.error.postcode")</span>
+        }
+    }
+
+    @inputWithButton(
+        formItem(s"${fieldName}"),
+        '_labelId -> "label-postcode",
+        '_label -> Messages("page.companyDetails.RegisteredAddress.postcode"),
+        '_labelClass -> "inline-block",
+        '_labelFor -> "postcode-input",
+        '_inputClass -> s"input--small",
+        '_inputId -> "postcode-input",
+        '_buttonId -> "uk-address",
+        '_buttonText -> Messages("page.companyDetails.RegisteredAddress.findUKAddress")
+    )
+
+</fieldset>

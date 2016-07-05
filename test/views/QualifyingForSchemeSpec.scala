@@ -64,7 +64,7 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("link-text-two").text() shouldEqual Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")
       document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction"
       document.body.getElementById("link-text-two").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm3000"
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.QualifyingForSchemeController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.YourCompanyNeedController.show.toString()
       document.body.getElementById("continue").text() shouldEqual Messages("common.button.continue")
     }
   }

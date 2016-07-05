@@ -1,0 +1,34 @@
+@import models.SubsidiariesModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+
+@(subsidiariesForm: Form[SubsidiariesModel])(implicit request: Request[_])
+
+@main_template(Messages("page.companyDetails.Subsidiaries.title"), backLink = Some(controllers.routes.IsKnowledgeIntensiveController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+
+@errorSummary(subsidiariesForm, "owns-subsidiaries", "subsidiaries")
+
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.Subsidiaries.heading")</h1>
+
+@form(action = controllers.routes.SubsidiariesController.submit()) {
+
+<div class="form-group">
+    @formInputRadioGroup(
+    field = subsidiariesForm("subsidiaries"),
+    Seq(
+    "Yes"->Messages("common.radioYesLabel"),
+    "No"->Messages("common.radioNoLabel")),
+    '_legend -> Messages("page.companyDetails.Subsidiaries.heading"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_groupClass -> "inline"
+    )
+</div>
+
+<div class="form-group">
+    <button class="btn button" id="next">@Messages("common.button.continueNextSection")</button>
+</div>
+}
+}
