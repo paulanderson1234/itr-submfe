@@ -36,7 +36,7 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession{
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.ownsSubsidiaries).map {
+    keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries).map {
       case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data)))
       case None => Ok(companyDetails.Subsidiaries(subsidiariesForm))
     }
@@ -48,7 +48,7 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession{
         BadRequest(companyDetails.Subsidiaries(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.ownsSubsidiaries, validFormData)
+        keyStoreConnector.saveFormData(KeystoreKeys.subsidiaries, validFormData)
         Redirect(routes.SubsidiariesController.show())
       }
     )

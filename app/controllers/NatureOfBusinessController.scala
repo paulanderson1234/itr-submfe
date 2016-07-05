@@ -53,7 +53,7 @@ trait NatureOfBusinessController extends FrontendController with ValidActiveSess
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
         // TODO: chane to have you sold anything commercially yet pge when present
-        Redirect(routes.DateOfIncorporationController.show)
+        Redirect(routes.NatureOfBusinessController.show)
       }
     )
     Future.successful(response)

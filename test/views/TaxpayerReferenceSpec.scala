@@ -70,7 +70,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
       document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
@@ -91,7 +91,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
       document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

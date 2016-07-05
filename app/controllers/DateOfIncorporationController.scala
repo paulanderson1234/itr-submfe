@@ -50,7 +50,7 @@ trait DateOfIncorporationController extends FrontendController with ValidActiveS
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        Redirect(routes.DateOfIncorporationController.show)
+        Redirect(routes.NatureOfBusinessController.show)
       }
     )
     Future.successful(response)
