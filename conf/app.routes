@@ -60,3 +60,8 @@ POST       /is-knowledge-intensive                  controllers.IsKnowledgeInten
 GET        /subsidiaries                            controllers.SubsidiariesController.show
 POST       /subsidiaries                            controllers.SubsidiariesController.submit
 
+GET        /registered-address                      controllers.RegisteredAddressController.show
+POST       /registered-address                      controllers.RegisteredAddressController.submit
+
+GET        /nature-of-business                      controllers.NatureOfBusinessController.show
+POST       /nature-of-business                      controllers.NatureOfBusinessController.submit

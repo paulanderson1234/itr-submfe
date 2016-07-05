@@ -16,7 +16,7 @@
 
 package utils
 
-import java.text.SimpleDateFormat
+import java.text.{ParseException, SimpleDateFormat}
 
 import models.{CompanyAddressModel, DateOfFirstSaleModel}
 import play.api.data.Forms._
@@ -163,21 +163,18 @@ object Validation {
     text().verifying(utrCharCheckConstraint)
   }
 
-
   def isValidDate(day: Int, month: Int, year: Int): Boolean = {
     try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
-      fmt.parse(s"${day}/${month}/${year}")
+      fmt.parse(s"$day/$month/$year")
       year match {
         case year if year < 1000 => false
         case _ => true
       }
     } catch {
-
-      case e: Exception =>{
-        false
-      }
+        case e: ParseException => false
     }
   }
+
 }

@@ -74,10 +74,10 @@
         <br>
 
         <div class = "form-group">
-            <p><a id="print-this-page" onClick="window.print()" href="">@Messages("page.introduction.WhatWeAskYou.print.text")</a></p>
+            <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.introduction.WhatWeAskYou.print.text")</a></p>
         </div>
 
-        <br>
+        <fieldset></fieldset>
 
         <div class="form-group">
             @form(action = controllers.routes.WhatWeAskYouController.submit()) {

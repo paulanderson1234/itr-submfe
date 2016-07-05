@@ -8,7 +8,9 @@
 
 @errorSummary(yourCompanyNeedForm, "introduction-company-need")
 
-<h1 class="heading-large" id="main-heading">@Messages("page.introduction.YourCompanyNeed.heading")</h1>
+<header class="page-header">
+    <h1 id="main-heading">@Messages("page.introduction.YourCompanyNeed.heading")</h1>
+</header>
 
 @form(action = controllers.routes.YourCompanyNeedController.submit()) {
 
@@ -28,5 +30,6 @@
 <div class="form-group">
     <button class="btn button" id="next">@Messages("common.button.continue")</button>
 </div>
+
 }
 }
