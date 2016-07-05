@@ -29,41 +29,41 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.jsoup._
 import org.scalatest.mock.MockitoSugar
 import scala.concurrent.Future
-import models.YourCompanyNeedModel
+import models.SubsidiariesModel
 import play.api.mvc.Result
 
-class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class SubsidiariesControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   implicit val hc = new HeaderCarrier()
 
-  def setupTarget(getData: Option[YourCompanyNeedModel], postData: Option[YourCompanyNeedModel]): YourCompanyNeedController = {
+  def setupTarget(getData: Option[SubsidiariesModel], postData: Option[SubsidiariesModel]): SubsidiariesController = {
 
     val mockKeystoreConnector = mock[KeystoreConnector]
 
 
-    when(mockKeystoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.anyString())(Matchers.any(), Matchers.any()))
+    when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.anyString())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(getData))
 
-    lazy val data = CacheMap("form-id", Map("data" -> Json.toJson(postData.getOrElse(YourCompanyNeedModel("")))))
-    when(mockKeystoreConnector.saveFormData[YourCompanyNeedModel](Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
+    lazy val data = CacheMap("form-id", Map("data" -> Json.toJson(postData.getOrElse(SubsidiariesModel("")))))
+    when(mockKeystoreConnector.saveFormData[SubsidiariesModel](Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
 
-    new YourCompanyNeedController {
+    new SubsidiariesController {
       override val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 
 
-  "YourCompanyNeedController" should {
+  "SubsidiariesController" should {
     "use the correct keystore connector" in {
-      YourCompanyNeedController.keyStoreConnector shouldBe KeystoreConnector
+      SubsidiariesController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
 
   // GET Tests
-  "Calling the YourCompanyNeed.show" when {
+  "Calling the Subsidiaries.show" when {
 
-      lazy val fakeRequest = FakeRequest("GET", "/investment-tax-relief/your-company-need").withSession(SessionKeys.sessionId -> "12345")
+    lazy val fakeRequest = FakeRequest("GET", "/investment-tax-relief/subsidiaries").withSession(SessionKeys.sessionId -> "12345")
 
     "not supplied with a pre-existing stored model" should {
 
@@ -87,7 +87,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication wi
     "supplied with a pre-existing stored model" should {
 
       "return a 200" in {
-        val target = setupTarget(Some(YourCompanyNeedModel("AA")), None)
+        val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
         lazy val result = target.show(fakeRequest)
         status(result) shouldBe 200
       }
@@ -95,58 +95,58 @@ class YourCompanyNeedControllerSpec extends UnitSpec with WithFakeApplication wi
       "return some HTML that" should {
 
         "contain some text and use the character set utf-8" in {
-          val target = setupTarget(Some(YourCompanyNeedModel("AA")), None)
+          val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
           lazy val result = target.show(fakeRequest)
           contentType(result) shouldBe Some("text/html")
           charset(result) shouldBe Some("utf-8")
         }
 
-        "have the radio option `A letter to show to potential investors` selected if " +
-          "`A letter to show to potential investors` is supplied in the model" in {
-          val target = setupTarget(Some(YourCompanyNeedModel("AA")), None)
+        "have the radio option `Yes` selected if " +
+          "`Yes` is supplied in the model" in {
+          val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
           lazy val result = target.show(fakeRequest)
           lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("needAAorCS-aa").parent.classNames().contains("selected") shouldBe true
+          document.body.getElementById("subsidiaries-yes").parent.classNames().contains("selected") shouldBe true
         }
 
-        "have the radio option `A reference number so investors can claim relief` selected if " +
-          "`A reference number so investors can claim relief` is supplied in the model" in {
-          val target = setupTarget(Some(YourCompanyNeedModel("CS")), None)
+        "have the radio option `No` selected if " +
+          "`No` is supplied in the model" in {
+          val target = setupTarget(Some(SubsidiariesModel("No")), None)
           lazy val result = target.show(fakeRequest)
           lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("needAAorCS-cs").parent.classNames().contains("selected") shouldBe true
+          document.body.getElementById("subsidiaries-no").parent.classNames().contains("selected") shouldBe true
         }
       }
     }
   }
 
   // POST Tests
-  "In YourCompanyNeedContoller calling the .submit action" when {
+  "In SubsidiariesController calling the .submit action" when {
 
     def buildRequest(body: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest("POST",
-      "/investment-tax-relief/your-company-need")
+      "/investment-tax-relief/subsidiaries")
       .withSession(SessionKeys.sessionId -> "12345")
       .withFormUrlEncodedBody(body: _*)
 
     def executeTargetWithMockData(data: String): Future[Result] = {
-      lazy val fakeRequest = buildRequest(("needAAorCS", data))
-      val mockData = new YourCompanyNeedModel(data)
+      lazy val fakeRequest = buildRequest(("subsidiaries", data))
+      val mockData = new SubsidiariesModel(data)
       val target = setupTarget(None, Some(mockData))
       target.submit(fakeRequest)
     }
 
-    "submitting a valid form with `A letter to show to potential investors`" should {
+    "submitting a valid form with `Yes`" should {
 
-      lazy val result = executeTargetWithMockData("AA")
+      lazy val result = executeTargetWithMockData("Yes")
 
       "return a 303" in {
         status(result) shouldBe 303
       }
     }
 
-    "submitting a valid form with `A reference number so investors can claim relief`" should {
+    "submitting a valid form with `No`" should {
 
-      lazy val result = executeTargetWithMockData("CS")
+      lazy val result = executeTargetWithMockData("No")
 
       "return a 303" in {
         status(result) shouldBe 303

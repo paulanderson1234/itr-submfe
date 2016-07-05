@@ -1,7 +1,7 @@
 #common
 common.button.next=Next
 common.button.continue=Continue
-common.button.continueNextSection=continue to next section
+common.button.continueNextSection=Continue to next section
 common.button.continueFirstSection=Continue to first section
 common.button.snc=Save and continue
 common.button.sign-in=Sign in
@@ -180,6 +180,22 @@ page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other co
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
+
+#Is Knowledge Intensive Page
+page.companyDetails.IsKnowledgeIntensive.title = Is your company KI
+page.companyDetails.IsKnowledgeIntensive.heading = Are you a knowledge intensive company?
+page.companyDetails.IsKnowledgeIntensive.description = Your company may be knowledge intensive if you’ve spent a certain amount of your operating costs on research and development.
+page.companyDetails.IsKnowledgeIntensive.definition = What''s a knowledge intensive company?
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you’ve spent on research and development must have been either:
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-one = 15% or more of your operating costs for at least 1 year
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of your operating costs per year
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need either:
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master’s degree level
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren’t physical
+
+#Subsidiaries Page
+page.companyDetails.Subsidiaries.title = Subsidiaries
+page.companyDetails.Subsidiaries.heading = Does your company own or control any other companies?
 
 #Registered Address page
 page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?

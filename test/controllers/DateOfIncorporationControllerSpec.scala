@@ -108,7 +108,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
         }
       )
     }

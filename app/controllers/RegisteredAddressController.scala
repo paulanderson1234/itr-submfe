@@ -50,7 +50,7 @@ trait RegisteredAddressController extends FrontendController with ValidActiveSes
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.registeredAddress, validFormData)
-        Redirect(routes.RegisteredAddressController.show)
+        Redirect(routes.DateOfIncorporationController.show)
       }
     )
     Future.successful(response)
