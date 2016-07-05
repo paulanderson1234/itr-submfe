@@ -181,6 +181,12 @@ page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
 
+#Registered Address page
+page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
+page.companyDetails.RegisteredAddress.postcode=Postcode
+page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
+page.companyDetails.RegisteredAddress.description.one=Enter the address yourself
+
 #nature of business page
 page.companyDetails.natureofbusiness.heading=What does your company do?
 page.companyDetails.natureofbusiness.title=What does your company do?
@@ -189,4 +195,3 @@ page.companyDetails.natureofbusiness.example.text=For example
 page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
 page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
 page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
-
