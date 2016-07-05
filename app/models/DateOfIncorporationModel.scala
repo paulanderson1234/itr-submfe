@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class DateOfIncorporationModel(day:Int, month:Int, year:Int)
+case class DateOfIncorporationModel(day:Option[Int], month:Option[Int], year:Option[Int])
 
 object DateOfIncorporationModel{
   implicit val format = Json.format[DateOfIncorporationModel]

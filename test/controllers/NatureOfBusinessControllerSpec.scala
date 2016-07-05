@@ -98,7 +98,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
   }
 
   "Sending a valid form submit to the NatureOfBusinessController" should {
-    "redirect to the itself" in {
+    "redirect to the commercial sale page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "natureofbusiness" -> "some text so it's valid")
@@ -106,7 +106,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
         }
       )
     }

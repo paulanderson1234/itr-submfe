@@ -17,6 +17,7 @@ $(document).ready($(function() {
         $("#day").val("");
         $("#month").val("");
         $("#year").val("");
+        $("#error-summary-display").hide();
     })
 
 }));

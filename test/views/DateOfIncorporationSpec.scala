@@ -37,8 +37,8 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val contactDetailsModel = new DateOfIncorporationModel(23,11,1993)
-  val emptyDateOfIncorporationModel = new DateOfIncorporationModel(0,0,0)
+  val contactDetailsModel = new DateOfIncorporationModel(Some(23), Some(11), Some(1993))
+  val emptyDateOfIncorporationModel = new DateOfIncorporationModel(None, None, None)
 
   class SetupPage {
 

@@ -51,7 +51,7 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-        Redirect(routes.HowToApplyController.show)
+        Redirect(routes.IsKnowledgeIntensiveController.show)
       }
     )
     Future.successful(response)

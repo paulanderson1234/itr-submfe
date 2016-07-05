@@ -1,6 +1,6 @@
 @import models.CommercialSaleModel
 @import uk.gov.hmrc.play.views.html.helpers.{form, inputRadioGroup}
-@import views.html.helpers.{InlineDateInput, RevealingRadios, RadioGroupHidden, errorSummary}
+@import views.html.helpers.{InlineDateInput, RevealingRadios, RadioGroupHidden, revealingRadioErrorSummary}
 
 @(commercialSaleForm: Form[CommercialSaleModel])(implicit request: Request[_])
 
@@ -10,7 +10,7 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 <div class="grid-row">
     <div class="column-two-thirds">
 
-        @errorSummary(commercialSaleForm, "commercial-sale", "day")
+        @revealingRadioErrorSummary(commercialSaleForm, "commercial-sale", "day", "commercial-sale-fieldset")
 
         <header class="page-header">
             <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.CommercialSale.heading")</h1>
@@ -23,7 +23,9 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
         Seq(("Yes",  Messages("common.radioYesLabel")),("No",  Messages("common.radioNoLabel"))),
         ("hasCommercialSale-yes", InlineDateInput(commercialSaleForm, "commercial-sale", Option(Messages("page.companyDetails.CommercialSale.question.hint")), Messages("common.date.hint.example"))),
         '_labelClass -> "block-label radio-label",
-        '_fieldsetId -> "commercial-sale-fieldset"
+        '_fieldsetId -> "commercial-sale-fieldset",
+        '_groupClass -> "inline"
+
         )
 
         <br>

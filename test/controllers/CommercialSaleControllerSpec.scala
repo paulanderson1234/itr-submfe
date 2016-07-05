@@ -1,103 +1,178 @@
-///*
-// * Copyright 2016 HM Revenue & Customs
-// *
-// * Licensed under the Apache License, Version 2.0 (the "License");
-// * you may not use this file except in compliance with the License.
-// * You may obtain a copy of the License at
-// *
-// *     http://www.apache.org/licenses/LICENSE-2.0
-// *
-// * Unless required by applicable law or agreed to in writing, software
-// * distributed under the License is distributed on an "AS IS" BASIS,
-// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// * See the License for the specific language governing permissions and
-// * limitations under the License.
-// */
-//
-//package views
-//
-//import java.util.UUID
-//
-//import connectors.KeystoreConnector
-//
-//import controllers.{CommercialSaleController, routes}
-//import controllers.helpers.FakeRequestHelper
-//import models.CommercialSaleModel
-//import org.jsoup.Jsoup
-//import org.jsoup.nodes.Document
-//import org.mockito.Matchers
-//import org.mockito.Mockito._
-//import org.scalatest.mock.MockitoSugar
-//import play.api.i18n.Messages
-//import play.api.test.Helpers._
-//import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-//
-//import scala.concurrent.Future
-//
-//class CommercialSaleControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
-//
-//  val mockKeystoreConnector = mock[KeystoreConnector]
-//
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package controllers
+
+import java.util.UUID
+
+import builders.SessionBuilder
+import connectors.KeystoreConnector
+import models._
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.OneServerPerSuite
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
+import play.api.test.FakeRequest
+import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.mock.MockitoSugar
+
+import scala.concurrent.Future
+
+class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+
+  object CommercialSaleControllerTest extends CommercialSaleController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+  }
+
+  val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
+
+  val model = CommercialSaleModel("Yes", Some(23),Some(11),Some(1993))
+  val emptyModel = CommercialSaleModel("", None, None, None)
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
+  val keyStoreSavedCommercialSale = CommercialSaleModel("Yes", Some(15),Some(3),Some(1996))
+
 //  val commercialSaleModelValidNo = new CommercialSaleModel("No", None, None, None)
-//  val commercialSaleModelValidYes = new CommercialSaleModel("Yes", Some(10), Some(25), Some(None))
-//  //case class CommercialSaleModel(hasCommercialSale : String, day: Option[Int], month: Option[Int], year: Option[Int]){
-//  val emptyCommercialSaleModel = new CommercialSaleModel("")
-//
-//  class SetupPage {
-//
-//    val controller = new CommercialSaleController{
-//      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-//    }
-//  }
-//
-//  "The Contact Details page" should {
-//
-//    "Verify that the taxpayer reference page contains the correct elements when a valid CommercialSaleModel is passed" in new SetupPage {
-//      val document: Document = {
-//        val userId = s"user-${UUID.randomUUID}"
-//
-//        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(Option(commercialSaleModel)))
-//        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-//          "utr" -> "1234567890"
-//        )))
-//        Jsoup.parse(contentAsString(result))
-//      }
-//
-//      document.title() shouldBe Messages("page.companyDetails.utr.title")
-//      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.utr.heading")
-//      document.getElementById("help").text() shouldBe Messages("page.companyDetails.utr.help.link")
-//      document.getElementById("help-text").text() shouldBe Messages("page.companyDetails.utr.help.text")
-//      document.getElementById("label-utr").select("span").hasClass("visuallyhidden") shouldBe true
-//      document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
-//      document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
-//      document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
-//    }
-//
-//    "Verify that the taxpayer reference page contains the correct elements when an invalid CommercialSaleModel is passed" in new SetupPage {
-//      val document: Document = {
-//        val userId = s"user-${UUID.randomUUID}"
-//
-//        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(Option(emptyCommercialSaleModel)))
-//        val result = controller.submit.apply((fakeRequestWithSession))
-//        Jsoup.parse(contentAsString(result))
-//      }
-//      document.title() shouldBe Messages("page.companyDetails.utr.title")
-//      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.utr.heading")
-//      document.getElementById("help").text() shouldBe Messages("page.companyDetails.utr.help.link")
-//      document.getElementById("help-text").text() shouldBe Messages("page.companyDetails.utr.help.text")
-//      document.getElementById("label-utr").select("span").hasClass("visuallyhidden") shouldBe true
-//      document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
-//      document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
-//      document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
-//      document.getElementById("error-summary-display").hasClass("error-summary--show")
-//    }
-//
-//  }
-//
-//}
+//  val commercialSaleModelValidYes = new CommercialSaleModel("Yes", Some(10), Some(25), Some(2015))
+//  val commercialSaleModelInvalidYes = new CommercialSaleModel("Yes", None, Some(25), Some(2015))
+//  val emptyCommercialSaleModel = new CommercialSaleModel("", None, None, None)
+
+
+  def showWithSession(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = CommercialSaleControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+
+  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = CommercialSaleControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    test(result)
+  }
+
+  implicit val hc = HeaderCarrier()
+
+  override def beforeEach() {
+    reset(mockKeyStoreConnector)
+  }
+
+  "CommercialSaleController" should {
+    "use the correct keystore connector" in {
+      CommercialSaleController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
+  "Sending a GET request to CommercialSaleController" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
+    }
+
+    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
+    }
+
+  }
+
+  "Sending a valid Yes form submit to the CommercialSaleController" should {
+    "redirect to the Knowledge intensive page" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> "Yes",
+        "day" -> "23",
+        "month" -> "11",
+        "year" -> "1993")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending a valid No form submit to the CommercialSaleController" should {
+    "redirect to the Knowledge intensive page" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> "No",
+        "day" -> "",
+        "month" -> "",
+        "year" -> "")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
+    "redirect to itself" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> "",
+        "day" -> "",
+        "month" -> "",
+        "year" -> "")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
+        }
+      )
+    }
+  }
+
+
+  "Sending an invalid form with missing data submission with validation errors to the CommercialSaleController" should {
+    "redirect to itself" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> "Yes",
+        "day" -> "12",
+        "month" -> "11",
+        "year" -> "")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
+        }
+      )
+    }
+  }
+
+}

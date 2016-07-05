@@ -15,19 +15,19 @@
 <fieldset class="form-group form-date @fieldsetClasses" id="@fieldName-fieldset">
 
     @if(questionText.isDefined) {
-        <legend><span style="display: none">@questionText.get</span></legend>
+        <legend><span id="question-date-text-legend-id" style="display: none">@questionText.get</span></legend>
     }
 
-    <h2>@questionText</h2>
+    <h2 id="question-text-id">@questionText</h2>
 
     @if(formItem.hasErrors) {
     @formItem.errors.filter(_.key == "").map { error => <span class="error-notification">@error.message</span>}
     @if(formItem.errors.find(_.key != "").isDefined && formItem.errors.find(_.key != "hasAcquisitionDate").isDefined) {
-    <span class="error-notification">@Messages("page.reg.accountingDates.date.invalid")</span>
+    <span class="error-notification">@Messages("Please enter a date")</span>
     }
     }
 
-    <span class="form-hint">@questionHint</span>
+    <span id="form-hint-id" class="form-hint">@questionHint</span>
 
     @simpleNoErrorInput(
     formItem("day"),

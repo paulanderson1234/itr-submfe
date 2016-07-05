@@ -55,6 +55,7 @@ validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
 validation.error.DateNotEntered=You have not entered a day, month or year
+validation.error.enterDate=Please enter a date
 
 ## Session Timeout message ##
 session.timeout.message=Your session has ended
