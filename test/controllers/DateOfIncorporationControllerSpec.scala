@@ -20,7 +20,6 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import connectors.KeystoreConnector
-import controllers.examples.CompanyAddressController
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -37,31 +36,31 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class CompanyAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  object CompanyAddressControllerTest extends CompanyAddressController {
+  object DateOfIncorporationControllerTest extends DateOfIncorporationController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val addressAsJson = """{"lines":["Flat 1","Some Street 1","Some Place 1"],"town":"Some Town 1","postcode":"ZE99 1XZ","country":{"code":"GB","name":"UK"}}"""
+  val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
 
-  val model = CompanyAddressModel("line 1", "line 2", "line 3", "line 4", "TF1 3NY", "")
-  val emptyModel = CompanyAddressModel("", "", "", "", "", "")
+  val model = DateOfIncorporationModel(23,11,1993)
+  val emptyModel = DateOfIncorporationModel(0, 0, 0)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedCompanyAddress = CompanyAddressModel("ks line 1", "ks line 2", "ks line 3", "ks line 4", "ks TF13NY", "ks UK")
+  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(23,11,1993)
 
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = CompanyAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = DateOfIncorporationControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = CompanyAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = DateOfIncorporationControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -71,17 +70,17 @@ class CompanyAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     reset(mockKeyStoreConnector)
   }
 
-  "CompanyAddressController" should {
+  "DateOfIncorporationController" should {
     "use the correct keystore connector" in {
-      CompanyAddressController.keyStoreConnector shouldBe KeystoreConnector
+      DateOfIncorporationController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
 
-  "Sending a GET request to CompanyAddressController" should {
+  "Sending a GET request to DateOfIncorporationController" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[CompanyAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCompanyAddress)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -89,7 +88,7 @@ class CompanyAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[CompanyAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
@@ -98,36 +97,30 @@ class CompanyAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   }
 
-  "Sending a valid form submit to the CompanyAddressController" should {
-    "redirect to the agent view page" in {
+  "Sending a valid form submit to the DateOfIncorporationController" should {
+    "redirect to the itself" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "addressline1" -> "line 1",
-        "addressline2" -> "line 2",
-        "addressline3" -> "line 3",
-        "addressline4" -> "line 4",
-        "postcode" -> "TF1 3NY",
-        "country" -> "")
+        "incorporationDay" -> "23",
+        "incorporationMonth" -> "11",
+        "incorporationYear" -> "1993")
 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/examples-contact")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
         }
       )
     }
   }
 
-  "Sending an invalid form submission with validation errors to the CompanyAddressController" should {
-    "redirect to the agent view page" in {
+  "Sending an invalid form submission with validation errors to the DateOfIncorporationController" should {
+    "redirect to itself" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "addressline1" -> "",
-        "addressline2" -> "line 2",
-        "addressline3" -> "line 3",
-        "addressline4" -> "line 4",
-        "postcode" -> "TF1 3NY",
-        "country" -> "")
+        "incorporationDay" -> "",
+        "incorporationMonth" -> "",
+        "incorporationYear" -> "")
 
       submitWithSession(request)(
         result => {

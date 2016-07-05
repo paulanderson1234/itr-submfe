@@ -1,0 +1,50 @@
+@(natureOfbusinessForm: Form[NatureOfBusinessModel])(implicit request: Request[_])
+@import controllers._
+@import forms._
+@import helpers._
+@import models.NatureOfBusinessModel
+@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+
+@main_template(Messages("page.companyDetails.natureofbusiness.title"), backLink = Some(controllers.routes.DateOfIncorporationController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+
+    @errorSummary(
+    Messages("common.errorSummary.label"), natureOfbusinessForm
+    )
+
+    <header class="page-header">
+        <h1 id="main-heading">@Messages("page.companyDetails.natureofbusiness.heading")</h1>
+    </header>
+
+    <h2 id="description-two" class="lede">@Messages("page.companyDetails.natureofbusiness.example.text")</h2>
+
+    <ul class="list list-bullet">
+        <li id="bullet-one">@Messages("page.companyDetails.natureofbusiness.bullet.one")</li>
+        <li id="bullet-two">@Messages("page.companyDetails.natureofbusiness.bullet.two")</li>
+        <li id="bullet-three">@Messages("page.companyDetails.natureofbusiness.bullet.three")</li>
+    </ul>
+
+    @form(action = controllers.routes.NatureOfBusinessController.submit()) {
+
+    <fieldset>
+        <legend class="visuallyhidden">@Messages("page.companyDetails.natureofbusiness.heading")</legend>
+        <div class="form-group">
+            @input(
+            natureOfbusinessForm("natureofbusiness"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-natureofbusiness",
+            '_hintId -> "label-natureofbusiness-hint",
+            '_label -> Messages("page.companyDetails.natureofbusiness.heading"),
+            '_labelTextClass -> "visuallyhidden",
+            '_inputClass -> "input--fullwidth",
+            '_inputHint -> Messages("page.companyDetails.natureofbusiness.question.hint"),
+            'id -> "utr"
+            )
+
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <button class="btn button" id="next">@Messages("common.button.continue")</button>
+    </div>
+    }
+}

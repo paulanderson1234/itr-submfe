@@ -16,40 +16,43 @@
 
 package controllers
 
-import common.KeystoreKeys
 import connectors.KeystoreConnector
-
-import controllers.predicates.ValidActiveSession
-import forms.YourCompanyNeedForm._
-import models.YourCompanyNeedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+import models.TaxpayerReferenceModel
+import common._
 import views.html._
-import scala.concurrent.Future
+import forms.TaxPayerReferenceForm._
 
-object YourCompanyNeedController extends YourCompanyNeedController{
+import scala.concurrent.Future
+import controllers.predicates.ValidActiveSession
+import views.html.companyDetails.TaxpayerReference
+
+object TaxpayerReferenceController extends TaxpayerReferenceController
+{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with ValidActiveSession{
+trait TaxpayerReferenceController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
-      case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
-      case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
+    keyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference).map {
+      case Some(data) => Ok(TaxpayerReference(taxPayerReferenceForm.fill(data)))
+      case None => Ok(TaxpayerReference(taxPayerReferenceForm))
     }
   }
 
   val submit = Action.async { implicit request =>
-    val response = yourCompanyNeedForm.bindFromRequest().fold(
+    val response = taxPayerReferenceForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(introduction.YourCompanyNeed(formWithErrors))
+        BadRequest(TaxpayerReference(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
-        Redirect(routes.QualifyingForSchemeController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
+        // TODO: chane to registered company adress page when present
+        Redirect(routes.HowToApplyController.show)
       }
     )
     Future.successful(response)

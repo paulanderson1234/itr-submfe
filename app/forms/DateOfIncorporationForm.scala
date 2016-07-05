@@ -17,22 +17,23 @@
 package forms
 
 import common.Dates._
-import utils.Validation._
-import models.DateOfFirstSaleModel
+import models.DateOfIncorporationModel
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data._
 import play.api.i18n.Messages
+import utils.Validation._
 
-object DateOfFirstSaleForm {
-  val dateOfFirstSaleForm = Form(
+object DateOfIncorporationForm {
+
+  val dateOfIncorporationForm = Form(
     mapping(
-      "dateOfFirstSaleDay" -> number,
-      "dateOfFirstSaleMonth" -> number,
-      "dateOfFirstSaleYear" -> number
-    )(DateOfFirstSaleModel.apply)(DateOfFirstSaleModel.unapply)
+      "incorporationDay" -> number,
+      "incorporationMonth" -> number,
+      "incorporationYear" -> number
+    )(DateOfIncorporationModel.apply)(DateOfIncorporationModel.unapply)
       .verifying(Messages("common.date.error.invalidDate"), fields =>
         isValidDate(fields.day, fields.month, fields.year))
-      .verifying(Messages("validation.error.DateOfFirstSale.Future"), fields =>
+      .verifying(Messages("validation.error.DateOfIncorporation.Future"), fields =>
         dateNotInFuture(fields.day, fields.month, fields.year))
   )
 }

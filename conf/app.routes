@@ -41,11 +41,21 @@ GET         /restart                 controllers.IntroductionController.restart
 GET        /how-to-apply                            controllers.HowToApplyController.show
 POST       /how-to-apply                            controllers.HowToApplyController.submit
 
+GET        /taxpayer-reference                       controllers.TaxpayerReferenceController.show
+POST       /taxpayer-reference                       controllers.TaxpayerReferenceController.submit
+
+
 GET        /your-company-need                       controllers.YourCompanyNeedController.show
 POST       /your-company-need                       controllers.YourCompanyNeedController.submit
+
+GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
+POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
 
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 
 GET        /registered-address                      controllers.RegisteredAddressController.show
 POST       /registered-address                      controllers.RegisteredAddressController.submit
+
+GET        /nature-of-business                      controllers.NatureOfBusinessController.show
+POST       /nature-of-business                      controllers.NatureOfBusinessController.submit

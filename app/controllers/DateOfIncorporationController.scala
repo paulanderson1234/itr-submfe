@@ -18,38 +18,39 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
-
 import controllers.predicates.ValidActiveSession
-import forms.YourCompanyNeedForm._
-import models.YourCompanyNeedModel
+import forms.DateOfIncorporationForm._
+import models.DateOfIncorporationModel
+import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import views.html._
+import views.html.companyDetails.DateOfIncorporation
+
 import scala.concurrent.Future
 
-object YourCompanyNeedController extends YourCompanyNeedController{
+
+object DateOfIncorporationController extends DateOfIncorporationController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with ValidActiveSession{
 
+trait DateOfIncorporationController extends FrontendController with ValidActiveSession{
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
-      case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
-      case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
-    }
+   keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
+     case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
+     case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
+   }
   }
 
   val submit = Action.async { implicit request =>
-    val response = yourCompanyNeedForm.bindFromRequest().fold(
+    val response = dateOfIncorporationForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(introduction.YourCompanyNeed(formWithErrors))
+        BadRequest(DateOfIncorporation(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
-        Redirect(routes.QualifyingForSchemeController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
+        Redirect(routes.DateOfIncorporationController.show)
       }
     )
     Future.successful(response)

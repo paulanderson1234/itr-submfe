@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package forms
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val registeredAddress ="introduction:registeredAddress"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
-  val natureOfBusiness = "companyDetails:natureOfBusiness"
+import models.NatureOfBusinessModel
+import play.api.data.Form
+import play.api.data.Forms._
 
+object NatureOfBusinessForm {
+  val natureOfBusinessForm = Form(
+    mapping(
+      "natureofbusiness" -> nonEmptyText
+    )(NatureOfBusinessModel.apply)(NatureOfBusinessModel.unapply)
+  )
 }

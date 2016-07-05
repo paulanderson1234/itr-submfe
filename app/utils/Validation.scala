@@ -16,14 +16,13 @@
 
 package utils
 
-import java.text.SimpleDateFormat
+import java.text.{ParseException, SimpleDateFormat}
 
 import models.{CompanyAddressModel, DateOfFirstSaleModel}
 import play.api.data.Forms._
 import play.api.data.Mapping
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.validation._
 import play.api.i18n.Messages
-import common.Dates
 
 object Validation {
 
@@ -150,18 +149,32 @@ object Validation {
     text().verifying(crnCheckConstraint)
   }
 
+  def utrTenCharCheck: Mapping[String] = {
+    val validUtr = """[0-9]{10}""".r
+    val utrCharCheckConstraint: Constraint[String] =
+      Constraint("contraints.utrTen")({
+        text =>
+          val error = text match {
+            case validUtr() => Nil
+            case _ => Seq(ValidationError(Messages("validation.error.utrTenChar")))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text().verifying(utrCharCheckConstraint)
+  }
 
   def isValidDate(day: Int, month: Int, year: Int): Boolean = {
     try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
-      fmt.parse(s"${day}/${month}/${year}")
-      true
-    } catch {
-
-      case e: Exception =>{
-        false
+      fmt.parse(s"$day/$month/$year")
+      year match {
+        case year if year < 1000 => false
+        case _ => true
       }
+    } catch {
+        case e: ParseException => false
     }
   }
+
 }

@@ -16,40 +16,44 @@
 
 package controllers
 
-import common.KeystoreKeys
 import connectors.KeystoreConnector
-
-import controllers.predicates.ValidActiveSession
-import forms.YourCompanyNeedForm._
-import models.YourCompanyNeedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+import models.NatureOfBusinessModel
+import common._
 import views.html._
-import scala.concurrent.Future
+import forms.NatureOfBusinessForm._
 
-object YourCompanyNeedController extends YourCompanyNeedController{
+import scala.concurrent.Future
+import controllers.predicates.ValidActiveSession
+import forms.NatureOfBusinessForm
+import views.html.companyDetails.NatureOfBusiness
+
+object NatureOfBusinessController extends NatureOfBusinessController
+{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with ValidActiveSession{
+trait NatureOfBusinessController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
-      case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
-      case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
+    keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
+      case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
+      case None => Ok(NatureOfBusiness(natureOfBusinessForm))
     }
   }
 
   val submit = Action.async { implicit request =>
-    val response = yourCompanyNeedForm.bindFromRequest().fold(
+    val response = natureOfBusinessForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(introduction.YourCompanyNeed(formWithErrors))
+        BadRequest(NatureOfBusiness(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
-        Redirect(routes.QualifyingForSchemeController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
+        // TODO: chane to have you sold anything commercially yet pge when present
+        Redirect(routes.DateOfIncorporationController.show)
       }
     )
     Future.successful(response)
