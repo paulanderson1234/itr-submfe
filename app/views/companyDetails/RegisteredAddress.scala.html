@@ -29,13 +29,12 @@
                         @input(
                         registeredAddressForm("postcode"),
                         '_divClass -> "inline",
-                        '_labelId -> "label-forename",
+                        '_labelId -> "label-postcode",
                         '_label -> Messages("page.companyDetails.RegisteredAddress.postcode"),
                         '_labelClass -> "inline-block",
-                        '_inputClass -> "input--small",
-                        'id -> "searchHouseNumber"
+                        '_inputClass -> "input--small"
                         )
-                        &nbsp;<a id="ff" class="button btn">Find UK address</a>
+                        &nbsp;<a id="uk-address" class="button btn">@Messages("page.companyDetails.RegisteredAddress.findUKAddress")</a>
                     </div>
                 </fieldset>
 

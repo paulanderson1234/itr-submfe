@@ -50,7 +50,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
 
   "The Qualifying for Scheme page" should {
 
-    "Verify that start page contains the correct elements" +
+    "Verify that start page contains the correct elements " +
       "when a valid RegisteredAddressModel is passed as returned from keystore" in new SetupPage {
         val document: Document = {
           val userId = s"user-${UUID.randomUUID}"
