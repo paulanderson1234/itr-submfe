@@ -61,7 +61,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
         }
 
         document.title shouldEqual Messages("page.companyDetails.RegisteredAddress.title")
-        document.body.getElementById("label-postcode").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.postcode")
+        document.body.getElementById("label-postcode").text() should include (Messages("page.companyDetails.RegisteredAddress.postcode"))
         document.body.getElementById("uk-address").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.findUKAddress")
         document.body.getElementById("description-one").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.description.one")
         document.body.getElementById("next").text() shouldEqual Messages("common.button.continue")
