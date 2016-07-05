@@ -16,17 +16,16 @@
 
 package controllers
 
-import java.util.UUID
+import common.KeystoreKeys
 import connectors.KeystoreConnector
+
 import controllers.predicates.ValidActiveSession
+import forms.RegisteredAddressForm._
+import models.RegisteredAddressModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.http.logging.SessionId
 import play.api.mvc._
-
-
+import views.html._
 import scala.concurrent.Future
-import views.html.introduction._
 
 object RegisteredAddressController extends RegisteredAddressController
 {
@@ -35,11 +34,25 @@ object RegisteredAddressController extends RegisteredAddressController
 
 trait RegisteredAddressController extends FrontendController with ValidActiveSession {
 
+  val keyStoreConnector: KeystoreConnector
+
   val show = ValidateSession.async { implicit request =>
-    Future.successful(Ok(views.html.introduction.RegisteredAddress()))
+    keyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress).map {
+      case Some(data) => Ok(companyDetails.RegisteredAddress(registeredAddressForm.fill(data)))
+      case None => Ok(companyDetails.RegisteredAddress(registeredAddressForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.RegisteredAddressController.show()))
+    val response = registeredAddressForm.bindFromRequest().fold(
+      formWithErrors => {
+        BadRequest(companyDetails.RegisteredAddress(formWithErrors))
+      },
+      validFormData => {
+        keyStoreConnector.saveFormData(KeystoreKeys.registeredAddress, validFormData)
+        Redirect(routes.RegisteredAddressController.show)
+      }
+    )
+    Future.successful(response)
   }
 }

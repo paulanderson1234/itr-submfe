@@ -1,0 +1,56 @@
+@(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
+
+@import models.RegisteredAddressModel
+@import controllers._
+@import forms._
+@import helpers._
+@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+
+
+@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.RegisteredAddressController.show().toString)) {
+
+<div class="form-group">
+    <div class="column-two-thirds">
+
+        <!--This automatically renders the errors collection for any validation errors on the form -->
+        @errorSummary(
+        Messages("common.errorSummary.label"), registeredAddressForm
+        )
+
+        <h1 id="title" class="form-title heading-xlarge">@Messages("page.companyDetails.RegisteredAddress.title")</h1>
+
+        @form(action = controllers.routes.RegisteredAddressController.submit()) {
+
+            <div class="form-group">
+
+                <fieldset>
+                    <div class="inline">
+
+                        @input(
+                        registeredAddressForm("postcode"),
+                        '_divClass -> "inline",
+                        '_labelId -> "label-forename",
+                        '_label -> Messages("page.companyDetails.RegisteredAddress.postcode"),
+                        '_labelClass -> "inline-block",
+                        '_inputClass -> "input--small",
+                        'id -> "searchHouseNumber"
+                        )
+                        &nbsp;<a id="ff" class="button btn">Find UK address</a>
+                    </div>
+                </fieldset>
+
+            </div>
+
+            <br>
+
+            <details>
+                <summary><span class="summary" id="description-one">@Messages("page.companyDetails.RegisteredAddress.description.one")</span></summary>
+            </details>
+
+
+            <button id="next" class="btn button" type="next">@Messages("common.button.continue")</button>
+        }
+    </div>
+</div>
+
+}

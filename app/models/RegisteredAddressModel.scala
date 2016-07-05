@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package models
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val registeredAddress ="introduction:registeredAddress"
+import play.api.libs.json.Json
+
+case class RegisteredAddressModel(postcode : String)
+
+object RegisteredAddressModel {
+  implicit val format = Json.format[RegisteredAddressModel]
+  implicit val writes = Json.writes[RegisteredAddressModel]
 }

@@ -160,3 +160,9 @@ page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other co
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
+
+#Registered Address page
+page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
+page.companyDetails.RegisteredAddress.postcode=Postcode
+page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
+page.companyDetails.RegisteredAddress.description.one=Enter the address yourself
