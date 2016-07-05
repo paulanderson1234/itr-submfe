@@ -1,7 +1,7 @@
 #common
 common.button.next=Next
 common.button.continue=Continue
-common.button.continueNextSection=continue to next section
+common.button.continueNextSection=Continue to next section
 common.button.continueFirstSection=Continue to first section
 common.button.snc=Save and continue
 common.button.sign-in=Sign in
@@ -192,3 +192,8 @@ page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of you
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need either:
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master’s degree level
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren’t physical
+
+#Subsidiaries Page
+page.companyDetails.Subsidiaries.title = Subsidiaries
+page.companyDetails.Subsidiaries.heading = Does your company own or control any other companies?
+
