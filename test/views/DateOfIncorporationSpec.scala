@@ -55,7 +55,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.show.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -80,7 +80,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 

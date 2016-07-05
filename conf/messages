@@ -35,6 +35,7 @@ common.date.hint=For example, 4 9 2016
 common.externalLink = opens in a new window
 common.date.error.invalidDate=Enter a valid date
 common.date.hint.example= For example, 31 3 1980
+common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
 common.section.progress.company.details.one=Section 1 of 5: Company details
@@ -186,8 +187,25 @@ page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
 
-#commercial salae page
+
+#commercial sale page
 page.companyDetails.CommercialSale.title=Has your company sold anything commercially yet?
 page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
 page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
+
+#Registered Address page
+page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
+page.companyDetails.RegisteredAddress.postcode=Postcode
+page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
+page.companyDetails.RegisteredAddress.description.one=Enter the address yourself
+
+#nature of business page
+page.companyDetails.natureofbusiness.heading=What does your company do?
+page.companyDetails.natureofbusiness.title=What does your company do?
+page.companyDetails.natureofbusiness.question.hint=Suggested limit: 15 words
+page.companyDetails.natureofbusiness.example.text=For example
+page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
+page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
+page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
+

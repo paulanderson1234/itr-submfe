@@ -57,3 +57,8 @@ POST       /commercial-sale                         controllers.CommercialSaleCo
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 
+GET        /registered-address                      controllers.RegisteredAddressController.show
+POST       /registered-address                      controllers.RegisteredAddressController.submit
+
+GET        /nature-of-business                      controllers.NatureOfBusinessController.show
+POST       /nature-of-business                      controllers.NatureOfBusinessController.submit

@@ -25,6 +25,8 @@ trait KeystoreKeys {
   val taxpayerReference = "companyDetails:taxpayerReference"
   val yourCompanyNeed = "introduction:yourCompanyNeed"
   val commercialSale = "companyDetails:commercialSale"
+  val registeredAddress ="introduction:registeredAddress"
   val dateOfIncorporation = "companyDetails:dateOfIncorporation"
+  val natureOfBusiness = "companyDetails:natureOfBusiness"
 
 }
