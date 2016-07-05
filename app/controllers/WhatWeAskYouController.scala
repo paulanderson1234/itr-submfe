@@ -36,6 +36,6 @@ trait WhatWeAskYouController extends FrontendController with ValidActiveSession 
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.WhatWeAskYouController.show()))
+    Future.successful(Redirect(routes.TaxpayerReferenceController.show()))
   }
 }

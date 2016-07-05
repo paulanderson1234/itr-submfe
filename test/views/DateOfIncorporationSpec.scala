@@ -70,7 +70,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
       document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
@@ -95,7 +95,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
       document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

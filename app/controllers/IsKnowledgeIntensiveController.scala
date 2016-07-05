@@ -18,39 +18,38 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+
 import controllers.predicates.ValidActiveSession
-import forms.DateOfIncorporationForm._
-import models.DateOfIncorporationModel
-import play.api.mvc.Action
+import forms.IsKnowledgeIntensiveForm._
+import models.IsKnowledgeIntensiveModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.companyDetails.DateOfIncorporation
-
+import play.api.mvc._
 import scala.concurrent.Future
+import views.html._
 
-
-object DateOfIncorporationController extends DateOfIncorporationController{
+object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
+trait IsKnowledgeIntensiveController extends FrontendController with ValidActiveSession{
 
-trait DateOfIncorporationController extends FrontendController with ValidActiveSession{
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-   keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
-     case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
-     case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
-   }
+    keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {
+      case Some(data) => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm.fill(data)))
+      case None => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
-    val response = dateOfIncorporationForm.bindFromRequest().fold(
+    val response = isKnowledgeIntensiveForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(DateOfIncorporation(formWithErrors))
+        BadRequest(companyDetails.IsKnowledgeIntensive(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        Redirect(routes.NatureOfBusinessController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
+        Redirect(routes.SubsidiariesController.show)
       }
     )
     Future.successful(response)

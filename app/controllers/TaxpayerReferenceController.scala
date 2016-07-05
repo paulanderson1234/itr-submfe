@@ -52,7 +52,7 @@ trait TaxpayerReferenceController extends FrontendController with ValidActiveSes
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
         // TODO: chane to registered company adress page when present
-        Redirect(routes.HowToApplyController.show)
+        Redirect(routes.RegisteredAddressController.show)
       }
     )
     Future.successful(response)

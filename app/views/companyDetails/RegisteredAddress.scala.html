@@ -6,7 +6,7 @@
 
 @(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.RegisteredAddressController.show().toString),
+@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.TaxpayerReferenceController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
 <div class="form-group">

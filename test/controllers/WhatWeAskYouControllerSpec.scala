@@ -62,7 +62,7 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/what-we-ask-you")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/taxpayer-reference")
         }
       )
     }
