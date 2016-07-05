@@ -4,7 +4,7 @@
 
 @(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.DateOfIncorporation.title"), backLink = Some(controllers.routes.DateOfIncorporationController.show().toString),
+@main_template(Messages("page.companyDetails.DateOfIncorporation.title"), backLink = Some(controllers.routes.RegisteredAddressController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
 @errorSummary(dateOfIncorporationForm, "date-of-incorporation", "incorporationDay")

@@ -4,14 +4,8 @@
 
 @(commercialSaleForm: Form[CommercialSaleModel])(implicit request: Request[_])
 
-@main_template(title = Messages("page.companyDetails.CommercialSale.title"), bodyClasses=None) {
-
 @main_template(Messages("page.companyDetails.CommercialSale.title"), backLink = Some(controllers.routes.NatureOfBusinessController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
-
-<div style="width:40%; display: inline-block" align="left" class="form-group-compound">
-    <a id="back" class="back-link" href="javascript:history.back()">@Messages("common.button.back")</a>
-</div>
 
 <div class="grid-row">
     <div class="column-two-thirds">

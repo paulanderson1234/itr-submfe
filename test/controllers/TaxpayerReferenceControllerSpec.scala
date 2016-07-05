@@ -106,7 +106,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-to-apply")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/registered-address")
         }
       )
     }
