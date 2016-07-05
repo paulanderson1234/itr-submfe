@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package models
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val commercialSale = "companyDetails:commercialSale"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
+import play.api.libs.json.Json
 
+case class CommercialSaleModel(hasCommercialSale : String, day: Option[Int], month: Option[Int], year: Option[Int]){
+  val toDate = if(day.isDefined && month.isDefined && year.isDefined) s"${day.get}-${month.get}-${year.get}" else ""
+}
+
+object CommercialSaleModel {
+  implicit val format = Json.format[CommercialSaleModel]
+  implicit val writes = Json.writes[CommercialSaleModel]
 }

@@ -42,6 +42,7 @@ object Dates {
   }
 
   def dateIsFuture (day: Int, month: Int, year: Int): Boolean = {
+    println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" + constructDate(day, month, year))
     constructDate(day, month, year).after(DateTime.now.toDate)
   }
 }

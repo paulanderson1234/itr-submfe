@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package common
-object KeystoreKeys extends KeystoreKeys
+package forms
 
-trait KeystoreKeys {
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
-  val taxpayerReference = "companyDetails:taxpayerReference"
-  val yourCompanyNeed = "introduction:yourCompanyNeed"
-  val commercialSale = "companyDetails:commercialSale"
-  val dateOfIncorporation = "companyDetails:dateOfIncorporation"
+import models.CommercialSaleModel
+import play.api.data.Form
+import play.api.data.Forms._
+import utils.Validation._
 
+object CommercialSaleForm {
+  val commercialSaleForm = Form(
+    mapping(
+      "hasCommercialSale" -> nonEmptyText,
+      "day" -> optional(number),
+      "month" -> optional(number),
+      "year" -> optional(number)
+    )(CommercialSaleModel.apply)(CommercialSaleModel.unapply).verifying(dateOfCommercialSaleDateValidation)
+  )
 }

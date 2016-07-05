@@ -1,0 +1,44 @@
+@import models.CommercialSaleModel
+@import uk.gov.hmrc.play.views.html.helpers.{form, inputRadioGroup}
+@import views.html.helpers.{InlineDateInput, RevealingRadios, RadioGroupHidden, errorSummary}
+
+@(commercialSaleForm: Form[CommercialSaleModel])(implicit request: Request[_])
+
+@main_template(title = Messages("page.companyDetails.CommercialSale.title"), bodyClasses=None) {
+
+@main_template(Messages("page.companyDetails.CommercialSale.title"), backLink = Some(controllers.routes.HowToApplyController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+
+<div style="width:40%; display: inline-block" align="left" class="form-group-compound">
+    <a id="back" class="back-link" href="javascript:history.back()">@Messages("common.button.back")</a>
+</div>
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        @errorSummary(commercialSaleForm, "commercial-sale", "day")
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.CommercialSale.heading")</h1>
+        </header>
+
+        @form(action = controllers.routes.CommercialSaleController.submit()) {
+
+        @RadioGroupHidden(
+        commercialSaleForm("hasCommercialSale"),
+        Seq(("Yes",  Messages("common.radioYesLabel")),("No",  Messages("common.radioNoLabel"))),
+        ("hasCommercialSale-yes", InlineDateInput(commercialSaleForm, "commercial-sale", Option(Messages("page.companyDetails.CommercialSale.question.hint")), Messages("common.date.hint.example"))),
+        '_labelClass -> "block-label radio-label",
+        '_fieldsetId -> "commercial-sale-fieldset"
+        )
+
+        <br>
+
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.continue")</button>
+        </div>
+        }
+    </div>
+
+</div>
+}
