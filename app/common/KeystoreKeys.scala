@@ -24,6 +24,7 @@ trait KeystoreKeys {
   val doSubmissionExample = "examples:doSubmissionExample"
   val taxpayerReference = "companyDetails:taxpayerReference"
   val yourCompanyNeed = "introduction:yourCompanyNeed"
+  val commercialSale = "companyDetails:commercialSale"
   val registeredAddress ="introduction:registeredAddress"
   val dateOfIncorporation = "companyDetails:dateOfIncorporation"
   val isKnowledgeIntensive = "companyDetails:isKnowledgeIntensive"

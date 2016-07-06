@@ -18,10 +18,11 @@ package models
 
 import play.api.libs.json.Json
 
-case class DateOfIncorporationModel(day:Option[Int], month:Option[Int], year:Option[Int])
-
-object DateOfIncorporationModel{
-  implicit val format = Json.format[DateOfIncorporationModel]
-  implicit val writes = Json.writes[DateOfIncorporationModel]
+case class CommercialSaleModel(hasCommercialSale : String, day: Option[Int], month: Option[Int], year: Option[Int]){
+  val toDate = if(day.isDefined && month.isDefined && year.isDefined) s"${day.get}-${month.get}-${year.get}" else ""
 }
 
+object CommercialSaleModel {
+  implicit val format = Json.format[CommercialSaleModel]
+  implicit val writes = Json.writes[CommercialSaleModel]
+}

@@ -16,22 +16,18 @@
 
 package forms
 
-import utils.Validation._
-import models.DateOfFirstSaleModel
+import models.CommercialSaleModel
+import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data._
-import play.api.i18n.Messages
+import utils.Validation._
 
-object DateOfFirstSaleForm {
-  val dateOfFirstSaleForm = Form(
+object CommercialSaleForm {
+  val commercialSaleForm = Form(
     mapping(
-      "dateOfFirstSaleDay" -> number,
-      "dateOfFirstSaleMonth" -> number,
-      "dateOfFirstSaleYear" -> number
-    )(DateOfFirstSaleModel.apply)(DateOfFirstSaleModel.unapply)
-      .verifying(Messages("common.date.error.invalidDate"), fields =>
-        isValidDate(fields.day, fields.month, fields.year))
-      .verifying(Messages("validation.error.DateOfFirstSale.Future"), fields =>
-        dateNotInFuture(fields.day, fields.month, fields.year))
+      "hasCommercialSale" -> nonEmptyText,
+      "day" -> optional(number),
+      "month" -> optional(number),
+      "year" -> optional(number)
+    )(CommercialSaleModel.apply)(CommercialSaleModel.unapply).verifying(dateOfCommercialSaleDateValidation)
   )
 }

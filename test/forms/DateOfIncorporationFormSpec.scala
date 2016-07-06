@@ -39,15 +39,15 @@ class DateOfIncorporationFormSpec extends UnitSpec {
 
   "Creating the form for the date of incorporation date" should {
     "return a populated form using .fill" in {
-      val model = DateOfIncorporationModel(10, 2, 2016)
+      val model = DateOfIncorporationModel(Some(10), Some(2), Some(2016))
       val form = dateOfIncorporationForm.fill(model)
-      form.value.get shouldBe DateOfIncorporationModel(10, 2, 2016)
+      form.value.get shouldBe DateOfIncorporationModel(Some(10), Some(2), Some(2016))
     }
 
     "return a Some if a model with valid inputs is supplied using .bind" in {
       val map = Map(("incorporationDay", "10"), ("incorporationMonth", "3"), ("incorporationYear", "2016"))
       val form = dateOfIncorporationForm.bind(map)
-      form.value shouldBe Some(DateOfIncorporationModel(10, 3, 2016))
+      form.value shouldBe Some(DateOfIncorporationModel(Some(10), Some(3), Some(2016)))
     }
 
     "return a None if a model with non-numeric inputs is supplied using .bind" in {
@@ -123,9 +123,20 @@ class DateOfIncorporationFormSpec extends UnitSpec {
       form.hasErrors shouldBe true
     }
 
-    "return a None if a model with an empty input is supplied using .bind" in {
-
+    "return a None if a model with an empty day input is supplied using .bind" in {
       val map = Map(("incorporationDay", ""), ("incorporationMonth", "4"), ("incorporationYear", "2016"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with an empty month input is supplied using .bind" in {
+      val map = Map(("incorporationDay", "4"), ("incorporationMonth", ""), ("incorporationYear", "2016"))
+      val form = dateOfIncorporationForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with an empty yer input is supplied using .bind" in {
+      val map = Map(("incorporationDay", "4"), ("incorporationMonth", "5"), ("incorporationYear", ""))
       val form = dateOfIncorporationForm.bind(map)
       form.hasErrors shouldBe true
     }

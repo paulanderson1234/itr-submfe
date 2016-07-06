@@ -18,13 +18,55 @@ package utils
 
 import java.text.{ParseException, SimpleDateFormat}
 
-import models.{CompanyAddressModel, DateOfFirstSaleModel}
+import models.{CommercialSaleModel, CompanyAddressModel, DateOfFirstSaleModel}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
+import java.util.{Calendar, Date}
+import org.joda.time.DateTime
 
 object Validation {
+
+  lazy val sf = new SimpleDateFormat("dd/MM/yyyy")
+  lazy val datePageFormat = new SimpleDateFormat("dd MMMM yyyy")
+  lazy val datePageFormatNoZero = new SimpleDateFormat("d MMMM yyyy")
+  lazy val nowDate = new Date();
+
+  def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
+    Constraint("constraints.date_of_first_sale")({
+      dateForm : CommercialSaleModel =>
+        dateForm.hasCommercialSale match {
+          case "No" => Valid
+          case "Yes" => anyEmpty(dateForm) match {
+            case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+            case false => isValidDate(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+              case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+              case true => dateNotInFuture(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+                case true => Valid
+                case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
+              }
+            }
+          }
+        }
+    })
+  }
+
+  def anyEmpty(dateModel : CommercialSaleModel) : Boolean = {
+    if(dateModel.day.isEmpty || dateModel.month.isEmpty || dateModel.year.isEmpty){
+      true
+    } else {
+      false
+    }
+  }
+
+  def validateNonEmptyDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    if(day.isEmpty || month.isEmpty || year.isEmpty){
+      false
+    } else {
+      true
+    }
+  }
 
   def mandatoryAddressLineCheck: Mapping[String] = {
     val validAddressLine = """[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,26}""".r
@@ -163,6 +205,14 @@ object Validation {
     text().verifying(utrCharCheckConstraint)
   }
 
+
+  def isValidDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    validateNonEmptyDateOptions(day, month, year) match {
+      case  false => true
+      case _ => isValidDate(day.get, month.get, year.get)
+    }
+  }
+
   def isValidDate(day: Int, month: Int, year: Int): Boolean = {
     try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
@@ -174,6 +224,38 @@ object Validation {
       }
     } catch {
         case e: ParseException => false
+    }
+  }
+
+  def constructDate (day: Int, month: Int, year: Int): Date = {
+    sf.parse(s"$day/$month/$year")
+  }
+
+  def dateInFuture (date: Date): Boolean = {
+    date.after(DateTime.now.toDate)
+  }
+
+  def dateNotInFuture (day: Int, month: Int, year: Int): Boolean = {
+    !constructDate(day, month, year).after(DateTime.now.toDate)
+  }
+
+  def dateIsFuture (day: Int, month: Int, year: Int): Boolean = {
+    constructDate(day, month, year).after(DateTime.now.toDate)
+  }
+
+  def dateNotInFutureOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    // if empty elements return as valid to prevent chaining of multiple errors (other validators should handle this)
+    validateNonEmptyDateOptions(day, month, year) match {
+      case  false => true
+      case _ => dateNotInFuture(day.get, month.get, year.get)
+    }
+  }
+
+  def dateInFutureOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    // if empty elements return as valid to prevent chaining of multiple errors (other validators should handle this)
+    validateNonEmptyDateOptions(day, month, year) match {
+      case  false => true
+      case _ => dateIsFuture(day.get, month.get, year.get)
     }
   }
 

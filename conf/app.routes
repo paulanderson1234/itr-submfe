@@ -51,6 +51,9 @@ POST       /your-company-need                       controllers.YourCompanyNeedC
 GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
 POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
 
+GET        /commercial-sale                         controllers.CommercialSaleController.show
+POST       /commercial-sale                         controllers.CommercialSaleController.submit
+
 GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
 POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 

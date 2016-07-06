@@ -16,7 +16,6 @@
 
 package forms
 
-import common.Dates._
 import models.DateOfIncorporationModel
 import play.api.data.Form
 import play.api.data.Forms._
@@ -27,13 +26,15 @@ object DateOfIncorporationForm {
 
   val dateOfIncorporationForm = Form(
     mapping(
-      "incorporationDay" -> number,
-      "incorporationMonth" -> number,
-      "incorporationYear" -> number
+      "incorporationDay" -> optional(number),
+      "incorporationMonth" -> optional(number),
+      "incorporationYear" -> optional(number)
     )(DateOfIncorporationModel.apply)(DateOfIncorporationModel.unapply)
+      .verifying(Messages("validation.error.DateNotEntered"), fields =>
+        validateNonEmptyDateOptions(fields.day, fields.month, fields.year))
       .verifying(Messages("common.date.error.invalidDate"), fields =>
-        isValidDate(fields.day, fields.month, fields.year))
+        isValidDateOptions(fields.day, fields.month, fields.year))
       .verifying(Messages("validation.error.DateOfIncorporation.Future"), fields =>
-        dateNotInFuture(fields.day, fields.month, fields.year))
+        dateNotInFutureOptions(fields.day, fields.month, fields.year))
   )
 }

@@ -17,42 +17,41 @@
 package controllers
 
 import connectors.KeystoreConnector
+import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.NatureOfBusinessModel
+import models.CommercialSaleModel
 import common._
 import views.html._
-import forms.NatureOfBusinessForm._
+import forms.CommercialSaleForm._
+import views.html.companyDetails.CommercialSale
 
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
-import forms.NatureOfBusinessForm
-import views.html.companyDetails.NatureOfBusiness
 
-object NatureOfBusinessController extends NatureOfBusinessController
+object CommercialSaleController extends CommercialSaleController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with ValidActiveSession{
+trait CommercialSaleController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
-      case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
-      case None => Ok(NatureOfBusiness(natureOfBusinessForm))
+    keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
+      case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
+      case None => Ok(CommercialSale(commercialSaleForm))
     }
   }
 
   val submit = Action.async { implicit request =>
-    val response = natureOfBusinessForm.bindFromRequest().fold(
+    val response = commercialSaleForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(NatureOfBusiness(formWithErrors))
+        BadRequest(CommercialSale(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-        Redirect(routes.CommercialSaleController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
+        Redirect(routes.IsKnowledgeIntensiveController.show)
       }
     )
     Future.successful(response)

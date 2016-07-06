@@ -23,6 +23,9 @@ common.error.summary.heading=This page has errors
 common.readMore=Read more
 common.base.yes=Yes
 common.base.no=No
+common.day=Day
+common.month=Month
+common.year=Year
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -30,6 +33,8 @@ common.date.fields.month=Month
 common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
 common.externalLink = opens in a new window
+common.date.error.invalidDate=Enter a valid date
+common.date.hint.example= For example, 31 3 1980
 common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
@@ -46,9 +51,11 @@ validation.error.country=Country must be no more than 20 valid characters if ent
 validaton.error.postcode=Please enter a valid postcode
 validation.error.email=Enter a valid email address
 validation.error.crn=Please enter a valid CRN
-validation.error.invalidDate=Please enter a valid date
+validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
+validation.error.DateNotEntered=You have not entered a day, month or year
+validation.error.enterDate=Please enter a date
 
 ## Session Timeout message ##
 session.timeout.message=Your session has ended
@@ -181,6 +188,12 @@ page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of
 page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
 
+#commercial sale page
+page.companyDetails.CommercialSale.title=Has your company sold anything commercially yet?
+page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
+page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
+validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
+
 #Is Knowledge Intensive Page
 page.companyDetails.IsKnowledgeIntensive.title = Is your company KI
 page.companyDetails.IsKnowledgeIntensive.heading = Are you a knowledge intensive company?
@@ -211,3 +224,4 @@ page.companyDetails.natureofbusiness.example.text=For example
 page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
 page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
 page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
+
