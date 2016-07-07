@@ -54,7 +54,7 @@ validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
-validation.error.DateNotEntered=You have not entered a day, month or year
+validation.error.DateNotEntered=You must enter a valid day, month and year
 validation.error.enterDate=Please enter a date
 
 ## Session Timeout message ##
@@ -193,6 +193,7 @@ page.companyDetails.CommercialSale.title=Has your company sold anything commerci
 page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
 page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
+validation.error.DateForNoOption=Date should not be entered when 'No' is selected
 
 #Is Knowledge Intensive Page
 page.companyDetails.IsKnowledgeIntensive.title = Is your company KI

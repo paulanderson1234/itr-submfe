@@ -18,6 +18,8 @@ $(document).ready($(function() {
         $("#month").val("");
         $("#year").val("");
         $("#error-summary-display").hide();
+        $(".form-field--error").removeClass("form-field--error");
+
     })
 
 }));
