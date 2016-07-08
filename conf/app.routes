@@ -68,3 +68,6 @@ POST       /registered-address                      controllers.RegisteredAddres
 
 GET        /nature-of-business                      controllers.NatureOfBusinessController.show
 POST       /nature-of-business                      controllers.NatureOfBusinessController.submit
+
+GET        /operating-costs                         controllers.OperatingCostsController.show
+POST       /operating-costs                         controllers.OperatingCostsController.submit

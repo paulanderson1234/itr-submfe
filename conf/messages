@@ -56,6 +56,7 @@ validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
 validation.error.DateNotEntered=You have not entered a day, month or year
 validation.error.enterDate=Please enter a date
+validation.error.operatingCosts=Please enter a value into
 
 ## Session Timeout message ##
 session.timeout.message=Your session has ended
@@ -205,6 +206,16 @@ page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of you
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need either:
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master’s degree level
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren’t physical
+
+page.companyDetails.OperatingCosts.title = Operating costs
+page.companyDetails.OperatingCosts.heading = In the past 3 tax years how much have you spent on running your company?
+page.companyDetails.OperatingCosts.hint.one = Operating costs include office rent, wages and marketing.
+page.companyDetails.OperatingCosts.hint.two = Tax years end on 5 April.
+page.companyDetails.OperatingCosts.col.heading.one = Operating costs
+page.companyDetails.OperatingCosts.col.heading.two = Research and Development costs
+page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
+page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
+page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
 
 #Subsidiaries Page
 page.companyDetails.Subsidiaries.title = Subsidiaries

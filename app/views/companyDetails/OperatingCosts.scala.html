@@ -1,0 +1,117 @@
+@import models.OperatingCostsModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+
+@(operatingCostsForm: Form[OperatingCostsModel])(implicit request: Request[_])
+
+@main_template(Messages("page.companyDetails.OperatingCosts.title"), backLink = Some(controllers.routes.IsKnowledgeIntensiveController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+
+@errorSummary(operatingCostsForm, "operating-costs")
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <header class="page-header">
+            <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.OperatingCosts.heading")</h1>
+        </header>
+
+        @form(action = controllers.routes.OperatingCostsController.submit()) {
+
+        <p class="form-hint" id="operating-costs-hint-one">@Messages("page.companyDetails.OperatingCosts.hint.one")</p>
+        <p class="form-hint" id="operating-costs-hint-two">@Messages("page.companyDetails.OperatingCosts.hint.two")</p>
+
+        <div class="form-group">
+            <table id="table">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th id="col-heading-one" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.one")</th>
+                    <th id="col-heading-two" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.two")</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="heading-small">@Messages("page.companyDetails.OperatingCosts.row.heading.one")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("operatingCosts1stYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "operating-one"
+
+                        )
+                    </td>
+                    <td>
+                        @input(
+                        operatingCostsForm("rAndDCosts1stYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "research-one"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small">@Messages("page.companyDetails.OperatingCosts.row.heading.two")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("operatingCosts2ndYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "operating-two"
+                        )
+                    </td>
+                    <td>
+                        @input(
+                        operatingCostsForm("rAndDCosts2ndYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "research-two"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small">@Messages("page.companyDetails.OperatingCosts.row.heading.three")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("operatingCosts3rdYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "operating-three"
+                        )
+                    </td>
+                    <td>
+                        @input(
+                        operatingCostsForm("rAndDCosts3rdYear"),
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength -> "13",
+                        '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        'id -> "research-three"
+                        )
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.continue")</button>
+        </div>
+        }
+    </div>
+
+</div>
+}

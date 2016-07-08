@@ -82,6 +82,20 @@ object Validation {
     text.verifying(addresssLineCheckConstraint)
   }
 
+  def mandatoryNumberCheck(message: String) : Mapping[String] = {
+    val validNum = """[0-9]{13}""".r
+    val numCharCheckConstraint: Constraint[String] =
+      Constraint("contraints.mandatoryNumberCheck")({
+        text =>
+          val error = text match {
+            case validNum() => Nil
+            case _ => Seq(ValidationError(Messages("validation.error.operatingCosts") + " " + message))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text.verifying(numCharCheckConstraint)
+  }
+
   def optionalAddressLineCheck: Mapping[String] = {
     val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,26}""".r
     val addresssLineCheckConstraint: Constraint[String] =
