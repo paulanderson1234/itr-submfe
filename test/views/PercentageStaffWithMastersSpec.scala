@@ -93,6 +93,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
+
   "Verify that PercentageStaffWithMasters page contains error summary when invalid model is submitted" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
