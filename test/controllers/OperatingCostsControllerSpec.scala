@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -99,7 +100,11 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the OperatingCostsController" should {
-    "redirect to the Operting Costs  page" in {
+    "redirect to the Operating Costs page (for now)" in {
+
+      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "750000",
@@ -119,7 +124,10 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
-    "redirect to itself" in {
+    "redirect to itself (for now)" in {
+
+      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "",
@@ -140,7 +148,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
 
   "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController" should {
-    "redirect to itself" in {
+    "redirect to itself (for now)" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "230000",
