@@ -255,6 +255,7 @@ object Validation {
     date.after(DateTime.now.toDate)
   }
 
+  /** Determines whether the date of incorporation passed is less than 3 years from today*/
   def dateAfterIncorporationRule(day:Int, month:Int, year:Int) : Boolean =
   {
     Try {

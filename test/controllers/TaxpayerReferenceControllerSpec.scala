@@ -30,7 +30,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 
@@ -94,15 +94,12 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
         result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Sending a valid form submit to the TaxpayerReferenceController" should {
     "redirect to the  company's registered address page" in {
-
       val request = FakeRequest().withFormUrlEncodedBody(
         "utr" -> "1234567891")
-
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -114,10 +111,8 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending an invalid form submission with validation errors to the TaxpayerReferenceController" should {
     "redirect with a bad request" in {
-
       val request = FakeRequest().withFormUrlEncodedBody(
         "utr" -> "fff")
-
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST

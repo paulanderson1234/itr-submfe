@@ -32,15 +32,14 @@ object DateOfIncorporationController extends DateOfIncorporationController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-
-trait DateOfIncorporationController extends FrontendController with ValidActiveSession{
+trait DateOfIncorporationController extends FrontendController with ValidActiveSession {
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-   keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
-     case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
-     case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
-   }
+    keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
+      case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
+      case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
@@ -56,3 +55,4 @@ trait DateOfIncorporationController extends FrontendController with ValidActiveS
     Future.successful(response)
   }
 }
+

@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import org.scalatest.mock.MockitoSugar
 import scala.concurrent.Future
 
-class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
+class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"

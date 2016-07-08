@@ -24,7 +24,8 @@ import scala.concurrent.Future
 
 object HowToApplyController extends HowToApplyController
 
-trait HowToApplyController extends FrontendController with ValidActiveSession{
+trait HowToApplyController extends FrontendController with ValidActiveSession {
+
   val show = ValidateSession.async { implicit request =>
     Future.successful(Ok(views.html.introduction.HowToApply()))
   }

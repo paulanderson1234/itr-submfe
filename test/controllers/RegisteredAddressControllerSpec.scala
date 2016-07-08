@@ -16,41 +16,55 @@
 
 package controllers
 
+import java.util.UUID
+
+import builders.SessionBuilder
 import connectors.KeystoreConnector
-import models.RegisteredAddressModel
-import org.jsoup._
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
+import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class RegisteredAddressControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
-  implicit val hc = new HeaderCarrier()
+  val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  def setupTarget(getData: Option[RegisteredAddressModel], postData: Option[RegisteredAddressModel]): RegisteredAddressController = {
+  object RegisteredAddressControllerTest extends RegisteredAddressController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+  }
 
-    val mockKeystoreConnector = mock[KeystoreConnector]
+  val model = RegisteredAddressModel("TF1 3NY")
+  val emptyModel = RegisteredAddressModel("")
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
+  val keyStoreSavedRegisteredAddress = RegisteredAddressModel("LE5 5NN")
 
+  def showWithSession(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = RegisteredAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
 
-    when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.anyString())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(getData))
+  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = RegisteredAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    test(result)
+  }
 
-    lazy val data = CacheMap("form-id", Map("data" -> Json.toJson(postData.getOrElse(RegisteredAddressModel("")))))
-    when(mockKeystoreConnector.saveFormData[RegisteredAddressModel](Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(data))
+  implicit val hc = HeaderCarrier()
 
-    new RegisteredAddressController {
-      override val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-    }
+  override def beforeEach() {
+    reset(mockKeyStoreConnector)
   }
 
   "RegisteredAddressController" should {
@@ -59,113 +73,48 @@ class RegisteredAddressControllerSpec extends UnitSpec with WithFakeApplication 
     }
   }
 
-  // GET Tests
-  "Calling the RegisteredAddress.show" when {
-
-      lazy val fakeRequest = FakeRequest("GET", "/investment-tax-relief/registered-address").withSession(SessionKeys.sessionId -> "12345")
-
-    "not supplied with a pre-existing stored model" should {
-
-      val target = setupTarget(None, None)
-      lazy val result = target.show(fakeRequest)
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-        "contain some text and use the character set utf-8" in {
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-      }
+  "Sending a GET request to RegisteredAddressController" should {
+    "return a 200 OK when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
 
-    "supplied with a pre-existing stored model" should {
-
-      "return a 200" in {
-        val target = setupTarget(Some(RegisteredAddressModel("ST1 1QQ")), None)
-        lazy val result = target.show(fakeRequest)
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-
-        "contain some text and use the character set utf-8" in {
-          val target = setupTarget(Some(RegisteredAddressModel("ST1 1QQ")), None)
-          lazy val result = target.show(fakeRequest)
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-      }
+    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
   }
 
-  // POST Tests
-  "In RegisteredAddressController calling the .submit action" when {
-
-    def buildRequest(body: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest("POST",
-      "/investment-tax-relief/registered-address")
-      .withSession(SessionKeys.sessionId -> "12345")
-      .withFormUrlEncodedBody(body: _*)
-
-    def executeTargetWithMockData(data: String): Future[Result] = {
-      lazy val fakeRequest = buildRequest(("postcode", data))
-      val mockData = new RegisteredAddressModel(data)
-      val target = setupTarget(None, Some(mockData))
-      target.submit(fakeRequest)
-    }
-
-    "submitting a valid form with 'a valid postcode'" should {
-
-      lazy val result = executeTargetWithMockData("ST1 1QQ")
-
-      "return a 303" in {
-        status(result) shouldBe 303
-      }
-    }
-
-    "submitting a valid form with 'a invalid postcode'" should {
-
-      lazy val result = executeTargetWithMockData("ST111 1QQ")
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-    }
-
-    "submitting a valid form with 'a invalid postcode (!)'" should {
-
-      lazy val result = executeTargetWithMockData("ST! 1QQ")
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-    }
-
-    "submitting a valid form with 'a invalid postcode (One letter)'" should {
-
-      lazy val result = executeTargetWithMockData("S")
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-    }
-
-    "submitting an invalid form with no content" should {
-
-      lazy val result = executeTargetWithMockData("")
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-
-      "display a visible Error Summary field" in {
-        document.getElementById("error-summary-display").hasClass("error-summary--show")
-      }
+  "Sending a valid form submit to the RegisteredAddressController" should {
+    "redirect to the commercial sale page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "postcode" -> "LE5 5NN")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
     }
   }
+
+  "Sending an invalid form submission with validation errors to the RegisteredAddressController" should {
+    "redirect to itself" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "postcode" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
 }

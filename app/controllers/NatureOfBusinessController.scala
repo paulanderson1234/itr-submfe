@@ -21,12 +21,10 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
-import views.html._
 import forms.NatureOfBusinessForm._
 
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
-import forms.NatureOfBusinessForm
 import views.html.companyDetails.NatureOfBusiness
 
 object NatureOfBusinessController extends NatureOfBusinessController

@@ -46,10 +46,10 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
 
-  val model = DateOfIncorporationModel(Some(23),Some(11),Some(1993))
+  val model = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
   val emptyModel = DateOfIncorporationModel(None, None, None)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(23),Some(11),Some(1993))
+  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
 
 
   def showWithSession(test: Future[Result] => Any) {
@@ -94,7 +94,6 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
         result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Sending a valid form submit to the DateOfIncorporationController" should {

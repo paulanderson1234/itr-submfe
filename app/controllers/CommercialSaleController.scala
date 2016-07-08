@@ -42,31 +42,7 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
     }
   }
 
-
-//  def routeRequest(date: Option[DateOfIncorporationModel]): Future[Result] = {
-//    date match {
-//      case Some(data) if Validation.dateBeforeIncorporationRule(data.day.get, data.month.get, data.year.get) =>
-//        Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
-//      case Some(_) => Future.successful(Redirect(routes.SubsidiariesController.show))
-//      case None => Future.successful(Redirect(routes.DateOfIncorporationController.show))
-//    }
-//  }
-//
-//  commercialSaleForm.bindFromRequest().fold(
-//    formWithErrors => {
-//      Future.successful(BadRequest(CommercialSale(formWithErrors)))
-//    },
-//    validFormData => {
-//      for {
-//        save <- keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-//        date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-//        route <- routeRequest(date)
-//      } yield route
-//    }
-//  )
-//}
-
-val submit = Action.async { implicit request =>
+  val submit = Action.async { implicit request =>
 
     def routeRequest(date: Option[DateOfIncorporationModel]): Future[Result] = {
       date match {
@@ -91,23 +67,4 @@ val submit = Action.async { implicit request =>
       }
     )
   }
-
-
-//  val submit = Action.async { implicit request =>
-//    commercialSaleForm.bindFromRequest().fold(
-//      formWithErrors => Future.successful(BadRequest(CommercialSale(formWithErrors))),
-//      validFormData => {
-//        keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-//        keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation) map {
-//          case Some(data) => {
-//            if (Validation.dateBeforeIncorporationRule(data.day.get, data.month.get, data.year.get)) {
-//              Redirect(routes.IsKnowledgeIntensiveController.show)
-//            }
-//            else Redirect(routes.SubsidiariesController.show)
-//          }
-//          case None => Redirect(routes.DateOfIncorporationController.show)
-//        }
-//      }
-//    )
-//  }
 }

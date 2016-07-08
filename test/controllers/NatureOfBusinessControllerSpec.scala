@@ -30,7 +30,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 
@@ -50,7 +50,6 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
   val emptyModel = NatureOfBusinessModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedNatureOfBusiness = NatureOfBusinessModel("text some other")
-
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -94,12 +93,10 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Sending a valid form submit to the NatureOfBusinessController" should {
     "redirect to the commercial sale page" in {
-
       val request = FakeRequest().withFormUrlEncodedBody(
         "natureofbusiness" -> "some text so it's valid")
 
@@ -121,7 +118,6 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
         }
       )
     }

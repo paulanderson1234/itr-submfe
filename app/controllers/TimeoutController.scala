@@ -16,12 +16,10 @@
 
 package controllers
 
-import java.util.UUID
 import views.html.warnings._
 import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{SessionKeys, HeaderCarrier}
-import scala.concurrent.{Future}
 
 import scala.concurrent.Future
 

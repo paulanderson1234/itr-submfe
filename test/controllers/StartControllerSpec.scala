@@ -47,7 +47,7 @@ class StartControllerSpec extends UnitSpec with WithFakeApplication {
       object IntroductionTestDataItem extends fakeRequestTo("", StartController.start)
 
       "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe 303
+        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
       }
     }
 
@@ -56,7 +56,7 @@ class StartControllerSpec extends UnitSpec with WithFakeApplication {
       object IntroductionWithSessionTestDataItem extends fakeRequestToWithSessionId("", StartController.start)
 
       "return a 303" in {
-        status(IntroductionWithSessionTestDataItem.result) shouldBe 303
+        status(IntroductionWithSessionTestDataItem.result) shouldBe SEE_OTHER
       }
     }
   }

@@ -21,7 +21,6 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.TaxpayerReferenceModel
 import common._
-import views.html._
 import forms.TaxPayerReferenceForm._
 
 import scala.concurrent.Future
@@ -51,7 +50,6 @@ trait TaxpayerReferenceController extends FrontendController with ValidActiveSes
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
-        // TODO: chane to registered company adress page when present
         Redirect(routes.RegisteredAddressController.show)
       }
     )
