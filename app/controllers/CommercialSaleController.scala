@@ -20,20 +20,18 @@ import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.CommercialSaleModel
+import models.{CommercialSaleModel, DateOfIncorporationModel}
 import common._
-import views.html._
 import forms.CommercialSaleForm._
-import views.html.companyDetails.CommercialSale
-
+import views.html.companyDetails.{CommercialSale, DateOfIncorporation}
+import utils.Validation
 import scala.concurrent.Future
 
-object CommercialSaleController extends CommercialSaleController
-{
+object CommercialSaleController extends CommercialSaleController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait CommercialSaleController extends FrontendController with ValidActiveSession{
+trait CommercialSaleController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
@@ -45,15 +43,28 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = commercialSaleForm.bindFromRequest().fold(
+
+    def routeRequest(date: Option[DateOfIncorporationModel]): Future[Result] = {
+      date match {
+        case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) =>
+          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
+        case Some(_) => Future.successful(Redirect(routes.SubsidiariesController.show))
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show))
+      }
+    }
+
+    commercialSaleForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(CommercialSale(formWithErrors))
+        Future.successful(BadRequest(CommercialSale(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-        Redirect(routes.IsKnowledgeIntensiveController.show)
+
+        for {
+          date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+          route <- routeRequest(date)
+        } yield route
       }
     )
-    Future.successful(response)
   }
 }

@@ -62,6 +62,54 @@ class CommercialSaleFormSpec extends UnitSpec {
       form.hasErrors shouldBe true
     }
 
+    "return a None if a model with both a 'No' selection and date present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", "2"), ("month", "4"), ("year", "2006"))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with day present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", "2"), ("month", ""), ("year", ""))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with month present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", ""), ("month", "2"), ("year", ""))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with year present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", ""), ("month", ""), ("year", "2006"))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with invalid day present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", "f"), ("month", ""), ("year", ""))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with invalid month present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", ""), ("month", "z"), ("year", ""))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with invalid year present using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", ""), ("month", ""), ("year", "q"))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
+    "return a None if a model with both a 'No' selection and partial date with year in future using .bind" in {
+      val map = Map(("hasCommercialSale","No"),("day", ""), ("month", ""), ("year", "9999"))
+      val form = commercialSaleForm.bind(map)
+      form.hasErrors shouldBe true
+    }
+
     "return a None if a model with a single digit year is supplied using .bind" in {
       val map = Map(("hasCommercialSale","Yes"),("day", "2"), ("month", "2"), ("year", "2"))
       val form = commercialSaleForm.bind(map)

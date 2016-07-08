@@ -16,43 +16,57 @@
 
 package controllers
 
+import java.util.UUID
+
+import builders.SessionBuilder
 import connectors.KeystoreConnector
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.OneServerPerSuite
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import org.jsoup._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
+
 import scala.concurrent.Future
-import models.IsKnowledgeIntensiveModel
-import play.api.mvc.Result
 
-class IsKnowledgeIntensiveControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
-  implicit val hc = new HeaderCarrier()
+  val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  def setupTarget(getData: Option[IsKnowledgeIntensiveModel], postData: Option[IsKnowledgeIntensiveModel]): IsKnowledgeIntensiveController = {
-
-    val mockKeystoreConnector = mock[KeystoreConnector]
-
-
-    when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.anyString())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(getData))
-
-    lazy val data = CacheMap("form-id", Map("data" -> Json.toJson(postData.getOrElse(IsKnowledgeIntensiveModel("")))))
-    when(mockKeystoreConnector.saveFormData[IsKnowledgeIntensiveModel](Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(data))
-
-    new IsKnowledgeIntensiveController {
-      override val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-    }
+  object IsKnowledgeIntensiveControllerTest extends IsKnowledgeIntensiveController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
+  val modelYes = IsKnowledgeIntensiveModel("Yes")
+  val modelNo = IsKnowledgeIntensiveModel("No")
+  val emptyModel = IsKnowledgeIntensiveModel("")
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
+  val keyStoreSavedIsKnowledgeIntensive = IsKnowledgeIntensiveModel("Yes")
+
+  def showWithSession(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = IsKnowledgeIntensiveControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+
+  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = IsKnowledgeIntensiveControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    test(result)
+  }
+
+  implicit val hc = HeaderCarrier()
+
+  override def beforeEach() {
+    reset(mockKeyStoreConnector)
+  }
 
   "IsKnowledgeIntensiveController" should {
     "use the correct keystore connector" in {
@@ -60,111 +74,64 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with WithFakeApplicati
     }
   }
 
-  // GET Tests
-  "Calling the IsKnowledgeIntensive.show" when {
-
-    lazy val fakeRequest = FakeRequest("GET", "/investment-tax-relief/is-knowledge-intensive").withSession(SessionKeys.sessionId -> "12345")
-
-    "not supplied with a pre-existing stored model" should {
-
-      val target = setupTarget(None, None)
-      lazy val result = target.show(fakeRequest)
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-        "contain some text and use the character set utf-8" in {
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-      }
+  "Sending a GET request to IsKnowledgeIntensiveController" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
 
-    "supplied with a pre-existing stored model" should {
-
-      "return a 200" in {
-        val target = setupTarget(Some(IsKnowledgeIntensiveModel("Yes")), None)
-        lazy val result = target.show(fakeRequest)
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-
-        "contain some text and use the character set utf-8" in {
-          val target = setupTarget(Some(IsKnowledgeIntensiveModel("Yes")), None)
-          lazy val result = target.show(fakeRequest)
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-        "have the radio option `Yes` selected if " +
-          "`Yes` is supplied in the model" in {
-          val target = setupTarget(Some(IsKnowledgeIntensiveModel("Yes")), None)
-          lazy val result = target.show(fakeRequest)
-          lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("isKnowledgeIntensive-yes").parent.classNames().contains("selected") shouldBe true
-        }
-
-        "have the radio option `No` selected if " +
-          "`No` is supplied in the model" in {
-          val target = setupTarget(Some(IsKnowledgeIntensiveModel("No")), None)
-          lazy val result = target.show(fakeRequest)
-          lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("isKnowledgeIntensive-no").parent.classNames().contains("selected") shouldBe true
-        }
-      }
+    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
   }
 
-  // POST Tests
-  "In IsKnowledgeIntensiveController calling the .submit action" when {
-
-    def buildRequest(body: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest("POST",
-      "/investment-tax-relief/is-knowledge-intensive")
-      .withSession(SessionKeys.sessionId -> "12345")
-      .withFormUrlEncodedBody(body: _*)
-
-    def executeTargetWithMockData(data: String): Future[Result] = {
-      lazy val fakeRequest = buildRequest(("isKnowledgeIntensive", data))
-      val mockData = new IsKnowledgeIntensiveModel(data)
-      val target = setupTarget(None, Some(mockData))
-      target.submit(fakeRequest)
-    }
-
-    "submitting a valid form with `Yes`" should {
-
-      lazy val result = executeTargetWithMockData("Yes")
-
-      "return a 303" in {
-        status(result) shouldBe 303
-      }
-    }
-
-    "submitting a valid form with `No`" should {
-
-      lazy val result = executeTargetWithMockData("No")
-
-      "return a 303" in {
-        status(result) shouldBe 303
-      }
-    }
-
-    "submitting an invalid form with no content" should {
-
-      lazy val result = executeTargetWithMockData("")
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-
-      "display a visible Error Summary field" in {
-        document.getElementById("error-summary-display").hasClass("error-summary--show")
-      }
+  "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController" should {
+    "redirect to the commercial sale page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
     }
   }
+
+  "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController" should {
+    "redirect to the commercial sale page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+  
+  "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController" should {
+    "redirect to itself" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
 }

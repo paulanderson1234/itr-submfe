@@ -37,7 +37,7 @@ trait KeystoreConnector {
     sessionCache.fetchAndGetEntry(key)
   }
 
-  def clearKeystore()(implicit hc : HeaderCarrier) :Unit  = {
+  def clearKeystore()(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
     sessionCache.remove()
   }
 

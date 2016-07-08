@@ -54,7 +54,7 @@ validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
 validation.common.error.fieldRequired = This field is required
-validation.error.DateNotEntered=You have not entered a day, month or year
+validation.error.DateNotEntered=You must enter a valid day, month and year
 validation.error.enterDate=Please enter a date
 validation.error.operatingCosts=Please enter a value into
 
@@ -87,14 +87,14 @@ page.introduction.HowToApply.fillOut.description= Assurance letters show potenti
 page.introduction.HowToApply.receive.description=If your application’s successful we’ll post your assurance letter to you or someone you nominate. You can then show it to potential investors.
 page.introduction.HowToApply.notBinding=Assurance letters aren’t guarantees or legally binding.
 page.introduction.HowToApply.send.descriptionOne=You can do this by email or post.
-page.introduction.HowToApply.send.descriptionTwo=When you send your application you'll need to include your:
+page.introduction.HowToApply.send.descriptionTwo=When you send your application you''ll need to include your:
 page.introduction.HowToApply.number.sendOne=company accounts
 page.introduction.HowToApply.number.sendTwo=memorandum and articles of association
 page.introduction.HowToApply.number.sendThree=documents like prospectuses that you’ll use to attract investment
 
 #Qualifying for Scheme page
 page.introduction.qualifyingForScheme.title=Qualifying for the scheme
-page.introduction.qualifyingForScheme.heading.one=Business areas that don't qualify
+page.introduction.qualifyingForScheme.heading.one=Business areas that don''t qualify
 page.introduction.qualifyingForScheme.description.one=Your company must have issued shares in the past 2 years.
 page.introduction.qualifyingForScheme.description.two=When it issued shares it must also have:
 page.introduction.qualifyingForScheme.description.three=You can find other conditions in the
@@ -109,7 +109,7 @@ page.introduction.qualifyingForScheme.bullet.property=buying or selling property
 page.introduction.qualifyingForScheme.bullet.hotels=running hotels or rental accommodation
 page.introduction.qualifyingForScheme.bullet.electricity=generating or exporting electricity
 page.introduction.qualifyingForScheme.link.schemeGuidance=scheme guidance
-page.introduction.qualifyingForScheme.link.unqualifiedBusiness=other business areas that don't qualify
+page.introduction.qualifyingForScheme.link.unqualifiedBusiness=other business areas that don''t qualify
 
 #examples pages (to be deleted later)
 page.examples.CompanyAddress.title=Company address details
@@ -138,8 +138,8 @@ page.examples.Confirmation.title=Confirmation
 page.examples.Confirmation.heading=Confirmation
 
 #Utr page
-page.companyDetails.utr.heading=What's your Company Unique Taxpayer Reference?
-page.companyDetails.utr.title=What's your Company Unique Taxpayer Reference?
+page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?
+page.companyDetails.utr.title=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.question.hint=If your UTR is 13 digits long, only enter the last 10
 page.companyDetails.utr.help.text=You can usually find it in letters we’ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
 page.companyDetails.utr.help.link=Where can you find this?
@@ -168,7 +168,7 @@ page.introduction.WhatWeAskYou.heading.two=Section 2: Previous tax relief invest
 page.introduction.WhatWeAskYou.heading.three=Section 3: This investment
 page.introduction.WhatWeAskYou.heading.four=Section 4: Contact details
 page.introduction.WhatWeAskYou.heading.five=Section 5: Supporting documents
-page.introduction.WhatWeAskYou.description.one=You can't save your progress, so make sure you have everything you need before you start your application.
+page.introduction.WhatWeAskYou.description.one=You can''t save your progress, so make sure you have everything you need before you start your application.
 page.introduction.WhatWeAskYou.description.two=Applying takes up to an hour.
 page.introduction.WhatWeAskYou.bullet.compIncorporated=When your company was incorporated
 page.introduction.WhatWeAskYou.bullet.compDo=What your company does
@@ -194,6 +194,7 @@ page.companyDetails.CommercialSale.title=Has your company sold anything commerci
 page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
 page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
+validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
 #Is Knowledge Intensive Page
 page.companyDetails.IsKnowledgeIntensive.title = Is your company KI

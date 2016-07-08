@@ -18,7 +18,6 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
-
 import controllers.predicates.ValidActiveSession
 import forms.YourCompanyNeedForm._
 import models.YourCompanyNeedModel

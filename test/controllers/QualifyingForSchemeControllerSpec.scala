@@ -28,7 +28,7 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
+class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -45,12 +45,11 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
   implicit val hc = HeaderCarrier()
 
   "Sending a GET request to QualifyingForSchemeController" should {
-    "return a 200" in {
+    "return a 200 OK" in {
       showWithSession(
-        result => status(result) shouldBe 200
+        result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Posting to the QualifyingForSchemeController" should {
@@ -59,9 +58,9 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSession(request)(result => {
-          status(result) shouldBe 303
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/what-we-ask-you")
-        }
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/what-we-ask-you")
+      }
       )
     }
   }

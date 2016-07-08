@@ -18,7 +18,6 @@ package controllers
 
 import java.util.UUID
 import org.jsoup.Jsoup
-import play.api.i18n.Messages
 import play.api.mvc.{AnyContent, Action}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -46,49 +45,36 @@ class IntroductionControllerSpec extends UnitSpec with WithFakeApplication {
     val jsoupDoc = Jsoup.parse(bodyOf(result))
   }
 
-
-
   "IntroductionController.show" should {
-
     "when called with no session" should {
-
       object IntroductionTestDataItem extends fakeRequestTo("", IntroductionController.show())
-
       "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe 303
+        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
       }
     }
 
     "when called with a session" should {
-
       object IntroductionWithSessionTestDataItem extends fakeRequestToWithSessionId("", IntroductionController.show())
-
       "return a 200" in {
-        status(IntroductionWithSessionTestDataItem.result) shouldBe 200
+        status(IntroductionWithSessionTestDataItem.result) shouldBe OK
       }
     }
   }
 
   "IntroductionController.submit" should {
-
     "when a submit is called" should{
-
       object IntroductionTestDataItem extends fakePostTo("", IntroductionController.submit())
-
       "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe 303
+        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
       }
     }
   }
 
   "IntroductionController.restart" should {
-
     "when restart is called" should{
-
       object IntroductionTestDataItem extends fakePostTo("", IntroductionController.restart())
-
       "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe 303
+        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
       }
 
     }

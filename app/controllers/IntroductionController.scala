@@ -21,7 +21,6 @@ import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.http.logging.SessionId
 import play.api.mvc._
 
 
@@ -33,26 +32,23 @@ object IntroductionController extends IntroductionController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait IntroductionController extends FrontendController with ValidActiveSession{
+trait IntroductionController extends FrontendController with ValidActiveSession {
 
   implicit val hc = new HeaderCarrier()
-  val keystoreConnector : KeystoreConnector = KeystoreConnector
+  val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   // this is the page that is called on a restart. It will populate the session keys if missing.
   val show = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
       val sessionId = UUID.randomUUID.toString
 
-      //TODO: if there is any data (i.e. a model passed to this form create an empty model and pass it..
       Future.successful(Redirect(routes.IntroductionController.show())
         .withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
     }
     else {
-      //TODO: if there is any data (i.e. a model passed to this form) retrive from session skeystore (fetchAndGet)
-      // and pass it to the form..
       Future.successful(Ok(start()))
-      }
     }
+  }
 
   val submit = Action.async { implicit request =>
     Future.successful(Redirect(routes.YourCompanyNeedController.show()))
