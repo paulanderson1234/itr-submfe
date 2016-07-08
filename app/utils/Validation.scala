@@ -24,36 +24,55 @@ import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
 import java.util.{Calendar, Date}
+
 import org.joda.time.DateTime
+
+import scala.util.{Failure, Success, Try}
 
 object Validation {
 
+  // use new Date() to get the date now
   lazy val sf = new SimpleDateFormat("dd/MM/yyyy")
   lazy val datePageFormat = new SimpleDateFormat("dd MMMM yyyy")
   lazy val datePageFormatNoZero = new SimpleDateFormat("d MMMM yyyy")
-  lazy val nowDate = new Date();
 
   def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
+
+    def validateYes(dateForm :CommercialSaleModel) = {
+      anyEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+        case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+        case false => isValidDate(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+          case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+          case true => dateNotInFuture(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
+          }
+        }
+      }
+    }
+
     Constraint("constraints.date_of_first_sale")({
       dateForm : CommercialSaleModel =>
         dateForm.hasCommercialSale match {
-          case "No" => Valid
-          case "Yes" => anyEmpty(dateForm) match {
-            case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
-            case false => isValidDate(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
-              case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
-              case true => dateNotInFuture(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
-                case true => Valid
-                case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
-              }
-            }
+          case "No" => allDatesEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
           }
+          case "Yes" => validateYes(dateForm)
         }
     })
   }
 
-  def anyEmpty(dateModel : CommercialSaleModel) : Boolean = {
-    if(dateModel.day.isEmpty || dateModel.month.isEmpty || dateModel.year.isEmpty){
+  def anyEmpty(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    if(day.isEmpty || month.isEmpty || year.isEmpty){
+      true
+    } else {
+      false
+    }
+  }
+
+  def allDatesEmpty(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+    if(day.isEmpty & month.isEmpty & year.isEmpty){
       true
     } else {
       false
@@ -214,7 +233,7 @@ object Validation {
   }
 
   def isValidDate(day: Int, month: Int, year: Int): Boolean = {
-    try {
+    Try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
       fmt.parse(s"$day/$month/$year")
@@ -222,8 +241,9 @@ object Validation {
         case year if year < 1000 => false
         case _ => true
       }
-    } catch {
-        case e: ParseException => false
+    } match {
+      case Success(result) => result
+      case Failure(_) => false
     }
   }
 
@@ -233,6 +253,20 @@ object Validation {
 
   def dateInFuture (date: Date): Boolean = {
     date.after(DateTime.now.toDate)
+  }
+
+  /** Determines whether the date of incorporation passed is less than 3 years from today*/
+  def dateAfterIncorporationRule(day:Int, month:Int, year:Int) : Boolean =
+  {
+    Try {
+      val fmt = new SimpleDateFormat("dd/MM/yyyy")
+      fmt.setLenient(false)
+      fmt.parse(s"$day/$month/$year")
+      constructDate(day, month, year).after(fmt.parse(dateMinusYears(Some(new Date()), 3)))
+    } match {
+      case Success(result) => result
+      case Failure(_) => false
+    }
   }
 
   def dateNotInFuture (day: Int, month: Int, year: Int): Boolean = {
@@ -259,4 +293,47 @@ object Validation {
     }
   }
 
+  def dateMinusMonths(date: Option[Date], months: Int): String = {
+    date match {
+      case Some(date) =>
+        val cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.add(Calendar.MONTH, months * -1)
+        new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime)
+      case _ => ""
+    }
+  }
+
+  def dateMinusYears(date: Option[Date], years: Int): String = {
+    date match {
+      case Some(date) =>
+        val cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.add(Calendar.YEAR, years * -1)
+        new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime)
+      case _ => ""
+    }
+  }
+
+  def dateAddMonths(date: Option[Date], months: Int): String = {
+    date match {
+      case Some(date) =>
+        val cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.add(Calendar.MONTH, months)
+        new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime)
+      case _ => ""
+    }
+  }
+
+  def dateAddYears(date: Option[Date], years: Int): String = {
+    date match {
+      case Some(date) =>
+        val cal = Calendar.getInstance()
+        cal.setTime(date)
+        cal.add(Calendar.YEAR, years)
+        new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime)
+      case _ => ""
+    }
+  }
 }

@@ -20,8 +20,6 @@ import java.util.UUID
 import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{SessionKeys, HeaderCarrier}
-import uk.gov.hmrc.play.http.logging.SessionId
-import views.html.introduction._
 
 import scala.concurrent.Future
 

@@ -23,7 +23,6 @@ import play.api.mvc._
 
 import scala.concurrent.Future
 
-
 object WhatWeAskYouController extends WhatWeAskYouController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector

@@ -31,7 +31,7 @@ object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait IsKnowledgeIntensiveController extends FrontendController with ValidActiveSession{
+trait IsKnowledgeIntensiveController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 

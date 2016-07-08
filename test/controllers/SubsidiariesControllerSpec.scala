@@ -16,43 +16,59 @@
 
 package controllers
 
+import java.util.UUID
+
+import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
-import play.api.libs.json.Json
-import uk.gov.hmrc.http.cache.client.CacheMap
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.mvc.AnyContentAsFormUrlEncoded
+import org.scalatest.BeforeAndAfterEach
+import org.scalatestplus.play.OneServerPerSuite
+import play.api.libs.json.Json
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import org.jsoup._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
+
 import scala.concurrent.Future
-import models.SubsidiariesModel
-import play.api.mvc.Result
 
-class SubsidiariesControllerSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
-  implicit val hc = new HeaderCarrier()
+  val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  def setupTarget(getData: Option[SubsidiariesModel], postData: Option[SubsidiariesModel]): SubsidiariesController = {
-
-    val mockKeystoreConnector = mock[KeystoreConnector]
-
-
-    when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.anyString())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(getData))
-
-    lazy val data = CacheMap("form-id", Map("data" -> Json.toJson(postData.getOrElse(SubsidiariesModel("")))))
-    when(mockKeystoreConnector.saveFormData[SubsidiariesModel](Matchers.anyString(), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(data))
-
-    new SubsidiariesController {
-      override val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-    }
+  object SubsidiariesControllerTest extends SubsidiariesController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
+  val modelYes = SubsidiariesModel("Yes")
+  val modelNo = SubsidiariesModel("No")
+  val emptyModel = SubsidiariesModel("")
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
+  val keyStoreSavedSubsidiaries = SubsidiariesModel("Yes")
+  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(2),Some(3),Some(2016))
+
+  def showWithSession(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = SubsidiariesControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+
+  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = SubsidiariesControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    test(result)
+  }
+
+  implicit val hc = HeaderCarrier()
+
+  override def beforeEach() {
+    reset(mockKeyStoreConnector)
+  }
 
   "SubsidiariesController" should {
     "use the correct keystore connector" in {
@@ -60,111 +76,72 @@ class SubsidiariesControllerSpec extends UnitSpec with WithFakeApplication with 
     }
   }
 
-  // GET Tests
-  "Calling the Subsidiaries.show" when {
-
-    lazy val fakeRequest = FakeRequest("GET", "/investment-tax-relief/subsidiaries").withSession(SessionKeys.sessionId -> "12345")
-
-    "not supplied with a pre-existing stored model" should {
-
-      val target = setupTarget(None, None)
-      lazy val result = target.show(fakeRequest)
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 200" in {
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-        "contain some text and use the character set utf-8" in {
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-      }
+  "Sending a GET request to SubsidiariesController" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
 
-    "supplied with a pre-existing stored model" should {
-
-      "return a 200" in {
-        val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
-        lazy val result = target.show(fakeRequest)
-        status(result) shouldBe 200
-      }
-
-      "return some HTML that" should {
-
-        "contain some text and use the character set utf-8" in {
-          val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
-          lazy val result = target.show(fakeRequest)
-          contentType(result) shouldBe Some("text/html")
-          charset(result) shouldBe Some("utf-8")
-        }
-
-        "have the radio option `Yes` selected if " +
-          "`Yes` is supplied in the model" in {
-          val target = setupTarget(Some(SubsidiariesModel("Yes")), None)
-          lazy val result = target.show(fakeRequest)
-          lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("subsidiaries-yes").parent.classNames().contains("selected") shouldBe true
-        }
-
-        "have the radio option `No` selected if " +
-          "`No` is supplied in the model" in {
-          val target = setupTarget(Some(SubsidiariesModel("No")), None)
-          lazy val result = target.show(fakeRequest)
-          lazy val document = Jsoup.parse(bodyOf(result))
-          document.body.getElementById("subsidiaries-no").parent.classNames().contains("selected") shouldBe true
-        }
-      }
+    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => status(result) shouldBe OK
+      )
     }
   }
 
-  // POST Tests
-  "In SubsidiariesController calling the .submit action" when {
-
-    def buildRequest(body: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = FakeRequest("POST",
-      "/investment-tax-relief/subsidiaries")
-      .withSession(SessionKeys.sessionId -> "12345")
-      .withFormUrlEncodedBody(body: _*)
-
-    def executeTargetWithMockData(data: String): Future[Result] = {
-      lazy val fakeRequest = buildRequest(("subsidiaries", data))
-      val mockData = new SubsidiariesModel(data)
-      val target = setupTarget(None, Some(mockData))
-      target.submit(fakeRequest)
-    }
-
-    "submitting a valid form with `Yes`" should {
-
-      lazy val result = executeTargetWithMockData("Yes")
-
-      "return a 303" in {
-        status(result) shouldBe 303
-      }
-    }
-
-    "submitting a valid form with `No`" should {
-
-      lazy val result = executeTargetWithMockData("No")
-
-      "return a 303" in {
-        status(result) shouldBe 303
-      }
-    }
-
-    "submitting an invalid form with no content" should {
-
-      lazy val result = executeTargetWithMockData("")
-      lazy val document = Jsoup.parse(bodyOf(result))
-
-      "return a 400" in {
-        status(result) shouldBe 400
-      }
-
-      "display a visible Error Summary field" in {
-        document.getElementById("error-summary-display").hasClass("error-summary--show")
-      }
+  "Sending a valid 'Yes' form submit to the SubsidiariesController" should {
+    "redirect to itself (for now)" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subsidiaries" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
     }
   }
+
+  "Sending a valid 'No' form submit to the SubsidiariesController" should {
+    "redirect to itself (for now)" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subsidiaries" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form wsubmission with validation errors to the SubsidiariesController" should {
+    "redirect to itself with errors" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "ownSubsidiaries" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
 }
