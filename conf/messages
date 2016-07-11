@@ -243,3 +243,8 @@ page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and a
 page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
 page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
 
+#percentage of staff with masters page
+page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
+page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
+
