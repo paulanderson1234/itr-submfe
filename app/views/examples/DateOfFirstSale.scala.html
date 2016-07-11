@@ -14,7 +14,7 @@
 
     @form(action = controllers.examples.routes.DateOfFirstSaleController.submit()) {
 
-        @formInlineDateInput(dateOfFirstSaleForm, "dateOfFirstSale", Some(Messages("page.examples.DateFirstSale.question")), Some(Messages("common.date.hint")))
+        @formInlineDateInput(dateOfFirstSaleForm, "dateOfFirstSale", Some(Messages("page.examples.DateFirstSale.question")), false, Some(Messages("common.date.hint")))
 
     <div class="form-group">
         <button class="btn button" id="next">@Messages("common.button.snc")</button>

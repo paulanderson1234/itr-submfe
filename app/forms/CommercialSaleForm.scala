@@ -25,9 +25,9 @@ object CommercialSaleForm {
   val commercialSaleForm = Form(
     mapping(
       "hasCommercialSale" -> nonEmptyText,
-      "day" -> optional(number),
-      "month" -> optional(number),
-      "year" -> optional(number)
+      "commercialSaleDay" -> optional(number),
+      "commercialSaleMonth" -> optional(number),
+      "commercialSaleYear" -> optional(number)
     )(CommercialSaleModel.apply)(CommercialSaleModel.unapply).verifying(dateOfCommercialSaleDateValidation)
   )
 }

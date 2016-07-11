@@ -1,4 +1,4 @@
-@(formItem:Form[_], fieldName: String, questionText: Option[String], hintText: Option[String], args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+@(formItem:Form[_], fieldName: String, legendQuestionText: Option[String], titleIsQuestion: Boolean, hintText: Option[String], args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
 
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import play.api.i18n._
@@ -10,8 +10,8 @@
 
 <fieldset class="form-group form-date @fieldsetClasses" id="@fieldName-fieldset">
 
-    <legend>
-        @questionText
+   <legend id="question-date-text-legend-id" class="@if(titleIsQuestion == true){visuallyhidden}">
+         <span id="question-text-id"  class="h2-heading">@legendQuestionText</span>
     </legend>
 
     @if(formItem.hasErrors) {
@@ -22,7 +22,7 @@
     }
 
     @hintText match {
-    case Some(hintText) => { <span class="form-hint">@hintText</span> }
+    case Some(hintText) => { <span id="form-hint-id" class="form-hint">@hintText</span> }
     case None => { }
     }
 

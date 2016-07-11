@@ -68,8 +68,6 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
-
   val model = CommercialSaleModel("Yes", Some(23),Some(11),Some(1993))
   val emptyModel = CommercialSaleModel("", None, None, None)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
@@ -133,9 +131,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "Yes",
-        "day" -> "23",
-        "month" -> "11",
-        "year" -> "1993")
+        "commercialSaleDay" -> "23",
+        "commercialSaleMonth" -> "11",
+        "commercialSaleYear" -> "1993")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
       submitWithSession(request)(
@@ -151,9 +149,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "Yes",
-        "day" -> "23",
-        "month" -> "11",
-        "year" -> "1993")
+        "commercialSaleDay" -> "23",
+        "commercialSaleMonth" -> "11",
+        "commercialSaleYear" -> "1993")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
       submitWithSession(request)(
@@ -169,9 +167,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "Yes",
-        "day" -> "23",
-        "month" -> "11",
-        "year" -> "1993")
+        "commercialSaleDay" -> "23",
+        "commercialSaleMonth" -> "11",
+        "commercialSaleYear" -> "1993")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
       submitWithSession(request)(
@@ -188,9 +186,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "No",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
       submitWithSession(request)(
@@ -206,9 +204,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "No",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
       submitWithSession(request)(
@@ -224,9 +222,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "No",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
       submitWithSession(request)(
@@ -242,9 +240,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "No",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       submitWithSession(request)(
@@ -260,9 +258,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "Yes",
-        "day" -> "12",
-        "month" -> "1",
-        "year" -> "2016")
+        "commercialSaleDay" -> "12",
+        "commercialSaleMonth" -> "1",
+        "commercialSaleYear" -> "2016")
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       submitWithSession(request)(
@@ -279,9 +277,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
 
       submitWithSession(request)(
         result => {
@@ -297,9 +295,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "",
-        "day" -> "",
-        "month" -> "",
-        "year" -> "")
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
 
       submitWithSession(request)(
         result => {
@@ -315,9 +313,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> "Yes",
-        "day" -> "12",
-        "month" -> "11",
-        "year" -> "")
+        "commercialSaleDay" -> "12",
+        "commercialSaleMonth" -> "11",
+        "commercialSaleYear" -> "")
 
       submitWithSession(request)(
         result => {
