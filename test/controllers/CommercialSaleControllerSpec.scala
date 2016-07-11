@@ -139,7 +139,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
         }
       )
     }
@@ -157,7 +157,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
         }
       )
     }
@@ -175,7 +175,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
         }
       )
     }
@@ -194,7 +194,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
         }
       )
     }
@@ -212,7 +212,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
         }
       )
     }
@@ -230,7 +230,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
         }
       )
     }
