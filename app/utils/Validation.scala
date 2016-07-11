@@ -39,11 +39,11 @@ object Validation {
   def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
 
     def validateYes(dateForm :CommercialSaleModel) = {
-      anyEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+      anyEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
         case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
-        case false => isValidDate(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+        case false => isValidDate(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
           case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
-          case true => dateNotInFuture(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+          case true => dateNotInFuture(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
             case true => Valid
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
           }
@@ -54,7 +54,7 @@ object Validation {
     Constraint("constraints.date_of_first_sale")({
       dateForm : CommercialSaleModel =>
         dateForm.hasCommercialSale match {
-          case "No" => allDatesEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+          case "No" => allDatesEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
             case true => Valid
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
           }
