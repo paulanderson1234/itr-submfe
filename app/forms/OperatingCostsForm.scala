@@ -23,12 +23,12 @@ import play.api.data.Forms._
 object OperatingCostsForm {
   val operatingCostsForm = Form(
     mapping(
-      "operatingCosts1stYear" -> utils.Validation.mandatoryNumberCheck("Operating Costs 1st Year"),
-      "operatingCosts2ndYear" -> utils.Validation.mandatoryNumberCheck("Operating Costs 2nd Year"),
-      "operatingCosts3rdYear" -> utils.Validation.mandatoryNumberCheck("Operating Costs 3rd Year"),
-      "rAndDCosts1stYear" -> utils.Validation.mandatoryNumberCheck("Research and Development Costs 1st Year"),
-      "rAndDCosts2ndYear" -> utils.Validation.mandatoryNumberCheck("Research and Development Costs 2nd Year"),
-      "rAndDCosts3rdYear" -> utils.Validation.mandatoryNumberCheck("Research and Development Costs 3rd Year")
+      "operatingCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.one"),
+      "operatingCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.two"),
+      "operatingCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.three"),
+      "rAndDCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.four"),
+      "rAndDCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.five"),
+      "rAndDCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.six")
     )(OperatingCostsModel.apply)(OperatingCostsModel.unapply)
   )
 }

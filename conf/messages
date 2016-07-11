@@ -217,6 +217,12 @@ page.companyDetails.OperatingCosts.col.heading.two = Research and Development co
 page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
 page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
 page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
+page.companyDetails.OperatingCosts.error.field.one = Please enter a value into Operating Costs 1st Year
+page.companyDetails.OperatingCosts.error.field.two = Please enter a value into Operating Costs 2nd Year
+page.companyDetails.OperatingCosts.error.field.three = Please enter a value into Operating Costs 3rd Year
+page.companyDetails.OperatingCosts.error.field.four = Please enter a value into Research and Development Costs 1st Year
+page.companyDetails.OperatingCosts.error.field.five = Please enter a value into Research and Development Costs 2nd Year
+page.companyDetails.OperatingCosts.error.field.six = Please enter a value into Research and Development Costs 3rd Year
 
 #Subsidiaries Page
 page.companyDetails.Subsidiaries.title = Subsidiaries

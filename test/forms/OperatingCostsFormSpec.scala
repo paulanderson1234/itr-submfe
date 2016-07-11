@@ -58,7 +58,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.one")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -79,7 +79,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.one")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -100,7 +100,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.one")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -141,7 +141,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "operatingCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.one")
           err.args shouldBe Array()
         }
         case _ => {
@@ -165,7 +165,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.two")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -186,7 +186,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.two")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -207,7 +207,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.two")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -248,7 +248,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "operatingCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.two")
           err.args shouldBe Array()
         }
         case _ => {
@@ -272,7 +272,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.three")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -293,7 +293,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.three")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -314,7 +314,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "operatingCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.three")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -355,7 +355,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "operatingCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Operating Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.three")
           err.args shouldBe Array()
         }
         case _ => {
@@ -379,7 +379,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.four")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -400,7 +400,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.four")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -421,7 +421,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.four")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -462,7 +462,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "rAndDCosts1stYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 1st Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.four")
           err.args shouldBe Array()
         }
         case _ => {
@@ -486,7 +486,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.five")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -507,7 +507,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.five")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -528,7 +528,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.five")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -569,7 +569,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "rAndDCosts2ndYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 2nd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.five")
           err.args shouldBe Array()
         }
         case _ => {
@@ -593,7 +593,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.six")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -614,7 +614,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.six")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -635,7 +635,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) =>
           err.key shouldBe "rAndDCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.six")
           err.args shouldBe Array()
         case _ =>
           fail("Missing error")
@@ -676,7 +676,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "rAndDCosts3rdYear"
-          err.message shouldBe (Messages("validation.error.operatingCosts") + " " + "Research and Development Costs 3rd Year")
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.six")
           err.args shouldBe Array()
         }
         case _ => {

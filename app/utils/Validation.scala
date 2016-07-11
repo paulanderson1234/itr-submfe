@@ -101,14 +101,14 @@ object Validation {
     text.verifying(addresssLineCheckConstraint)
   }
 
-  def mandatoryNumberCheck(message: String) : Mapping[String] = {
+  def mandatoryMaxTenNumberValidation(message: String) : Mapping[String] = {
     val validNum = """[0-9]{1,13}""".r
     val numCharCheckConstraint: Constraint[String] =
       Constraint("contraints.mandatoryNumberCheck")({
         text =>
           val error = text match {
             case validNum() => Nil
-            case _ => Seq(ValidationError(Messages("validation.error.operatingCosts") + " " + message))
+            case _ => Seq(ValidationError(Messages(message)))
           }
           if (error.isEmpty) Valid else Invalid(error)
       })
