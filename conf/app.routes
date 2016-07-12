@@ -71,3 +71,6 @@ POST       /nature-of-business                      controllers.NatureOfBusiness
 
 GET        /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.show
 POST       /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.submit
+
+GET        /proposed-investment                     controllers.ProposedInvestmentController.show
+POST       /proposed-investment                     controllers.ProposedInvestmentController.submit

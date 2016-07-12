@@ -185,6 +185,7 @@ object Validation {
     text().verifying(emailCheckConstraint)
   }
 
+
   def postcodeCountryCheckConstraint: Constraint[CompanyAddressModel] = {
     Constraint("constraints.postcodeCountryCheck")({
       companyAddressForm: CompanyAddressModel =>
@@ -224,6 +225,29 @@ object Validation {
     text().verifying(utrCharCheckConstraint)
   }
 
+  val integerCheck: String => Boolean = (input) => {
+    Try(input.trim.toInt) match {
+      case Success(_) => true
+      case Failure(_) if input.trim == "" => true
+      case Failure(_) => false
+    }
+  }
+
+  val mandatoryCheck: String => Boolean = (input) => input.trim != ""
+
+  val decimalPlacesCheck: BigDecimal => Boolean = (input) => input.scale < 3
+
+  val decimalPlacesCheckNoDecimal: BigDecimal => Boolean = (input) => input.scale < 1
+
+  def maxIntCheck (maxInteger: Int) : Int => Boolean = (input) => input <= maxInteger
+  def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
+
+  val yesNoCheck: String =>  Boolean = {
+    case "Yes" => true
+    case "No" => true
+    case "" => true
+    case _ => false
+  }
 
   def isValidDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
     validateNonEmptyDateOptions(day, month, year) match {
@@ -337,3 +361,5 @@ object Validation {
     }
   }
 }
+
+
