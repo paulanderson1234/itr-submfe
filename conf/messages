@@ -235,6 +235,8 @@ page.investment.amount.OutOfRange=Enter an amount between 1 and 5000000
 page.investment.amount.title=How much do you want to raise through this investment?
 page.investment.amount.heading=How much do you want to raise through this investment?
 page.investment.amount.hint=The amount must be less than £5 million
+page.investment.help.link=What happens if you raise more or less than you''re expecting to?
+page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters

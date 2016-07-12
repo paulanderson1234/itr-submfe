@@ -67,6 +67,8 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("label-amount").select("span").hasClass("visuallyhidden") shouldBe true
       document.getElementById("label-amount").select(".visuallyhidden").text() shouldBe Messages("page.investment.amount.heading")
       document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
+      document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
+      document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
@@ -86,6 +88,8 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("label-amount").select("span").hasClass("visuallyhidden") shouldBe true
       document.getElementById("label-amount").select(".visuallyhidden").text() shouldBe Messages("page.investment.amount.heading")
       document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
+      document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
+      document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
