@@ -107,7 +107,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -133,7 +133,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -159,7 +159,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -212,7 +212,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -238,7 +238,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -264,7 +264,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -316,7 +316,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -341,7 +341,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +
@@ -358,7 +358,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +
@@ -375,7 +375,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +

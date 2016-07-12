@@ -82,8 +82,8 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
     def routeRequest(date: Option[DateOfIncorporationModel]): String = {
       date match {
         case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) =>
-          routes.IsKnowledgeIntensiveController.show.toString
-        case Some(_) => routes.CommercialSaleController.show.toString
+          routes.CommercialSaleController.show.toString
+        case Some(_) => routes.IsKnowledgeIntensiveController.show.toString
         case None => routes.DateOfIncorporationController.show.toString
       }
     }
