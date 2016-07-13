@@ -32,4 +32,5 @@ trait KeystoreKeys {
   val natureOfBusiness = "companyDetails:natureOfBusiness"
   val percentageStaffWithMasters ="knowledgeIntensive:percentageStaffWithMasters"
   val proposedInvestment ="investment:proposedInvestment"
+  val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
 }

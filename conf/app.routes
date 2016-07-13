@@ -74,3 +74,6 @@ POST       /percentage-of-staff-with-masters        controllers.PercentageStaffW
 
 GET        /proposed-investment                     controllers.ProposedInvestmentController.show
 POST       /proposed-investment                     controllers.ProposedInvestmentController.submit
+
+GET        /used-investment-scheme-before           controllers.HadPreviousRFIController.show
+POST       /used-investment-scheme-before           controllers.HadPreviousRFIController.submit
