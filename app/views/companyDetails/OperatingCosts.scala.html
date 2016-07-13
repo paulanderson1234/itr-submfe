@@ -34,23 +34,32 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
                 <tr>
                     <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.OperatingCosts.row.heading.one")</td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("operatingCosts1stYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "operating-one"
-
                         )
                     </td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("rAndDCosts1stYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "research-one"
                         )
                     </td>
@@ -58,45 +67,67 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
                 <tr>
                     <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.OperatingCosts.row.heading.two")</td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("operatingCosts2ndYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "operating-two"
                         )
                     </td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("rAndDCosts2ndYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "research-two"
                         )
+
                     </td>
                 </tr>
                 <tr>
                     <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.OperatingCosts.row.heading.three")</td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("operatingCosts3rdYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "operating-three"
                         )
+
                     </td>
                     <td>
-                        @input(
+
+                        @inputWithCurrencySymbol(
                         operatingCostsForm("rAndDCosts3rdYear"),
-                        '_inputClass -> "input--fullwidth",
-                        '_maxlength -> "13",
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount",
+                        '_hintId -> "label-amount-hint",
                         '_label -> Messages("page.companyDetails.OperatingCosts.heading"),
                         '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "13",
                         'id -> "research-three"
                         )
                     </td>

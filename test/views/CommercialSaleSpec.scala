@@ -60,9 +60,9 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
           .thenReturn(Future.successful(Option(commercialSaleModelValidYes)))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "hasCommercialSale" -> "Yes",
-          "day" -> "10",
-          "month" -> "25",
-          "year" -> "2015"
+          "commercialSaleDay" -> "10",
+          "commercialSaleMonth" -> "25",
+          "commercialSaleYear" -> "2015"
         )))
         Jsoup.parse(contentAsString(result))
       }
@@ -71,9 +71,10 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.CommercialSale.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
       document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("question-date-text-legend-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("show").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("hide").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("question-text-id").hasClass("h2-heading")
+      document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
+      document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show.toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -88,9 +89,9 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
           .thenReturn(Future.successful(Option(commercialSaleModelValidNo)))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "hasCommercialSale" -> "No",
-          "day" -> "",
-          "month" -> "",
-          "year" -> ""
+          "commercialSaleDay" -> "",
+          "commercialSaleMonth" -> "",
+          "commercialSaleYear" -> ""
         )))
         Jsoup.parse(contentAsString(result))
       }
@@ -99,9 +100,10 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.CommercialSale.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
       document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("question-date-text-legend-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("show").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("hide").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("question-text-id").hasClass("h2-heading")
+      document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
+      document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show.toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -120,9 +122,10 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.CommercialSale.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
       document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("question-date-text-legend-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("show").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("hide").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("question-text-id").hasClass("h2-heading")
+      document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
+      document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show.toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -142,9 +145,10 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.CommercialSale.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
       document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("question-date-text-legend-id").text() shouldBe Messages("page.companyDetails.CommercialSale.question.hint")
-      document.getElementById("show").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("hide").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("question-text-id").hasClass("h2-heading")
+      document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
+      document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show.toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")

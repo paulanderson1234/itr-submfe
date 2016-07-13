@@ -8,15 +8,13 @@
 @main_template(Messages("page.companyDetails.utr.title"), backLink = Some(controllers.routes.WhatWeAskYouController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
+
 <div class="grid-row">
     <div class="column-two-thirds">
         @errorSummary(
         Messages("common.errorSummary.label"), taxpayerReferenceForm
         )
-
-        <header class="page-header">
-            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.utr.heading")</h1>
-        </header>
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.utr.heading")</h1>
 
         @form(action = controllers.routes.TaxpayerReferenceController.submit()) {
         <div class="form-group">
@@ -32,8 +30,9 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
             'id -> "utr"
             )
 
+
             <details>
-                <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">@Messages("page.companyDetails.utr.help.link")</span></summary>
+                <summary><span id="help" class="summary">@Messages("page.companyDetails.utr.help.link")</span></summary>
                 <div class="panel panel-indent panel-border-narrow">
                     <p id="help-text">@Messages("page.companyDetails.utr.help.text")</p>
                 </div>

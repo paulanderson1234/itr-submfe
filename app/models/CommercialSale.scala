@@ -18,8 +18,11 @@ package models
 
 import play.api.libs.json.Json
 
-case class CommercialSaleModel(hasCommercialSale : String, day: Option[Int], month: Option[Int], year: Option[Int]){
-  val toDate = if(day.isDefined && month.isDefined && year.isDefined) s"${day.get}-${month.get}-${year.get}" else ""
+case class CommercialSaleModel(hasCommercialSale : String, commercialSaleDay: Option[Int],
+                               commercialSaleMonth: Option[Int], commercialSaleYear: Option[Int]){
+  val toDate = if(commercialSaleDay.isDefined && commercialSaleMonth.isDefined &&
+    commercialSaleYear.isDefined) s"${commercialSaleDay.get}-${commercialSaleMonth.get}-${commercialSaleYear.get}"
+    else ""
 }
 
 object CommercialSaleModel {

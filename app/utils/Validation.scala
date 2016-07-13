@@ -39,11 +39,11 @@ object Validation {
   def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
 
     def validateYes(dateForm :CommercialSaleModel) = {
-      anyEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+      anyEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
         case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
-        case false => isValidDate(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+        case false => isValidDate(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
           case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
-          case true => dateNotInFuture(dateForm.day.get, dateForm.month.get, dateForm.year.get) match {
+          case true => dateNotInFuture(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
             case true => Valid
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
           }
@@ -54,7 +54,7 @@ object Validation {
     Constraint("constraints.date_of_first_sale")({
       dateForm : CommercialSaleModel =>
         dateForm.hasCommercialSale match {
-          case "No" => allDatesEmpty(dateForm.day, dateForm.month, dateForm.year) match {
+          case "No" => allDatesEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
             case true => Valid
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
           }
@@ -199,6 +199,7 @@ object Validation {
     text().verifying(emailCheckConstraint)
   }
 
+
   def postcodeCountryCheckConstraint: Constraint[CompanyAddressModel] = {
     Constraint("constraints.postcodeCountryCheck")({
       companyAddressForm: CompanyAddressModel =>
@@ -238,6 +239,29 @@ object Validation {
     text().verifying(utrCharCheckConstraint)
   }
 
+  val integerCheck: String => Boolean = (input) => {
+    Try(input.trim.toInt) match {
+      case Success(_) => true
+      case Failure(_) if input.trim == "" => true
+      case Failure(_) => false
+    }
+  }
+
+  val mandatoryCheck: String => Boolean = (input) => input.trim != ""
+
+  val decimalPlacesCheck: BigDecimal => Boolean = (input) => input.scale < 3
+
+  val decimalPlacesCheckNoDecimal: BigDecimal => Boolean = (input) => input.scale < 1
+
+  def maxIntCheck (maxInteger: Int) : Int => Boolean = (input) => input <= maxInteger
+  def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
+
+  val yesNoCheck: String =>  Boolean = {
+    case "Yes" => true
+    case "No" => true
+    case "" => true
+    case _ => false
+  }
 
   def isValidDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
     validateNonEmptyDateOptions(day, month, year) match {
@@ -351,3 +375,5 @@ object Validation {
     }
   }
 }
+
+

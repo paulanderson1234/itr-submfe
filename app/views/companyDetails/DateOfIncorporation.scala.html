@@ -14,7 +14,7 @@ sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
 @form(action = controllers.routes.DateOfIncorporationController.submit()) {
 
-@formInlineDateInput(dateOfIncorporationForm, "incorporation", None, Some(Messages("date.hint.dateOfIncorporation")))
+@formInlineDateInput(dateOfIncorporationForm, "incorporation", Some("page.companyDetails.DateOfIncorporation.heading"), true, Some(Messages("date.hint.dateOfIncorporation")))
 
 <details>
     <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">@Messages("page.companyDetails.DateOfIncorporation.whereToFind")</span></summary>

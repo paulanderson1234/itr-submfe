@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import models.CommercialSaleModel
-import play.api.data.Form
-import play.api.data.Forms._
-import utils.Validation._
+import play.api.libs.json.Json
 
-object CommercialSaleForm {
-  val commercialSaleForm = Form(
-    mapping(
-      "hasCommercialSale" -> nonEmptyText,
-      "commercialSaleDay" -> optional(number),
-      "commercialSaleMonth" -> optional(number),
-      "commercialSaleYear" -> optional(number)
-    )(CommercialSaleModel.apply)(CommercialSaleModel.unapply).verifying(dateOfCommercialSaleDateValidation)
-  )
+case class ProposedInvestmentModel(investmentAmount : Int) {
+
+}
+
+object ProposedInvestmentModel {
+
+  implicit val format = Json.format[ProposedInvestmentModel]
+  implicit val writes = Json.writes[ProposedInvestmentModel]
 }
