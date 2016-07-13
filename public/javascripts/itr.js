@@ -3,12 +3,15 @@ $(document).ready($(function() {
 
         var $self = $(this);
         var $hidden = $('#hidden')
+        var $hiddenNo = $('#hidden-no')
         var $input = $self.find('input');
 
         if ($input.val() === 'Yes' && $input.prop('checked')) {
             $hidden.show();
+            $hiddenNo.hide();
         } else {
             $hidden.hide();
+            $hiddenNo.hide();
         }
 
         $input.change(function() {
@@ -17,9 +20,11 @@ $(document).ready($(function() {
 
             if ($this.val() === 'Yes') {
                 $hidden.show();
+                $hiddenNo.hide();
 
             } else if($this.val() === 'No') {
                $hidden.hide();
+               $hiddenNo.show();
                $("#error-summary-display").hide();
                $(".form-field--error").removeClass("form-field--error");
                $(".error-summary-show").removeClass("error-summary-show");
@@ -261,4 +266,3 @@ $(document).ready($(function() {
   addEvent(window, 'load', addDetailsPolyfill);
 
 })();
-

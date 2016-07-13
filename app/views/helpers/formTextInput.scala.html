@@ -1,0 +1,48 @@
+@(field: play.api.data.Field, formItem:Form[_], args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+
+@import play.api.i18n._
+@import views.html.helper._
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+@elements = @{ new FieldElements(field.id, field, null, args.toMap, lang) }
+@parentField = @{args.toMap.get('parentField).asInstanceOf[Option[Field]]}
+@parentElements = @{parentField.map(pf => new FieldElements(pf.id, pf, null, Map(), lang) )}
+
+@labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
+@value = @{ field.value match { case Some(x) => x case None => "" case x => x }}
+@labelId = {@elements.args.get('_labelId)}
+@labelHighlight = @{ elements.args.get('_labelHighlight).getOrElse(false).asInstanceOf[Boolean] }
+
+@fieldsetClasses = @{if(formItem.hasErrors && (formItem.errors.find(_.key == "").isDefined)) "form-field--error" else "" }
+
+<fieldset class="form-group form-date @fieldsetClasses" id="fieldset">
+
+    <label for="@elements.field.id" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-group error}">
+        @if(!labelAfter && elements.args.contains('_label)) { <span @if(elements.args.contains('_id)) {
+        id="@elements.args.get('_id)"
+        } class="form-label text" id="@{elements.field.id}-desc">@elements.label</span> }
+        @if(parentElements.isDefined){
+            @parentElements.get.errors.map { error => <span id="@{elements.field.id}--error" class="error-notification">@Messages(error)</span>}
+        }
+        @if(formItem.hasErrors) {
+            @formItem.errors.filter(_.key == "").map  { error => <span class="error-notification">@error.message</span>}
+            @if(formItem.errors.find(_.key != "").isDefined) {
+
+                <span class="error-notification">@Messages("common.date.error.invalidDate")</span>
+            }
+        }
+        @if( elements.args.get('_info) ) { <p>@elements.args.get('_info)</p> }
+        @if(labelAfter && elements.args.contains('_label)) { @elements.label }
+        @if(elements.args.contains('_help)) { <p class="form-hint" id="@{elements.field.id}-hint">@elements.infos</p> }
+        <textarea
+                @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" } else { class="form-control input--medium"}
+        name="@elements.field.name"
+        @if( elements.args.get('_maxlength) ){ maxlength="@elements.args.get('_maxlength)" }
+        @if( elements.args.get('_cols) ){ cols="@elements.args.get('_cols)" }
+        @if( elements.args.get('_rows) ){ rows="@elements.args.get('_rows)" }
+        id="@elements.field.id">@field.value</textarea>
+
+
+    </label>
+
+</fieldset>
