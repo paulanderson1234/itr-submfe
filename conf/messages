@@ -18,7 +18,7 @@ common.feedbackFirst=This is a new service – your
 common.feedbackSecond=will help us to improve it.
 common.feedbackLinkText=feedback
 common.readMore=Read more
-common.error.fieldRequired = This field is required
+common.error.fieldRequired=This field is required
 common.error.summary.heading=This page has errors
 common.readMore=Read more
 common.base.yes=Yes
@@ -26,19 +26,22 @@ common.base.no=No
 common.day=Day
 common.month=Month
 common.year=Year
+error.required=This field is required
 
 ## Common date Messages ##
 common.date.fields.day=Day
 common.date.fields.month=Month
 common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
-common.externalLink = opens in a new window
+common.externalLink=opens in a new window
 common.date.error.invalidDate=Enter a valid date
 common.date.hint.example= For example, 31 3 1980
 common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
 common.section.progress.company.details.one=Section 1 of 5: Company details
+common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
+common.section.progress.company.details.three=Section 3 of 5: This investment
 
 #validation errors
 validation.error.countrypostcode=Only one of country or postcode should be entered
@@ -53,7 +56,7 @@ validation.error.email=Enter a valid email address
 validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
-validation.common.error.fieldRequired = This field is required
+validation.common.error.fieldRequired=This field is required
 validation.error.DateNotEntered=You must enter a valid day, month and year
 validation.error.enterDate=Please enter a date
 
@@ -225,6 +228,15 @@ page.companyDetails.natureofbusiness.example.text=For example
 page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
 page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
 page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
+
+#proposed investment amount
+page.investment.amount.invalidAmount=Enter an amount in the correct format e.g. 10000
+page.investment.amount.OutOfRange=Enter an amount between 1 and 5000000
+page.investment.amount.title=How much do you want to raise through this investment?
+page.investment.amount.heading=How much do you want to raise through this investment?
+page.investment.amount.hint=The amount must be less than £5 million
+page.investment.help.link=What happens if you raise more or less than you''re expecting to?
+page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
