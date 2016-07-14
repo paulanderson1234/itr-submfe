@@ -16,39 +16,39 @@
 
 package controllers
 
-import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
-import forms.OperatingCostsForm._
-import models.OperatingCostsModel
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.knowledgeIntensive.OperatingCosts
-
+import play.api.mvc._
+import models.TenYearPlanModel
+import common._
+import forms.TenYearPlanForm._
+import views.html.knowledgeIntensive.TenYearPlan
 import scala.concurrent.Future
 
-
-object OperatingCostsController extends OperatingCostsController{
+object TenYearPlanController extends TenYearPlanController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait OperatingCostsController extends FrontendController with ValidActiveSession{
+trait TenYearPlanController extends FrontendController with ValidActiveSession {
+
   val keyStoreConnector: KeystoreConnector
+
   val show = ValidateSession.async { implicit request =>
-   keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
-     case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
-     case None => Ok(OperatingCosts(operatingCostsForm))
-   }
+    keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
+      case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
+      case None => Ok(TenYearPlan(tenYearPlanForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
-    val response = operatingCostsForm.bindFromRequest().fold(
+    val response = tenYearPlanForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(OperatingCosts(formWithErrors))
+        BadRequest(TenYearPlan(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        Redirect(routes.PercentageStaffWithMastersController.show())
+        keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+        Redirect(routes.SubsidiariesController.show())
       }
     )
     Future.successful(response)

@@ -1,0 +1,12 @@
+@(fieldName: String, message: String, args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+
+@import play.api.i18n._
+@import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+
+<fieldset class="form-group form-date" id="@fieldName-fieldset">
+
+    <legend id="message-text-legend-id">
+        <span id="message-text-id">@Messages(message)</span>
+    </legend>
+
+</fieldset>
