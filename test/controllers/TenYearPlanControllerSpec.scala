@@ -97,29 +97,11 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   }
 
-  "Sending a valid Yes form submission to the TenYearPlanController" should {
-    "redirect to the subsidiaries page if data is retrieved from keystore" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "Yes",
-        "tenYearPlanDesc" -> "Text")
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
-        }
-      )
-    }
-  }
-
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> "No",
         "tenYearPlanDesc" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -134,8 +116,6 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> "Yes",
         "tenYearPlanDesc" -> "text")
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -151,7 +131,6 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> "",
         "tenYearPlanDesc" -> "")
-
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -167,38 +146,6 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> "Yes",
         "tenYearPlanDesc" -> "")
-
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-        }
-      )
-    }
-  }
-
-  "Sending a valid No form submission to the TenYearPlanController" should {
-    "redirect to the date of incorporation page if no ten year plan description is retrieved from keystore" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "No",
-        "tenYearPlanDesc" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ten-year-plan")
-        }
-      )
-    }
-  }
-
-  "Sending an invalid form with missing data submission with validation errors to the TenYearPlanController" should {
-    "redirect to itself" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "Yes",
-        "tenYearPlanDesc" -> "")
-
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST

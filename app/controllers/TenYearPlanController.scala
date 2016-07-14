@@ -23,7 +23,6 @@ import play.api.mvc._
 import models.TenYearPlanModel
 import common._
 import forms.TenYearPlanForm._
-import utils.Validation
 import views.html.knowledgeIntensive.TenYearPlan
 import scala.concurrent.Future
 
@@ -43,28 +42,15 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
   }
 
   val submit = Action.async { implicit request =>
-
-    def routeRequest(description: Option[TenYearPlanModel]): Future[Result] = {
-      description match {
-        case Some(data) if Validation.anyFieldsEmpty(data.hasTenYearPlan, data.tenYearPlanDesc) =>
-          Future.successful(Redirect(routes.SubsidiariesController.show()))
-        case Some(_) => Future.successful(Redirect(routes.SubsidiariesController.show()))
-        case None => Future.successful(Redirect(routes.TenYearPlanController.show()))
-      }
-    }
-
-    tenYearPlanForm.bindFromRequest().fold(
+    val response = tenYearPlanForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(TenYearPlan(formWithErrors)))
+        BadRequest(TenYearPlan(formWithErrors))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
-
-        for {
-          date <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
-          route <- routeRequest(date)
-        } yield route
+        Redirect(routes.SubsidiariesController.show())
       }
     )
+    Future.successful(response)
   }
 }

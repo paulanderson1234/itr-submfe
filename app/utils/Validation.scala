@@ -65,6 +65,13 @@ object Validation {
 
   def tenYearPlanDescValidation : Constraint[TenYearPlanModel] = {
 
+    def anyFieldsEmpty(hasPlan: String, planDesc: Option[String]) : Boolean = {
+      if(hasPlan.isEmpty || planDesc.isEmpty){
+        true
+      } else
+        false
+    }
+
     def validateYes(tenYearForm : TenYearPlanModel) = {
       anyFieldsEmpty(tenYearForm.hasTenYearPlan, tenYearForm.tenYearPlanDesc) match {
         case true => Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired"))))
@@ -82,13 +89,6 @@ object Validation {
           case "Yes" => validateYes(tenYearForm)
         }
     })
-  }
-
-  def anyFieldsEmpty(hasPlan: String, planDesc: Option[String]) : Boolean = {
-    if(hasPlan.isEmpty || planDesc.isEmpty){
-      true
-    } else
-      false
   }
 
   def anyEmpty(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
