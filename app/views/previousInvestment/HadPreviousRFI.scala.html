@@ -1,0 +1,35 @@
+@import models.HadPreviousRFIModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+
+@(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_])
+
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading"), backLink = Some(controllers.routes.SubsidiariesController.show().toString),
+sectionProgress=Some(Messages("common.section.progress.company.details.two"))) {
+
+@errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
+
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.heading")</h1>
+
+@form(action = controllers.routes.HadPreviousRFIController.submit()) {
+
+<div class="form-group">
+    @formInputRadioGroup(
+    field = hadPreviousRFIForm("hadPreviousRFI"),
+    Seq(
+    "Yes"->Messages("common.radioYesLabel"),
+    "No"->Messages("common.radioNoLabel")),
+    '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_legendID -> "hadPreviousRFILegend",
+    '_groupClass -> "inline"
+    )
+</div>
+
+<div class="form-group">
+    <button class="btn button" id="next">@Messages("common.button.continue")</button>
+</div>
+}
+}

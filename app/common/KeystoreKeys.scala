@@ -34,4 +34,5 @@ trait KeystoreKeys {
   val percentageStaffWithMasters ="knowledgeIntensive:percentageStaffWithMasters"
   val tenYearPlan = "knowledgeIntensive:tenYearPlan"
   val proposedInvestment ="investment:proposedInvestment"
+  val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
 }

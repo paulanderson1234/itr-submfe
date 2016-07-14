@@ -215,8 +215,9 @@ page.companyDetails.OperatingCosts.title = Operating costs
 page.companyDetails.OperatingCosts.heading = In the past 3 tax years how much have you spent on running your company?
 page.companyDetails.OperatingCosts.hint.one = Operating costs include office rent, wages and marketing.
 page.companyDetails.OperatingCosts.hint.two = Tax years end on 5 April.
-page.companyDetails.OperatingCosts.col.heading.one = Operating costs
-page.companyDetails.OperatingCosts.col.heading.two = Research and Development costs
+page.companyDetails.OperatingCosts.col.heading.one = Dates Column
+page.companyDetails.OperatingCosts.col.heading.two = Operating costs
+page.companyDetails.OperatingCosts.col.heading.three = Research and Development costs
 page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
 page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
 page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
@@ -267,3 +268,9 @@ page.knowledgeIntensive.TenYearPlan.question.hint.one = This is one of the condi
 page.knowledgeIntensive.TenYearPlan.question.hint.two = Suggested limit: 200 words
 page.knowledgeIntensive.TenYearPlan.description.one = How will your company do that?
 page.knowledgeIntensive.TenYearPlan.description.two = Based on the information you’ve given your company isn’'t knowledge intensive
+
+#had previous RFI
+page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
+
+
