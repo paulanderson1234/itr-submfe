@@ -30,6 +30,7 @@ trait KeystoreKeys {
   val isKnowledgeIntensive = "companyDetails:isKnowledgeIntensive"
   val subsidiaries = "companyDetails:subsidiaries"
   val natureOfBusiness = "companyDetails:natureOfBusiness"
+  val operatingCosts = "companyDetails:operatingCosts"
   val percentageStaffWithMasters ="knowledgeIntensive:percentageStaffWithMasters"
   val tenYearPlan = "knowledgeIntensive:tenYearPlan"
   val proposedInvestment ="investment:proposedInvestment"
