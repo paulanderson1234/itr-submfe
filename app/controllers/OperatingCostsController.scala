@@ -23,7 +23,7 @@ import forms.OperatingCostsForm._
 import models.OperatingCostsModel
 import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.companyDetails.OperatingCosts
+import views.html.knowledgeIntensive.OperatingCosts
 
 import scala.concurrent.Future
 
@@ -48,7 +48,7 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        Redirect(routes.OperatingCostsController.show())
+        Redirect(routes.PercentageStaffWithMastersController.show())
       }
     )
     Future.successful(response)

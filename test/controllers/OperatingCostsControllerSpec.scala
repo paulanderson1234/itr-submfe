@@ -100,7 +100,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the OperatingCostsController" should {
-    "redirect to the Operating Costs page (for now)" in {
+    "redirect to the Percentage Of Staff With Masters page (for now)" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
@@ -117,14 +117,14 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
         }
       )
     }
   }
 
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
-    "redirect to itself (for now)" in {
+    "redirect to itself" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
@@ -148,7 +148,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
 
   "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController" should {
-    "redirect to itself (for now)" in {
+    "redirect to itself" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "230000",
@@ -157,6 +157,26 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
         "rAndDCosts1stYear" -> "",
         "rAndDCosts2ndYear" -> "",
         "rAndDCosts3rdYear" -> "")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe 400
+          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController" should {
+    "redirect to itself" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "230000",
+        "operatingCosts2ndYear" -> "189250",
+        "operatingCosts3rdYear" -> "300000",
+        "rAndDCosts1stYear" -> "aaaaa",
+        "rAndDCosts2ndYear" -> "10000",
+        "rAndDCosts3rdYear" -> "12000")
 
       submitWithSession(request)(
         result => {
