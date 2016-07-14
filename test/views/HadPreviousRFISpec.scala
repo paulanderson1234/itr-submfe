@@ -65,6 +65,8 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
+    document.getElementById("hadPreviousRFILegend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
 
 
@@ -89,6 +91,8 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     document.select("#hadPreviousRFI-no").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
+    document.getElementById("hadPreviousRFILegend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
