@@ -49,7 +49,10 @@ trait IsKnowledgeIntensiveController extends FrontendController with ValidActive
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
-        Redirect(routes.SubsidiariesController.show)
+        validFormData.isKnowledgeIntensive match {
+          case "Yes"  => Redirect(routes.OperatingCostsController.show)
+          case "No"   => Redirect(routes.SubsidiariesController.show)
+        }
       }
     )
     Future.successful(response)

@@ -48,7 +48,7 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        Redirect(routes.OperatingCostsController.show())
+        Redirect(routes.PercentageStaffWithMastersController.show())
       }
     )
     Future.successful(response)
