@@ -18,7 +18,7 @@ package utils
 
 import java.text.{ParseException, SimpleDateFormat}
 
-import models.{CommercialSaleModel, CompanyAddressModel, DateOfFirstSaleModel}
+import models.{CommercialSaleModel, CompanyAddressModel, DateOfFirstSaleModel, TenYearPlanModel}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
@@ -59,6 +59,34 @@ object Validation {
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
           }
           case "Yes" => validateYes(dateForm)
+        }
+    })
+  }
+
+  def tenYearPlanDescValidation : Constraint[TenYearPlanModel] = {
+
+    def anyFieldsEmpty(hasPlan: String, planDesc: Option[String]) : Boolean = {
+      if(hasPlan.isEmpty || planDesc.isEmpty){
+        true
+      } else
+        false
+    }
+
+    def validateYes(tenYearForm : TenYearPlanModel) = {
+      anyFieldsEmpty(tenYearForm.hasTenYearPlan, tenYearForm.tenYearPlanDesc) match {
+        case true => Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired"))))
+        case false => Valid
+      }
+    }
+
+    Constraint("constraints.ten_year_plan")({
+      tenYearForm : TenYearPlanModel =>
+        tenYearForm.hasTenYearPlan match {
+          case "No" => anyFieldsEmpty(tenYearForm.hasTenYearPlan, tenYearForm.tenYearPlanDesc) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired"))))
+          }
+          case "Yes" => validateYes(tenYearForm)
         }
     })
   }

@@ -261,6 +261,14 @@ page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff wit
 page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
 
+#ten year plan page
+page.knowledgeIntensive.TenYearPlan.title = Ten year plan
+page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren'’t physical?
+page.knowledgeIntensive.TenYearPlan.question.hint.one = This is one of the conditions for knowledge intensive companies
+page.knowledgeIntensive.TenYearPlan.question.hint.two = Suggested limit: 200 words
+page.knowledgeIntensive.TenYearPlan.description.one = How will your company do that?
+page.knowledgeIntensive.TenYearPlan.description.two = Based on the information you’ve given your company isn’'t knowledge intensive
+
 #had previous RFI
 page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
 page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
