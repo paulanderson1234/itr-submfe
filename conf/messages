@@ -261,3 +261,8 @@ page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff wit
 page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
 
+#had previous RFI
+page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
+
+
