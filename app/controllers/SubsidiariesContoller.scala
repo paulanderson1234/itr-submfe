@@ -19,7 +19,7 @@ package controllers
 import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
-import models.{DateOfIncorporationModel, SubsidiariesModel}
+import models.{IsKnowledgeIntensiveModel, DateOfIncorporationModel, SubsidiariesModel}
 import forms.SubsidiariesForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -67,7 +67,7 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
       invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url)))),
       validForm => {
         keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
-        Future.successful(Redirect(routes.SubsidiariesController.show()))
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
     )
   }
@@ -79,18 +79,21 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
    * If the date of incorporation is not found in keystore that becomes the backlink value.
    */
   def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(date: Option[DateOfIncorporationModel]): String = {
-      date match {
-        case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) =>
+    def routeRequest(date: Option[DateOfIncorporationModel], ki : Option[IsKnowledgeIntensiveModel]): String = {
+      (date,ki) match {
+        case (Some(date),_) if Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) =>
           routes.CommercialSaleController.show.toString
-        case Some(_) => routes.IsKnowledgeIntensiveController.show.toString
-        case None => routes.DateOfIncorporationController.show.toString
+        case (Some(date),Some(ki)) => if (ki.isKnowledgeIntensive.equals("Yes")) routes.TenYearPlanController.show.toString()
+                            else routes.IsKnowledgeIntensiveController.show.toString()
+        case (Some(date),_) => routes.IsKnowledgeIntensiveController.show.toString()
+        case _ => routes.DateOfIncorporationController.show.toString
       }
     }
 
     for {
       date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      route <- Future.successful(routeRequest(date))
+      ki <- keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive)
+      route <- Future.successful(routeRequest(date,ki))
     } yield route
 
   }

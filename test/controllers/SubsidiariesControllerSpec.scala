@@ -51,6 +51,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedSubsidiaries = SubsidiariesModel("Yes")
   val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(2),Some(3),Some(2016))
+  val keyStoreSavedIsKnowledgeIntensiveYes = IsKnowledgeIntensiveModel("Yes")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -82,6 +83,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -92,6 +95,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -99,7 +104,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   }
 
   "Sending a valid 'Yes' form submit to the SubsidiariesController" should {
-    "redirect to itself (for now)" in {
+    "redirect to the previous investment before page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -108,14 +113,14 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
         }
       )
     }
   }
 
   "Sending a valid 'No' form submit to the SubsidiariesController" should {
-    "redirect to itself (for now)" in {
+    "redirect to the previous investment before page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -124,16 +129,18 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
         }
       )
     }
   }
 
-  "Sending an invalid form wsubmission with validation errors to the SubsidiariesController" should {
+  "Sending an invalid form submission with validation errors to the SubsidiariesController" should {
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "ownSubsidiaries" -> "")
       submitWithSession(request)(

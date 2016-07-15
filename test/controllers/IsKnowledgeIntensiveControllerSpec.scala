@@ -95,21 +95,21 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
   }
 
   "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController" should {
-    "redirect to the commercial sale page" in {
+    "redirect to the operating costs page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
         "isKnowledgeIntensive" -> "Yes")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
         }
       )
     }
   }
 
   "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController" should {
-    "redirect to the commercial sale page" in {
+    "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
         "isKnowledgeIntensive" -> "No")

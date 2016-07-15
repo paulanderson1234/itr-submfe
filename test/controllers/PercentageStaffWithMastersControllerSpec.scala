@@ -95,28 +95,28 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
   }
 
   "Sending a valid 'Yes' form submit to the PercentageStaffWithMastersController" should {
-    "redirect to itself (for now)" in {
+    "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
         "staffWithMasters" -> "Yes")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/ten-year-plan")
         }
       )
     }
   }
 
   "Sending a valid 'No' form submit to the PercentageStaffWithMastersController" should {
-    "redirect to itself (for now)" in {
+    "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
         "staffWithMasters" -> "No")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/ten-year-plan")
         }
       )
     }
