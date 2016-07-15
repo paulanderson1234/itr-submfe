@@ -207,13 +207,13 @@ $(document).ready($(function() {
 
         var twisty = document.createElement('i');
 
-        if (openAttr === true) {
-          twisty.className = 'arrow arrow-open';
-          twisty.appendChild(document.createTextNode('\u25bc'));
-        } else {
-          twisty.className = 'arrow arrow-closed';
-          twisty.appendChild(document.createTextNode('\u25ba'));
-        }
+//        if (openAttr === true) {
+//          twisty.className = 'arrow arrow-open';
+//          twisty.appendChild(document.createTextNode('\u25bc'));
+//        } else {
+//          twisty.className = 'arrow arrow-closed';
+//          twisty.appendChild(document.createTextNode('\u25ba'));
+//        }
 
         details.__summary.__twisty = details.__summary.insertBefore(twisty, details.__summary.firstChild);
         details.__summary.__twisty.setAttribute('aria-hidden', 'true');
