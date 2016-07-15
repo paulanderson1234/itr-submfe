@@ -67,7 +67,7 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
       invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url)))),
       validForm => {
         keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
-        Future.successful(Redirect(routes.SubsidiariesController.show()))
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
     )
   }

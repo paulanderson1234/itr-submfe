@@ -104,7 +104,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   }
 
   "Sending a valid 'Yes' form submit to the SubsidiariesController" should {
-    "redirect to itself (for now)" in {
+    "redirect to the previous investment before page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -113,14 +113,14 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
         }
       )
     }
   }
 
   "Sending a valid 'No' form submit to the SubsidiariesController" should {
-    "redirect to itself (for now)" in {
+    "redirect to the previous investment before page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -129,7 +129,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
         }
       )
     }
