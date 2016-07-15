@@ -1,8 +1,9 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-@(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None, legendClass:Option[String] = None)(implicit lang: play.api.i18n.Lang)
+@(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None,
+legendClass:Option[String] = None, contentNo:Option[Html])(implicit lang: play.api.i18n.Lang)
 
-<div class="form-group" data-hidden='hidden'>
+<div class="form-group" data-hidden="hidden" data-hidden-no="hidden-no">
 
     @formInputRadioGroup(
     field = form(fieldName),
@@ -18,9 +19,15 @@
     '_groupClass -> "inline"
     )
 
-    <div class="panel-indent" id='hidden'>
+    <div class="panel-indent" id="hidden">
         <div>
             @content
+        </div>
+    </div>
+
+    <div class="panel-indent" id="hidden-no">
+        <div>
+            @contentNo
         </div>
     </div>
 </div>

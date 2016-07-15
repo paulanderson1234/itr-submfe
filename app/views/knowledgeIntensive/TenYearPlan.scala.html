@@ -8,40 +8,40 @@
 @main_template(Messages("page.knowledgeIntensive.TenYearPlan.title"), backLink = Some(controllers.routes.PercentageStaffWithMastersController.show().toString),
 sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
 
-    @errorSummary(tenYearPlanForm, "ten-year-plan", "tenYearPlanDesc")
+@errorSummary(tenYearPlanForm, "ten-year-plan", "tenYearPlanDesc")
 
-    <header class="page-header">
-        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.knowledgeIntensive.TenYearPlan.heading")</h1>
-    </header>
+<header class="page-header">
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.knowledgeIntensive.TenYearPlan.heading")</h1>
+</header>
 
-    <p class = "form-hint" id="desc-one">@Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
+<p class = "form-hint" id="desc-one">@Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
 
     @form(action = controllers.routes.TenYearPlanController.submit()) {
 
-       @formHiddenYesNoRadioNoError(
-        tenYearPlanForm,
-        "hasTenYearPlan",
-        Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one"),
-        formTextInput(tenYearPlanForm("tenYearPlanDesc"), tenYearPlanForm,
-            'class -> "form-control",
-            '_label -> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
-            '_inputClass -> "form-control",
-            '_help -> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two"),
-            '_maxlength -> "2000",
-            '_cols -> "50",
-            '_rows -> "10"
-        ),
-        None,
-        Some("visuallyhidden"),
-        Some(formSpanMessage("desc", "page.knowledgeIntensive.TenYearPlan.description.two"))
+    @formHiddenYesNoRadioTwoPanelsNoError(
+    tenYearPlanForm,
+    "hasTenYearPlan",
+    Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one"),
+    formTextInput(tenYearPlanForm("tenYearPlanDesc"), tenYearPlanForm,
+    'class -> "form-control",
+    '_label -> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
+    '_inputClass -> "form-control",
+    '_help -> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two"),
+    '_maxlength -> "2000",
+    '_cols -> "50",
+    '_rows -> "10"
+    ),
+    None,
+    Some("visuallyhidden"),
+    Some(formSpanMessage("desc", "page.knowledgeIntensive.TenYearPlan.description.two"))
 
-        )
+    )
 
 
 
-    <div class="form-group">
-        <button class="btn button" id="next">@Messages("common.button.continue")</button>
-    </div>
+<div class="form-group">
+    <button class="btn button" id="next">@Messages("common.button.continue")</button>
+</div>
 
-    }
+}
 }
