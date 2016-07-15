@@ -48,7 +48,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
-        Redirect(routes.PercentageStaffWithMastersController.show())
+        Redirect(routes.TenYearPlanController.show())
       }
     )
     Future.successful(response)

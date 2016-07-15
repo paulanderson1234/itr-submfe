@@ -83,8 +83,9 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
       (date,ki) match {
         case (Some(date),_) if Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) =>
           routes.CommercialSaleController.show.toString
-        case (_,Some(ki)) => if (ki.isKnowledgeIntensive.equals("Yes")) routes.PercentageStaffWithMastersController.show.toString()
+        case (Some(date),Some(ki)) => if (ki.isKnowledgeIntensive.equals("Yes")) routes.TenYearPlanController.show.toString()
                             else routes.IsKnowledgeIntensiveController.show.toString()
+        case (Some(date),_) => routes.IsKnowledgeIntensiveController.show.toString()
         case _ => routes.DateOfIncorporationController.show.toString
       }
     }

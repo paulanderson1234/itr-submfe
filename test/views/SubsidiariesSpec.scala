@@ -21,7 +21,7 @@ import java.util.UUID
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesController, routes}
 import controllers.helpers.FakeRequestHelper
-import models.{DateOfIncorporationModel, SubsidiariesModel}
+import models.{IsKnowledgeIntensiveModel, DateOfIncorporationModel, SubsidiariesModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -75,6 +75,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
   val todayYear: String = localDate.getYear.toString
 
   val keyStoreSavedSubsidiaries = SubsidiariesModel("Yes")
+  val keyStoreSavedIsKnowledgeIntensiveYes = IsKnowledgeIntensiveModel("Yes")
+  val keyStoreSavedIsKnowledgeIntensiveNo = IsKnowledgeIntensiveModel("No")
   val keyStoreSavedDateOfIncorporation3Years = DateOfIncorporationModel(Some(date3YearsAgoDay),Some(date3YearsAgoMonth),Some(date3YearsAgoYear))
   val keyStoreSavedDateOfIncorporation3YearsLessOneDay = DateOfIncorporationModel(Some(date3YearsLessOneDayDay),Some(date3YearsLessOneDayMonth),Some(date3YearsLessOneDayYear))
   val keyStoreSavedDateOfIncorporation3YearsAndOneDay = DateOfIncorporationModel(Some(date3YearsOneDayDay),Some(date3YearsOneDayMonth),Some(date3YearsOneDayYear))
@@ -100,6 +102,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
         )))
@@ -126,6 +130,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
         )))
@@ -152,6 +158,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
         )))
@@ -178,6 +186,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
         )))
@@ -205,6 +215,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
         )))
@@ -231,6 +243,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+          when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
         )))
@@ -257,6 +271,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
         )))
@@ -282,6 +298,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
@@ -309,6 +327,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptySubsidiariesModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
         )))
@@ -333,6 +353,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
        //submit the model with no radio slected as a post action
         val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
@@ -350,6 +372,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
         val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
@@ -367,6 +391,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
         val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
@@ -384,6 +410,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
         val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
@@ -393,6 +421,181 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+    }
+
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid Yes SubsidiariesModel is retrieved from keystore and date of incorporation is more than 3 years from today from keystore " +
+      "and it is not a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid Yes SubsidiariesModel is retrieved from keystore and date of incorporation is more than 3 years from today from keystore " +
+      "and it is a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid No SubsidiariesModel is retrieved from keystore and date of incorporation is more than 3 years from today from keystore " +
+      "and it is not a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid No SubsidiariesModel is retrieved from keystore and date of incorporation is more than 3 years from today from keystore " +
+      "and it is a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid Yes SubsidiariesModel is retrieved from keystore and date of incorporation is empty " +
+      "and it is a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid No SubsidiariesModel is retrieved from keystore and date of incorporation is empty " +
+      "and it is not a knowledge intensive company" in new SetupPage {
+      val document : Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
+        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "Yes"
+        )))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
     }
 
   }
