@@ -79,15 +79,16 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
    * If the date of incorporation is not found in keystore that becomes the backlink value.
    */
   def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(date: Option[DateOfIncorporationModel], ki : Option[IsKnowledgeIntensiveModel], masters: Option[PercentageStaffWithMastersModel]): String = {
+    def routeRequest(date: Option[DateOfIncorporationModel], ki : Option[IsKnowledgeIntensiveModel],
+                     masters: Option[PercentageStaffWithMastersModel]): String = {
       (date,ki,masters) match {
         case (Some(date),_,_) if Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) =>
           routes.CommercialSaleController.show.toString
         case (Some(date),Some(ki),Some(masters)) => if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("No")) {
-                                                      routes.TenYearPlanController.show.toString()}
-                                                    else if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("Yes")){
-                                                      routes.PercentageStaffWithMastersController.show.toString()}
-                                                    else routes.IsKnowledgeIntensiveController.show.toString()
+                                                    routes.TenYearPlanController.show.toString()
+                                                    }else if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("Yes")){
+                                                      routes.PercentageStaffWithMastersController.show.toString()
+                                                    }else routes.IsKnowledgeIntensiveController.show.toString()
         case (Some(date),_,_) => routes.IsKnowledgeIntensiveController.show.toString()
         case _ => routes.DateOfIncorporationController.show.toString
       }
