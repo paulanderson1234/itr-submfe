@@ -1,35 +1,35 @@
 @import models.YourCompanyNeedModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers._
+@import views.html.helpers.{backButton, formInputRadioGroup, errorSummary}
 
 @(yourCompanyNeedForm: Form[YourCompanyNeedModel])(implicit request: Request[_])
 
 @main_template(Messages("page.introduction.YourCompanyNeed.title"), bodyClasses = None) {
 
-@backButton(controllers.routes.IntroductionController.show().toString)
+    @backButton(controllers.routes.IntroductionController.show().toString)
 
-@errorSummary(yourCompanyNeedForm, "introduction-company-need")
+    @errorSummary(yourCompanyNeedForm, "introduction-company-need")
 
-<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.introduction.YourCompanyNeed.heading")</h1>
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.introduction.YourCompanyNeed.heading")</h1>
 
-@form(action = controllers.routes.YourCompanyNeedController.submit()) {
+    @form(action = controllers.routes.YourCompanyNeedController.submit()) {
 
-<div class="form-group">
-    @formInputRadioGroup(
-    field = yourCompanyNeedForm("needAAorCS"),
-    Seq(
-    "AA"->Messages("page.introduction.YourCompanyNeed.advancedAssurance"),
-    "CS"->Messages("page.introduction.YourCompanyNeed.complianceStatement")),
-    '_legend -> Messages("page.introduction.YourCompanyNeed.heading"),
-    '_legendClass -> "visuallyhidden",
-    '_labelAfter -> true,
-    '_labelClass -> "block-label"
-    )
-</div>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = yourCompanyNeedForm("needAAorCS"),
+        Seq(
+        "AA"->Messages("page.introduction.YourCompanyNeed.advancedAssurance"),
+        "CS"->Messages("page.introduction.YourCompanyNeed.complianceStatement")),
+        '_legend -> Messages("page.introduction.YourCompanyNeed.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label"
+        )
+    </div>
 
-<div class="form-group">
-    <button class="btn button" id="next">@Messages("common.button.continue")</button>
-</div>
+    <div class="form-group">
+        <button class="btn button" id="next">@Messages("common.button.continue")</button>
+    </div>
 
-}
+    }
 }
