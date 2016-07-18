@@ -162,7 +162,6 @@ date.hint.dateOfIncorporation= For example, 31 3 1980
 page.companyDetails.DateOfIncorporation.whereToFind=Where can you find this?
 page.companyDetails.DateOfIncorporation.location= It’s on your certificate of registration. You can also find it by searching for your company on the
 page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
-page.companyDetails.DateOfIncorporation.companiesHouse.link = https://www.gov.uk/get-information-about-a-company
 
 #What we'll ask you page
 page.introduction.WhatWeAskYou.title=What we''ll ask you

@@ -32,8 +32,9 @@
         '_labelClass -> "form-group form-group-day",
         '_type -> "text",
         '_inputClass -> s"input--xxsmall input--no-spinner",
-        '_maxlength -> "2"
-    )
+        '_maxlength -> "2",
+        '_pattern -> "[0-9]"
+     )
 
     @simpleNoErrorInput(
         formItem(s"${fieldName}Month"),
@@ -41,7 +42,9 @@
         '_labelClass -> "form-group form-group-month",
         '_type -> "text",
         '_inputClass -> s"input--xxsmall input--no-spinner",
-        '_maxlength -> "2"
+        '_maxlength -> "2",
+        '_pattern -> "[0-9]"
+
     )
 
     @simpleNoErrorInput(
@@ -50,7 +53,9 @@
         '_labelClass -> "form-group form-group-year",
         '_type -> "text",
         '_inputClass -> s"input--small input--no-spinner",
-        '_maxlength -> "4"
+        '_maxlength -> "4",
+        '_pattern -> "[0-9]{4}"
+
     )
 
 </fieldset>

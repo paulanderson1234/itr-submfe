@@ -4,8 +4,9 @@
 
 @(isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.IsKnowledgeIntensive.title"), backLink = Some(controllers.routes.CommercialSaleController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+@main_template(Messages("page.companyDetails.IsKnowledgeIntensive.title")) {
+
+@backButtonWithProgress(controllers.routes.CommercialSaleController.show().toString, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(isKnowledgeIntensiveForm, "is-knowledge-intensive", "isKnowledgeIntensive")
 

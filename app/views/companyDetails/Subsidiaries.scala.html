@@ -4,8 +4,9 @@
 
 @(subsidiariesForm: Form[SubsidiariesModel], backlinkUrl: String)(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.Subsidiaries.title"), backLink = Some(backlinkUrl),
-sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+@main_template(Messages("page.companyDetails.Subsidiaries.title")) {
+
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(subsidiariesForm, "owns-subsidiaries", "subsidiaries")
 

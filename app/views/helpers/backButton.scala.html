@@ -1,5 +1,4 @@
-@()
+@(href : String)(implicit lang: play.api.i18n.Lang)
+<a id="back-link" class="back-link" href="@href">@Messages("common.button.back")</a>
 
-<div class="form-group-compound">
-    <a id="back" class="back-link" href="javascript:history.back()">@Messages("common.button.back")</a>
-</div>
+

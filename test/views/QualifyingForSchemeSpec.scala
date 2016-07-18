@@ -21,7 +21,7 @@ import java.util.UUID
 import builders.SessionBuilder
 import connectors.KeystoreConnector
 import controllers.{QualifyingForSchemeController, routes}
-import controllers.helpers.FakeRequestHelper
+import controllers.helpers.{FakeRequestHelper, TestHelper}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.mock.MockitoSugar
@@ -49,9 +49,11 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("heading-one").text() shouldEqual Messages("page.introduction.qualifyingForScheme.heading.one")
       document.body.getElementById("description-one").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.one")
       document.body.getElementById("description-two").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.two")
-      document.body.getElementById("description-three").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.three") + " " + Messages("page.introduction.qualifyingForScheme.link.schemeGuidance") + " ."
+      document.body.getElementById("description-three").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.three") + " " +
+        TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
       document.body.getElementById("description-four").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.four")
-      document.body.getElementById("description-five").text() shouldEqual (Messages("page.introduction.qualifyingForScheme.description.five") + " " + Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness"))
+      document.body.getElementById("description-five").text() shouldEqual (Messages("page.introduction.qualifyingForScheme.description.five") + " " +
+        TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")))
       document.body.getElementById("uk-base").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.UKbase")
       document.body.getElementById("listed").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.listed")
       document.body.getElementById("num-employees").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.numEmployees")
@@ -60,8 +62,8 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("property").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.property")
       document.body.getElementById("hotels").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.hotels")
       document.body.getElementById("electricity").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.electricity")
-      document.body.getElementById("link-text-one").text() shouldEqual Messages("page.introduction.qualifyingForScheme.link.schemeGuidance")
-      document.body.getElementById("link-text-two").text() shouldEqual Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")
+      document.body.getElementById("link-text-one").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
+      document.body.getElementById("link-text-two").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness"))
       document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction"
       document.body.getElementById("link-text-two").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm3000"
       document.body.getElementById("back-link").attr("href") shouldEqual routes.YourCompanyNeedController.show.toString()
