@@ -4,8 +4,9 @@
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_])
 
-@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading"), backLink = Some(controllers.routes.SubsidiariesController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.two"))) {
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
+
+@backButtonWithProgress(controllers.routes.SubsidiariesController.show().toString, Messages("common.section.progress.company.details.two"))
 
 @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 

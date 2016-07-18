@@ -6,8 +6,9 @@
 @import helpers._
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 
-@main_template(Messages("page.investment.amount.title"), backLink = Some(controllers.routes.ProposedInvestmentController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.three"))) {
+@main_template(Messages("page.investment.amount.title")) {
+
+@backButtonWithProgress(controllers.routes.HadPreviousRFIController.show().toString, Messages("common.section.progress.company.details.three"))
 
 <div class="grid-row">
     <div class="column-two-thirds">

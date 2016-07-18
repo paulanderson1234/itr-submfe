@@ -6,8 +6,9 @@
 
 @(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.RegisteredAddress.title"), bodyClasses = None, backLink = Some(controllers.routes.TaxpayerReferenceController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+@main_template(Messages("page.companyDetails.RegisteredAddress.title")) {
+
+@backButtonWithProgress(controllers.routes.TaxpayerReferenceController.show().toString, Messages("common.section.progress.company.details.one"))
 
 <div class="form-group">
     <div class="column-two-thirds">

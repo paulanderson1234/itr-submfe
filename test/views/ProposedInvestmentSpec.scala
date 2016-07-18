@@ -48,7 +48,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
     }
   }
 
-  "The Contact Details page" should {
+  "The Proposed Investment page" should {
 
     "Verify that the proposed investment page contains the correct elements when a valid ProposedInvestmentModel is passed" in new SetupPage {
       val document: Document = {
@@ -70,7 +70,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
 
@@ -91,7 +91,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

@@ -4,8 +4,9 @@
 
 @(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_])
 
-@main_template(Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title"), backLink = Some(controllers.routes.IsKnowledgeIntensiveController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+@main_template(Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")) {
+
+@backButtonWithProgress(controllers.routes.OperatingCostsController.show().toString, Messages("common.section.progress.company.details.one"))
 
     @errorSummary(percentageStaffWithMastersForm, "percentage-of-staff-with-masters", "staffWithMasters")
 

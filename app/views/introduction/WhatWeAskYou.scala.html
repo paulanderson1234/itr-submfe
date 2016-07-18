@@ -6,7 +6,9 @@
 
 @import config.FrontendAppConfig
 
-@main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None, backLink = Some(controllers.routes.QualifyingForSchemeController.show().toString)) {
+@main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None) {
+
+@backButton(controllers.routes.QualifyingForSchemeController.show().toString)
 
 <div class="grid-row">
     <div class="column-two-thirds">

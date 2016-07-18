@@ -37,14 +37,7 @@ sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Re
     }
 }
 
-@contentHeader = {
-@if(backLink.isDefined) {
-    <a id="back-link" class="back-link" href="@backLink.get">@Messages("common.button.back")</a>
-    @if(sectionProgress.isDefined) {
-        <span id="progress-section" class="form-hint-breadcrumb leftPadding">@sectionProgress.get</span>
-        }
-    }
-}
+@contentHeader = {}
 
 @govuk_wrapper(appConfig = config.FrontendAppConfig,
     title = title,

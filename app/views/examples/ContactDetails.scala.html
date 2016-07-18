@@ -6,8 +6,9 @@
 @import models.ContactDetailsModel
 @import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
 
-@main_template(Messages("page.examples.ContactDetails.title"), backLink = Some(controllers.examples.routes.CompanyAddressController.show().toString),
-sectionProgress=Some("Section 2 of 5: Company Details")) {
+@main_template(Messages("page.examples.ContactDetails.title")) {
+
+@backButtonWithProgress(controllers.examples.routes.CompanyAddressController.show().toString, Messages("common.section.progress.company.details.two"))
 
 <div class="grid-row">
     <div class="column-two-thirds">
