@@ -85,6 +85,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -97,6 +99,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -141,6 +145,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       val request = FakeRequest().withFormUrlEncodedBody(
         "ownSubsidiaries" -> "")
       submitWithSession(request)(
