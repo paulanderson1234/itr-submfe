@@ -4,17 +4,15 @@
 
 @(operatingCostsForm: Form[OperatingCostsModel])(implicit request: Request[_])
 
-@main_template(Messages("page.companyDetails.OperatingCosts.title"), backLink = Some(controllers.routes.IsKnowledgeIntensiveController.show().toString),
-sectionProgress=Some(Messages("common.section.progress.company.details.one"))) {
+@main_template(Messages("page.companyDetails.OperatingCosts.title")) {
+
+@backButtonWithProgress(controllers.routes.IsKnowledgeIntensiveController.show().toString, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(operatingCostsForm, "operating-costs")
 
 <div class="grid-row">
     <div class="column-two-thirds">
-
-        <header class="page-header">
-            <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.OperatingCosts.heading")</h1>
-        </header>
+        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.OperatingCosts.heading")</h1>
 
         @form(action = controllers.routes.OperatingCostsController.submit()) {
 

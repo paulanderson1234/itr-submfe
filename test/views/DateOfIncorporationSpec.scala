@@ -20,7 +20,7 @@ import java.util.UUID
 
 import connectors.KeystoreConnector
 import controllers.{DateOfIncorporationController, routes}
-import controllers.helpers.FakeRequestHelper
+import controllers.helpers.{FakeRequestHelper, TestHelper}
 import models.DateOfIncorporationModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -67,8 +67,8 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
-      document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
-      document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
+      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
+      document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
@@ -92,12 +92,13 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
-      document.body.getElementById("company-house-db").text() shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse")
-      document.body.getElementById("company-house-db").attr("href") shouldEqual Messages("page.companyDetails.DateOfIncorporation.companiesHouse.link")
+      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
+      document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
+
     }
 
   }

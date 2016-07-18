@@ -20,8 +20,8 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import connectors.KeystoreConnector
-import controllers.{IsKnowledgeIntensiveController, PercentageStaffWithMastersController, routes}
-import models.{IsKnowledgeIntensiveModel, PercentageStaffWithMastersModel}
+import controllers.{PercentageStaffWithMastersController, routes}
+import models.{PercentageStaffWithMastersModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -57,7 +57,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().toString()
     document.title() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading")
     document.getElementById("condition-for-KI").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint")
@@ -66,10 +66,6 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
     document.getElementById("staffWithMasters-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("staffWithMasters-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
-
-
-
   }
 
   "Verify that PercentageStaffWithMasters page contains the correct elements when an empty model " +
@@ -82,7 +78,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().toString()
     document.title() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading")
     document.getElementById("condition-for-KI").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint")
@@ -108,4 +104,3 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
 
   }
 }
-
