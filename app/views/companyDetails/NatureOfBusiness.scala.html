@@ -1,17 +1,14 @@
-@(natureOfbusinessForm: Form[NatureOfBusinessModel])(implicit request: Request[_])
-@import controllers._
-@import forms._
-@import helpers._
+@import uk.gov.hmrc.play.views.html.helpers.form
 @import models.NatureOfBusinessModel
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+@import views.html.helpers.{backButtonWithProgress, errorSummary, input}
+
+@(natureOfbusinessForm: Form[NatureOfBusinessModel])(implicit request: Request[_])
 
 @main_template(Messages("page.companyDetails.natureofbusiness.title")) {
 
 @backButtonWithProgress(controllers.routes.DateOfIncorporationController.show().toString, Messages("common.section.progress.company.details.one"))
 
-    @errorSummary(
-    Messages("common.errorSummary.label"), natureOfbusinessForm
-    )
+    @errorSummary(natureOfbusinessForm, "nature-of-business", "natureofbusiness")
 
     <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.natureofbusiness.heading")</h1>
 

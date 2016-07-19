@@ -1,9 +1,8 @@
-@(taxpayerReferenceForm: Form[TaxpayerReferenceModel])(implicit request: Request[_])
-@import controllers._
-@import forms._
-@import helpers._
 @import models.TaxpayerReferenceModel
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButtonWithProgress, input, errorSummary}
+
+@(taxpayerReferenceForm: Form[TaxpayerReferenceModel])(implicit request: Request[_])
 
 @main_template(Messages("page.companyDetails.utr.title")) {
 
@@ -11,9 +10,9 @@
 
 <div class="grid-row">
     <div class="column-two-thirds">
-        @errorSummary(
-        Messages("common.errorSummary.label"), taxpayerReferenceForm
-        )
+
+        @errorSummary(taxpayerReferenceForm, "taxpayer-reference", "utr")
+
         <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.utr.heading")</h1>
 
         @form(action = controllers.routes.TaxpayerReferenceController.submit()) {

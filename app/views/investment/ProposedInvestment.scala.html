@@ -1,10 +1,8 @@
-@(proposedInvestmentForm: Form[ProposedInvestmentModel])(implicit request: Request[_])
-
 @import models.ProposedInvestmentModel
-@import controllers._
-@import forms._
-@import helpers._
-@import uk.gov.hmrc.play.views.html.helpers.{form, errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+
+@(proposedInvestmentForm: Form[ProposedInvestmentModel])(implicit request: Request[_])
 
 @main_template(Messages("page.investment.amount.title")) {
 
@@ -12,9 +10,9 @@
 
 <div class="grid-row">
     <div class="column-two-thirds">
-        @errorSummary(
-        Messages("common.errorSummary.label"), proposedInvestmentForm
-        )
+
+        @errorSummary(proposedInvestmentForm, "proposed-investment", "investmentAmount")
+
         <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.amount.heading")</h1>
 
         @form(action = controllers.routes.ProposedInvestmentController.submit()) {
