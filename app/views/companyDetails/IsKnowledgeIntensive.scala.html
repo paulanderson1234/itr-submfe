@@ -6,51 +6,51 @@
 
 @main_template(Messages("page.companyDetails.IsKnowledgeIntensive.title")) {
 
-@backButtonWithProgress(controllers.routes.CommercialSaleController.show().toString, Messages("common.section.progress.company.details.one"))
+    @backButtonWithProgress(controllers.routes.CommercialSaleController.show().toString, Messages("common.section.progress.company.details.one"))
 
-@errorSummary(isKnowledgeIntensiveForm, "is-knowledge-intensive", "isKnowledgeIntensive")
+    @errorSummary(isKnowledgeIntensiveForm, "is-knowledge-intensive", "isKnowledgeIntensive")
 
-<h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.IsKnowledgeIntensive.heading")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.IsKnowledgeIntensive.title")</h1>
 
-<p class = "form-hint" id="description-ki">@Messages("page.companyDetails.IsKnowledgeIntensive.description")</p>
+    <p class = "form-hint" id="description-ki">@Messages("page.companyDetails.IsKnowledgeIntensive.description")</p>
 
-<details>
-    <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">@Messages("page.companyDetails.IsKnowledgeIntensive.definition")</span></summary>
-    <div class="panel panel-indent panel-border-narrow">
+    <details>
+        <summary><span id="help" class="summary">@Messages("page.companyDetails.IsKnowledgeIntensive.definition")</span></summary>
+        <div class="panel panel-indent panel-border-narrow">
 
-        <p id ="ki-requirement-definition">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")</p>
-        <ul class ="list list-bullet">
-            <li id = "ki-requirement-one">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")</li>
-            <li id = "ki-requirement-two">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")</li>
-        </ul>
+            <p id ="ki-requirement-definition">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")</p>
+            <ul class ="list list-bullet">
+                <li id = "ki-requirement-one">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")</li>
+                <li id = "ki-requirement-two">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")</li>
+            </ul>
 
-        <p id ="ki-requirement-also">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")</p>
-        <ul class ="list list-bullet">
-            <li id ="ki-requirement-three">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")
-            <li id ="ki-requirement-four">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")
-        </ul></li>
+            <p id ="ki-requirement-also">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")</p>
+            <ul class ="list list-bullet">
+                <li id ="ki-requirement-three">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")</li>
+                <li id ="ki-requirement-four">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")</li>
+            </ul>
 
-    </div>
-</details>
+        </div>
+    </details>
 
-@form(action = controllers.routes.IsKnowledgeIntensiveController.submit()) {
+    @form(action = controllers.routes.IsKnowledgeIntensiveController.submit()) {
 
-<div class="form-group">
-    @formInputRadioGroup(
-    field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
-    Seq(
-    "Yes"->Messages("common.radioYesLabel"),
-    "No"->Messages("common.radioNoLabel")),
-    '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
-    '_legendClass -> "visuallyhidden",
-    '_labelAfter -> true,
-    '_labelClass -> "block-label",
-    '_groupClass -> "inline"
-    )
-</div>
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
+            Seq(
+            "Yes"->Messages("common.radioYesLabel"),
+            "No"->Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
 
-<div class="form-group">
-    <button class="btn button" id="next">@Messages("common.button.continue")</button>
-</div>
-}
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.continue")</button>
+        </div>
+    }
 }
