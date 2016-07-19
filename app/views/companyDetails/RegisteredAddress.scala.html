@@ -1,7 +1,5 @@
 @import models.RegisteredAddressModel
-@import controllers._
-@import forms._
-@import helpers._
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formInlinePostcodeInput}
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
