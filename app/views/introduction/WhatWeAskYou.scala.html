@@ -77,13 +77,14 @@
             <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.introduction.WhatWeAskYou.print.text")</a></p>
         </div>
 
-        <fieldset></fieldset>
-
-        <div class="form-group">
-            @form(action = controllers.routes.WhatWeAskYouController.submit()) {
-            <button class="button" role="button" id="next">@Messages("common.button.continueFirstSection")</button>
-            }
-        </div>
+        <fieldset>
+            <legend id="what-we-ask-you-legend-id" class="visuallyhidden">@Messages("page.introduction.WhatWeAskYou.title")</legend>
+            <div class="form-group">
+                @form(action = controllers.routes.WhatWeAskYouController.submit()) {
+                <button class="button" role="button" id="next">@Messages("common.button.continueFirstSection")</button>
+                }
+            </div>
+        </fieldset>
     </div>
 </div>
 

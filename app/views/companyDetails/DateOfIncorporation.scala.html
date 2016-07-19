@@ -6,30 +6,30 @@
 
 @main_template(Messages("page.companyDetails.DateOfIncorporation.title")) {
 
-@backButtonWithProgress(controllers.routes.RegisteredAddressController.show().toString, Messages("common.section.progress.company.details.one"))
+    @backButtonWithProgress(controllers.routes.RegisteredAddressController.show().toString, Messages("common.section.progress.company.details.one"))
 
-@errorSummary(dateOfIncorporationForm, "date-of-incorporation", "incorporationDay")
+    @errorSummary(dateOfIncorporationForm, "date-of-incorporation", "incorporationDay")
 
-<h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
 
-@form(action = controllers.routes.DateOfIncorporationController.submit()) {
+    @form(action = controllers.routes.DateOfIncorporationController.submit()) {
 
-@formInlineDateInput(dateOfIncorporationForm, "incorporation", Some("page.companyDetails.DateOfIncorporation.heading"), true, Some(Messages("date.hint.dateOfIncorporation")))
+        @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some("page.companyDetails.DateOfIncorporation.heading"), true, Some(Messages("date.hint.dateOfIncorporation")))
 
-<details>
-    <summary><span id="help" class="summary" onClick="ga('send', 'event', 'link', 'click', 'help')">@Messages("page.companyDetails.DateOfIncorporation.whereToFind")</span></summary>
-    <div class="panel panel-indent panel-border-narrow">
-        <p class = "form-hint" id = "date-of-incorporation-where-to-find">@Messages("page.companyDetails.DateOfIncorporation.location")
-            @externalLink(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"),
-            "https://www.gov.uk/get-information-about-a-company",
-            Some("company-house-db"))
-        </a></p>
-    </div>
-</details>
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.companyDetails.DateOfIncorporation.whereToFind")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p class = "form-hint" id = "date-of-incorporation-where-to-find">@Messages("page.companyDetails.DateOfIncorporation.location")
+                    @externalLink(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"),
+                    "https://www.gov.uk/get-information-about-a-company",
+                    Some("company-house-db"))
+                </p>
+            </div>
+        </details>
 
-<div class="form-group">
-    <button class="btn button" id="next">@Messages("common.button.continue")</button>
-</div>
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.continue")</button>
+        </div>
 
-}
+    }
 }
