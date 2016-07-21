@@ -33,6 +33,7 @@ trait KeystoreKeys {
   val operatingCosts = "companyDetails:operatingCosts"
   val percentageStaffWithMasters ="knowledgeIntensive:percentageStaffWithMasters"
   val tenYearPlan = "knowledgeIntensive:tenYearPlan"
-  val proposedInvestment ="investment:proposedInvestment"
+  val proposedInvestment = "investment:proposedInvestment"
+  val usedInvestmentReasonBefore = "investment:usedReasonBefore"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
 }
