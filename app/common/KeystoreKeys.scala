@@ -35,5 +35,6 @@ trait KeystoreKeys {
   val tenYearPlan = "knowledgeIntensive:tenYearPlan"
   val proposedInvestment = "investment:proposedInvestment"
   val usedInvestmentReasonBefore = "investment:usedReasonBefore"
+  val newProduct = "investment:newProduct"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
 }

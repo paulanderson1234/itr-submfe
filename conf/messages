@@ -263,6 +263,14 @@ page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the condi
 page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
 page.investment.UsedInvestmentReasonBefore.heading=Have you used a tax relief investment for that reason before?
 
+#New product page
+page.investment.NewProduct.title=New Product?
+page.investment.NewProduct.heading=Will you use this investment to launch a new product?
+page.investment.NewProduct.hint=Answer yes if the product''s either:
+page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
+page.investment.NewProduct.bullet.two=new for your company
+
+
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan
 page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren'’t physical?
