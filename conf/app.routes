@@ -85,3 +85,6 @@ POST       /proposed-investment                     controllers.ProposedInvestme
 GET        /used-investment-scheme-before           controllers.HadPreviousRFIController.show
 POST       /used-investment-scheme-before           controllers.HadPreviousRFIController.submit
 
+GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
+POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit
+
