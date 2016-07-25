@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -47,6 +48,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   val modelYes = NewProductModel("Yes")
   val modelNo = NewProductModel("No")
   val emptyModel = NewProductModel("")
+  val modelSubsidiariesYes = SubsidiariesModel("Yes")
+  val modelSubsidiariesNo = SubsidiariesModel("No")
+  val emptySubsidiariesModel = SubsidiariesModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedNewProduct = NewProductModel("Yes")
 
@@ -95,8 +99,10 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   }
 
   "Sending a valid 'Yes' form submit to the NewProductController" should {
-    "redirect to the subsidiaries page" in {
+    "redirect to the subsidiaries page when the subsidiaries value is Yes" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isNewProduct" -> "Yes")
       submitWithSession(request)(
@@ -108,20 +114,90 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     }
   }
 
-  "Sending a valid 'No' form submit to the NewProductController" should {
-    "redirect the ten year plan page" in {
+  "Sending a valid 'Yes' form submit to the NewProductController" should {
+    "redirect to the subsidiaries page when the subsidiaries value is No" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewProduct" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the NewProductController" should {
+    "redirect to the subsidiaries page when the subsidiaries value is not present" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewProduct" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  //TODO:
+  // the No sections below will be much simplified later as they will just go to the required error page
+  // (or in page javascript to make it red in which case not part of navigation at all and no controlelr test required)
+  // The subsidiaries logic test is not required in the 3 tests below can be replaced by a single test  top the error page
+  "Sending a valid 'No' form submit to the NewProductController" should {
+    "redirect to the subsidiaries page when the subsidiaries value is Yes" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isNewProduct" -> "No")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
   }
-  
+
+  "Sending a valid 'No' form submit to the NewProductController" should {
+    "redirect to the subsidiaries page when the subsidiaries value is No" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewProduct" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit to the NewProductController" should {
+    "redirect to the subsidiaries page when the subsidiaries value is not present" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewProduct" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
   "Sending an invalid form submission with validation errors to the NewProductController" should {
     "redirect to itself" in {
       val request = FakeRequest().withFormUrlEncodedBody(

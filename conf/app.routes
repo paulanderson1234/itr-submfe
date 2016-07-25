@@ -85,6 +85,8 @@ POST       /proposed-investment                     controllers.ProposedInvestme
 GET        /new-product                             controllers.NewProductController.show
 POST       /new-product                             controllers.NewProductController.submit
 
+GET        /new-geographical-market		            controllers.NewGeographicalMarketController.show
+POST       /new-geographical-market	                controllers.NewGeographicalMarketController.submit
 
 GET        /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.show
 POST       /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.submit

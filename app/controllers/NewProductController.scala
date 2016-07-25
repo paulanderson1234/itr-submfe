@@ -16,13 +16,14 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.NewProductForm._
-import models.NewProductModel
+import models.{NewProductModel, SubsidiariesModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+
 import scala.concurrent.Future
 import views.html.investment.NewProduct
 
@@ -42,18 +43,39 @@ trait NewProductController extends FrontendController with ValidActiveSession {
   }
 
   val submit = Action.async { implicit request =>
-    val response = newProductForm.bindFromRequest().fold(
+
+    def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
+      date match {
+        case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+          //TODO: replace below line with subsidiaries spending investment controller when page available(REMOVE THESE COMMENTS WHEN DONE)
+          Future.successful(Redirect(routes.ProposedInvestmentController.show))
+        //TODO: replace below line with how to plan to use investement controller when page available (REMOVE THESE COMMENTS WHEN DONE(
+        case Some(_) => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
+        //TODO: THE LINE BELOW SHOULD NOT BE CHANGED (REMOVE THESE COMMENTS WHEN DONE)
+        case None => Future.successful(Redirect(routes.SubsidiariesController.show))
+      }
+    }
+
+    newProductForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(NewProduct(formWithErrors))
+        Future.successful(BadRequest(NewProduct(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
         validFormData.isNewProduct match {
-          case "Yes"  => Redirect(routes.ProposedInvestmentController.show)
-          case "No"   => Redirect(routes.HadPreviousRFIController.show)
+          // TODO: Uncomment below with correct behaviour for 'No' error once decided
+          // i.e. replaces existing case Constants.StandardRadioButtonNoValue with line below
+          //case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TOBeDecidedController.show))
+          case Constants.StandardRadioButtonNoValue => for {
+            date <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            route <- routeRequest(date)
+          } yield route
+          case _ => for {
+            date <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            route <- routeRequest(date)
+          } yield route
         }
       }
     )
-    Future.successful(response)
   }
 }
