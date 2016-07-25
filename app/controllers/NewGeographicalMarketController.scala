@@ -16,42 +16,39 @@
 
 package controllers
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.predicates.ValidActiveSession
+import forms.NewGeographicalMarketForm._
+import models.NewGeographicalMarketModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.ProposedInvestmentModel
-import common._
-import forms.ProposedInvestmentForm._
-
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
-import views.html.investment.ProposedInvestment
+import views.html.investment.NewGeographicalMarket
 
-object ProposedInvestmentController extends ProposedInvestmentController
-{
+object NewGeographicalMarketController extends NewGeographicalMarketController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ProposedInvestmentController extends FrontendController with ValidActiveSession {
+trait NewGeographicalMarketController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
-      case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data)))
-      case None => Ok(ProposedInvestment(proposedInvestmentForm))
+    keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket).map {
+      case Some(data) => Ok(NewGeographicalMarket(newGeographicalMarketForm.fill(data)))
+      case None => Ok(NewGeographicalMarket(newGeographicalMarketForm))
     }
   }
 
   val submit = Action.async { implicit request =>
-    val response = proposedInvestmentForm.bindFromRequest().fold(
+    val response = newGeographicalMarketForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(ProposedInvestment(formWithErrors))
+        BadRequest(NewGeographicalMarket(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
-        //TODO: needs to go to what will use investment for page
-        Redirect(routes.ProposedInvestmentController.show)
+        keyStoreConnector.saveFormData(KeystoreKeys.newGeographicalMarket, validFormData)
+        Redirect(routes.NewProductController.show)
       }
     )
     Future.successful(response)

@@ -270,6 +270,14 @@ page.investment.NewProduct.hint=Answer yes if the product''s either:
 page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
 page.investment.NewProduct.bullet.two=new for your company
 
+#New Geographical market page
+page.investment.NewGeographicalMarket.title=New Product?
+page.investment.NewGeographicalMarket.heading=Will you use this investment to launch a new product?
+page.investment.NewGeographicalMarket.hint=This includes launching it in another:
+page.investment.NewGeographicalMarket.bullet.one=city
+page.investment.NewGeographicalMarket.bullet.two=region
+page.investment.NewGeographicalMarket.bullet.three=country
+
 
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan
