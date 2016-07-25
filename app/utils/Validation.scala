@@ -336,13 +336,13 @@ object Validation {
   }
 
   /** Determines whether the first commercial sale was within the age range (10 or 7 years)*/
-  def checkAgeRule(day:Int, month:Int, year:Int, ageRange:Int) : Boolean =
+  def checkAgeRule(day:Int, month:Int, year:Int, ageRange:String) : Boolean =
   {
     Try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
       fmt.parse(s"$day/$month/$year")
-      constructDate(day, month, year).after(fmt.parse(dateMinusYears(Some(new Date()), ageRange)))
+      constructDate(day, month, year).after(fmt.parse(dateMinusYears(Some(new Date()), ageRange.toInt)))
     } match {
       case Success(result) => result
       case Failure(_) => false
