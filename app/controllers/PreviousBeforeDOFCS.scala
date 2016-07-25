@@ -20,13 +20,10 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 import forms.PreviousBeforeDOFCSForm._
 import controllers.predicates.ValidActiveSession
-import forms.SubsidiariesForm._
-import models.{PercentageStaffWithMastersModel, SubsidiariesModel, PreviousBeforeDOFCSModel}
+import models.{SubsidiariesModel, PreviousBeforeDOFCSModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import views.html.companyDetails.Subsidiaries
-import views.html.previousInvestment.PreviousBeforeDOFCS
+import views.html.investment.PreviousBeforeDOFCS
 import scala.concurrent.Future
 import views.html._
 
@@ -40,8 +37,8 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
 
   val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
-      case Some(data) => Ok(previousInvestment.PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data)))
-      case None => Ok(previousInvestment.PreviousBeforeDOFCS(previousBeforeDOFCSForm))
+      case Some(data) => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data)))
+      case None => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm))
     }
   }
 
