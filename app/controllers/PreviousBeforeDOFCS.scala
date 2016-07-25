@@ -20,9 +20,13 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 import forms.PreviousBeforeDOFCSForm._
 import controllers.predicates.ValidActiveSession
-import models.PreviousBeforeDOFCSModel
+import forms.SubsidiariesForm._
+import models.{PercentageStaffWithMastersModel, SubsidiariesModel, PreviousBeforeDOFCSModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+import uk.gov.hmrc.play.http.HeaderCarrier
+import views.html.companyDetails.Subsidiaries
+import views.html.previousInvestment.PreviousBeforeDOFCS
 import scala.concurrent.Future
 import views.html._
 
@@ -42,18 +46,30 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
   }
 
   val submit = Action.async { implicit request =>
-    val response = previousBeforeDOFCSForm.bindFromRequest().fold(
-      formWithErrors => {
-        BadRequest(previousInvestment.PreviousBeforeDOFCS(formWithErrors))
-      },
-      validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
-        validFormData.previousBeforeDOFCS match {
-          case "Yes"  => Redirect(routes.PreviousBeforeDOFCSController.show)
-          case "No"   => Redirect(routes.PreviousBeforeDOFCSController.show)
-        }
-      }
-    )
-    Future.successful(response)
+
+  def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
+    date match {
+      case Some(data) if data.ownSubsidiaries == "Yes" =>
+        Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
+      case Some(_) => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
+      case None => Future.successful(Redirect(routes.SubsidiariesController.show))
+    }
   }
+
+  previousBeforeDOFCSForm.bindFromRequest().fold(
+    formWithErrors => {
+      Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors)))
+    },
+    validFormData => {
+      keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
+      validFormData.previousBeforeDOFCS match {
+        case "No" => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
+        case "Yes" => for {
+          subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+          route <- routeRequest(subsidiaries)
+        } yield route
+      }
+    }
+  )
+}
 }

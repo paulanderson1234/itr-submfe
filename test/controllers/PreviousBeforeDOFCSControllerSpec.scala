@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -49,6 +50,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   val emptyModel = PreviousBeforeDOFCSModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedPreviousBeforeDOFCS = PreviousBeforeDOFCSModel("Yes")
+  val keyStoreSavedSubsidiariesYes = SubsidiariesModel("Yes")
+  val keyStoreSavedSubsidiariesNo = SubsidiariesModel("No")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -94,9 +97,25 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController" should {
     "redirect to itself" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "previousBeforeDOFCS" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model" should {
+    "redirect to itself" in {
+     when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "previousBeforeDOFCS" -> "Yes")
       submitWithSession(request)(
@@ -108,11 +127,14 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController" should {
+
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "No")
+        "previousBeforeDOFCS" -> "Yes")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -121,6 +143,23 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       )
     }
   }
+
+  "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model" should {
+    "redirect to Subsidiaries page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "previousBeforeDOFCS" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
 
   "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController" should {
     "redirect to itself" in {
