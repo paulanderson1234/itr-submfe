@@ -291,4 +291,7 @@ page.knowledgeIntensive.TenYearPlan.description.two = Based on the information y
 page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
 page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
 
+#previous before dofcs
+page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
+page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
 

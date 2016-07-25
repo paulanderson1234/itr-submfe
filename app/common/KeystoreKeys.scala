@@ -38,4 +38,5 @@ trait KeystoreKeys {
   val newProduct = "investment:newProduct"
   val newGeographicalMarket = "investment:newGeographicalMarket"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
+  val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
 }
