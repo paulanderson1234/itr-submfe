@@ -82,6 +82,13 @@ POST       /ten-year-plan                           controllers.TenYearPlanContr
 GET        /proposed-investment                     controllers.ProposedInvestmentController.show
 POST       /proposed-investment                     controllers.ProposedInvestmentController.submit
 
+GET        /new-product                             controllers.NewProductController.show
+POST       /new-product                             controllers.NewProductController.submit
+
+
+GET        /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.show
+POST       /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.submit
+
 GET        /used-investment-scheme-before           controllers.HadPreviousRFIController.show
 POST       /used-investment-scheme-before           controllers.HadPreviousRFIController.submit
 

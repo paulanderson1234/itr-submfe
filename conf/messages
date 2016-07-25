@@ -199,8 +199,7 @@ validation.error.DateOfCommercialSale.Future=Date of first commercial sale canno
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
 #Is Knowledge Intensive Page
-page.companyDetails.IsKnowledgeIntensive.title = Is your company KI
-page.companyDetails.IsKnowledgeIntensive.heading = Are you a knowledge intensive company?
+page.companyDetails.IsKnowledgeIntensive.title = Are you a knowledge intensive company?
 page.companyDetails.IsKnowledgeIntensive.description = Your company may be knowledge intensive if you’ve spent a certain amount of your operating costs on research and development.
 page.companyDetails.IsKnowledgeIntensive.definition = What''s a knowledge intensive company?
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you’ve spent on research and development must have been either:
@@ -259,6 +258,18 @@ page.investment.help.link.text=You''ll still be eligible for the scheme, as long
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
 page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
+
+#used investment reason before page
+page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
+page.investment.UsedInvestmentReasonBefore.heading=Have you used a tax relief investment for that reason before?
+
+#New product page
+page.investment.NewProduct.title=New Product?
+page.investment.NewProduct.heading=Will you use this investment to launch a new product?
+page.investment.NewProduct.hint=Answer yes if the product''s either:
+page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
+page.investment.NewProduct.bullet.two=new for your company
+
 
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan

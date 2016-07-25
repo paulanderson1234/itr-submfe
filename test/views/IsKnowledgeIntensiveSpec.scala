@@ -58,15 +58,15 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
-    document.getElementById("ki-requirement-definition").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition"))
-    document.getElementById("ki-requirement-one").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one"))
-    document.getElementById("ki-requirement-two").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two"))
-    document.getElementById("ki-requirement-also").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also"))
-    document.getElementById("ki-requirement-three").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three"))
-    document.getElementById("ki-requirement-four").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four"))
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
+    document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
+    document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
+    document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
+    document.getElementById("ki-requirement-also").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")
+    document.getElementById("ki-requirement-three").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")
+    document.getElementById("ki-requirement-four").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
@@ -88,15 +88,15 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
-    document.getElementById("ki-requirement-definition").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition"))
-    document.getElementById("ki-requirement-one").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one"))
-    document.getElementById("ki-requirement-two").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two"))
-    document.getElementById("ki-requirement-also").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also"))
-    document.getElementById("ki-requirement-three").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three"))
-    document.getElementById("ki-requirement-four").text() shouldBe (Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four"))
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
+    document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
+    document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
+    document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
+    document.getElementById("ki-requirement-also").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")
+    document.getElementById("ki-requirement-three").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")
+    document.getElementById("ki-requirement-four").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
@@ -107,7 +107,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
   "Verify that IsKnowledgeIntensive page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      // submit the model with no radio slected as a post action
+      // submit the model with no radio selected as a post action
       val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
       Jsoup.parse(contentAsString(result))
     }

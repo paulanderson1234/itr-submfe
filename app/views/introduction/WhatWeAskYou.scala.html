@@ -1,10 +1,8 @@
-@()(implicit request: Request[_])
-
 @import uk.gov.hmrc.play.views.html.helpers.{form}
-@import controllers.routes._
-@import helpers._
-
+@import helpers.backButton
 @import config.FrontendAppConfig
+
+@()(implicit request: Request[_])
 
 @main_template(Messages("page.introduction.WhatWeAskYou.title"), bodyClasses = None) {
 
@@ -79,13 +77,14 @@
             <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.introduction.WhatWeAskYou.print.text")</a></p>
         </div>
 
-        <fieldset></fieldset>
-
-        <div class="form-group">
-            @form(action = controllers.routes.WhatWeAskYouController.submit()) {
-            <button class="button" role="button" id="next">@Messages("common.button.continueFirstSection")</button>
-            }
-        </div>
+        <fieldset>
+            <legend id="what-we-ask-you-legend-id" class="visuallyhidden">@Messages("page.introduction.WhatWeAskYou.title")</legend>
+            <div class="form-group">
+                @form(action = controllers.routes.WhatWeAskYouController.submit()) {
+                <button class="button" role="button" id="next">@Messages("common.button.continueFirstSection")</button>
+                }
+            </div>
+        </fieldset>
     </div>
 </div>
 

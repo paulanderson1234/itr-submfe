@@ -73,6 +73,7 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
       document.body.getElementById("prospectuses").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prospectuses")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.QualifyingForSchemeController.show().toString()
       document.body.getElementById("print-this-page").text() shouldBe Messages("page.introduction.WhatWeAskYou.print.text")
+      document.body.getElementById("what-we-ask-you-legend-id").hasClass("visuallyhidden")
       document.body.getElementById("next").text() shouldBe Messages("common.button.continueFirstSection")
 
     }
