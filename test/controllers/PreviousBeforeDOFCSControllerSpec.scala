@@ -115,6 +115,22 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     "redirect to itself" in {
      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "previousBeforeDOFCS" -> "Yes")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
+    "redirect to itself" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "previousBeforeDOFCS" -> "Yes")
@@ -127,14 +143,29 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
+    "redirect to itself" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "previousBeforeDOFCS" -> "No")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model" should {
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "Yes")
+        "previousBeforeDOFCS" -> "No")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
