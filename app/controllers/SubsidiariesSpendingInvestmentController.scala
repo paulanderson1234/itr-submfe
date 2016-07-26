@@ -36,10 +36,12 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 
 import controllers.predicates.ValidActiveSession
+import forms.SubsidiariesForm._
 import forms.SubsidiariesSpendingInvestmentForm._
-import models.SubsidiariesSpendingInvestmentModel
+import models.{SubsidiariesModel, PreviousBeforeDOFCSModel, NewProductModel, SubsidiariesSpendingInvestmentModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc.Action
+import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html._
 
 import scala.concurrent.Future
@@ -53,26 +55,51 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map{
-      case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data)))
-      case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm))
+
+    def routeRequest(backUrl: String) = {
+      keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
+        case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data),backUrl))
+        case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm,backUrl))
+      }
     }
+
+    for {
+      link <- getBackLink
+      route <- routeRequest(link)
+    } yield route
   }
 
   val submit = Action.async { implicit request =>
-    val response = subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(investment.SubsidiariesSpendingInvestment(formWithErrors))
-      },
-      validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validFormData)
-        validFormData.subSpendingInvestment match {
-          case "Yes"  => Redirect(routes.SubsidiariesSpendingInvestmentController.show)
-          case "No"   => Redirect(routes.SubsidiariesSpendingInvestmentController.show)
+    subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
+      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(investment.SubsidiariesSpendingInvestment(invalidForm, url)))),
+      validForm => {
+        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
+        validForm.subSpendingInvestment match {
+          case "Yes"  => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
+          case "No"   => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
         }
       }
     )
-    Future.successful(response)
+  }
+
+  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
+    def routeRequest(newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
+                     subsidiaries: Option[SubsidiariesModel]): String = {
+      (newProduct,previousBeforeDOFCS,subsidiaries) match {
+        case (Some(newProduct),_,_) => routes.NewProductController.show.toString()
+        case (None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show.toString()
+        case (None,None,Some(subsidiaries)) => routes.SubsidiariesController.show.toString()
+        case _ => routes.SubsidiariesController.show.toString()
+      }
+    }
+
+    for {
+      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+      previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
+      subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+      route <- Future.successful(routeRequest(newProduct,previousBeforeDOFCS,subsidiaries))
+    } yield route
+
   }
 
 }
