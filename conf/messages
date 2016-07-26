@@ -259,6 +259,25 @@ page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff wit
 page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
 
+#used investment reason before page
+page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
+page.investment.UsedInvestmentReasonBefore.heading=Have you used a tax relief investment for that reason before?
+
+#New product page
+page.investment.NewProduct.title=New Product?
+page.investment.NewProduct.heading=Will you use this investment to launch a new product?
+page.investment.NewProduct.hint=Answer yes if the product''s either:
+page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
+page.investment.NewProduct.bullet.two=new for your company
+
+#New Geographical market page
+page.investment.NewGeographicalMarket.title=New Product?
+page.investment.NewGeographicalMarket.heading=Will you use this investment to launch a new product?
+page.investment.NewGeographicalMarket.hint=This includes launching it in another:
+page.investment.NewGeographicalMarket.bullet.one=city
+page.investment.NewGeographicalMarket.bullet.two=region
+page.investment.NewGeographicalMarket.bullet.three=country
+
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan
 page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren'’t physical?
@@ -276,3 +295,7 @@ page.investment.whatWillUseFor.title = What will you use this investment for?
 page.investment.whatWillUseFor.business = Doing business
 page.investment.whatWillUseFor.preparing = Getting ready to do business, eg by renting and office
 page.investment.whatWillUseFor.rAndD = Research and Development
+
+#previous before dofcs
+page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
+page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
