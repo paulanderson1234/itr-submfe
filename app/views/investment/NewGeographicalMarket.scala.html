@@ -2,11 +2,11 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
-@(newGeographicalMarketForm: Form[NewGeographicalMarketModel])(implicit request: Request[_])
+@(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_])
 
 @main_template(Messages("page.investment.NewGeographicalMarket.title")) {
 
-@backButtonWithProgress(controllers.routes.ProposedInvestmentController.show().toString, Messages("common.section.progress.company.details.three"))
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
 
     @errorSummary(newGeographicalMarketForm, "used-investment-reason-before", "usedNewGeographicalMarket")
 
