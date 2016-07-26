@@ -342,7 +342,7 @@ object Validation {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
       fmt.parse(s"$day/$month/$year")
-      constructDate(day, month, year).after(fmt.parse(dateMinusYears(Some(new Date()), ageRange.toInt)))
+      constructDate(day, month, year).before(fmt.parse(dateMinusYears(Some(new Date()), ageRange.toInt)))
     } match {
       case Success(result) => result
       case Failure(_) => false

@@ -46,11 +46,11 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
   val submit = Action.async { implicit request =>
 
     def calcRoute(prevRFI: Option[HadPreviousRFIModel], comSale: Option[CommercialSaleModel],
-                  HasSub: Option[SubsidiariesModel], KIFlag: Option[IsKnowledgeIntensiveModel]): Future[Result] = {
+                  HasSub: Option[SubsidiariesModel], kIFlag: Option[IsKnowledgeIntensiveModel]): Future[Result] = {
 
-      def getAgeLimit(KIFlag: Option[IsKnowledgeIntensiveModel]): String = {
+      def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
         KIFlag match {
-          case Some(IsKnowledgeIntensiveModel("Yes")) => "10"
+          case IsKnowledgeIntensiveModel("Yes") => "10"
           case _ => "7"
         }
       }
@@ -72,14 +72,19 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
         case Some(comSale) => if (comSale.hasCommercialSale.equals("Yes")) {
           prevRFI match {
             case Some(prevRFI) => if (prevRFI.hadPreviousRFI.equals("Yes")) {
-              Future.successful(Redirect(routes.WhatWillUseForController.show()))
+              Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
             }
-            else {
-              if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get,getAgeLimit(KIFlag))) {
-                //Goes to new geographic market
-                Future.successful(Redirect(routes.WhatWillUseForController.show()))
+            else { kIFlag match {
+              case Some(kIFlag) =>
+                if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get,getAgeLimit(kIFlag))) {
+                  //Goes to new geographic market
+                  Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+                }
+                else {subsidiariesCheck(HasSub)}
+
+              case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
               }
-              else {subsidiariesCheck(HasSub)}
+
             }
             case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
           }

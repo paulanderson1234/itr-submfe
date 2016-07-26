@@ -57,7 +57,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.title() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("whatWillUseFor-businessLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
@@ -80,7 +80,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.title() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("whatWillUseFor-businessLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
