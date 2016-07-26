@@ -271,8 +271,8 @@ page.investment.NewProduct.bullet.one=novel, meaning new and original for the ma
 page.investment.NewProduct.bullet.two=new for your company
 
 #New Geographical market page
-page.investment.NewGeographicalMarket.title=New Product?
-page.investment.NewGeographicalMarket.heading=Will you use this investment to launch a new product?
+page.investment.NewGeographicalMarket.title=New geographical market
+page.investment.NewGeographicalMarket.heading=Will you use this investment to launch one of your products somewhere new?
 page.investment.NewGeographicalMarket.hint=This includes launching it in another:
 page.investment.NewGeographicalMarket.bullet.one=city
 page.investment.NewGeographicalMarket.bullet.two=region
