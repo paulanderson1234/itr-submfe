@@ -45,53 +45,6 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
 
   val submit = Action.async { implicit request =>
 
-    //    def routeRequest(PrevRFI: Option[HadPreviousRFIModel], ComSale: Option[CommercialSaleModel], HasSub: Option[SubsidiariesModel]): Future[Result] = {
-    //      PrevRFI match {
-    //        case Some(HadPreviousRFIModel("Yes")) => ComSale match {
-    //          case Some(CommercialSaleModel("Yes", Some(day), Some(month), Some(year))) =>
-    //            //Goes to Same Reason As Before
-    //            Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //
-    //        }
-    //        case Some(HadPreviousRFIModel("No")) => ComSale match {
-    //          case Some(CommercialSaleModel("No", Some(day), Some(month), Some(year))) => HasSub match {
-    //            case Some(SubsidiariesModel("Yes")) =>
-    //              //Goes to Subsidiaries spending investment
-    //              Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //
-    //            case Some(SubsidiariesModel("No")) =>
-    //              //Goes to How plan to use Investment
-    //              Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //          }
-    //        }
-    //        case Some(_) =>  Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //        case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //      }
-    //    }
-
-    //    def routeRequest(PrevRFI: HadPreviousRFIModel, ComSale: CommercialSaleModel, HasSub: SubsidiariesModel): Future[Result] = {
-    //      PrevRFI match {
-    //        case HadPreviousRFIModel("Yes") => ComSale match {
-    //          case CommercialSaleModel("Yes", Some(day), Some(month), Some(year)) =>
-    //              //Goes to Same Reason As Before
-    //              Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //
-    //          }
-    //        case HadPreviousRFIModel("No") => ComSale match {
-    //          case CommercialSaleModel("No", Some(day), Some(month), Some(year)) => HasSub match {
-    //            case SubsidiariesModel("Yes") =>
-    //              //Goes to Subsidiaries spending investment
-    //              Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //
-    //            case SubsidiariesModel("No") =>
-    //              //Goes to How plan to use Investment
-    //              Future.successful(Redirect(routes.WhatWillUseForController.show()))
-    //            }
-    //          }
-    //      }
-    //    }
-
-
     def calcRoute(prevRFI: Option[HadPreviousRFIModel], comSale: Option[CommercialSaleModel],
                   HasSub: Option[SubsidiariesModel], KIFlag: Option[IsKnowledgeIntensiveModel]): Future[Result] = {
 
@@ -102,13 +55,16 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
         }
       }
 
-      def subsidiariesCheck(hasSub: Option[SubsidiariesModel]): Result = {
+      def subsidiariesCheck(hasSub: Option[SubsidiariesModel]): Future[Result] = {
         hasSub match {
           case Some(hasSub) => if (hasSub.ownSubsidiaries.equals("Yes")) {
             //goes to subsidiary spending investment
-            Future.successful.Redirect(routes.WhatWillUseForController.show())
-          } else //goes to how to plan to use investment
-            Future.successful.Redirect(routes.WhatWillUseForController.show())
+            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          } else {
+            //goes to how to plan to use investment
+            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          }
+          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
         }
       }
 
@@ -116,25 +72,28 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
         case Some(comSale) => if (comSale.hasCommercialSale.equals("Yes")) {
           prevRFI match {
             case Some(prevRFI) => if (prevRFI.hadPreviousRFI.equals("Yes")) {
-              Future.successful.Redirect(routes.WhatWillUseForController.show())
+              Future.successful(Redirect(routes.WhatWillUseForController.show()))
             }
             else {
               if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get,getAgeLimit(KIFlag))) {
                 //Goes to new geographic market
-                Future.successful.Redirect(routes.WhatWillUseForController.show())
+                Future.successful(Redirect(routes.WhatWillUseForController.show()))
               }
-              else subsidiariesCheck(HasSub)
+              else {subsidiariesCheck(HasSub)}
             }
+            case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
           }
         }
-        else subsidiariesCheck(HasSub)
+        else {subsidiariesCheck(HasSub)}
+
+        case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
       }
+
     }
 
-
-    val response = whatWillUseForForm.bindFromRequest().fold(
+    whatWillUseForForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(WhatWillUseFor(formWithErrors))
+        Future.successful(BadRequest(WhatWillUseFor(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.whatWillUseFor, validFormData)
@@ -144,9 +103,8 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
           comSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
           hasSub <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
           kIFlag <- keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive)
-          route <- Future.successful(calcRoute(prevRFI, comSale, hasSub, kIFlag))
+          route <- calcRoute(prevRFI, comSale, hasSub, kIFlag)
         } yield route
-
       }
     )
   }
