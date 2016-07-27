@@ -58,7 +58,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.heading")
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
@@ -68,10 +68,6 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.getElementById("previousBeforeDOFCSLegend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
-
-
-
   }
 
   "Verify that previousBeforeDOFCS page contains the correct elements when an empty model " +
@@ -84,7 +80,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.heading")
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
