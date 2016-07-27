@@ -37,6 +37,7 @@ trait KeystoreKeys {
   val usedInvestmentReasonBefore = "investment:usedReasonBefore"
   val newProduct = "investment:newProduct"
   val newGeographicalMarket = "investment:newGeographicalMarket"
+  val subsidiariesNinetyOwned="investment:subsidiariesNinetyOwned"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
   val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
 }

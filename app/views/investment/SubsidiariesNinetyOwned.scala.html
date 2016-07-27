@@ -1,0 +1,41 @@
+@import models.SubsidiariesNinetyOwnedModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+
+@(subsidiariesNinetyOwnedForm: Form[SubsidiariesNinetyOwnedModel])(implicit request: Request[_])
+
+@main_template(Messages("page.investment.SubsidiariesNinetyOwned.title")){
+
+    @backButtonWithProgress(controllers.routes.SubsidiariesNinetyOwnedController.show().toString, Messages("common.section.progress.company.details.three"))
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            @errorSummary(subsidiariesNinetyOwnedForm, "subsidiaries-ninety-percent-owned", "ownNinetyPercent")
+
+            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.SubsidiariesNinetyOwned.title")</h1>
+
+            @form(action = controllers.routes.SubsidiariesNinetyOwnedController.submit()) {
+                <div class="form-group">
+                    @formInputRadioGroup(
+                    field = subsidiariesNinetyOwnedForm("ownNinetyPercent"),
+                    Seq(
+                    "Yes"->Messages("common.radioYesLabel"),
+                    "No"->Messages("common.radioNoLabel")),
+                    '_legend -> Messages("page.investment.SubsidiariesNinetyOwned.title"),
+                    '_legendClass -> "visuallyhidden",
+                    '_labelAfter -> true,
+                    '_labelClass -> "block-label",
+                    '_groupClass -> "inline"
+                    )
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" id="next">@Messages("common.button.continue")</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}

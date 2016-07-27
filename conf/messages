@@ -295,3 +295,5 @@ page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax rel
 page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
 page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
 
+#Subsidiaries ninety percent owned:
+page.investment.SubsidiariesNinetyOwned.title=Does [your company name] own more than 90% of that company?
