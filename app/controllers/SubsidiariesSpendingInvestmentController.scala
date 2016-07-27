@@ -38,7 +38,7 @@ import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.SubsidiariesForm._
 import forms.SubsidiariesSpendingInvestmentForm._
-import models.{SubsidiariesModel, PreviousBeforeDOFCSModel, NewProductModel, SubsidiariesSpendingInvestmentModel}
+import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc.Action
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -84,20 +84,20 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
 
   def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
     def routeRequest(newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
-                     subsidiaries: Option[SubsidiariesModel]): String = {
-      (newProduct,previousBeforeDOFCS,subsidiaries) match {
+                     whatWillUseFor: Option[WhatWillUseForModel]): String = {
+      (newProduct,previousBeforeDOFCS,whatWillUseFor) match {
         case (Some(newProduct),_,_) => routes.NewProductController.show.toString()
         case (None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show.toString()
-        case (None,None,Some(subsidiaries)) => routes.SubsidiariesController.show.toString()
-        case _ => routes.SubsidiariesController.show.toString()
+        case (None,None,Some(whatWillUseFor)) => routes.WhatWillUseForController.show.toString()
+        case _ => routes.WhatWillUseForController.show.toString()
       }
     }
 
     for {
       newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
-      subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-      route <- Future.successful(routeRequest(newProduct,previousBeforeDOFCS,subsidiaries))
+      whatWillUseFor<- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
+      route <- Future.successful(routeRequest(newProduct,previousBeforeDOFCS,whatWillUseFor))
     } yield route
 
   }

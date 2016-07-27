@@ -84,7 +84,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel("Yes")
   val keyStoreSavedNewProduct = NewProductModel("Yes")
   val keyStoreSavedPreviousBeforeDOFCSYes = PreviousBeforeDOFCSModel("Yes")
-  val keyStoreSavedSubsidiaries= SubsidiariesModel("Yes")
+  val keyStoreSavedSubsidiaries= WhatWillUseForModel("Yes")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -116,7 +116,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
+      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
@@ -130,7 +130,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
+      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
@@ -172,7 +172,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCSYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
+      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       val request = FakeRequest().withFormUrlEncodedBody(
         "subSpendingInvestment" -> "")
