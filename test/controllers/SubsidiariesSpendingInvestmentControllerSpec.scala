@@ -78,7 +78,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   }
 
   val modelYes = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
-  val modelNo = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = SubsidiariesSpendingInvestmentModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
