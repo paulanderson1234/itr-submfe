@@ -108,7 +108,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
         }
       )
     }
@@ -124,7 +124,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
         }
       )
     }
@@ -160,7 +160,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
         }
       )
     }
@@ -176,7 +176,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
         }
       )
     }

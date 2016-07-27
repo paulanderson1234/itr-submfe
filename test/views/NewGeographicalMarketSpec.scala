@@ -19,9 +19,10 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.{NewGeographicalMarketController, routes}
-import models.NewGeographicalMarketModel
+import models.{NewGeographicalMarketModel, PreviousBeforeDOFCSModel, UsedInvestmentReasonBeforeModel, WhatWillUseForModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -39,6 +40,10 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
 
   val isNewGeographicalMarketModel = new NewGeographicalMarketModel("Yes")
   val emptyNewGeographicalMarketModel = new NewGeographicalMarketModel("")
+  val keyStoreSavedWhatWillUseFor = WhatWillUseForModel("Doing Business")
+  val keyStoreSavedPrevBeforeDOFCSYes = PreviousBeforeDOFCSModel("Yes")
+  val keyStoreSavedPrevBeforeDOFCSNo = PreviousBeforeDOFCSModel("No")
+  val keyStoreSavedUsedInvestmentReasonBeforeYes = UsedInvestmentReasonBeforeModel("No")
 
   class SetupPage {
 
@@ -48,16 +53,22 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
   }
 
   "Verify that the NewGeographicalMarket page contains the correct elements " +
-    "when a valid NewGeographicalMarketModel is passed as returned from keystore" in new SetupPage {
+    "when a only a WhatWillUseForModel is retrieved from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
+      when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedWhatWillUseFor)))
+      when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isNewGeographicalMarketModel)))
       val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1
