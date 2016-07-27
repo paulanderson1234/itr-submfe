@@ -51,7 +51,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesSpendingInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -72,10 +72,10 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  val subsidiariesSpendingInvestmentModel = new SubsidiariesSpendingInvestmentModel("Yes")
+  val subsidiariesSpendingInvestmentModel = new SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
   val emptySubsidiariesSpendingInvestmentModel = new SubsidiariesSpendingInvestmentModel("")
-  val newProductModel = new NewProductModel("Yes")
-  val previousBeforeDOFCSModel= new PreviousBeforeDOFCSModel("Yes")
+  val newProductModel = new NewProductModel(Constants.StandardRadioButtonYesValue)
+  val previousBeforeDOFCSModel= new PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val whatWilUseForModel = new WhatWillUseForModel("Tobacco growing")
 
   class SetupPage {
@@ -103,7 +103,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-          "subSpendingInvestment" -> "Yes"
+          "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
         )))
         Jsoup.parse(contentAsString(result))
       }
@@ -130,7 +130,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -157,7 +157,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -184,7 +184,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -210,7 +210,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -236,7 +236,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -262,7 +262,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }
@@ -288,7 +288,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )))
       Jsoup.parse(contentAsString(result))
     }

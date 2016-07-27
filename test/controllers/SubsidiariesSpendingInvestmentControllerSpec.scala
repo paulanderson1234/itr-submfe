@@ -51,7 +51,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -77,14 +77,14 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = SubsidiariesSpendingInvestmentModel("Yes")
-  val modelNo = SubsidiariesSpendingInvestmentModel("No")
+  val modelYes = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
   val emptyModel = SubsidiariesSpendingInvestmentModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel("Yes")
-  val keyStoreSavedNewProduct = NewProductModel("Yes")
-  val keyStoreSavedPreviousBeforeDOFCSYes = PreviousBeforeDOFCSModel("Yes")
-  val keyStoreSavedSubsidiaries= WhatWillUseForModel("Yes")
+  val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedNewProduct = NewProductModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedPreviousBeforeDOFCSYes = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedSubsidiaries= WhatWillUseForModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -143,7 +143,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController" should {
     "redirect to itself" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes")
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -156,7 +156,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController" should {
     "redirect to itself" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "No")
+        "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

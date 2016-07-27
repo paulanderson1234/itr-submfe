@@ -32,6 +32,7 @@
 //
 package forms
 
+import common.Constants
 import models.{SubsidiariesSpendingInvestmentModel, NewProductModel}
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -57,7 +58,7 @@ class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
   }
 
   val subsidiariesSpendingInvestmentJson = """{"subSpendingInvestment":"Yes"}"""
-  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("Yes")
+  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
 
   "The Subsidiaries Spending Investment Form" should {
     "Return an error if no radio button is selected" in {
@@ -80,7 +81,7 @@ class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
   "The Subsidiaries Spending Investment  Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "Yes"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -94,7 +95,7 @@ class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
   "The Subsidiaries Spending Investment  Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "subSpendingInvestment" -> "No"
+        "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -122,7 +123,7 @@ class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[NewProductModel]
       val subsidiariesSpendingInvestmentForm = SubsidiariesSpendingInvestmentForm.subsidiariesSpendingInvestmentForm.fill(subsidiariesSpendingInvestmentModel)
-      subsidiariesSpendingInvestmentForm.get.subSpendingInvestment shouldBe "Yes"
+      subsidiariesSpendingInvestmentForm.get.subSpendingInvestment shouldBe (Constants.StandardRadioButtonYesValue)
     }
 
     // form json to model - unapply

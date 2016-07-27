@@ -32,7 +32,7 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 
 import controllers.predicates.ValidActiveSession
@@ -75,8 +75,8 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
       validForm => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
         validForm.subSpendingInvestment match {
-          case "Yes"  => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
-          case "No"   => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
+          case  Constants.StandardRadioButtonYesValue  => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
+          case  Constants.StandardRadioButtonNoValue   => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
         }
       }
     )

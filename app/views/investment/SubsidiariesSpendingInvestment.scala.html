@@ -1,4 +1,5 @@
 @import models.SubsidiariesSpendingInvestmentModel
+@import common.Constants
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
@@ -20,8 +21,8 @@
             @formInputRadioGroup(
             field = subsidiariesSpendingInvestmentForm("subSpendingInvestment"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue ->Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
             '_legend -> Messages("page.investment.SubsidiariesSpendingInvestment.title"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,
