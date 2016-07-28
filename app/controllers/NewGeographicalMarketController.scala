@@ -68,7 +68,7 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
         case (Some(whatWillUseFor), None , None) => routes.WhatWillUseForController.show().toString
         case (_,Some(usedInvestReason), None) => routes.UsedInvestmentReasonBeforeController.show().toString()
         case (_,_,Some(prevBeforeDOFCS)) => routes.PreviousBeforeDOFCSController.show().toString()
-        case _ => routes.NewProductController.show().toString
+        case _ => routes.WhatWillUseForController.show().toString
       }
     }
 
