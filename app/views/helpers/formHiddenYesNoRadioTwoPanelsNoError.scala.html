@@ -1,6 +1,6 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-@(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None,
+@(form: Form[_], fieldName: String, questionText:String, content:Option[Html], helpText:Option[String] = None,
 legendClass:Option[String] = None, contentNo:Option[Html])(implicit lang: play.api.i18n.Lang)
 
 <div class="form-group" data-hidden="hidden" data-hidden-no="hidden-no">

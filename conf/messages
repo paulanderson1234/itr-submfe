@@ -297,3 +297,5 @@ page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that 
 
 #Subsidiaries ninety percent owned:
 page.investment.SubsidiariesNinetyOwned.title=Does [your company name] own more than 90% of that company?
+page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for the scheme. If you’ve made a mistake you can change your answer.
+page.investment.SubsidiariesNinetyOwned.error.two=If your answer’s correct you might still be eligible for other tax relief schemes.

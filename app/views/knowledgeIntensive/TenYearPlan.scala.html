@@ -20,7 +20,7 @@
     tenYearPlanForm,
     "hasTenYearPlan",
     Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one"),
-    formTextInput(tenYearPlanForm("tenYearPlanDesc"), tenYearPlanForm,
+    Some(formTextInput(tenYearPlanForm("tenYearPlanDesc"), tenYearPlanForm,
     'class -> "form-control",
     '_label -> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
     '_inputClass -> "form-control",
@@ -28,7 +28,7 @@
     '_maxlength -> "2000",
     '_cols -> "50",
     '_rows -> "10"
-    ),
+    )),
     None,
     Some("visuallyhidden"),
     Some(formSpanMessage("desc", "page.knowledgeIntensive.TenYearPlan.description.two"))

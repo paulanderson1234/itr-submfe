@@ -1,6 +1,6 @@
 @import models.SubsidiariesNinetyOwnedModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, formHiddenYesNoRadioTwoPanelsNoError, textWithConstErrors, backButtonWithProgress}
 
 @(subsidiariesNinetyOwnedForm: Form[SubsidiariesNinetyOwnedModel])(implicit request: Request[_])
 
@@ -16,17 +16,19 @@
             <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.SubsidiariesNinetyOwned.title")</h1>
 
             @form(action = controllers.routes.SubsidiariesNinetyOwnedController.submit()) {
-                <div class="form-group">
-                    @formInputRadioGroup(
-                    field = subsidiariesNinetyOwnedForm("ownNinetyPercent"),
-                    Seq(
-                    "Yes"->Messages("common.radioYesLabel"),
-                    "No"->Messages("common.radioNoLabel")),
-                    '_legend -> Messages("page.investment.SubsidiariesNinetyOwned.title"),
-                    '_legendClass -> "visuallyhidden",
-                    '_labelAfter -> true,
-                    '_labelClass -> "block-label",
-                    '_groupClass -> "inline"
+                <div class="form-group" data-hidden-show-error="hidden">
+                    @formHiddenYesNoRadioTwoPanelsNoError(
+                        subsidiariesNinetyOwnedForm,
+                        "ownNinetyPercent",
+                        Messages("page.investment.SubsidiariesNinetyOwned.title"),
+                        None,
+                        None,
+                        Some("visuallyhidden"),
+                        Some(textWithConstErrors(
+                        "ownNinetyPercent",
+                        Messages("page.investment.SubsidiariesNinetyOwned.error.one"),
+                        Messages("page.investment.SubsidiariesNinetyOwned.error.two")
+                        ))
                     )
                 </div>
 

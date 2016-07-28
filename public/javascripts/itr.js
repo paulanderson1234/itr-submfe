@@ -71,6 +71,23 @@ $(document).ready($(function() {
 
     }
 
+   $('*[data-hidden-show-error]').each(function() {
+
+        var $input = $self.find('input');
+
+        $input.change(function() {
+
+            var $this = $(this);
+
+            if ($this.val() === 'Yes') {
+               $(".form-field--error").removeClass("form-field--error");
+            } else if($this.val() === 'No') {
+               $(".form-group").addClass("form-field--error");
+            }
+        });
+
+   });
+
 }));
 
 // <details> polyfill
