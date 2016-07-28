@@ -290,6 +290,10 @@ page.knowledgeIntensive.TenYearPlan.description.two = Based on the information y
 page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
 page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
 
+#subsidiaries spending investment
+page.investment.SubsidiariesSpendingInvestment.title = Subsidiaries spending investment
+page.investment.SubsidiariesSpendingInvestment.heading = Will another company that''s owned or controlled by [your company name] spend this investment?
+
 #what will use for page
 page.investment.whatWillUseFor.title = What will you use this investment for?
 page.investment.whatWillUseFor.business = Doing business
