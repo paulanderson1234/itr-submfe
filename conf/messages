@@ -43,6 +43,11 @@ common.section.progress.company.details.one=Section 1 of 5: Company details
 common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
 
+## Common report error ##
+common.error.help.text=Get help with this page.
+common.error.summary.heading=This page has errors
+
+
 #validation errors
 validation.error.countrypostcode=Only one of country or postcode should be entered
 validation.error.optionaladdresssline=Address line must be no more than 27 valid characters if entered
@@ -51,7 +56,7 @@ validation.error.linefouraddresssline=Address line must be no more than 17 valid
 validation.error.postcode=Please enter a valid postcode
 validation.error.postcodelookup=Please enter a valid postcode
 validation.error.country=Country must be no more than 20 valid characters if entered
-validaton.error.postcode=Please enter a valid postcode
+validation.error.postcode=Please enter a valid postcode
 validation.error.email=Enter a valid email address
 validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
@@ -264,7 +269,7 @@ page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
 page.investment.UsedInvestmentReasonBefore.heading=Have you used a tax relief investment for that reason before?
 
 #New product page
-page.investment.NewProduct.title=New Product?
+page.investment.NewProduct.title=New product
 page.investment.NewProduct.heading=Will you use this investment to launch a new product?
 page.investment.NewProduct.hint=Answer yes if the product''s either:
 page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
@@ -295,3 +300,12 @@ page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax rel
 page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
 page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
 
+#investment grow description page
+page.investment.InvestmentGrow.heading=How will this investment help your company grow?
+page.investment.InvestmentGrow.title=How plan to use investment
+page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
+page.investment.InvestmentGrow.example.text=For example you may be planning to:
+page.investment.InvestmentGrow.bullet.one=hire more employees
+page.investment.InvestmentGrow.bullet.two=attract new customers
+page.investment.InvestmentGrow.bullet.three=develop a new product
+page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.

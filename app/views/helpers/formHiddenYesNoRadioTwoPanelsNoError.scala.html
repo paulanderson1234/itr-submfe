@@ -1,7 +1,9 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
 @(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None,
-legendClass:Option[String] = None, contentNo:Option[Html])(implicit lang: play.api.i18n.Lang)
+legendClass:Option[String] = None, contentNo:Option[Html], helpTextPanel1:Option[String] = None,
+helpTextPanel2:Option[String] = None, headerTextPanel1:Option[String] = None,
+headerTextPanel2:Option[String] = None)(implicit lang: play.api.i18n.Lang)
 
 <div class="form-group" data-hidden="hidden" data-hidden-no="hidden-no">
 
@@ -21,12 +23,17 @@ legendClass:Option[String] = None, contentNo:Option[Html])(implicit lang: play.a
 
     <div class="panel-indent" id="hidden">
         <div>
+
+            @if(headerTextPanel1.isDefined) { <span id="headerTextPanel1">@headerTextPanel1.get</span> }
+            @if(helpTextPanel1.isDefined) { <span id="helpTextPanel1" class="form-hint">@helpTextPanel1.get</span> }
             @content
         </div>
     </div>
 
     <div class="panel-indent" id="hidden-no">
         <div>
+            @if(headerTextPanel2.isDefined) { <span id="headerTextPanel2">@headerTextPanel2.get</span> }
+            @if(helpTextPanel2.isDefined) { <spanb id="helpTextPanel2" class="form-hint">@helpTextPanel2.get</spanb> }
             @contentNo
         </div>
     </div>

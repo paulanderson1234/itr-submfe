@@ -68,7 +68,7 @@ $(document).ready($(function() {
          $(".form-group-day").children("input").val("");
          $(".form-group-month").children("input").val("");
          $(".form-group-year").children("input").val("");
-
+         //$("#tenYearPlanDesc").val("");
     }
 
 }));

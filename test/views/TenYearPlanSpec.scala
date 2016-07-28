@@ -64,17 +64,17 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         Jsoup.parse(contentAsString(result))
       }
 
-      document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
-      document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("tenYearPlanDesc-hint").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-      document.getElementById("tenYearPlanDesc-desc").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
-      document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
-      document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
-      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+        document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
+        document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
+        document.getElementById("helpTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
+        document.getElementById("headerTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
+        document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
+        document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+        document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+        document.getElementById("next").text() shouldBe Messages("common.button.continue")
     }
 
 
@@ -85,8 +85,8 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(noWithNoTenYearPlanModel)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasTenYearPlan" -> "Yes",
-          "tenYearPlanDesc" -> "abcd"
+          "hasTenYearPlan" -> "No",
+          "tenYearPlanDesc" -> ""
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -94,8 +94,6 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("tenYearPlanDesc-hint").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-      document.getElementById("tenYearPlanDesc-desc").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
       document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
@@ -116,14 +114,12 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("tenYearPlanDesc-hint").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-      document.getElementById("tenYearPlanDesc-desc").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
-      document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("helpTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
@@ -133,19 +129,20 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(yesInvalidTenYearPlanModel)))
-        val result = controller.submit.apply(fakeRequestWithSession)
+        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+          "hasTenYearPlan" -> "Yes",
+          "tenYearPlanDesc" -> ""
+        ))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("tenYearPlanDesc-hint").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-      document.getElementById("tenYearPlanDesc-desc").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
-      document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+      document.getElementById("headerTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
