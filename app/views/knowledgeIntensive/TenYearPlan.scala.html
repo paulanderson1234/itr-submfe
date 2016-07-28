@@ -1,6 +1,6 @@
 @import models.TenYearPlanModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, formHiddenYesNoRadioTwoPanelsNoError, formTextInput, backButtonWithProgress, formSpanMessage}
+@import views.html.helpers.{errorSummary, formHiddenYesNoRadioTwoPanelsNoError, formTextInput, backButtonWithProgress, formSpanMessage, textArea}
 
 @(tenYearPlanForm: Form[TenYearPlanModel])(implicit request: Request[_])
 
@@ -20,19 +20,19 @@
     tenYearPlanForm,
     "hasTenYearPlan",
     Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one"),
-    formTextInput(tenYearPlanForm("tenYearPlanDesc"), tenYearPlanForm,
-    'class -> "form-control",
-    '_label -> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
-    '_inputClass -> "form-control",
-    '_help -> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two"),
-    '_maxlength -> "2000",
+    textArea(
+    tenYearPlanForm("tenYearPlanDesc"),
     '_cols -> "50",
-    '_rows -> "10"
+    '_rows -> "10",
+    '_maxLength-> "1000"
     ),
     None,
     Some("visuallyhidden"),
-    Some(formSpanMessage("desc", "page.knowledgeIntensive.TenYearPlan.description.two"))
-
+    Some(formSpanMessage("desc", "page.knowledgeIntensive.TenYearPlan.description.two")),
+    Some(Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")),
+    None,
+    Some(Messages("page.knowledgeIntensive.TenYearPlan.description.one")),
+    None
     )
 
 <div class="form-group">
