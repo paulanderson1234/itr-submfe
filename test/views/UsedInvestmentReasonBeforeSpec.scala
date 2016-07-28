@@ -57,7 +57,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -78,7 +78,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -92,7 +92,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
   "Verify that UsedInvestmentReasonBefore page contains error summary when invalid model is submitted" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      // submit the model with no radio slected as a post action
+      // submit the model with no radio selected as a post action
       val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
       Jsoup.parse(contentAsString(result))
     }

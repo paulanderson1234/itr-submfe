@@ -20,10 +20,11 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.NewGeographicalMarketForm._
-import models.NewGeographicalMarketModel
+import models.{NewGeographicalMarketModel, PreviousBeforeDOFCSModel, UsedInvestmentReasonBeforeModel, WhatWillUseForModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import uk.gov.hmrc.play.http.HeaderCarrier
+import utils.Validation
 
 import scala.concurrent.Future
 import views.html.investment.NewGeographicalMarket
@@ -61,7 +62,21 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
   }
 
   def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    //TODO: this needs to reuse the existing logic that determines the forward navigation (3 possible routes)
-    Future.successful(routes.ProposedInvestmentController.show.toString())
+    def routeRequest(whatWillUseFor: Option[WhatWillUseForModel], usedInvestReason : Option[UsedInvestmentReasonBeforeModel],
+                     prevBeforeDOFCS: Option[PreviousBeforeDOFCSModel]): String = {
+      (whatWillUseFor,usedInvestReason,prevBeforeDOFCS) match {
+        case (Some(whatWillUseFor), None , None) => routes.WhatWillUseForController.show().toString
+        case (_,Some(usedInvestReason), None) => routes.UsedInvestmentReasonBeforeController.show().toString()
+        case (_,_,Some(prevBeforeDOFCS)) => routes.PreviousBeforeDOFCSController.show().toString()
+        case _ => routes.WhatWillUseForController.show().toString
+      }
+    }
+
+    for {
+      whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
+      usedInvestReason <- keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore)
+      prevBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
+      route <- Future.successful(routeRequest(whatWillUseFor,usedInvestReason,prevBeforeDOFCS))
+    } yield route
   }
 }

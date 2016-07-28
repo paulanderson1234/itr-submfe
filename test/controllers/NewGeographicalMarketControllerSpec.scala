@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -49,6 +50,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   val emptyModel = NewGeographicalMarketModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel("Yes")
+  val keyStoreSavedWhatWillUseFor = WhatWillUseForModel("Doing Business")
+  val keyStoreSavedPrevBeforeDOFCS = PreviousBeforeDOFCSModel("Yes")
+  val keyStoreSavedUsedInvestmentReasonBefore = UsedInvestmentReasonBeforeModel("Yes")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -124,6 +128,12 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController" should {
     "redirect to itself" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedWhatWillUseFor)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedUsedInvestmentReasonBefore)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedPrevBeforeDOFCS)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isNewGeographicalMarket" -> "")
       submitWithSession(request)(

@@ -48,11 +48,11 @@ trait NewProductController extends FrontendController with ValidActiveSession {
       date match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
           //TODO: replace below line with subsidiaries spending investment controller when page available(REMOVE THESE COMMENTS WHEN DONE)
-          Future.successful(Redirect(routes.ProposedInvestmentController.show))
+          Future.successful(Redirect(routes.NewProductController.show()))
         //TODO: replace below line with how to plan to use investement controller when page available (REMOVE THESE COMMENTS WHEN DONE(
-        case Some(_) => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
+        case Some(_) => Future.successful(Redirect(routes.NewProductController.show()))
         //TODO: THE LINE BELOW SHOULD NOT BE CHANGED (REMOVE THESE COMMENTS WHEN DONE)
-        case None => Future.successful(Redirect(routes.SubsidiariesController.show))
+        case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }
 

@@ -94,6 +94,12 @@ POST       /used-investment-reason-before           controllers.UsedInvestmentRe
 GET        /used-investment-scheme-before           controllers.HadPreviousRFIController.show
 POST       /used-investment-scheme-before           controllers.HadPreviousRFIController.submit
 
+GET        /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.show
+POST       /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.submit
+
+GET        /investment-purpose                      controllers.WhatWillUseForController.show
+POST       /investment-purpose                      controllers.WhatWillUseForController.submit
+
 GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
 POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit
 
