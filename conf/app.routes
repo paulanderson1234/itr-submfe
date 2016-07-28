@@ -82,6 +82,12 @@ POST       /ten-year-plan                           controllers.TenYearPlanContr
 GET        /proposed-investment                     controllers.ProposedInvestmentController.show
 POST       /proposed-investment                     controllers.ProposedInvestmentController.submit
 
+GET        /new-product                             controllers.NewProductController.show
+POST       /new-product                             controllers.NewProductController.submit
+
+GET        /new-geographical-market		            controllers.NewGeographicalMarketController.show
+POST       /new-geographical-market	                controllers.NewGeographicalMarketController.submit
+
 GET        /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.show
 POST       /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.submit
 
@@ -90,4 +96,10 @@ POST       /used-investment-scheme-before           controllers.HadPreviousRFICo
 
 GET        /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.show
 POST       /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.submit
+
+GET        /investment-purpose                      controllers.WhatWillUseForController.show
+POST       /investment-purpose                      controllers.WhatWillUseForController.submit
+
+GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
+POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit
 

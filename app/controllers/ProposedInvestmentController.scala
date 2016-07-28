@@ -50,6 +50,7 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+        //TODO: needs to go to what will use investment for page
         Redirect(routes.ProposedInvestmentController.show)
       }
     )

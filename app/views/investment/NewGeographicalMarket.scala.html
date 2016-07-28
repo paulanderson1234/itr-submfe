@@ -1,0 +1,44 @@
+@import models.NewGeographicalMarketModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+
+@(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_])
+
+@main_template(Messages("page.investment.NewGeographicalMarket.title")) {
+
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(newGeographicalMarketForm, "used-investment-reason-before", "usedNewGeographicalMarket")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.investment.NewGeographicalMarket.heading")</h1>
+
+    <div class="form-group">
+    <h2 id="bullet-heading-hint" class="form-hint lede">@Messages("page.investment.NewGeographicalMarket.hint")</h2>
+    <ul class="form-hint list list-bullet">
+        <li id="bullet-one">@Messages("page.investment.NewGeographicalMarket.bullet.one")</li>
+        <li id="bullet-two">@Messages("page.investment.NewGeographicalMarket.bullet.two")</li>
+        <li id="bullet-three">@Messages("page.investment.NewGeographicalMarket.bullet.three")</li>
+    </ul>
+    </div>
+
+    @form(action = controllers.routes.NewGeographicalMarketController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = newGeographicalMarketForm("isNewGeographicalMarket"),
+            Seq(
+            "Yes"->Messages("common.radioYesLabel"),
+            "No"->Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.investment.NewGeographicalMarket.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.continue")</button>
+        </div>
+    }
+}
