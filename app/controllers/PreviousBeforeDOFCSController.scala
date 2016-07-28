@@ -47,9 +47,9 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
   def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
     date match {
       case Some(data) if data.ownSubsidiaries == "Yes" =>
-        Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
-      case Some(_) => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
-      case None => Future.successful(Redirect(routes.SubsidiariesController.show))
+        Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
+      case Some(_) => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
+      case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
     }
   }
 
@@ -60,7 +60,7 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
     validFormData => {
       keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
       validFormData.previousBeforeDOFCS match {
-        case "No" => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show))
+        case "No" => Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
         case "Yes" => for {
           subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
           route <- routeRequest(subsidiaries)

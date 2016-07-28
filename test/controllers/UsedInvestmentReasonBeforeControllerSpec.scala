@@ -102,7 +102,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
         }
       )
     }
@@ -116,7 +116,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
         }
       )
     }

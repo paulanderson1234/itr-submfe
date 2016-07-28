@@ -101,7 +101,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
         }
       )
     }

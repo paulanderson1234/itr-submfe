@@ -49,8 +49,8 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Valid
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
         validFormData.usedInvestmentReasonBefore match {
-          case "Yes"  => Redirect(routes.ProposedInvestmentController.show)
-          case "No"   => Redirect(routes.HadPreviousRFIController.show)
+          case "Yes"  => Redirect(routes.PreviousBeforeDOFCSController.show())
+          case "No"   => Redirect(routes.NewGeographicalMarketController.show())
         }
       }
     )
