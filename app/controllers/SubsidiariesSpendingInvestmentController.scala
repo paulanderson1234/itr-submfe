@@ -36,7 +36,6 @@ import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 
 import controllers.predicates.ValidActiveSession
-import forms.SubsidiariesForm._
 import forms.SubsidiariesSpendingInvestmentForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController

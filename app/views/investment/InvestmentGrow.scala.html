@@ -2,11 +2,11 @@
 @import models.InvestmentGrowModel
 @import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea}
 
-@(investmentGrowForm: Form[InvestmentGrowModel])(implicit request: Request[_])
+@(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[_])
 
 @main_template(Messages("page.investment.InvestmentGrow.title")) {
 
-@backButtonWithProgress(controllers.routes.InvestmentGrowController.show().toString, Messages("common.section.progress.company.details.three"))
+@backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.three"))
 
     @errorSummary(investmentGrowForm, "investment-growth-description", "investmentGrow")
 
