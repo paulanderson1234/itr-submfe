@@ -82,7 +82,8 @@ object Validation {
     Constraint("constraints.ten_year_plan")({
       tenYearForm : TenYearPlanModel =>
         tenYearForm.hasTenYearPlan match {
-          case "No" => if(tenYearForm.tenYearPlanDesc.isEmpty) Valid else Invalid(Seq(ValidationError(Messages("validation.error.DescriptionEnteredForNoOption"))))
+          case "No" => if(tenYearForm.hasTenYearPlan.isEmpty)
+            Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired")))) else Valid
           case "Yes" => validateYes(tenYearForm)
         }
     })
