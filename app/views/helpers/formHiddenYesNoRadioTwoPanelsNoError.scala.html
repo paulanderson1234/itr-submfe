@@ -1,4 +1,5 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
+@import common.Constants
 
 @(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None,
 legendClass:Option[String] = None, contentNo:Option[Html], helpTextPanel1:Option[String] = None,
@@ -10,8 +11,8 @@ headerTextPanel2:Option[String] = None)(implicit lang: play.api.i18n.Lang)
     @formInputRadioGroup(
     field = form(fieldName),
     Seq(
-    "Yes"->Messages("common.base.yes"),
-    "No"->Messages("common.base.no")),
+    Constants.StandardRadioButtonYesValue->Messages("common.base.yes"),
+    Constants.StandardRadioButtonNoValue->Messages("common.base.no")),
     '_legend -> questionText,
     '_legendClass -> legendClass,
     '_helpText -> helpText,
