@@ -19,10 +19,11 @@ package controllers
 import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.InvestmentGrowModel
+import models._
 import common._
 import forms.InvestmentGrowForm._
-
+import uk.gov.hmrc.play.http.HeaderCarrier
+import views.html._
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.investment.InvestmentGrow
@@ -37,22 +38,55 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
-      case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data)))
-      case None => Ok(InvestmentGrow(investmentGrowForm))
+
+    def routeRequest(backUrl: String) = {
+      keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
+        case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data),backUrl))
+        case None => Ok(InvestmentGrow(investmentGrowForm,backUrl))
+      }
     }
+
+    for {
+      link <- getBackLink
+      route <- routeRequest(link)
+    } yield route
   }
 
   val submit = Action.async { implicit request =>
-    val response = investmentGrowForm.bindFromRequest().fold(
-      formWithErrors => {
-        BadRequest(InvestmentGrow(formWithErrors))
-      },
-      validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validFormData)
-        Redirect(routes.InvestmentGrowController.show())
+    investmentGrowForm.bindFromRequest.fold(
+      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(investment.InvestmentGrow(invalidForm, url)))),
+      validForm => {
+        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
     )
-    Future.successful(response)
+  }
+
+
+  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
+    def routeRequest(newGeographicalMarket: Option[NewGeographicalMarketModel], subsidiariesSpendingInvestment: Option[SubsidiariesSpendingInvestmentModel],
+                     newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
+                     whatWillUseFor: Option[WhatWillUseForModel]): String = {
+      (newGeographicalMarket,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor) match {
+        case (Some(newGeographicalMarket),_,_,_,_) => routes.NewGeographicalMarketController.show.toString()
+        case (None,Some(subsidiariesInvestment),_,_,_) => routes.SubsidiariesSpendingInvestmentController.show.toString()
+        case (None,None,Some(newProduct),_,_) => routes.NewProductController.show.toString()
+        case (None,None,None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show.toString()
+        case (None,None, None,None, Some(whatWillUseFor)) => routes.WhatWillUseForController.show.toString()
+        case _ => routes.WhatWillUseForController.show.toString()
+      }
+    }
+
+
+    // todo change newGeographicMarket to subsidiaries90Owned when it is created
+    for {
+      newGeographicalMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+      subsidiariesSpendingInvestment <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
+      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+      previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
+      whatWillUseFor<- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
+      route <- Future.successful(routeRequest(newGeographicalMarket,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor))
+    } yield route
+
   }
 }
