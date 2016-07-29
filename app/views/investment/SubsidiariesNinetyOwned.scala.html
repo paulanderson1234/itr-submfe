@@ -1,38 +1,47 @@
 @import models.SubsidiariesNinetyOwnedModel
+@import common.Constants
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, formHiddenYesNoRadioTwoPanelsNoError, textWithConstErrors, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress}
 
 @(subsidiariesNinetyOwnedForm: Form[SubsidiariesNinetyOwnedModel])(implicit request: Request[_])
 
 @main_template(Messages("page.investment.SubsidiariesNinetyOwned.title")){
 
-    @backButtonWithProgress(controllers.routes.SubsidiariesNinetyOwnedController.show().toString, Messages("common.section.progress.company.details.three"))
+    @backButtonWithProgress(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString, Messages("common.section.progress.company.details.three"))
 
     <div class="grid-row">
         <div class="column-two-thirds">
 
             @errorSummary(subsidiariesNinetyOwnedForm, "subsidiaries-ninety-percent-owned", "ownNinetyPercent")
 
-            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.SubsidiariesNinetyOwned.title")</h1>
+            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.SubsidiariesNinetyOwned.heading")</h1>
 
             @form(action = controllers.routes.SubsidiariesNinetyOwnedController.submit()) {
-                <div class="form-group" data-hidden-show-error="hidden">
-                    @formHiddenYesNoRadioTwoPanelsNoError(
-                        subsidiariesNinetyOwnedForm,
-                        "ownNinetyPercent",
-                        Messages("page.investment.SubsidiariesNinetyOwned.title"),
-                        None,
-                        None,
-                        Some("visuallyhidden"),
-                        Some(textWithConstErrors(
-                        "ownNinetyPercent",
-                        Messages("page.investment.SubsidiariesNinetyOwned.error.one"),
-                        Messages("page.investment.SubsidiariesNinetyOwned.error.two")
-                        ))
-                    )
+                <div id="radioNinetyPercentDiv">
+                    <div class="form-group">
+                        @formInputRadioGroup(
+                        field = subsidiariesNinetyOwnedForm("ownNinetyPercent"),
+                        Seq(
+                        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+                        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+                        '_legend -> Messages("page.investment.SubsidiariesNinetyOwned.title"),
+                        '_legendClass -> "visuallyhidden",
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label",
+                        '_groupClass -> "inline"
+                        )
+                    </div>
+
+                    <div id="ninetyPercentErrorSection">
+                        @textWithConstErrors(
+                            "ownNinetyPercent",
+                            Messages("page.investment.SubsidiariesNinetyOwned.error.one"),
+                            Messages("page.investment.SubsidiariesNinetyOwned.error.two")
+                        )
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="ninetyPercentButtonDiv">
                     <button class="btn button" id="next">@Messages("common.button.continue")</button>
                 </div>
             }

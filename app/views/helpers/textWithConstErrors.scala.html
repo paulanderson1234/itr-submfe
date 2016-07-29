@@ -5,10 +5,11 @@
 
 <fieldset class="form-group" id="@fieldName-fieldset">
 
-    <legend id="message-text-legend-id visuallyhidden">
-        <span>@Messages(messageOne)</span>
+    <legend id="message-text-legend-id visuallyhidden"></legend>
+    <div class="form-field--error fields-aligned">
+        <span class="error-notification" id="text-one-id">@Messages(messageOne)</span>
         <br>
-        <span id="text-two-id">@Messages(messageTwo)</span>
-    </legend>
+        <span class="error-notification" id="text-two-id">@Messages(messageTwo)</span>
+    </div>
 
 </fieldset>

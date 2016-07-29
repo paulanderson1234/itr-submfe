@@ -1,3 +1,5 @@
+$("#ninetyPercentErrorSection").hide();
+
 $(document).ready($(function() {
     $('*[data-hidden]').each(function() {
 
@@ -71,24 +73,43 @@ $(document).ready($(function() {
 
     }
 
-   $('*[data-hidden-show-error]').each(function() {
+    $("#ownNinetyPercent-no").on("click", function () {
+          if ($(this).is(":checked")) {
+              EnableNinetyPercentError();
+        }
+    });
 
-        var $input = $self.find('input');
+    $("#ownNinetyPercent-yes").on("click", function () {
+          if ($(this).is(":checked")) {
+            DisableNinetyPercentError();
+        }
+    });$("#ownNinetyPercent-yes").on("click", function () {
+          if ($(this).is(":checked")) {
+            DisableNinetyPercentError();
+        }
+    });
 
-        $input.change(function() {
 
-            var $this = $(this);
-
-            if ($this.val() === 'Yes') {
-               $(".form-field--error").removeClass("form-field--error");
-            } else if($this.val() === 'No') {
-               $(".form-group").addClass("form-field--error");
-            }
-        });
-
-   });
 
 }));
+
+function EnableNinetyPercentError()
+{
+    $("#radioNinetyPercentDiv").addClass("error");
+    $("#ownNinetyPercent-noLabel").addClass("error-border");
+    $("#ninetyPercentErrorSection").show();
+    $("#ninetyPercentButtonDiv").hide();
+
+}
+
+function DisableNinetyPercentError()
+{
+    $("#radioNinetyPercentDiv").removeClass("error");
+    $("#ownNinetyPercent-noLabel").removeClass("error-border");
+    $("#ninetyPercentErrorSection").hide();
+    $("#ninetyPercentButtonDiv").show();
+
+}
 
 // <details> polyfill
 // http://caniuse.com/#feat=details
