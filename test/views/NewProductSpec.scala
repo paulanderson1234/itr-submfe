@@ -19,16 +19,19 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.{NewProductController, routes}
-import models.NewProductModel
+import models.{NewProductModel, SubsidiariesModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -39,6 +42,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
 
   val isNewProductModel = new NewProductModel("Yes")
   val emptyNewProductModel = new NewProductModel("")
+  val modelSubsidiariesNo = SubsidiariesModel("No")
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(isNewProductModel)))
 
   class SetupPage {
 
@@ -106,5 +111,23 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.investment.NewProduct.title")
+  }
+
+  "Verify that NewProduct page contains no errors when valid model is submitted" in new SetupPage {
+    val document : Document = {
+      val userId = s"user-${UUID.randomUUID}"
+      // submit the model with no radio selected as a post action
+      when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
+      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(
+        "isNewProduct" -> Constants.StandardRadioButtonYesValue
+      ))
+      Jsoup.parse(contentAsString(result))
+    }
+
+    // Make sure we have the expected error summary displayed
+    //document.getElementById("error-summary-display").hasClass("error-summary--show")
+    //document.title() shouldBe Messages("page.investment.NewProduct.title")
   }
 }

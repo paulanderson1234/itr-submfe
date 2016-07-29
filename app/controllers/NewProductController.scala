@@ -47,11 +47,8 @@ trait NewProductController extends FrontendController with ValidActiveSession {
     def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
       date match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-          //TODO: replace below line with subsidiaries spending investment controller when page available(REMOVE THESE COMMENTS WHEN DONE)
-          Future.successful(Redirect(routes.NewProductController.show()))
-        //TODO: replace below line with how to plan to use investement controller when page available (REMOVE THESE COMMENTS WHEN DONE(
-        case Some(_) => Future.successful(Redirect(routes.NewProductController.show()))
-        //TODO: THE LINE BELOW SHOULD NOT BE CHANGED (REMOVE THESE COMMENTS WHEN DONE)
+          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+        case Some(_) => Future.successful(Redirect(routes.InvestmentGrowController.show()))
         case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }
