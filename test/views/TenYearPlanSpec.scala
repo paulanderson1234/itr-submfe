@@ -18,6 +18,7 @@ package views
 
 import java.util.UUID
 
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{CommercialSaleController, TenYearPlanController, routes}
@@ -58,7 +59,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(yesWithTenYearPlanModel)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasTenYearPlan" -> "Yes",
+          "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
           "tenYearPlanDesc" -> "abcd"
         ))
         Jsoup.parse(contentAsString(result))
@@ -85,7 +86,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(noWithNoTenYearPlanModel)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasTenYearPlan" -> "No",
+          "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
           "tenYearPlanDesc" -> ""
         ))
         Jsoup.parse(contentAsString(result))
@@ -130,7 +131,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(yesInvalidTenYearPlanModel)))
         val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasTenYearPlan" -> "Yes",
+          "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
           "tenYearPlanDesc" -> ""
         ))
         Jsoup.parse(contentAsString(result))

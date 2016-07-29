@@ -40,17 +40,25 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
       case None => Ok(TenYearPlan(tenYearPlanForm))
     }
   }
-
   val submit = Action.async { implicit request =>
     val response = tenYearPlanForm.bindFromRequest().fold(
       formWithErrors => {
         BadRequest(TenYearPlan(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+        validFormData.hasTenYearPlan match {
+          case Constants.StandardRadioButtonYesValue =>
+            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,  validFormData)
+          case _ =>
+            // don't save a description if No is selected
+            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,
+              TenYearPlanModel(validFormData.hasTenYearPlan, None))
+        }
+
         Redirect(routes.SubsidiariesController.show())
       }
     )
     Future.successful(response)
   }
+
 }

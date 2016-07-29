@@ -15,11 +15,10 @@
  */
 
 package controllers
-
-import java.time.ZoneId
-import java.util.{Date, UUID}
+import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -100,7 +99,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "No",
+        "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")
       submitWithSession(request)(
         result => {
@@ -114,7 +113,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   "Sending a valid Yes form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page with valid submission" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "Yes",
+        "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")
       submitWithSession(request)(
         result => {
@@ -144,7 +143,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to itself with validation errors" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "Yes",
+        "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "")
       submitWithSession(request)(
         result => {
