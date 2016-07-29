@@ -49,10 +49,10 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   val emptyModel = InvestmentGrowModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedInvestmentGrow = InvestmentGrowModel("text some other")
-  val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel("Yes")
+  val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonNoValue)
   val keyStoreSavedNewProduct =NewProductModel(Constants.StandardRadioButtonYesValue)
-  val keyStoreSavedPrevBeforeDOFCS = PreviousBeforeDOFCSModel("Yes")
+  val keyStoreSavedPrevBeforeDOFCS = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedWhatWillUseFor = WhatWillUseForModel("Doing Business")
 
 
