@@ -15,10 +15,10 @@
  */
 
 package controllers
+
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -36,30 +36,28 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  object TenYearPlanControllerTest extends TenYearPlanController {
+  object InvestmentGrowControllerTest extends InvestmentGrowController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = TenYearPlanModel("Yes", Some("Text"))
-  val emptyModel = TenYearPlanModel("", None)
+  val model = InvestmentGrowModel("some text")
+  val emptyModel = InvestmentGrowModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel("Yes", Some("abcd"))
-  val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel("No", None)
-
+  val keyStoreSavedInvestmentGrow = InvestmentGrowModel("text some other")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = TenYearPlanControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = InvestmentGrowControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = TenYearPlanControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = InvestmentGrowControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -69,17 +67,17 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     reset(mockKeyStoreConnector)
   }
 
-  "TenYearPlanController" should {
+  "InvestmentGrowController" should {
     "use the correct keystore connector" in {
-      TenYearPlanController.keyStoreConnector shouldBe KeystoreConnector
+      InvestmentGrowController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
 
-  "Sending a GET request to TenYearPlanController" should {
+  "Sending a GET request to InvestmentGrowController" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -87,64 +85,34 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
       )
     }
-
   }
 
-  "Sending a valid No form submission to the TenYearPlanController" should {
-    "redirect to the subsidiaries page if no and and no description" in {
+  "Sending a valid form submit to the InvestmentGrowController" should {
+    "redirect to itself currently" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
-        "tenYearPlanDesc" -> "")
+        "investmentGrowDesc" -> "some text so it's valid")
+
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
   }
 
-  "Sending a valid Yes form submission to the TenYearPlanController" should {
-    "redirect to the subsidiaries page with valid submission" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
-        "tenYearPlanDesc" -> "text")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
-        }
-      )
-    }
-  }
-
-  "Sending an empty invalid form submission with validation errors to the TenYearPlanController" should {
+  "Sending an invalid form submission with validation errors to the InvestmentGrowController" should {
     "redirect to itself" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> "",
-        "tenYearPlanDesc" -> "")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-          redirectLocation(result) shouldBe None
-        }
-      )
-    }
-  }
+        "investmentGrowDesc" -> "")
 
-  "Sending an an invalid form submission with both Yes and a blank description to the TenYearPlanController" should {
-    "redirect to itself with validation errors" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
-        "tenYearPlanDesc" -> "")
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -152,4 +120,5 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       )
     }
   }
+
 }

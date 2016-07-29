@@ -17,48 +17,42 @@
 package controllers
 
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.TenYearPlanModel
+import models.InvestmentGrowModel
 import common._
-import forms.TenYearPlanForm._
-import views.html.knowledgeIntensive.TenYearPlan
-import scala.concurrent.Future
+import forms.InvestmentGrowForm._
 
-object TenYearPlanController extends TenYearPlanController {
+import scala.concurrent.Future
+import controllers.predicates.ValidActiveSession
+import views.html.investment.InvestmentGrow
+
+object InvestmentGrowController extends InvestmentGrowController
+{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait TenYearPlanController extends FrontendController with ValidActiveSession {
+trait InvestmentGrowController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
-      case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
-      case None => Ok(TenYearPlan(tenYearPlanForm))
+    keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
+      case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data)))
+      case None => Ok(InvestmentGrow(investmentGrowForm))
     }
   }
+
   val submit = Action.async { implicit request =>
-    val response = tenYearPlanForm.bindFromRequest().fold(
+    val response = investmentGrowForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(TenYearPlan(formWithErrors))
+        BadRequest(InvestmentGrow(formWithErrors))
       },
       validFormData => {
-        validFormData.hasTenYearPlan match {
-          case Constants.StandardRadioButtonYesValue =>
-            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,  validFormData)
-          case _ =>
-            // don't save a description if No is selected
-            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,
-              TenYearPlanModel(validFormData.hasTenYearPlan, None))
-        }
-
-        Redirect(routes.SubsidiariesController.show())
+        keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validFormData)
+        Redirect(routes.InvestmentGrowController.show())
       }
     )
     Future.successful(response)
   }
-
 }

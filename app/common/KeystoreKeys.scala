@@ -42,4 +42,5 @@ trait KeystoreKeys {
   val subsidiariesNinetyOwned="investment:subsidiariesNinetyOwned"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
   val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
+  val investmentGrow ="investment:investmentGrow"
 }

@@ -105,3 +105,6 @@ POST       /previous-before-dofcs                   controllers.PreviousBeforeDO
 
 GET        /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.show
 POST       /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.submit
+
+GET        /how-plan-to-use-investment              controllers.InvestmentGrowController.show
+POST       /how-plan-to-use-investment              controllers.InvestmentGrowController.submit
