@@ -77,7 +77,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
 
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownNinetyPercent" -> ""
         ))
         Jsoup.parse(contentAsString(result))
@@ -89,6 +89,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
   }
 }
