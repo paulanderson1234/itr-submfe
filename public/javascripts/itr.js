@@ -1,3 +1,5 @@
+$("#ninetyPercentErrorSection").hide();
+
 $(document).ready($(function() {
     $('*[data-hidden]').each(function() {
 
@@ -71,7 +73,43 @@ $(document).ready($(function() {
          //$("#tenYearPlanDesc").val("");
     }
 
+    $("#ownNinetyPercent-no").on("click", function () {
+          if ($(this).is(":checked")) {
+              EnableNinetyPercentError();
+        }
+    });
+
+    $("#ownNinetyPercent-yes").on("click", function () {
+          if ($(this).is(":checked")) {
+            DisableNinetyPercentError();
+        }
+    });$("#ownNinetyPercent-yes").on("click", function () {
+          if ($(this).is(":checked")) {
+            DisableNinetyPercentError();
+        }
+    });
+
+
+
 }));
+
+function EnableNinetyPercentError()
+{
+    $("#radioNinetyPercentDiv").addClass("error");
+    $("#ownNinetyPercent-noLabel").addClass("error-border");
+    $("#ninetyPercentErrorSection").show();
+    $("#ninetyPercentButtonDiv").hide();
+
+}
+
+function DisableNinetyPercentError()
+{
+    $("#radioNinetyPercentDiv").removeClass("error");
+    $("#ownNinetyPercent-noLabel").removeClass("error-border");
+    $("#ninetyPercentErrorSection").hide();
+    $("#ninetyPercentButtonDiv").show();
+
+}
 
 // <details> polyfill
 // http://caniuse.com/#feat=details

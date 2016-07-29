@@ -145,3 +145,7 @@ related ul {
 .yes-no-button {
     margin-top: 1em;
 }
+
+.error-border {
+  border: 4px solid #b10e1e !important;
+}

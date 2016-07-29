@@ -310,6 +310,13 @@ page.investment.whatWillUseFor.rAndD = Research and Development
 page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
 page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
 
+
+#Subsidiaries ninety percent owned:
+page.investment.SubsidiariesNinetyOwned.heading=Does [your company name] own more than 90% of that company?
+page.investment.SubsidiariesNinetyOwned.title=Does [your company name] own more than 90% of that company
+page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for the scheme. If you’ve made a mistake you can change your answer.
+page.investment.SubsidiariesNinetyOwned.error.two=If your answer’s correct you might still be eligible for other tax relief schemes.
+
 #investment grow description page
 page.investment.InvestmentGrow.heading=How will this investment help your company grow?
 page.investment.InvestmentGrow.title=How plan to use investment

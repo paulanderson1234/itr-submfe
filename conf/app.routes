@@ -103,6 +103,8 @@ POST       /investment-purpose                      controllers.WhatWillUseForCo
 GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
 POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit
 
+GET        /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.show
+POST       /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.submit
+
 GET        /how-plan-to-use-investment              controllers.InvestmentGrowController.show
 POST       /how-plan-to-use-investment              controllers.InvestmentGrowController.submit
-
