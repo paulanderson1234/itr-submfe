@@ -71,6 +71,8 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         document.getElementById("helpTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
         document.getElementById("headerTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
         document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
+        document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
+        document.getElementById("labelTextId").hasClass("visuallyhidden")
         document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
         document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
         document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()

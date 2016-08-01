@@ -92,7 +92,6 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     reset(mockKeyStoreConnector)
   }
 
-
   "The InvestmentGrow Page" +
     "Verify that the correct elements are loaded " +
     "When newGeographicMarket = null, subsidiariesSpendingInvestment = null, newProduct = null, previousDOFCS = null " +
@@ -128,6 +127,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 
   "The InvestmentGrow Page" +
@@ -165,6 +166,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 
   "The InvestmentGrow Page" +
@@ -202,6 +205,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 
 
@@ -240,6 +245,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 
 
@@ -279,6 +286,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 
   "The InvestmentGrow Page" +
@@ -318,5 +327,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show.toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
 }
