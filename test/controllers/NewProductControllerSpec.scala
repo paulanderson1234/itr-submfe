@@ -99,7 +99,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   }
 
   "Sending a valid 'Yes' form submit to the NewProductController" should {
-    "redirect to the subsidiaries page when the subsidiaries value is Yes" in {
+    "redirect to the subsidiaries spending investment page when the subsidiaries value is Yes" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
@@ -108,14 +108,14 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }
   }
 
   "Sending a valid 'Yes' form submit to the NewProductController" should {
-    "redirect to the subsidiaries page when the subsidiaries value is No" in {
+    "redirect to how use investment (how grow) page when the subsidiaries value is No" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
@@ -124,7 +124,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
@@ -160,7 +160,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }
@@ -176,7 +176,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
