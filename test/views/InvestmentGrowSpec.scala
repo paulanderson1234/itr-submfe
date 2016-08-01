@@ -14,38 +14,6 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2016 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
-  * Copyright 2016 HM Revenue & Customs
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
-
 package views
 
 import java.util.UUID
@@ -76,7 +44,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
   val emptyInvestmentGrowModel = new InvestmentGrowModel("")
 
   //todo Change to Subsidiaries90Owned when created
-  val newGeographicMarket = new NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val subsidiariesNinetyOwned = new SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
   val subsidiariesSpendingInvestment = new SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonNoValue)
   val newProductModel = new NewProductModel(Constants.StandardRadioButtonYesValue)
   val previousBeforeDOFCSModel= new PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
@@ -98,7 +66,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = null" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -110,9 +78,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -137,7 +105,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = Some(whatWIllUseFor)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -149,9 +117,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Some(whatWilUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -176,7 +144,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = Some(whatWIllUseFor)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -188,9 +156,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Some(whatWilUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -216,7 +184,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = Some(whatWIllUseFor)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -228,9 +196,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Some(whatWilUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -257,7 +225,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = Some(whatWIllUseFor)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(subsidiariesSpendingInvestment)))
@@ -269,9 +237,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Some(whatWilUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -297,8 +265,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "and whatWillUseFor = Some(whatWIllUseFor)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(newGeographicMarket)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).
         thenReturn(Future.successful(Some(subsidiariesSpendingInvestment)))
@@ -310,9 +278,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Some(whatWilUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      )))
+      ))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -324,7 +292,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
     document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
     document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")

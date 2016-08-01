@@ -112,7 +112,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model" should {
-    "redirect to itself" in {
+    "redirect to the how-plan-to-use-investment page" in {
      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
@@ -121,14 +121,14 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
   }
 
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
-    "redirect to itself" in {
+    "redirect to the subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
@@ -137,7 +137,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }

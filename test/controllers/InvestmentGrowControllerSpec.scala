@@ -49,13 +49,11 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   val emptyModel = InvestmentGrowModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedInvestmentGrow = InvestmentGrowModel("text some other")
-  val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedSubsidiariesNinetyOwned = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonNoValue)
   val keyStoreSavedNewProduct =NewProductModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedPrevBeforeDOFCS = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedWhatWillUseFor = WhatWillUseForModel("Doing Business")
-
-
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -117,8 +115,8 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the InvestmentGrowController" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(keyStoreSavedNewGeographicalMarket)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(keyStoreSavedSubsidiariesNinetyOwned)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
         (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(keyStoreSavedSubsidiariesSpendingInvestment)))

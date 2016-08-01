@@ -141,26 +141,26 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   }
 
   "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController" should {
-    "redirect to itself" in {
+    "redirect to the subsidiaries-ninety-percent-owned page" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-ninety-percent-owned")
         }
       )
     }
   }
 
   "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController" should {
-    "redirect to itself" in {
+    "redirect to the how-plan-to-use-investment page" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
