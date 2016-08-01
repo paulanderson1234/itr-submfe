@@ -74,8 +74,8 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
       validForm => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
         validForm.subSpendingInvestment match {
-          case  Constants.StandardRadioButtonYesValue  => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
-          case  Constants.StandardRadioButtonNoValue   => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show))
+          case  Constants.StandardRadioButtonYesValue  => Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
+          case  Constants.StandardRadioButtonNoValue   => Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }
       }
     )

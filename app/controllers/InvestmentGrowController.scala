@@ -64,28 +64,26 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
 
 
   def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(newGeographicalMarket: Option[NewGeographicalMarketModel], subsidiariesSpendingInvestment: Option[SubsidiariesSpendingInvestmentModel],
+    def routeRequest(subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel], subsidiariesSpendingInvestment: Option[SubsidiariesSpendingInvestmentModel],
                      newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
                      whatWillUseFor: Option[WhatWillUseForModel]): String = {
-      (newGeographicalMarket,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor) match {
-        case (Some(newGeographicalMarket),_,_,_,_) => routes.NewGeographicalMarketController.show.toString()
-        case (None,Some(subsidiariesInvestment),_,_,_) => routes.SubsidiariesSpendingInvestmentController.show.toString()
-        case (None,None,Some(newProduct),_,_) => routes.NewProductController.show.toString()
-        case (None,None,None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show.toString()
-        case (None,None, None,None, Some(whatWillUseFor)) => routes.WhatWillUseForController.show.toString()
-        case _ => routes.WhatWillUseForController.show.toString()
+      (subsidiariesNinetyOwned,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor) match {
+        case (Some(subsidiariesNinetyOwned),_,_,_,_) => routes.SubsidiariesNinetyOwnedController.show().toString()
+        case (None,Some(subsidiariesInvestment),_,_,_) => routes.SubsidiariesSpendingInvestmentController.show().toString()
+        case (None,None,Some(newProduct),_,_) => routes.NewProductController.show().toString()
+        case (None,None,None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show().toString()
+        case (None,None, None,None, Some(whatWillUseFor)) => routes.WhatWillUseForController.show().toString()
+        case _ => routes.WhatWillUseForController.show().toString()
       }
     }
 
-
-    // todo change newGeographicMarket to subsidiaries90Owned when it is created
     for {
-      newGeographicalMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+      subsidiariesNinetyOwned <- keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
       subsidiariesSpendingInvestment <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
       newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
       whatWillUseFor<- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
-      route <- Future.successful(routeRequest(newGeographicalMarket,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor))
+      route <- Future.successful(routeRequest(subsidiariesNinetyOwned,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor))
     } yield route
 
   }
