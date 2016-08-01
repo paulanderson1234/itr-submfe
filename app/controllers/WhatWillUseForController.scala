@@ -58,13 +58,11 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
       def subsidiariesCheck(hasSub: Option[SubsidiariesModel]): Future[Result] = {
         hasSub match {
           case Some(hasSub) => if (hasSub.ownSubsidiaries.equals("Yes")) {
-            //goes to subsidiary spending investment
-            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+            Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
           } else {
-            //goes to how to plan to use investment
-            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+            Future.successful(Redirect(routes.InvestmentGrowController.show()))
           }
-          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
         }
       }
 
@@ -77,21 +75,22 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
             else { kIFlag match {
               case Some(kIFlag) =>
                 if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get,getAgeLimit(kIFlag))) {
-                  //Goes to new geographic market
                   Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
                 }
                 else {subsidiariesCheck(HasSub)}
 
-              case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+
+              //TODO: Redirect to commercial sale as you should not be able to skip commercial sale or KI.
+              case None => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
               }
 
             }
-            case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+            case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
         }
         else {subsidiariesCheck(HasSub)}
 
-        case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+        case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
       }
 
     }

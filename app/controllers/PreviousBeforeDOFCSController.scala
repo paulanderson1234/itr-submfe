@@ -47,8 +47,8 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
   def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
     date match {
       case Some(data) if data.ownSubsidiaries == "Yes" =>
-        Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
-      case Some(_) => Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
+        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+      case Some(_) => Future.successful(Redirect(routes.InvestmentGrowController.show()))
       case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
     }
   }

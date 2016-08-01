@@ -49,7 +49,7 @@ trait SubsidiariesNinetyOwnedController extends FrontendController with ValidAct
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
-        Redirect(routes.SubsidiariesNinetyOwnedController.show())
+        Redirect(routes.InvestmentGrowController.show())
       }
     )
     Future.successful(response)
