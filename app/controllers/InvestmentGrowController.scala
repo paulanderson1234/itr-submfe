@@ -56,7 +56,7 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
     investmentGrowForm.bindFromRequest.fold(
       invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(investment.InvestmentGrow(invalidForm, url)))),
       validForm => {
-        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
+        keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
     )
