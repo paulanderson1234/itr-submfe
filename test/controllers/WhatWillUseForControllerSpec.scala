@@ -215,7 +215,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = false, KI = true, sub = true and Commercial sale over than 7 years" should {
-    "redirect itself for the moment" in {
+    "redirect to subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -229,14 +229,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = false, KI = false and Commercial sale over 3 years" should {
-    "redirect itself for the moment" in {
+    "redirect to the subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -250,7 +250,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }
@@ -278,7 +278,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = false, KI = true, sub = false and Commercial sale = false" should {
-    "redirect itself for the moment" in {
+    "redirect to the how-plan-to-use-investment page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -292,14 +292,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = true, KI = true, sub = false and Commercial sale = none" should {
-    "redirect itself for the moment" in {
+    "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -313,14 +313,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
         }
       )
     }
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = false, KI = none, sub = none and Commercial sale = false" should {
-    "redirect itself for the moment" in {
+    "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -334,14 +334,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
         }
       )
     }
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = false, KI = none, sub = true and Commercial sale = true" should {
-    "redirect itself for the moment" in {
+    "redirect to the subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -355,14 +355,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
         }
       )
     }
   }
 
   "Sending a valid form submit to the WhatWillUseForController with PreviousRFI = none, KI = true, sub = false and Commercial sale = true" should {
-    "redirect itself for the moment" in {
+    "redirect to the used-investment-scheme-before page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Future.successful(None)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
@@ -376,7 +376,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
         }
       )
     }

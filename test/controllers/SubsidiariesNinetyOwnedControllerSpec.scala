@@ -95,7 +95,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
   }
 
   "Sending a valid form submission to the SubsidiariesNinetyOwnedController" should {
-    "redirect to itself" in {
+    "redirect to the how-plan-to-use-investment page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
@@ -103,7 +103,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-ninety-percent-owned")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
         }
       )
     }
