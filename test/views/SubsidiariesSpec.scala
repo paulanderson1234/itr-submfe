@@ -308,7 +308,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify that the Subsidiaries page contains the correct elements " +
-      "when a valid 'Yes' SubsidiariesModel is retrieved from keystore and date of incorporation is less than 3 years from today from keystore and not KI" +
+      "when a valid 'Yes' SubsidiariesModel is retrieved from keystore and date of incorporation is greater than 3 years from today from keystore and not KI" +
       "and staffWithMasters is no" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
