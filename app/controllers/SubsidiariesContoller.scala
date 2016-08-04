@@ -53,15 +53,6 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
     } yield route
   }
 
-  val thisIsTheEquivalentOf_show = ValidateSession.async { implicit request =>
-    getBackLink flatMap { link =>
-      keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
-        case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), link))
-        case None => Ok(Subsidiaries(subsidiariesForm, link))
-      }
-    }
-  }
-
   val submit = Action.async { implicit request =>
     subsidiariesForm.bindFromRequest.fold(
       invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url)))),
@@ -83,14 +74,14 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
                      masters: Option[PercentageStaffWithMastersModel]): String = {
       (date,ki,masters) match {
         case (Some(date),_,_) if Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) =>
-          routes.CommercialSaleController.show.toString
+          routes.CommercialSaleController.show().toString
         case (Some(date),Some(ki),Some(masters)) => if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("No")) {
-                                                    routes.TenYearPlanController.show.toString()
+                                                    routes.TenYearPlanController.show().toString()
                                                     }else if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("Yes")){
-                                                      routes.PercentageStaffWithMastersController.show.toString()
-                                                    }else routes.IsKnowledgeIntensiveController.show.toString()
-        case (Some(date),_,_) => routes.IsKnowledgeIntensiveController.show.toString()
-        case _ => routes.DateOfIncorporationController.show.toString
+                                                      routes.PercentageStaffWithMastersController.show().toString()
+                                                    }else routes.IsKnowledgeIntensiveController.show().toString()
+        case (Some(date),_,_) => routes.IsKnowledgeIntensiveController.show().toString()
+        case _ => routes.DateOfIncorporationController.show().toString
       }
     }
 
