@@ -326,3 +326,9 @@ page.investment.InvestmentGrow.bullet.one=hire more employees
 page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
 page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
+
+#check your answers page
+page.checkAndSubmit.checkAnswers.heading=Check your answers
+page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment scheme
+page.checkAndSubmit.checkAnswers.print.text=Print this page
+page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
