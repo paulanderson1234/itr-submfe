@@ -14,45 +14,40 @@
  * limitations under the License.
  */
 
-package controllers.examples
+package controllers
 
+import java.util.UUID
+
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
+import models.CheckAnswersModel
+import play.api.mvc.Action
+
+import forms.CheckAnswersForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import models.DoSubmissionModel
-import common._
-import views.html._
-import forms.DoSubmissionForm._
+import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
+import views.html.checkAndSubmit.CheckAnswers
+
 import scala.concurrent.Future
 
-
-object DoSubmissionController extends DoSubmissionController
-{
+object CheckAnswersController extends CheckAnswersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait DoSubmissionController extends FrontendController with ValidActiveSession{
+trait CheckAnswersController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[DoSubmissionModel](KeystoreKeys.doSubmissionExample).map {
-      case Some(data) => Ok(examples.DoSubmission(doSubmissionForm.fill(data)))
-      case None => Ok(examples.DoSubmission(doSubmissionForm))
+    keyStoreConnector.fetchAndGetFormData[CheckAnswersModel](KeystoreKeys.checkYourAnswers).map {
+      case Some(data) => Ok(CheckAnswers(checkAnswersForm.fill(data)))
+      case None => Ok(CheckAnswers(checkAnswersForm))
     }
   }
 
   val submit = Action.async { implicit request =>
-    val response = doSubmissionForm.bindFromRequest().fold(
-      formWithErrors => {
-        BadRequest(examples.DoSubmission(formWithErrors))
-      },
-      validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.doSubmissionExample, validFormData)
-        Redirect(routes.ConfirmationController.show)
-      }
-    )
-    Future.successful(response)
+    Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
+
 }

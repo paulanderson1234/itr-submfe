@@ -44,4 +44,5 @@ trait KeystoreKeys {
   val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
   val investmentGrow ="investment:investmentGrow"
   val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
+  val checkYourAnswers ="checkAndSubmit:checkYourAnswers"
 }
