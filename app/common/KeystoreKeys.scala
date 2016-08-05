@@ -43,4 +43,5 @@ trait KeystoreKeys {
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
   val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
   val investmentGrow ="investment:investmentGrow"
+  val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
 }
