@@ -7,8 +7,6 @@ GET         /assets/*file            controllers.Assets.at(path="/public", file)
 GET         /                        controllers.StartController.start
 #####################################################################################################################
 
-
-GET        /hello-world                             controllers.HelloWorld.helloWorld
 GET        /                                        controllers.StartController.start
 GET        /start                                   controllers.IntroductionController.show
 POST       /start                                   controllers.IntroductionController.submit
@@ -16,21 +14,6 @@ POST       /start                                   controllers.IntroductionCont
 GET        /qualifying-for-scheme                   controllers.QualifyingForSchemeController.show
 POST       /qualifying-for-scheme                   controllers.QualifyingForSchemeController.submit
 
-#Session examples routes - to be removed later
-#####################################################################################################################
-GET        /examples-address                          controllers.examples.CompanyAddressController.show
-POST       /examples-address                          controllers.examples.CompanyAddressController.submit
-
-GET        /examples-contact                          controllers.examples.ContactDetailsController.show
-POST       /examples-contact                          controllers.examples.ContactDetailsController.submit
-
-GET        /examples-date-first-sale                   controllers.examples.DateOfFirstSaleController.show
-POST       /examples-date-first-sale                   controllers.examples.DateOfFirstSaleController.submit
-
-GET        /examples-do-submission                   controllers.examples.DoSubmissionController.show
-POST       /examples-do-submission                   controllers.examples.DoSubmissionController.submit
-
-GET        /examples-confirmation                     controllers.examples.ConfirmationController.show
 
 #Session Timeout route
 #####################################################################################################################

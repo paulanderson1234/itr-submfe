@@ -21,19 +21,13 @@ import java.util.UUID
 import builders.SessionBuilder
 import connectors.KeystoreConnector
 import controllers.IntroductionController
-import controllers.examples.routes
 import controllers.helpers.FakeRequestHelper
-import models.ContactDetailsModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-
-import scala.concurrent.Future
 
 class startSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 

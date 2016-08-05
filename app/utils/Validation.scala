@@ -18,7 +18,7 @@ package utils
 
 import java.text.{ParseException, SimpleDateFormat}
 
-import models.{CommercialSaleModel, CompanyAddressModel, DateOfFirstSaleModel, TenYearPlanModel}
+import models.{CommercialSaleModel, CompanyAddressModel, TenYearPlanModel}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
