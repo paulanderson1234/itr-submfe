@@ -1,6 +1,9 @@
 @import models.CheckAnswersModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.backButton
+@import helpers.summaryTextRowHelperBasic
+@import helpers.summaryTextRowHelperParagraph
+@import helpers.summaryTableHeaderHelper
 
 @(checkAnswersForm: Form[CheckAnswersModel])(implicit request: Request[_])
 
@@ -17,6 +20,19 @@
     </div>
 
     @form(action = controllers.routes.CheckAnswersController.submit()) {
+
+        <section id="yourAnswers">
+            <!-- Header -->
+            @summaryTableHeaderHelper("Section 1: Company details")
+            <table>
+                <!-- Data Rows-->
+                <tbody>
+                    @summaryTextRowHelperBasic("Company name","Company name Ltd.", Some(controllers.routes.QualifyingForSchemeController.show().toString))
+                    @summaryTextRowHelperParagraph("Company name",Array("Company name Ltd.","HJDJSDSJSDHJDSHJSDHSD"), Some(controllers.routes.QualifyingForSchemeController.show().toString))
+                </tbody>
+            </table>
+        </section>
+
         <div class="form-group">
             <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkAnswers.button.confirm")</button>
         </div>
