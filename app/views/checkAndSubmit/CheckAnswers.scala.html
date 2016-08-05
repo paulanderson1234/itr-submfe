@@ -1,0 +1,25 @@
+@import models.CheckAnswersModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.backButton
+
+@(checkAnswersForm: Form[CheckAnswersModel])(implicit request: Request[_])
+
+@main_template(Messages("page.checkAndSubmit.checkAnswers.heading")) {
+
+    @backButton(controllers.routes.CheckAnswersController.show().toString)
+
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
+
+    <p>@Messages("page.checkAndSubmit.checkAnswers.description")</p>
+
+    <div class = "form-group">
+        <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
+    </div>
+
+    @form(action = controllers.routes.CheckAnswersController.submit()) {
+        <div class="form-group">
+            <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkAnswers.button.confirm")</button>
+        </div>
+    }
+
+}

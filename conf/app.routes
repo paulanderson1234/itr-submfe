@@ -91,3 +91,6 @@ POST       /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNine
 
 GET        /how-plan-to-use-investment              controllers.InvestmentGrowController.show
 POST       /how-plan-to-use-investment              controllers.InvestmentGrowController.submit
+
+GET        /check-your-answers                      controllers.CheckAnswersController.show
+POST       /check-your-answers                      controllers.CheckAnswersController.submit
