@@ -7,7 +7,7 @@
 
 @(checkAnswersForm: Form[CheckAnswersModel])(implicit request: Request[_])
 
-@main_template(Messages("page.checkAndSubmit.checkAnswers.heading")) {
+@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout = false) {
 
     @backButton(controllers.routes.CheckAnswersController.show().toString)
 
