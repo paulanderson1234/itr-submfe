@@ -53,8 +53,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
 
   // set up border line conditions of today and future date (tomorrow)
-  val date = new Date();
-  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+  val date = new Date()
+  val localDate = date.toInstant.atZone(ZoneId.systemDefault()).toLocalDate
   val date3YearsAgo = localDate.minusYears(3)
   val date3YearsAgoDay: Int = date3YearsAgo.getDayOfMonth
   val date3YearsAgoMonth: Int = date3YearsAgo.getMonthValue
@@ -108,14 +108,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -138,14 +138,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -168,14 +168,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -198,14 +198,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -229,14 +229,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -259,14 +259,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -289,14 +289,45 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
+      document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.select("#subsidiaries-yes").size() shouldBe 1
+      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+    }
+
+    "Verify that the Subsidiaries page contains the correct elements " +
+      "when a valid 'Yes' SubsidiariesModel is retrieved from keystore and date of incorporation is greater than 3 years from today from keystore and not KI" +
+      "and staffWithMasters is no" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
+        when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20No)))
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+          "ownSubsidiaries" -> "No"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      // Back link should change based on the value of date of incorporation retrieved from keystore
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -319,14 +350,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -349,14 +380,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "No"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -378,14 +409,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +
@@ -399,14 +430,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +
@@ -420,14 +451,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
     }
 
     "Verify that Subsidiaries page contains show the error summary when an invalid model (no radio button selection) +" +
@@ -441,14 +472,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio slected as a post action
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply(fakeRequestWithSession)
         Jsoup.parse(contentAsString(result))
       }
 
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
     }
 
 
@@ -465,14 +496,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -496,14 +527,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -527,14 +558,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -558,14 +589,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -589,14 +620,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -620,14 +651,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -652,14 +683,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20Yes)))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -684,14 +715,14 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20No)))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
           "ownSubsidiaries" -> "Yes"
-        )))
+        ))
         Jsoup.parse(contentAsString(result))
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show().toString()
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1

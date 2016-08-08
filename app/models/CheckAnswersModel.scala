@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import scala.concurrent.Future
-//import views.html._
+import play.api.libs.json.Json
 
-object HelloWorld extends HelloWorld
+case class CheckAnswersModel(placeholder: Option[String])
 
-trait HelloWorld extends FrontendController {
-  val helloWorld = Action.async { implicit request =>
-    Future.successful(Ok(views.html.helloworld.hello_world()))
-  }
+object CheckAnswersModel {
+  implicit val format = Json.format[CheckAnswersModel]
+  implicit val writes = Json.writes[CheckAnswersModel]
 }

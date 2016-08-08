@@ -340,3 +340,9 @@ page.supportingDocuments.SupportingDocuments.bullet.three=your memorandum and ar
 page.supportingDocuments.SupportingDocuments.bullet.four=documents like prospectuses that you''ll use to attract investment
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
+
+#check your answers page
+page.checkAndSubmit.checkAnswers.heading=Check your answers
+page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
+page.checkAndSubmit.checkAnswers.print.text=Print this page
+page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
