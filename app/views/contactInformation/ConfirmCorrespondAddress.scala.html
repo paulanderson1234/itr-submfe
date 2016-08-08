@@ -1,0 +1,52 @@
+@import models.ConfirmCorrespondAddressModel
+@import common.Constants
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress}
+
+@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel])(implicit request: Request[_])
+
+@main_template(Messages("page.contactInformation.ConfirmCorrespondAddress.title")){
+
+    @backButtonWithProgress(controllers.routes.ConfirmCorrespondAddressController.show().toString, Messages("common.section.progress.company.details.four"))
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            @errorSummary(confirmCorrespondAddressForm, "confirm-correspondence-address", "contactAddressUse")
+
+            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ConfirmCorrespondAddress.heading")</h1>
+
+            <div id="storedAddressDiv" class="form-group">
+                <p class="heading-small">Company Name Ltd.</p>
+                <span class="form-hint">2 Telford Plaza,</span>
+                <span class="form-hint">Lawn Central</span>
+                <span class="form-hint">Telford</span>
+                <span class="form-hint">TF3 4NT</span>
+            </div>
+
+            @form(action = controllers.routes.ConfirmCorrespondAddressController.submit()) {
+                <div id="radioContactAddressDiv">
+                    <div class="form-group">
+                        @formInputRadioGroup(
+                        field = confirmCorrespondAddressForm("contactAddressUse"),
+                        Seq(
+                        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+                        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+                        '_legend -> Messages("page.contactInformation.ConfirmCorrespondAddress.title"),
+                        '_legendClass -> "visuallyhidden",
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label",
+                        '_groupClass -> "inline"
+                        )
+                    </div>
+                </div>
+
+                <div class="form-group" id="contactAddressButtonDiv">
+                    <button class="btn button" id="next" type="submit">@Messages("common.button.continue")</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}

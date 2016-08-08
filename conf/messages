@@ -42,6 +42,7 @@ common.date.error.invalidDate=Date must have a valid day, month and a year with 
 common.section.progress.company.details.one=Section 1 of 5: Company details
 common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
+common.section.progress.company.details.four=Section 4 of 5: Contact details
 
 ## Common report error ##
 common.error.help.text=Get help with this page.
@@ -326,6 +327,10 @@ page.investment.InvestmentGrow.bullet.one=hire more employees
 page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
 page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
+
+#Confirm Correspondence Address
+page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
+page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers

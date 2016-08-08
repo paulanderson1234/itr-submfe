@@ -298,4 +298,41 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
     document.getElementById("labelTextId").hasClass("visuallyhidden")
   }
+
+  "The InvestmentGrow Page should show an error no data entered" in new SetupPage{
+    val document: Document = {
+      val userId = s"user-${UUID.randomUUID}"
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel]
+        (Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(investmentGrowModel)))
+      val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        "investmentGrowDesc" -> ""
+      ))
+      Jsoup.parse(contentAsString(result))
+    }
+
+    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
+    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show.toString()
+    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+    document.getElementById("labelTextId").hasClass("visuallyhidden")
+    document.getElementById("error-summary-display").hasClass("error-summary--show")
+  }
 }
