@@ -16,11 +16,26 @@
 
 package models
 
-import play.api.libs.json.Json
+case class CheckAnswersModel(
+                              yourCompanyNeedModel: YourCompanyNeedModel,
+                              taxpayerReferenceModel: TaxpayerReferenceModel,
+                              registeredAddressModel: RegisteredAddressModel,
+                              dateOfIncorporationModel: DateOfIncorporationModel,
+                              natureOfBusinessModel: NatureOfBusinessModel,
+                              commercialSaleModel: CommercialSaleModel,
+                              isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel],
+                              operatingCostsModel: Option[OperatingCostsModel],
+                              percentageStaffWithMastersModel: Option[PercentageStaffWithMastersModel],
+                              tenYearPlanModel: Option[TenYearPlanModel],
+                              subsidiariesModel: Option[SubsidiariesModel],
+                              hadPreviousRFIModel: HadPreviousRFIModel,
+                              proposedInvestmentModel: ProposedInvestmentModel,
+                              whatWillUseForModel: WhatWillUseForModel,
+                              usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
+                              previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
+                              newGeographicalMarketModel: Option[NewGeographicalMarketModel],
+                              subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
+                              subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
+                              investmentGrowModel: InvestmentGrowModel
+                              )
 
-case class CheckAnswersModel(placeholder: Option[String])
-
-object CheckAnswersModel {
-  implicit val format = Json.format[CheckAnswersModel]
-  implicit val writes = Json.writes[CheckAnswersModel]
-}

@@ -16,38 +16,37 @@
 
 package controllers
 
-import java.util.UUID
-
 import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
-import models.CheckAnswersModel
+import models._
 import play.api.mvc.Action
-
-import forms.CheckAnswersForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 import views.html.checkAndSubmit.CheckAnswers
 
 import scala.concurrent.Future
 
 object CheckAnswersController extends CheckAnswersController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+
 }
 
 trait CheckAnswersController extends FrontendController with ValidActiveSession {
 
-  val keyStoreConnector: KeystoreConnector
+
+  val checkAnswersModel = new CheckAnswersModel(YourCompanyNeedModel(""), TaxpayerReferenceModel(""), RegisteredAddressModel(""),
+    DateOfIncorporationModel(Some(1), Some(1), Some(1990)), NatureOfBusinessModel(""), CommercialSaleModel("No", None, None, None),
+    Some(IsKnowledgeIntensiveModel("")), Some(OperatingCostsModel("", "", "", "", "", "")), Some(PercentageStaffWithMastersModel("")),
+    Some(TenYearPlanModel("", None)), Some(SubsidiariesModel("")), HadPreviousRFIModel(""), ProposedInvestmentModel(0), WhatWillUseForModel(""),
+    Some(UsedInvestmentReasonBeforeModel("")), Some(PreviousBeforeDOFCSModel("")), Some(NewGeographicalMarketModel("")),
+    Some(SubsidiariesSpendingInvestmentModel("")), Some(SubsidiariesNinetyOwnedModel("")), InvestmentGrowModel(""))
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[CheckAnswersModel](KeystoreKeys.checkYourAnswers).map {
-      case Some(data) => Ok(CheckAnswers(checkAnswersForm.fill(data)))
-      case None => Ok(CheckAnswers(checkAnswersForm))
-    }
+    Future.successful(Ok(CheckAnswers(checkAnswersModel)))
   }
 
   val submit = Action.async { implicit request =>
     Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
+
 
 }
