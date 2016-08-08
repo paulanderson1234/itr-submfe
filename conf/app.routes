@@ -108,3 +108,6 @@ POST       /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNine
 
 GET        /how-plan-to-use-investment              controllers.InvestmentGrowController.show
 POST       /how-plan-to-use-investment              controllers.InvestmentGrowController.submit
+
+GET        /supporting-documents                    controllers.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.SupportingDocumentsController.submit
