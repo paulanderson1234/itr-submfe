@@ -16,7 +16,7 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.ConfirmCorrespondAddressForm._
@@ -49,7 +49,10 @@ trait ConfirmCorrespondAddressController extends FrontendController with ValidAc
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
-        Redirect(routes.ConfirmCorrespondAddressController.show())
+        validFormData.contactAddressUse match {
+          case Constants.StandardRadioButtonYesValue => Redirect(routes.ConfirmCorrespondAddressController.show)
+          case Constants.StandardRadioButtonNoValue  => Redirect(routes.ConfirmCorrespondAddressController.show)
+        }
       }
     )
     Future.successful(response)

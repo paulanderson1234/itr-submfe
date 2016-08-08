@@ -94,11 +94,26 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending a valid form submission to the ConfirmCorrespondAddressController" should {
+  "Sending a valid form submission with Yes option to the ConfirmCorrespondAddressController" should {
     "redirect to own page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+      )
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submission with No option to the ConfirmCorrespondAddressController" should {
+    "redirect to own page" in {
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "contactAddressUse" -> Constants.StandardRadioButtonNoValue
       )
       submitWithSession(request)(
         result => {
