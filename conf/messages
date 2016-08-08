@@ -26,6 +26,7 @@ common.base.no=No
 common.day=Day
 common.month=Month
 common.year=Year
+common.base.change = Change
 error.required=This field is required
 
 ## Common date Messages ##

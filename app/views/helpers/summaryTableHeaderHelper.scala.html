@@ -1,0 +1,17 @@
+@(headerId: String, heading: String)
+<thead>
+<tr>
+    <th id="@{headerId}-table-heading" colspan="2">
+        <h2 class="heading-medium">
+            @heading
+        </h2>
+    </th>
+    <th>
+        <h2 class="visuallyhidden">
+            @Messages("common.base.change")
+        </h2>
+    </th>
+</tr>
+</thead>
+
+
