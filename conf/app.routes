@@ -94,3 +94,6 @@ POST       /how-plan-to-use-investment              controllers.InvestmentGrowCo
 
 GET        /check-your-answers                      controllers.CheckAnswersController.show
 POST       /check-your-answers                      controllers.CheckAnswersController.submit
+
+GET        /contact-details                         controllers.ContactDetailsController.show
+POST       /contact-details                         controllers.ContactDetailsController.submit

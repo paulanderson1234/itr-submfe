@@ -42,6 +42,7 @@ common.date.error.invalidDate=Date must have a valid day, month and a year with 
 common.section.progress.company.details.one=Section 1 of 5: Company details
 common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
+common.section.progress.company.details.four=Section 4 of 5: Contact details
 
 ## Common report error ##
 common.error.help.text=Get help with this page.
@@ -58,6 +59,7 @@ validation.error.postcodelookup=Please enter a valid postcode
 validation.error.country=Country must be no more than 20 valid characters if entered
 validation.error.postcode=Please enter a valid postcode
 validation.error.email=Enter a valid email address
+validation.error.telephoneNumber=Please enter a valid telephone number
 validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
@@ -332,3 +334,12 @@ page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
+
+#contact details page
+page.contactInformation.contactDetails.heading=Who should we contact about your application?
+page.contactInformation.contactDetails.title=Contact details
+page.contactInformation.contactDetails.forename.label=Forename
+page.contactInformation.contactDetails.surname.label=Surname
+page.contactInformation.contactDetails.phoneNumber.label=Telephone number
+page.contactInformation.contactDetails.email.label=Email address
+
