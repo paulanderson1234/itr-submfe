@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.Json
+import models.ContactDetailsModel
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class DoSubmissionModel (doSubmission: String)
-
-object DoSubmissionModel {
-  implicit val format = Json.format[DoSubmissionModel]
-  implicit val writes = Json.writes[DoSubmissionModel]
+object ContactDetailsForm {
+  val contactDetailsForm = Form(
+    mapping(
+      "forename" -> nonEmptyText,
+      "surname" -> nonEmptyText,
+      "telephoneNumber" -> utils.Validation.telephoneNumberCheck,
+      "email" -> utils.Validation.emailCheck
+    )(ContactDetailsModel.apply)(ContactDetailsModel.unapply)
+  )
 }
