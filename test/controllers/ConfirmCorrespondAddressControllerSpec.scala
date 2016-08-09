@@ -103,7 +103,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
         }
       )
     }

@@ -18,6 +18,7 @@ package common
 object KeystoreKeys extends KeystoreKeys
 
 trait KeystoreKeys {
+  // form keys
   val companyAddressExample = "examples:companyAddress"
   val contactDetailsExample = "examples:contactDetails"
   val dateOfFirstSaleExample = "examples:dateOfFirstSale"
@@ -46,4 +47,7 @@ trait KeystoreKeys {
   val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
   val checkYourAnswers ="checkAndSubmit:checkYourAnswers"
   val contactAddress = "contactInformation:contactAddress"
+
+  // backlink keys
+  val backLinkSupportingDocs ="backLink:SupportingDocs"
 }
