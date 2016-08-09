@@ -8,6 +8,7 @@ common.button.sign-in=Sign in
 common.button.back=Back
 common.button.start=Start now
 common.button.findAddress=Find address
+common.button.checkAnswers=Check your answers
 common.errorSummary.label=The following errors were identified on this page.
 common.radioNoLabel=No
 common.radioYesLabel=Yes
@@ -43,6 +44,7 @@ common.date.error.invalidDate=Date must have a valid day, month and a year with 
 common.section.progress.company.details.one=Section 1 of 5: Company details
 common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
+common.section.progress.company.details.five=Section 5 of 5: Supporting documents
 common.section.progress.company.details.four=Section 4 of 5: Contact details
 
 ## Common report error ##
@@ -79,12 +81,12 @@ page.start.welcome.heading=Get tax relief for your investors
 page.start.welcome.description.one=If you have a small or medium-sized company the government can help it grow by offering tax relief to your investors.
 page.start.welcome.description.two=This service lets you:
 page.start.welcome.bullet.learn=learn about tax relief schemes
-page.start.welcome.bullet.eligible=find out if your company’s eligible for them
-page.start.welcome.bullet.certify=prove to potential investors that they’ll get tax relief
+page.start.welcome.bullet.eligible=find out if your company''s eligible for them
+page.start.welcome.bullet.certify=prove to potential investors that they''ll get tax relief
 page.start.welcome.bullet.claim=help your investors claim tax relief
 page.start.welcome.apply.link=How to apply
 page.start.welcome.helpFirst=You will not be able to save your application.
-page.start.welcome.helpSecond=On completion you will be able to downlaod your application to email as an attachment.
+page.start.welcome.helpSecond=On completion you will be able to download your application to email as an attachment.
 page.start.welcome.schemeGuidance=scheme guidance
 
 
@@ -93,15 +95,15 @@ page.introduction.HowToApply.title=How to apply
 page.introduction.HowToApply.heading=How to apply
 page.introduction.HowToApply.number.fillOut= Fill out an application for an assurance letter
 page.introduction.HowToApply.number.send= Send your application and supporting documents to us
-page.introduction.HowToApply.number.receive= We’ll send your assurance letter
+page.introduction.HowToApply.number.receive= We''ll send your assurance letter
 page.introduction.HowToApply.fillOut.description= Assurance letters show potential investors that they may get tax relief by buying shares in your company.
-page.introduction.HowToApply.receive.description=If your application’s successful we’ll post your assurance letter to you or someone you nominate. You can then show it to potential investors.
-page.introduction.HowToApply.notBinding=Assurance letters aren’t guarantees or legally binding.
+page.introduction.HowToApply.receive.description=If your application''s successful we''ll post your assurance letter to you or someone you nominate. You can then show it to potential investors.
+page.introduction.HowToApply.notBinding=Assurance letters aren''t guarantees or legally binding.
 page.introduction.HowToApply.send.descriptionOne=You can do this by email or post.
 page.introduction.HowToApply.send.descriptionTwo=When you send your application you''ll need to include your:
 page.introduction.HowToApply.number.sendOne=company accounts
 page.introduction.HowToApply.number.sendTwo=memorandum and articles of association
-page.introduction.HowToApply.number.sendThree=documents like prospectuses that you’ll use to attract investment
+page.introduction.HowToApply.number.sendThree=documents like prospectuses that you''ll use to attract investment
 
 #Qualifying for Scheme page
 page.introduction.qualifyingForScheme.title=Qualifying for the scheme
@@ -109,11 +111,11 @@ page.introduction.qualifyingForScheme.heading.one=Business areas that don''t qua
 page.introduction.qualifyingForScheme.description.one=Your company must have issued shares in the past 2 years.
 page.introduction.qualifyingForScheme.description.two=When it issued shares it must also have:
 page.introduction.qualifyingForScheme.description.three=You can find other conditions in the
-page.introduction.qualifyingForScheme.description.four=You can’t apply if your company’s involved in:
+page.introduction.qualifyingForScheme.description.four=You can''t apply if your company''s involved in:
 page.introduction.qualifyingForScheme.description.five=There are also
 page.introduction.qualifyingForScheme.bullet.UKbase=had a permanent UK base
 page.introduction.qualifyingForScheme.bullet.listed=not been listed on a stock exchange, or had plans to be listed
-page.introduction.qualifyingForScheme.bullet.numEmployees=had fewer than 250 employees, or 500 if you’ve spent a certain amount of your operating costs on research and development
+page.introduction.qualifyingForScheme.bullet.numEmployees=had fewer than 250 employees, or 500 if you''ve spent a certain amount of your operating costs on research and development
 page.introduction.qualifyingForScheme.bullet.farming=farming
 page.introduction.qualifyingForScheme.bullet.legal=legal or financial services
 page.introduction.qualifyingForScheme.bullet.property=buying or selling property or land
@@ -152,7 +154,7 @@ page.examples.Confirmation.heading=Confirmation
 page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.title=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.question.hint=If your UTR is 13 digits long, only enter the last 10
-page.companyDetails.utr.help.text=You can usually find it in letters we’ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
+page.companyDetails.utr.help.text=You can usually find it in letters we''ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
 page.companyDetails.utr.help.link=Where can you find this?
 
 #Your company need page
@@ -168,7 +170,7 @@ page.companyDetails.DateOfIncorporation.heading= When was your company incorpora
 page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
 date.hint.dateOfIncorporation= For example, 31 3 1980
 page.companyDetails.DateOfIncorporation.whereToFind=Where can you find this?
-page.companyDetails.DateOfIncorporation.location= It’s on your certificate of registration. You can also find it by searching for your company on the
+page.companyDetails.DateOfIncorporation.location= It''s on your certificate of registration. You can also find it by searching for your company on the
 page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
 
 #What we'll ask you page
@@ -184,19 +186,19 @@ page.introduction.WhatWeAskYou.bullet.compIncorporated=When your company was inc
 page.introduction.WhatWeAskYou.bullet.compDo=What your company does
 page.introduction.WhatWeAskYou.bullet.soldCommercially=When it first sold something commercially
 page.introduction.WhatWeAskYou.bullet.ownsControlsComp=If your company owns or controls any other companies
-page.introduction.WhatWeAskYou.bullet.spentRAndD=If your company’s spent a certain amount of its operating costs on research and development
-page.introduction.WhatWeAskYou.bullet.prevTaxRelief=If your company’s used tax relief investments before
+page.introduction.WhatWeAskYou.bullet.spentRAndD=If your company''s spent a certain amount of its operating costs on research and development
+page.introduction.WhatWeAskYou.bullet.prevTaxRelief=If your company''s used tax relief investments before
 page.introduction.WhatWeAskYou.bullet.investRaised=How much the investments raised
 page.introduction.WhatWeAskYou.bullet.sharesIssued=When you issued shares under them
 page.introduction.WhatWeAskYou.bullet.nameSchemes=The names of the schemes
-page.introduction.WhatWeAskYou.bullet.howUseInvest=How you’ll use the investment (up to 200 words)
+page.introduction.WhatWeAskYou.bullet.howUseInvest=How you''ll use the investment (up to 200 words)
 page.introduction.WhatWeAskYou.bullet.amountToRaise=How much you want to raise
-page.introduction.WhatWeAskYou.bullet.whoToContact=Who you’d like us to contact
+page.introduction.WhatWeAskYou.bullet.whoToContact=Who you''d like us to contact
 page.introduction.WhatWeAskYou.bullet.contactDetails=Their contact details
 page.introduction.WhatWeAskYou.bullet.companyAccounts=Your company accounts
 page.introduction.WhatWeAskYou.bullet.otherCompAccounts=The accounts of other companies that your business owns or controls
 page.introduction.WhatWeAskYou.bullet.memorandum=Your memorandum and articles of association
-page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you’ll use to attract investment
+page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything else you''ll use to attract investment
 page.introduction.WhatWeAskYou.print.text=Print this page
 
 #commercial sale page
@@ -208,14 +210,14 @@ validation.error.DateForNoOption=Date should not be entered when '''No'' is sele
 
 #Is Knowledge Intensive Page
 page.companyDetails.IsKnowledgeIntensive.title = Are you a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.description = Your company may be knowledge intensive if you’ve spent a certain amount of your operating costs on research and development.
+page.companyDetails.IsKnowledgeIntensive.description = Your company may be knowledge intensive if you''ve spent a certain amount of your operating costs on research and development.
 page.companyDetails.IsKnowledgeIntensive.definition = What''s a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you’ve spent on research and development must have been either:
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you''ve spent on research and development must have been either:
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-one = 15% or more of your operating costs for at least 1 year
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of your operating costs per year
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need either:
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master’s degree level
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren’t physical
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master''s degree level
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren''t physical
 
 page.companyDetails.OperatingCosts.title = Operating costs
 page.companyDetails.OperatingCosts.heading = In the past 3 tax years how much have you spent on running your company?
@@ -264,7 +266,7 @@ page.investment.help.link.text=You''ll still be eligible for the scheme, as long
 
 #percentage of staff with masters page
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
-page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master’'s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master''s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
 
 #used investment reason before page
@@ -288,11 +290,11 @@ page.investment.NewGeographicalMarket.bullet.three=country
 
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan
-page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren'’t physical?
+page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren''t physical?
 page.knowledgeIntensive.TenYearPlan.question.hint.one = This is one of the conditions for knowledge intensive companies
 page.knowledgeIntensive.TenYearPlan.question.hint.two = Suggested limit: 200 words
 page.knowledgeIntensive.TenYearPlan.description.one = How will your company do that?
-page.knowledgeIntensive.TenYearPlan.description.two = Based on the information you’ve given your company isn’'t knowledge intensive
+page.knowledgeIntensive.TenYearPlan.description.two = Based on the information you''ve given your company isn''t knowledge intensive
 validation.error.DescriptionEnteredForNoOption=If ''No'' is selected description should be removed from the ''Yes'' option.
 
 #had previous RFI
@@ -317,8 +319,8 @@ page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that 
 #Subsidiaries ninety percent owned:
 page.investment.SubsidiariesNinetyOwned.heading=Does [your company name] own more than 90% of that company?
 page.investment.SubsidiariesNinetyOwned.title=Does [your company name] own more than 90% of that company
-page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for the scheme. If you’ve made a mistake you can change your answer.
-page.investment.SubsidiariesNinetyOwned.error.two=If your answer’s correct you might still be eligible for other tax relief schemes.
+page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for the scheme. If you''ve made a mistake you can change your answer.
+page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you might still be eligible for other tax relief schemes.
 
 #investment grow description page
 page.investment.InvestmentGrow.heading=How will this investment help your company grow?
@@ -330,9 +332,21 @@ page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
 page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
 
+#supporting documents page
+page.supportingDocuments.SupportingDocuments.title=Supporting documents
+page.supportingDocuments.SupportingDocuments.heading=Supporting documents
+page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include:
+page.supportingDocuments.SupportingDocuments.bullet.one=your company accounts
+page.supportingDocuments.SupportingDocuments.bullet.two=[accounts for companies that [your company name] owns or controls]
+page.supportingDocuments.SupportingDocuments.bullet.three=your memorandum and articles of association
+page.supportingDocuments.SupportingDocuments.bullet.four=documents like prospectuses that you''ll use to attract investment
+page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
+
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
 page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
+
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers

@@ -95,6 +95,9 @@ POST       /how-plan-to-use-investment              controllers.InvestmentGrowCo
 GET        /contact-details                         controllers.ContactDetailsController.show
 POST       /contact-details                         controllers.ContactDetailsController.submit
 
+GET        /supporting-documents                    controllers.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.SupportingDocumentsController.submit
+
 GET        /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.show
 POST       /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.submit
 
