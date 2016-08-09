@@ -28,6 +28,8 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 error.required=This field is required
+common.address.postcode=Postcode
+common.address.findUKAddress=Find UK address
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -239,8 +241,6 @@ page.companyDetails.Subsidiaries.heading = Does your company own or control any 
 
 #Registered Address page
 page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
-page.companyDetails.RegisteredAddress.postcode=Postcode
-page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
 page.companyDetails.RegisteredAddress.description.one=Enter the address manually
 
 #nature of business page
@@ -338,3 +338,8 @@ page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
+
+#supply contact address
+page.contactInformation.ContactAddress.heading=What''s their address?
+page.contactInformation.ContactAddress.title=Contact address
+page.contactInformation.ContactAddress.description.one=Enter address manually

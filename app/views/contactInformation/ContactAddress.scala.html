@@ -1,0 +1,34 @@
+@import models.ContactAddressModel
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formInlinePostcodeInput}
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(contactAddressForm: Form[ContactAddressModel])(implicit request: Request[_])
+
+@main_template(Messages("page.contactInformation.ContactAddress.title")) {
+
+@backButtonWithProgress(controllers.routes.ConfirmCorrespondAddressController.show().toString, Messages("common.section.progress.company.details.four"))
+
+<div class="form-group">
+    <div class="column-two-thirds">
+
+        @errorSummary(contactAddressForm, "contact-address", "postcode")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ContactAddress.heading")</h1>
+
+        @form(action = controllers.routes.ContactAddressController.submit()) {
+
+            @formInlinePostcodeInput(contactAddressForm, "postcode", None, None)
+
+            <br>
+
+            <details>
+                <summary><span class="summary" id="description-one">@Messages("page.contactInformation.ContactAddress.description.one")</span></summary>
+            </details>
+
+
+            <button id="next" class="btn button" type="submit">@Messages("common.button.continueNextSection")</button>
+        }
+    </div>
+</div>
+
+}
