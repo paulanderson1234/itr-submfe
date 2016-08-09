@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import models.CheckAnswersModel
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.Json
 
-object CheckAnswersForm {
-  val checkAnswersForm = Form(
-    mapping(
-      "placeholder" -> optional(text)
-    )(CheckAnswersModel.apply)(CheckAnswersModel.unapply)
-  )
+case class ConfirmCorrespondAddressModel (contactAddressUse: String)
+
+
+object ConfirmCorrespondAddressModel {
+  implicit val format = Json.format[ConfirmCorrespondAddressModel]
+  implicit val writes = Json.writes[ConfirmCorrespondAddressModel]
 }

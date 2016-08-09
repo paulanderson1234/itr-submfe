@@ -26,6 +26,7 @@ common.base.no=No
 common.day=Day
 common.month=Month
 common.year=Year
+common.base.change = Change
 error.required=This field is required
 
 ## Common date Messages ##
@@ -328,6 +329,10 @@ page.investment.InvestmentGrow.bullet.one=hire more employees
 page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
 page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
+
+#Confirm Correspondence Address
+page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
+page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers

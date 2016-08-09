@@ -1,0 +1,9 @@
+@(rowId: String, question: String, answer: String, link: Option[String] = None)
+<tr>
+    <td id="@{rowId}-question bold" valign="top">@question</td>
+    <td id="@{rowId}-answer" valign="top">@answer</td>
+    <td class="numeric">@if(link.isDefined) {
+        <a id="@{rowId}-link" href=@link>@Messages("common.base.change")</a>
+        }</td>
+</tr>
+
