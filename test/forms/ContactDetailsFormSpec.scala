@@ -441,21 +441,6 @@ class ContactDetailsFormSpec extends UnitSpec {
     }
   }
 
-//  "email value supplied with the maximum allowed (on the boundary)" should {
-//    lazy val form = contactDetailsForm.bind(Map(
-//      "forename" -> "Doug",
-//      "surname" -> "Perry",
-//      "telephoneNumber" -> "01375 869472",
-//      "email" -> "thisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255characterslongthisemailis255charac@hmrc.co.uk.")
-//    )
-//    "raise form error" in {
-//      form.hasErrors shouldBe false
-//    }
-//    "raise 0 form errors" in {
-//      form.errors.length shouldBe 0
-//    }
-//  }
-
 //Telephone Number Regex
 
   "telephoneNumber value supplied with multiple white space" should {
@@ -928,48 +913,3 @@ class ContactDetailsFormSpec extends UnitSpec {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
