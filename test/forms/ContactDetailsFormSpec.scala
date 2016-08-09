@@ -637,7 +637,296 @@ class ContactDetailsFormSpec extends UnitSpec {
 
 //Email Regex
 
+  "email supplied with multiple white spaces" should {
+      lazy val form = contactDetailsForm.bind(Map(
+        "forename" -> "Pat",
+        "surname" -> "Butcher",
+        "telephoneNumber" -> "08475 849375",
+        "email" -> "P at@Butche r.com")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 1 form error" in {
+        form.errors.length shouldBe 1
+        form.errors.head.key shouldBe "email"
+      }
+      "associate the correct error message to the error" in {
+        form.error("email").get.message shouldBe Messages("validation.error.email")
+      }
+    }
 
+  "email supplied with multiple @" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat@Butcher@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "email supplied without @" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "PatButcher.com")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "email supplied with sub domain" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "PatButcher@subdomain.ntlworld.com")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "email supplied with firstname.lastname@" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat.Butcher@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "email supplied with forename surname <email@example.com>" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat Butcher <Pat.Butcher@HMRC.gov.uk>")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "email supplied with firstname+lastname@" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat+Butcher@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "email supplied with firstname_lastname@" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat_Butcher@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "Part 1 - minimum allowed supplied for email (on boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "P@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "Part 1 - nothing supplied for first part of the email (under the boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "Part 1 - maximum allowed supplied for email (on boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemail@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "Part 1 - too many characters supplied for the first part of the email (over the boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemailx@HMRC.gov.uk")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "Part 2 - minimum allowed supplied for email (on boundary)" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat.Butcher@P")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "Part 2 - nothing supplied for second part of the email (under the boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat.Butcher@")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "Part 2 - maximum allowed supplied for email (on boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat.Butcher@thisisalongemailthisisalongemailthisisalongemai.thisisalongemail")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "Part 2 - too many characters supplied for the second part of the email (over the boundary) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "Pat.Butcher@thisisalongemailthisisalongemailthisisalongemai.thisisalongemailx")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "email"
+    }
+    "associate the correct error message to the error" in {
+      form.error("email").get.message shouldBe Messages("validation.error.email")
+    }
+  }
+
+  "Part 3 - max characters supplied for the email (on both boundaries) " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Pat",
+      "surname" -> "Butcher",
+      "telephoneNumber" -> "08475 849375",
+      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemail@thisisalongemailthisisalongemailthisisalongemai.thisisalongemail")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form error" in {
+      form.errors.length shouldBe 0
+    }
+  }
 }
 
 

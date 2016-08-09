@@ -95,7 +95,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the ContactDetailsController" should {
-    "redirect to the ContactDetailsController page" in {
+    "redirect to the Confirm Correspondence Address Controller page" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -105,7 +105,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-details")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
         }
       )
     }

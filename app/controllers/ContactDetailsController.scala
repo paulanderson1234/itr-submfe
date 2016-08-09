@@ -51,7 +51,7 @@ trait ContactDetailsController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.contactDetailsExample, validFormData)
-        Redirect(routes.ContactDetailsController.show)
+        Redirect(routes.ConfirmCorrespondAddressController.show())
       }
     )
     Future.successful(response)
