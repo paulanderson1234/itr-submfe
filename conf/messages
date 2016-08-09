@@ -27,6 +27,7 @@ common.base.no=No
 common.day=Day
 common.month=Month
 common.year=Year
+common.base.change = Change
 error.required=This field is required
 
 ## Common date Messages ##
@@ -44,7 +45,7 @@ common.section.progress.company.details.one=Section 1 of 5: Company details
 common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
 common.section.progress.company.details.five=Section 5 of 5: Supporting documents
-
+common.section.progress.company.details.four=Section 4 of 5: Contact details
 
 ## Common report error ##
 common.error.help.text=Get help with this page.
@@ -340,6 +341,11 @@ page.supportingDocuments.SupportingDocuments.bullet.three=your memorandum and ar
 page.supportingDocuments.SupportingDocuments.bullet.four=documents like prospectuses that you''ll use to attract investment
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
+
+#Confirm Correspondence Address
+page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
+page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
+
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers

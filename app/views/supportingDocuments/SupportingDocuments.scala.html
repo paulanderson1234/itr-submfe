@@ -1,13 +1,13 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.{errorSummary, externalLink, backButtonWithProgress}
 
-@()(implicit request: Request[_])
+@(backlinkUrl: String)(implicit request: Request[_])
 
 @import config.FrontendAppConfig
 
 @main_template(title = Messages("page.supportingDocuments.SupportingDocuments.title"), bodyClasses = None) {
 
-@backButtonWithProgress(controllers.routes.SupportingDocumentsController.show().toString, Messages("common.section.progress.company.details.five"))
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.five"))
 
 <div class="grid-row">
     <div class="column-two-thirds">

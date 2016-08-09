@@ -19,25 +19,37 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import org.scalatest.mock.MockitoSugar
+import common.KeystoreKeys
+import connectors.KeystoreConnector
+import models.ProposedInvestmentModel
+import org.mockito.Matchers
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import org.scalatest.mock.MockitoSugar
+import org.mockito.Mockito._
+
 import scala.concurrent.Future
 
 class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
 
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+
+  object SupportingDocumentsControllerTest extends SupportingDocumentsController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+  }
+
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = SupportingDocumentsController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = SupportingDocumentsControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = SupportingDocumentsController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = SupportingDocumentsControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -45,8 +57,23 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to SupportingDocumentsController" should {
     "return a 200 OK" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().toString())))
       showWithSession(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "sending a Get requests to the SupportingDocumentsController" should {
+    "redirect to the confirm correspndence address page if no saved back link was found" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
+        }
       )
     }
   }

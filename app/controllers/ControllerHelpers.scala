@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package forms
+package controllers
 
-import models.CheckAnswersModel
-import play.api.data.Form
-import play.api.data.Forms._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-object CheckAnswersForm {
-  val checkAnswersForm = Form(
-    mapping(
-      "placeholder" -> optional(text)
-    )(CheckAnswersModel.apply)(CheckAnswersModel.unapply)
-  )
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+
+object ControllerHelpers extends ControllerHelpers {
+
+}
+
+trait ControllerHelpers {
+
+  def getSavedBackLink(keystoreKey: String, keystoreConnector: connectors.KeystoreConnector)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    keystoreConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
+      case Some(data) => Future.successful(Some(data))
+      case None => Future.successful(None)
+    }
+  }
+
 }

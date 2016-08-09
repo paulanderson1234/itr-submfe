@@ -16,10 +16,12 @@
 
 package controllers
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.supportingDocuments.SupportingDocuments
 
 import scala.concurrent.Future
 
@@ -30,11 +32,53 @@ object SupportingDocumentsController extends SupportingDocumentsController
 
 trait SupportingDocumentsController extends FrontendController with ValidActiveSession {
 
+  val keyStoreConnector: KeystoreConnector
+
   val show = ValidateSession.async { implicit request =>
-    Future.successful(Ok(views.html.supportingDocuments.SupportingDocuments()))
+
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
+      case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
+      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+    }
   }
 
   val submit = Action.async { implicit request =>
     Future.successful(Redirect(routes.SupportingDocumentsController.show()))
   }
+
+  /*
+  // EXAMPLE USING COMMON BACKLINK METHOD FOR INVALID FORM SUBMISSION
+  // NOTE: THIS IS JUST AN EXAMPLE - THE KeystoreKeys.backLinkSupportingDocs NEEDS CHANGING TO CORRECT KEY
+  // THE NONE CASE IS WHAT WE DO IF NO BACK LINK IS FOUND IN KEYSTORE
+  val submit = Action.async { implicit request =>
+    subsidiariesForm.bindFromRequest.fold(
+      invalidForm =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
+          case Some(data) => Future.successful(BadRequest(Subsidiaries(invalidForm, data)))
+          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
+        },
+      validForm => {
+        keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+      }
+    )
+  }
+  */
+
+//  val showeM = ValidateSession.async { implicit request =>
+//
+//    keyStoreConnector.fetchAndGetFormData[String](KeystoreKeys.backLinkSupportingDocs).flatMap {
+//      case Some(data) => Future.successful(Ok(views.html.supportingDocuments.SupportingDocuments(data)))
+//      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+//    }
+//  }
+
+  //  val showit = ValidateSession.async { implicit request =>
+  //
+  //    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs)(hc).flatMap {
+  //      case Some(data) => Future.successful(Ok(views.html.supportingDocuments.SupportingDocuments(data)))
+  //      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+  //    }
+  //  }
+
 }
