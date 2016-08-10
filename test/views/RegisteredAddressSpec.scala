@@ -22,7 +22,7 @@ import builders.SessionBuilder
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{RegisteredAddressController, routes}
-import models.{RegisteredAddressModel, YourCompanyNeedModel}
+import models.RegisteredAddressModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -39,7 +39,6 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
   val mockKeystoreConnector = mock[KeystoreConnector]
 
   val registeredAddressModel = new RegisteredAddressModel("ST1 1QQ")
-  val emptyRegisteredAddressModel = new RegisteredAddressModel("")
 
   class SetupPage {
 
@@ -48,24 +47,75 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
     }
   }
 
-  "The Qualifying for Scheme page" should {
+  "The Registered Address page" should {
 
-    "Verify that start page contains the correct elements " +
+    "Verify that Registered Address page contains the correct elements " +
       "when a valid RegisteredAddressModel is passed as returned from keystore" in new SetupPage {
-        val document: Document = {
-          val userId = s"user-${UUID.randomUUID}"
-          when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Option(registeredAddressModel)))
-          val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
-          Jsoup.parse(contentAsString(result))
-        }
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(registeredAddressModel)))
+        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        Jsoup.parse(contentAsString(result))
+      }
 
-        document.title shouldEqual Messages("page.companyDetails.RegisteredAddress.title")
-        document.body.getElementById("label-postcode").text() should include (Messages("page.companyDetails.RegisteredAddress.postcode"))
-        document.body.getElementById("uk-address").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.findUKAddress")
+        document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+        document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
+        document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
         document.body.getElementById("description-one").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.description.one")
         document.body.getElementById("next").text() shouldEqual Messages("common.button.continue")
+        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
 
     }
+
+    "Verify that Registered Address page contains the correct elements " +
+      "when no data is returned from keystore" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        Jsoup.parse(contentAsString(result))
+      }
+
+        document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+        document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
+        document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
+        document.body.getElementById("description-one").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.description.one")
+        document.body.getElementById("next").text() shouldEqual Messages("common.button.continue")
+        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+
+    }
+
+    "Verify that the contact address contains the correct elements and error when an invalid model is posted" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+
+        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(registeredAddressModel)))
+        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+          "postcode" -> ""
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+      document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
+      document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
+      document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
+      document.body.getElementById("description-one").text() shouldEqual Messages("page.companyDetails.RegisteredAddress.description.one")
+      document.body.getElementById("next").text() shouldEqual Messages("common.button.continue")
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
+      document.getElementById("error-summary-heading").text() shouldBe Messages("common.error.summary.heading")
+    }
+
   }
 }

@@ -66,7 +66,7 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
   "sending a Get requests to the SupportingDocumentsController" should {
-    "redirect to the confirm correspndence address page if no saved back link was found" in {
+    "redirect to the confirm correspondence address page if no saved back link was found" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       showWithSession(
@@ -79,13 +79,13 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
   "Posting to the SupportingDocumentsController" should {
-    "redirect to itself" in {
+    "redirect to Check your answers page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSession(request)(result => {
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
       }
       )
     }

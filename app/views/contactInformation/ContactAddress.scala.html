@@ -1,0 +1,43 @@
+@import models.ContactAddressModel
+@import views.html.helpers.{backButtonWithProgress, errorSummary, input}
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(contactAddressForm: Form[ContactAddressModel])(implicit request: Request[_])
+
+@main_template(Messages("page.contactInformation.ContactAddress.title")) {
+
+@backButtonWithProgress(controllers.routes.ConfirmCorrespondAddressController.show().toString, Messages("common.section.progress.company.details.four"))
+
+<div class="form-group">
+    <div class="column-two-thirds">
+
+        @errorSummary(contactAddressForm, "contact-address", "postcode")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ContactAddress.heading")</h1>
+
+        @form(action = controllers.routes.ContactAddressController.submit()) {
+
+        @input(
+        contactAddressForm("postcode"),
+        '_inputClass -> "input--normal form-control form-control--block",
+        '_labelId -> "label-postcode",
+        '_label -> Messages("common.address.postcode")
+        )
+
+        <div class="form-field form-field--submit">
+            <button class="button button--secondary" id="uk-address" name="action" value="lookup">@Messages("common.address.findUKAddress")</button>
+        </div>
+
+        <div class="form-group">
+            <br>
+            <details>
+                <summary><span class="summary" id="description-one">@Messages("page.contactInformation.ContactAddress.description.one")</span></summary>
+            </details>
+        </div>
+
+         <button id="next" class="btn button" type="submit">@Messages("common.button.continueNextSection")</button>
+        }
+    </div>
+</div>
+
+}

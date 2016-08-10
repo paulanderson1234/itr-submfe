@@ -43,7 +43,7 @@ trait SupportingDocumentsController extends FrontendController with ValidActiveS
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+    Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 
   /*
