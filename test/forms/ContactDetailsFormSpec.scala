@@ -183,7 +183,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       "raise form error" in {
         form.hasErrors shouldBe true
       }
-      "raise 2 form errors" in {
+      "raise 3 form errors" in {
         form.errors.length shouldBe 3
         form.errors.head.key shouldBe "forename"
         form.errors(1).key shouldBe "surname"
@@ -243,10 +243,13 @@ class ContactDetailsFormSpec extends UnitSpec {
       "email" -> "Matt.Divet@hmrcaspire.com")
     )
     "raise form error" in {
-      form.hasErrors shouldBe false
+      form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
-      form.errors.length shouldBe 0
+    "raise 1 form errors" in {
+      form.errors.length shouldBe 1
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
     }
 
   }
@@ -496,10 +499,14 @@ class ContactDetailsFormSpec extends UnitSpec {
       "email" -> "Jules.Mcshane@digital.hmrc.gov.uk.")
     )
     "raise form error" in {
-      form.hasErrors shouldBe false
+      form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
-      form.errors.length shouldBe 0
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
     }
   }
 
@@ -511,10 +518,14 @@ class ContactDetailsFormSpec extends UnitSpec {
       "email" -> "Jules.Mcshane@digital.hmrc.gov.uk.")
     )
     "raise form error" in {
-      form.hasErrors shouldBe false
+      form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
-      form.errors.length shouldBe 0
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
     }
   }
 
@@ -526,10 +537,14 @@ class ContactDetailsFormSpec extends UnitSpec {
       "email" -> "Jules.Mcshane@digital.hmrc.gov.uk.")
     )
     "raise form error" in {
-      form.hasErrors shouldBe false
+      form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
-      form.errors.length shouldBe 0
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
     }
   }
 
@@ -543,8 +558,9 @@ class ContactDetailsFormSpec extends UnitSpec {
     "raise form error" in {
       form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
+    "raise 1 form error" in {
       form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
     }
     "associate the correct error message to the error" in {
       form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
@@ -561,8 +577,9 @@ class ContactDetailsFormSpec extends UnitSpec {
     "raise form error" in {
       form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
+    "raise 1 form error" in {
       form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
     }
     "associate the correct error message to the error" in {
       form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
@@ -594,8 +611,9 @@ class ContactDetailsFormSpec extends UnitSpec {
     "raise form error" in {
       form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
+    "raise 1 form error" in {
       form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
     }
     "associate the correct error message to the error" in {
       form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
@@ -612,8 +630,43 @@ class ContactDetailsFormSpec extends UnitSpec {
     "raise form error" in {
       form.hasErrors shouldBe true
     }
-    "raise 0 form errors" in {
+    "raise 1 form error" in {
       form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
+    }
+  }
+
+  "telephoneNumber value supplied with a leading space " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Jules",
+      "surname" -> "Mcshane",
+      "telephoneNumber" -> " 01384 512364",
+      "email" -> "Jules.Mcshane@digital.hmrc.gov.uk.")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "telephoneNumber value supplied with a trailing space " should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Jules",
+      "surname" -> "Mcshane",
+      "telephoneNumber" -> "01384 512364 ",
+      "email" -> "Jules.Mcshane@digital.hmrc.gov.uk.")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
     }
     "associate the correct error message to the error" in {
       form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
