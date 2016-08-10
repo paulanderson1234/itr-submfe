@@ -74,7 +74,7 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
       document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CheckAnswersController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().toString()
     }
   }
 }
