@@ -444,6 +444,44 @@ class ContactDetailsFormSpec extends UnitSpec {
     }
   }
 
+  "telephoneNumber value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Doug",
+      "surname" -> "Perry",
+      "telephoneNumber" -> "1234567890123456789012345",
+      "email" -> "Doug.Perry@digital.hmrc.gov.uk.")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
+    }
+  }
+
+  "telephoneNumber value supplied over the maximum allowed (over the boundary) incluses whitespace in the count" should {
+    lazy val form = contactDetailsForm.bind(Map(
+      "forename" -> "Doug",
+      "surname" -> "Perry",
+      "telephoneNumber" -> "123456789012345 789 01245",
+      "email" -> "Doug.Perry@digital.hmrc.gov.uk.")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "telephoneNumber"
+    }
+    "associate the correct error message to the error" in {
+      form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
+    }
+  }
+
 //Telephone Number Regex
 
   "telephoneNumber value supplied with multiple white space" should {
