@@ -100,14 +100,14 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the InvestmentGrowController" should {
-    "redirect to itself currently" in {
+    "redirect to Contact Details Controller" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentGrowDesc" -> "some text so it's valid")
 
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-details")
         }
       )
     }
