@@ -14,7 +14,7 @@
 @buttonId = {@elements.args.get('_buttonId)}
 @buttonText = {@elements.args.get('_buttonText)}
 
-
+<div class="inline">
 <label id="@labelId" for="@elements.field.name" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}"
        @if(elements.args.contains('_labelDataAttributes)){@elements.args.get('_labelDataAttributes)}>
 
@@ -80,6 +80,8 @@
         @if(labelHighlight){</strong>}
     }
 
-<button id="@buttonId" class="button btn">@buttonText</button>
+
 
 </label>
+<button id="@buttonId" class="button btn">@buttonText</button>
+</div>

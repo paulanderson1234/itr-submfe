@@ -92,14 +92,14 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the ContactAddressController" should {
-    "redirect to the Supporting Documents page but currently Contact Address page until page is included" in {
+    "redirect to the Supporting Documents page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
         "postcode" -> "LE5 5NN")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
         }
       )
     }

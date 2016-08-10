@@ -107,7 +107,71 @@ class RegisteredAddressFormSpec extends UnitSpec {
     }
   }
 
-  // model fron json
+  "The Registered Address Form" should {
+    "Return an error if postcode regex pattern contains multiple spaces" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "postcode" -> "TF1  2FT"
+      )
+      bindWithError(request) match {
+        case Some(err) => {
+          err.key shouldBe "postcode"
+          err.message shouldBe Messages("validation.error.postcodelookup")
+          err.args shouldBe Array()
+        }
+        case _ => fail("Missing error")
+      }
+    }
+  }
+
+  "The Registered Address Form" should {
+    "Return an error if postcode regex pattern contains leading spaces" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "postcode" -> " TF1 2FT"
+      )
+      bindWithError(request) match {
+        case Some(err) => {
+          err.key shouldBe "postcode"
+          err.message shouldBe Messages("validation.error.postcodelookup")
+          err.args shouldBe Array()
+        }
+        case _ => fail("Missing error")
+      }
+    }
+  }
+
+  "The Registered Address Form" should {
+    "Return an error if postcode regex pattern contains spaces at end" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "postcode" -> "TF1 1ET "
+      )
+      bindWithError(request) match {
+        case Some(err) => {
+          err.key shouldBe "postcode"
+          err.message shouldBe Messages("validation.error.postcodelookup")
+          err.args shouldBe Array()
+        }
+        case _ => fail("Missing error")
+      }
+    }
+  }
+
+  "The Registered Address Form" should {
+    "Return an error if postcode regex pattern contains invalid characters" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "postcode" -> "TF£ 1%&"
+      )
+      bindWithError(request) match {
+        case Some(err) => {
+          err.key shouldBe "postcode"
+          err.message shouldBe Messages("validation.error.postcodelookup")
+          err.args shouldBe Array()
+        }
+        case _ => fail("Missing error")
+      }
+    }
+  }
+
+  // model from json
   "The Registered Address Form model" should {
     "load the JSON successfully" in {
 

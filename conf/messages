@@ -242,7 +242,8 @@ page.companyDetails.Subsidiaries.title = Subsidiaries
 page.companyDetails.Subsidiaries.heading = Does your company own or control any other companies?
 
 #Registered Address page
-page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
+page.companyDetails.RegisteredAddress.title=Registered address
+page.companyDetails.RegisteredAddress.heading=What''s your company''s registered address?
 page.companyDetails.RegisteredAddress.description.one=Enter the address manually
 
 #nature of business page

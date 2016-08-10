@@ -18,6 +18,7 @@ package views
 
 import java.util.UUID
 
+import builders.SessionBuilder
 import connectors.KeystoreConnector
 import controllers.{routes, ContactAddressController}
 import controllers.helpers.FakeRequestHelper
@@ -38,7 +39,6 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
   val mockKeystoreConnector = mock[KeystoreConnector]
 
   val contactAddressModel = new ContactAddressModel("ST1 1QQ")
-  val emptyContactAddressModel = new ContactAddressModel("")
 
   class SetupPage {
 
@@ -55,9 +55,7 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactAddressModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "postcode" -> "ST1 1QQ"
-        ))
+        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
         Jsoup.parse(contentAsString(result))
       }
 
@@ -73,8 +71,29 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
 
     }
 
-    "Verify that the Contact Address page contains the correct elements " +
-      "when an invalid ContactAddressModel is passed" in new SetupPage {
+    "Verify that Contact Address page contains the correct elements " +
+      "when no data is returned from keystore" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title shouldBe Messages("page.contactInformation.ContactAddress.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ContactAddress.heading")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().toString()
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+      document.body.getElementById("label-postcode").text() should include(Messages("common.address.postcode"))
+      document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
+      document.body.getElementById("description-one").text() shouldBe Messages("page.contactInformation.ContactAddress.description.one")
+      document.body.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+
+    }
+
+    "Verify that the contact address contains the correct elements and error when an invalid model is posted" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
@@ -85,7 +104,6 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       document.title shouldBe Messages("page.contactInformation.ContactAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ContactAddress.heading")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().toString()
@@ -97,7 +115,7 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.getElementById("error-summary-heading").text() shouldBe Messages("common.error.summary.heading")
-
     }
+
   }
 }
