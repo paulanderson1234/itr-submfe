@@ -55,6 +55,12 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   implicit val hc = HeaderCarrier()
 
+  "SupportingDocumentsController" should {
+    "use the correct keystore connector" in {
+      SupportingDocumentsController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
   "Sending a GET request to SupportingDocumentsController" should {
     "return a 200 OK" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
@@ -80,9 +86,7 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Posting to the SupportingDocumentsController" should {
     "redirect to itself" in {
-
       val request = FakeRequest().withFormUrlEncodedBody()
-
       submitWithSession(request)(result => {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")

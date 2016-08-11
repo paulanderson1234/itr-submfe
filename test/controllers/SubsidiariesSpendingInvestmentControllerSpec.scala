@@ -86,7 +86,6 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
       )
     }
 
-
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
@@ -96,58 +95,73 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         result => status(result) shouldBe OK
       )
     }
-//
-//      "provide an empty model and return a 300 when no back link is fetched using keystore" in {
-//        when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(None))
-//        when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-//          .thenReturn(Future.successful(None))
-//        showWithSession(
-//          result => {
-//            status(result) shouldBe SEE_OTHER
-//            redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
-//          }
-//        )
-//      }
-//    }
-//  }
-//
-//  "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController" should {
-//    "redirect to the subsidiaries-ninety-percent-owned page" in {
-//      val request = FakeRequest().withFormUrlEncodedBody(
-//        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue)
-//      submitWithSession(request)(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-ninety-percent-owned")
-//        }
-//      )
-//    }
-//  }
-//
-//  "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController" should {
-//    "redirect to the how-plan-to-use-investment page" in {
-//      val request = FakeRequest().withFormUrlEncodedBody(
-//        "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue)
-//      submitWithSession(request)(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
-//        }
-//      )
-//    }
-//  }
-//
-//  "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController" should {
-//    "redirect to itself with errors" in {
-//      val request = FakeRequest().withFormUrlEncodedBody(
-//        "subSpendingInvestment" -> "")
-//      submitWithSession(request)(
-//        result => {
-//          status(result) shouldBe BAD_REQUEST
-//        }
-//      )
-//    }
-//  }
 
+    "provide an empty model and return a 300 when no back link is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController" should {
+    "redirect to the subsidiaries-ninety-percent-owned page" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue)
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-ninety-percent-owned")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController" should {
+    "redirect to the how-plan-to-use-investment page" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue)
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a invalid form submit to the SubsidiariesSpendingInvestmentController with no backlink" should {
+    "redirect to the subsidiaries-ninety-percent-owned page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subSpendingInvestment" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController" should {
+    "redirect to itself with errors" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "subSpendingInvestment" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
 }

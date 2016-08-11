@@ -115,11 +115,25 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to Contact Details Controller" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentGrowDesc" -> "some text so it's valid")
-
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-details")
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink" should {
+    "redirect to WhatWillUseFor page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentGrowDesc" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
         }
       )
     }

@@ -137,9 +137,24 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
   }
+
+  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink" should {
+    "redirect to WhatWillUseFor page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewGeographicalMarket" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
+      )
+    }
+  }
   
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController" should {
-    "redirect to itself" in {
+    "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
