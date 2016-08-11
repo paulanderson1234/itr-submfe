@@ -16,14 +16,15 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import forms.PreviousBeforeDOFCSForm._
 import controllers.predicates.ValidActiveSession
-import models.{SubsidiariesModel, PreviousBeforeDOFCSModel}
+import models.{PreviousBeforeDOFCSModel, SubsidiariesModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import views.html.investment.PreviousBeforeDOFCS
+
 import scala.concurrent.Future
 import views.html._
 
@@ -46,9 +47,12 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
 
   def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
     date match {
-      case Some(data) if data.ownSubsidiaries == "Yes" =>
+      case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().toString())
         Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-      case Some(_) => Future.successful(Redirect(routes.InvestmentGrowController.show()))
+      case Some(_) =>
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().toString())
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
       case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
     }
   }
@@ -60,8 +64,11 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
     validFormData => {
       keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
       validFormData.previousBeforeDOFCS match {
-        case "No" => Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-        case "Yes" => for {
+        case Constants.StandardRadioButtonNoValue => {
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().toString())
+          Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+        }
+        case Constants.StandardRadioButtonYesValue => for {
           subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
           route <- routeRequest(subsidiaries)
         } yield route

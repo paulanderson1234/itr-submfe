@@ -39,22 +39,29 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
 
   val show = ValidateSession.async { implicit request =>
 
-    def routeRequest(backUrl: String) = {
-      keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
-        case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data),backUrl))
-        case None => Ok(InvestmentGrow(investmentGrowForm,backUrl))
+    def routeRequest(backUrl: Option[String]) = {
+      if(backUrl.isDefined) {
+        keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
+          case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data), backUrl.get))
+          case None => Ok(InvestmentGrow(investmentGrowForm, backUrl.get))
+        }
       }
+      else Future.successful(Redirect(routes.WhatWillUseForController.show()))
     }
 
     for {
-      link <- getBackLink
+      link <- loadBackLinkURL
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = Action.async { implicit request =>
     investmentGrowForm.bindFromRequest.fold(
-      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(investment.InvestmentGrow(invalidForm, url)))),
+      invalidForm =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap {
+          case Some(data) => Future.successful(BadRequest(views.html.investment.InvestmentGrow(invalidForm, data)))
+          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+        },
       validForm => {
         keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
         Future.successful(Redirect(routes.ContactDetailsController.show()))
@@ -62,29 +69,10 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
     )
   }
 
-
-  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel], subsidiariesSpendingInvestment: Option[SubsidiariesSpendingInvestmentModel],
-                     newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
-                     whatWillUseFor: Option[WhatWillUseForModel]): String = {
-      (subsidiariesNinetyOwned,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor) match {
-        case (Some(subsidiariesNinetyOwned),_,_,_,_) => routes.SubsidiariesNinetyOwnedController.show().toString()
-        case (None,Some(subsidiariesInvestment),_,_,_) => routes.SubsidiariesSpendingInvestmentController.show().toString()
-        case (None,None,Some(newProduct),_,_) => routes.NewProductController.show().toString()
-        case (None,None,None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show().toString()
-        case (None,None, None,None, Some(whatWillUseFor)) => routes.WhatWillUseForController.show().toString()
-        case _ => routes.WhatWillUseForController.show().toString()
-      }
+  def loadBackLinkURL(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap{
+      case Some(data) => Future.successful(Some(data))
+      case None => Future.successful(None)
     }
-
-    for {
-      subsidiariesNinetyOwned <- keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
-      subsidiariesSpendingInvestment <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
-      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
-      whatWillUseFor<- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
-      route <- Future.successful(routeRequest(subsidiariesNinetyOwned,subsidiariesSpendingInvestment,newProduct,previousBeforeDOFCS,whatWillUseFor))
-    } yield route
-
   }
 }

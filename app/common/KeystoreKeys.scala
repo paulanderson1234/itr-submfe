@@ -50,4 +50,7 @@ trait KeystoreKeys {
 
   // backlink keys
   val backLinkSupportingDocs ="backLink:SupportingDocs"
+  val backLinkNewGeoMarket ="backLink:NewGeoMarket"
+  val backLinkSubSpendingInvestment ="backLink:SubSpendingInvestment"
+  val backLinkInvestmentGrow ="backLink:InvestmentGrow"
 }

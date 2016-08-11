@@ -19,9 +19,9 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
-import models._
+import models.NewGeographicalMarketModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -45,14 +45,11 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = NewGeographicalMarketModel("Yes")
-  val modelNo = NewGeographicalMarketModel("No")
+  val modelYes = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = NewGeographicalMarketModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel("Yes")
-  val keyStoreSavedWhatWillUseFor = WhatWillUseForModel("Doing Business")
-  val keyStoreSavedPrevBeforeDOFCS = PreviousBeforeDOFCSModel("Yes")
-  val keyStoreSavedUsedInvestmentReasonBefore = UsedInvestmentReasonBeforeModel("Yes")
+  val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -80,20 +77,35 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to NewGeographicalMarketController" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       showWithSession(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       showWithSession(
         result => status(result) shouldBe OK
+      )
+    }
+
+    "provide an empty model and return a 300 when no back link is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
       )
     }
   }
@@ -102,7 +114,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "Yes")
+        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -116,7 +128,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "No")
+        "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -125,15 +137,26 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
   }
+
+  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink" should {
+    "redirect to WhatWillUseFor page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isNewGeographicalMarket" -> "")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
+      )
+    }
+  }
   
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController" should {
-    "redirect to itself" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedWhatWillUseFor)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedUsedInvestmentReasonBefore)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedPrevBeforeDOFCS)))
+    "redirect to itself with errors" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isNewGeographicalMarket" -> "")
       submitWithSession(request)(
