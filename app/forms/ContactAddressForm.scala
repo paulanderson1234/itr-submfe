@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package common
+package forms
 
-object Constants extends Constants
+import models.ContactAddressModel
+import play.api.data.Form
+import play.api.data.Forms._
 
-trait Constants {
-  val StandardRadioButtonYesValue = "Yes"
-  val StandardRadioButtonNoValue = "No"
-  def taxYearFormattedAnswer(value: String, taxYear: String) : String= s"£$value in $taxYear tax year"
-  val SuggestedTextMaxLength: Int = 2048
+object ContactAddressForm {
+  val contactAddressForm = Form(
+    mapping(
+      "postcode" -> utils.Validation.postcodeLookupCheck
+    )(ContactAddressModel.apply)(ContactAddressModel.unapply)
+  )
 }

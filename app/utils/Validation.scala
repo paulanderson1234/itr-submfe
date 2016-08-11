@@ -225,6 +225,19 @@ object Validation {
     text().verifying(emailCheckConstraint)
   }
 
+  def telephoneNumberCheck: Mapping[String] = {
+    val validTelephoneNumberLine = """^[0-9\(\)\+ ]{0,23}\S$""".r
+    val telephoneNumberCheckConstraint: Constraint[String] =
+      Constraint("contraints.telephoneNumber")({
+        text =>
+          val error = text match {
+            case validTelephoneNumberLine() => Nil
+            case _ => Seq(ValidationError(Messages("validation.error.telephoneNumber")))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text().verifying(telephoneNumberCheckConstraint)
+  }
 
   def postcodeCountryCheckConstraint: Constraint[CompanyAddressModel] = {
     Constraint("constraints.postcodeCountryCheck")({

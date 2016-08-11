@@ -19,9 +19,8 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
 import connectors.KeystoreConnector
-import models.ConfirmCorrespondAddressModel
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -37,28 +36,29 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-
-  object ConfirmCorrespondAddressControllerTest extends ConfirmCorrespondAddressController {
+  object ContactDetailsControllerTest extends ContactDetailsController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val model = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
+  val emptyModel = ContactDetailsModel("","","","")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedContactDetails = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
+
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = ContactDetailsControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = ContactDetailsControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -68,17 +68,17 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     reset(mockKeyStoreConnector)
   }
 
-  "ConfirmCorrespondAddressController" should {
+  "ContactDetailsController" should {
     "use the correct keystore connector" in {
-      ConfirmCorrespondAddressController.keyStoreConnector shouldBe KeystoreConnector
+      ContactDetailsController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
 
-  "Sending a GET request to ConfirmCorrespondAddressController" should {
+  "Sending a GET request to ContactDetailsController" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -86,7 +86,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
@@ -94,43 +94,30 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending a valid form submission with Yes option to the ConfirmCorrespondAddressController" should {
-    "redirect Supporting Documents" in {
-
+  "Sending a valid form submit to the ContactDetailsController" should {
+    "redirect to the Confirm Correspondence Address Controller page" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+        "forename" -> "Hank",
+        "surname" -> "The Tank",
+        "telephoneNumber" -> "01385 236846",
+        "email" -> "thisiavalidemail@valid.com"
       )
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
         }
       )
     }
   }
 
-  "Sending a valid form submission with No option to the ConfirmCorrespondAddressController" should {
-    "redirect to Contact Address page" in {
-
+  "Sending an invalid form submission with validation errors to the ContactDetailsController" should {
+    "redirect with a bad request" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonNoValue
-      )
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
-        }
-      )
-    }
-  }
-
-  "Sending an empty invalid form submission with validation errors to the ConfirmCorrespondAddressController" should {
-    "redirect to itself" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> ""
-       )
-
+        "forename" -> "Hank",
+        "surname" -> "The Tank",
+        "telephoneNumber" -> "",
+        "email" -> "thisiavalidemail@valid.com")
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -138,4 +125,5 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       )
     }
   }
+
 }

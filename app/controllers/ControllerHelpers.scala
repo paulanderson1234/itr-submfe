@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package models
+package controllers
 
-import play.api.libs.json.Json
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-case class DoSubmissionModel (doSubmission: String)
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-object DoSubmissionModel {
-  implicit val format = Json.format[DoSubmissionModel]
-  implicit val writes = Json.writes[DoSubmissionModel]
+object ControllerHelpers extends ControllerHelpers {
+
+}
+
+trait ControllerHelpers {
+
+  def getSavedBackLink(keystoreKey: String, keystoreConnector: connectors.KeystoreConnector)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    keystoreConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
+      case Some(data) => Future.successful(Some(data))
+      case None => Future.successful(None)
+    }
+  }
+
 }

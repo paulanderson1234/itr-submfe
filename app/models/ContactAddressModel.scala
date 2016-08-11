@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package common
+package models
 
-object Constants extends Constants
+import play.api.libs.json.Json
 
-trait Constants {
-  val StandardRadioButtonYesValue = "Yes"
-  val StandardRadioButtonNoValue = "No"
-  def taxYearFormattedAnswer(value: String, taxYear: String) : String= s"£$value in $taxYear tax year"
-  val SuggestedTextMaxLength: Int = 2048
+case class ContactAddressModel(postcode : String)
+
+object ContactAddressModel {
+  implicit val format = Json.format[ContactAddressModel]
+  implicit val writes = Json.writes[ContactAddressModel]
 }
