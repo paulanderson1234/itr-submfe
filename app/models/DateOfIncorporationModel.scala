@@ -17,10 +17,11 @@
 package models
 
 import play.api.libs.json.Json
+import utils.DateFormatter
 
 case class DateOfIncorporationModel(day:Option[Int], month:Option[Int], year:Option[Int])
 
-object DateOfIncorporationModel{
+object DateOfIncorporationModel extends DateFormatter{
   implicit val format = Json.format[DateOfIncorporationModel]
   implicit val writes = Json.writes[DateOfIncorporationModel]
 }

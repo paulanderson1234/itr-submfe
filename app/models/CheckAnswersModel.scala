@@ -17,25 +17,25 @@
 package models
 
 case class CheckAnswersModel(
-                              yourCompanyNeedModel: YourCompanyNeedModel,
-                              taxpayerReferenceModel: TaxpayerReferenceModel,
-                              registeredAddressModel: RegisteredAddressModel,
-                              dateOfIncorporationModel: DateOfIncorporationModel,
-                              natureOfBusinessModel: NatureOfBusinessModel,
-                              commercialSaleModel: CommercialSaleModel,
+                              yourCompanyNeedModel: Option[YourCompanyNeedModel],
+                              taxpayerReferenceModel: Option[TaxpayerReferenceModel],
+                              registeredAddressModel: Option[RegisteredAddressModel],
+                              dateOfIncorporationModel: Option[DateOfIncorporationModel],
+                              natureOfBusinessModel: Option[NatureOfBusinessModel],
+                              commercialSaleModel: Option[CommercialSaleModel],
                               isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel],
                               operatingCostsModel: Option[OperatingCostsModel],
                               percentageStaffWithMastersModel: Option[PercentageStaffWithMastersModel],
                               tenYearPlanModel: Option[TenYearPlanModel],
                               subsidiariesModel: Option[SubsidiariesModel],
-                              hadPreviousRFIModel: HadPreviousRFIModel,
-                              proposedInvestmentModel: ProposedInvestmentModel,
-                              whatWillUseForModel: WhatWillUseForModel,
+                              hadPreviousRFIModel: Option[HadPreviousRFIModel],
+                              proposedInvestmentModel: Option[ProposedInvestmentModel],
+                              whatWillUseForModel: Option[WhatWillUseForModel],
                               usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
                               previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
                               newGeographicalMarketModel: Option[NewGeographicalMarketModel],
                               subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
-                              investmentGrowModel: InvestmentGrowModel
+                              investmentGrowModel: Option[InvestmentGrowModel]
                               )
 

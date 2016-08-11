@@ -16,6 +16,7 @@
 
 package models
 
+import common.Constants
 import play.api.libs.json.Json
 
 case class PercentageStaffWithMastersModel (staffWithMasters: String)
@@ -23,4 +24,12 @@ case class PercentageStaffWithMastersModel (staffWithMasters: String)
 object PercentageStaffWithMastersModel {
   implicit val format = Json.format[PercentageStaffWithMastersModel]
   implicit val writes = Json.writes[PercentageStaffWithMastersModel]
+
+  def staffWithMastersToString(matcher: String): String = {
+    matcher match {
+      case Constants.StandardRadioButtonYesValue => "More than 20%"
+      case Constants.StandardRadioButtonNoValue => "Less than 20%"
+      case _ => "N/A"
+    }
+  }
 }

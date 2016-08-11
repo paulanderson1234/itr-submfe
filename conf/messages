@@ -28,6 +28,8 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 error.required=This field is required
+common.pound = £
+common.notAvailable=N/A
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -338,3 +340,37 @@ page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
+
+#summaryIds
+summaryId.companyDetailsSection = companyDetailsSection
+summaryId.companyName =companyName
+summaryId.utr =utr
+summaryId.registeredAddress =registeredAddress
+summaryId.dateOfIncorporation =dateOfIncorporation
+summaryId.natureOfBusiness =natureOfBusiness
+summaryId.hasCommercialSale =hasCommercialSale
+summaryId.commercialSaleDate =commercialSaleDate
+summaryId.knowledgeIntensive =knowledgeIntensive
+summaryId.operatingCosts =operatingCosts
+summaryId.rdCosts =rdCosts
+summaryId.percentageStaffWithMasters =percentageStaffWithMasters
+summaryId.tenYearPlan =tenYearPlan
+summaryId.tenYearPlanDesc =tenYearPlanDesc
+summaryId.subsidiaries =subsidiaries
+
+#summaryQuestions
+summaryQuestion.companyDetailsSection =Section 1: Company details
+summaryQuestion.companyName =Company name
+summaryQuestion.utr =Company Unique Taxpayer Reference
+summaryQuestion.registeredAddress =Registered address
+summaryQuestion.dateOfIncorporation =Date of incorporation
+summaryQuestion.natureOfBusiness =What your company does
+summaryQuestion.hasCommercialSale = Has made commercial sale
+summaryQuestion.commercialSaleDate =Date of first commercial sale
+summaryQuestion.knowledgeIntensive =Knowledge intensive
+summaryQuestion.operatingCosts =Operating costs
+summaryQuestion.rdCosts =Research and development costs
+summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's degrees
+summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
+summaryQuestion.tenYearPlanDesc =How your company will do that
+summaryQuestion.subsidiaries =Own or control any other companies
