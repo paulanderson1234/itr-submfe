@@ -29,6 +29,8 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 error.required=This field is required
+common.address.postcode=Postcode
+common.address.findUKAddress=Find UK address
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -241,9 +243,8 @@ page.companyDetails.Subsidiaries.title = Subsidiaries
 page.companyDetails.Subsidiaries.heading = Does your company own or control any other companies?
 
 #Registered Address page
-page.companyDetails.RegisteredAddress.title=What''s your company''s registered address?
-page.companyDetails.RegisteredAddress.postcode=Postcode
-page.companyDetails.RegisteredAddress.findUKAddress=Find UK address
+page.companyDetails.RegisteredAddress.title=Registered address
+page.companyDetails.RegisteredAddress.heading=What''s your company''s registered address?
 page.companyDetails.RegisteredAddress.description.one=Enter the address manually
 
 #nature of business page
@@ -354,6 +355,11 @@ page.checkAndSubmit.checkAnswers.description=You are applying for an assurance l
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
 
+#supply contact address
+page.contactInformation.ContactAddress.heading=What''s their address?
+page.contactInformation.ContactAddress.title=Contact address
+page.contactInformation.ContactAddress.description.one=Enter address manually
+
 #contact details page
 page.contactInformation.contactDetails.heading=Who should we contact about your application?
 page.contactInformation.contactDetails.title=Contact details
@@ -361,4 +367,3 @@ page.contactInformation.contactDetails.forename.label=Forename
 page.contactInformation.contactDetails.surname.label=Surname
 page.contactInformation.contactDetails.phoneNumber.label=Telephone number
 page.contactInformation.contactDetails.email.label=Email address
-

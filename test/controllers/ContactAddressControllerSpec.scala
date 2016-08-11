@@ -19,9 +19,8 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
 import connectors.KeystoreConnector
-import models.ConfirmCorrespondAddressModel
+import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -37,28 +36,28 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-
-  object ConfirmCorrespondAddressControllerTest extends ConfirmCorrespondAddressController {
+  object ContactAddressControllerTest extends ContactAddressController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val model = ContactAddressModel("TF1 3NY")
+  val emptyModel = ContactAddressModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedContactAddress = ContactAddressModel("LE5 5NN")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = ContactAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = ContactAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -68,25 +67,23 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     reset(mockKeyStoreConnector)
   }
 
-  "ConfirmCorrespondAddressController" should {
+  "ContactAddressController" should {
     "use the correct keystore connector" in {
-      ConfirmCorrespondAddressController.keyStoreConnector shouldBe KeystoreConnector
+      ContactAddressController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
 
-  "Sending a GET request to ConfirmCorrespondAddressController" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
+  "Sending a GET request to ContactAddressController" should {
+    "return a 200 OK when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
       showWithSession(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       showWithSession(
         result => status(result) shouldBe OK
@@ -94,12 +91,11 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending a valid form submission with Yes option to the ConfirmCorrespondAddressController" should {
-    "redirect Supporting Documents" in {
-
+  "Sending a valid form submit to the ContactAddressController" should {
+    "redirect to the Supporting Documents page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-      )
+        "postcode" -> "LE5 5NN")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -109,28 +105,10 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending a valid form submission with No option to the ConfirmCorrespondAddressController" should {
-    "redirect to Contact Address page" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonNoValue
-      )
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
-        }
-      )
-    }
-  }
-
-  "Sending an empty invalid form submission with validation errors to the ConfirmCorrespondAddressController" should {
+  "Sending an invalid form submission with validation errors to the ContactAddressController" should {
     "redirect to itself" in {
-
       val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> ""
-       )
-
+        "postcode" -> "")
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -138,4 +116,5 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       )
     }
   }
+
 }

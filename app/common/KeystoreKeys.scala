@@ -46,6 +46,7 @@ trait KeystoreKeys {
   val investmentGrow ="investment:investmentGrow"
   val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
   val checkYourAnswers ="checkAndSubmit:checkYourAnswers"
+  val contactAddress = "contactInformation:contactAddress"
 
   // backlink keys
   val backLinkSupportingDocs ="backLink:SupportingDocs"

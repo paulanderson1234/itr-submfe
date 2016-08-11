@@ -1,5 +1,5 @@
 @import models.RegisteredAddressModel
-@import views.html.helpers.{backButtonWithProgress, errorSummary, formInlinePostcodeInput}
+@import views.html.helpers.{backButtonWithProgress, errorSummary, input}
 @import uk.gov.hmrc.play.views.html.helpers.form
 
 @(registeredAddressForm: Form[RegisteredAddressModel])(implicit request: Request[_])
@@ -13,20 +13,29 @@
 
         @errorSummary(registeredAddressForm, "registered-address", "postcode")
 
-        <h1 id="title" class="form-title heading-xlarge">@Messages("page.companyDetails.RegisteredAddress.title")</h1>
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.RegisteredAddress.heading")</h1>
 
         @form(action = controllers.routes.RegisteredAddressController.submit()) {
 
-            @formInlinePostcodeInput(registeredAddressForm, "postcode", None, None)
+        @input(
+        registeredAddressForm("postcode"),
+        '_inputClass -> "input--normal form-control form-control--block",
+        '_labelId -> "label-postcode",
+        '_label -> Messages("common.address.postcode")
+        )
 
+        <div class="form-field form-field--submit">
+            <button class="button button--secondary" id="uk-address" name="action" value="lookup">@Messages("common.address.findUKAddress")</button>
+        </div>
+
+        <div class="form-group">
             <br>
-
             <details>
                 <summary><span class="summary" id="description-one">@Messages("page.companyDetails.RegisteredAddress.description.one")</span></summary>
             </details>
+        </div>
 
-
-            <button id="next" class="btn button" type="submit">@Messages("common.button.continue")</button>
+        <button id="next" class="btn button" type="submit">@Messages("common.button.continue")</button>
         }
     </div>
 </div>

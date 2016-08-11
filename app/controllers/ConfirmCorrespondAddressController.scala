@@ -55,7 +55,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with ValidAc
             keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ConfirmCorrespondAddressController.show.toString())
             Redirect(routes.SupportingDocumentsController.show)
           }
-          case Constants.StandardRadioButtonNoValue  => Redirect(routes.ConfirmCorrespondAddressController.show)
+          case Constants.StandardRadioButtonNoValue  => Redirect(routes.ContactAddressController.show)
         }
       }
     )

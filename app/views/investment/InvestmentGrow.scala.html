@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import models.InvestmentGrowModel
+@import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea}
 
 @(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[_])
@@ -34,7 +35,7 @@
                 investmentGrowForm("investmentGrowDesc"),
                 '_cols -> "50",
                 '_rows -> "10",
-                '_maxLength-> "1000",
+                '_maxLength-> Constants.SuggestedTextMaxLength,
                 '_label-> Messages("page.investment.InvestmentGrow.heading"),
                 '_labelTextClass-> "visuallyhidden"
             )

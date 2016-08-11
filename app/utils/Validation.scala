@@ -226,7 +226,7 @@ object Validation {
   }
 
   def telephoneNumberCheck: Mapping[String] = {
-    val validTelephoneNumberLine = """^[0-9 )/(-*#+]+$""".r
+    val validTelephoneNumberLine = """^[0-9\(\)\+ ]{0,23}\S$""".r
     val telephoneNumberCheckConstraint: Constraint[String] =
       Constraint("contraints.telephoneNumber")({
         text =>
