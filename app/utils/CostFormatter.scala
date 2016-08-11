@@ -18,6 +18,7 @@ package utils
 
 import java.text.NumberFormat
 
+import common.Constants
 import play.api.i18n.Messages
 
 /*
@@ -38,15 +39,7 @@ import play.api.i18n.Messages
 trait CostFormatter {
 
   def getOperatingAndRDCostsAsFormattedString(value: String, taxYear: String): String= {
-    val builder = new StringBuilder
-    builder.append(Messages("common.pound"))
-        .append(Transfomers.integerToFormattedNumber(value.toInt))
-        .append(" ")
-        .append("in")
-        .append(" ")
-        .append(taxYear)
-        .append(" ")
-        .append("tax year")
-        .toString
+    val transformedValue = Transfomers.integerToFormattedNumber(value.toInt)
+    Constants.taxYearFormattedAnswer(transformedValue,taxYear)
   }
 }

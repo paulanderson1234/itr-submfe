@@ -17,9 +17,7 @@
 package utils
 
 import java.text.SimpleDateFormat
-
-import org.joda.time.DateTime
-import play.api.i18n.Messages
+import scala.util.{Failure, Success, Try}
 
 /*
  * Copyright 2016 HM Revenue & Customs
@@ -37,9 +35,21 @@ import play.api.i18n.Messages
  * limitations under the License.
  */
 trait DateFormatter {
-  def getDateAsFormattedString(day:Int, month:Int, year:Int) : String = {
-      val date = new DateTime(year, month, day, 0, 0, 0)
-      val formatter = new SimpleDateFormat("dd MMM YYYY");
-      formatter.format(date.toDate)
+  def toDateString(day: Int, month: Int, year:Int ): String = {
+    Try {
+      val inFormat= new SimpleDateFormat("dd/MM/yyyy")
+      val outFormat = new SimpleDateFormat("dd MMMM yyyy")
+      val formattedDate = outFormat.format(inFormat.parse(s"$day/$month/$year"))
+      formattedDate
+
+    } match {
+      case Success(result) => result
+
+      // just return an empty string in implementation
+      case Failure(_) => {
+        ""
+      }
+    }
+
   }
 }

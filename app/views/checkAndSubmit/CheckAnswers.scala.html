@@ -43,7 +43,7 @@
             <!-- Date of Incorporation -->
             @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
                 @defining(checkAnswersModel.dateOfIncorporationModel.get) { dateOfIncorporationModel =>
-                    @summaryTextRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.getDateAsFormattedString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.routes.DateOfIncorporationController.show().toString))
+                    @summaryTextRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.routes.DateOfIncorporationController.show().toString))
                 }
             }else{
                 @summaryTextRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), Messages("common.notAvailable"), Some(controllers.routes.DateOfIncorporationController.show().toString))
@@ -64,11 +64,9 @@
             @if(checkAnswersModel.commercialSaleModel.isDefined){
                 @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>
                     @if(commercialSaleModel.hasCommercialSale.equals(Messages("common.radioYesLabel"))){
-                        @summaryTextRowHelperBasic(Messages("summaryId.commercialSaleDate"), Messages("summaryQuestion.commercialSaleDate"), CommercialSaleModel.getDateAsFormattedString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get),Some(controllers.routes.CommercialSaleController.show().toString))
+                        @summaryTextRowHelperBasic(Messages("summaryId.commercialSaleDate"), Messages("summaryQuestion.commercialSaleDate"), CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get),Some(controllers.routes.CommercialSaleController.show().toString))
                     }
                 }
-            }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.commercialSaleDate"), Messages("summaryQuestion.commercialSaleDate"), Messages("common.notAvailable"),Some(controllers.routes.CommercialSaleController.show().toString))
             }
             <!--Is Knowledge Intensive -->
             @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
