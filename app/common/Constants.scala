@@ -22,5 +22,7 @@ trait Constants {
   val StandardRadioButtonYesValue = "Yes"
   val StandardRadioButtonNoValue = "No"
   val SuggestedTextMaxLength: Int = 2048
+  val IsKnowledgeIntesnsiveYears : String = "10"
+  val IsNotKnowledgeIntesnsiveYears : String = "7"
 
 }

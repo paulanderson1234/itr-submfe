@@ -52,8 +52,8 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
 
       def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
         KIFlag match {
-          case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => "10"
-          case _ => "7"
+          case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => Constants.IsKnowledgeIntesnsiveYears
+          case _ => Constants.IsNotKnowledgeIntesnsiveYears
         }
       }
 
