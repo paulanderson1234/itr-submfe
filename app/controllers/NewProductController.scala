@@ -47,8 +47,11 @@ trait NewProductController extends FrontendController with ValidActiveSession {
     def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
       date match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.NewProductController.show().toString())
           Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-        case Some(_) => Future.successful(Redirect(routes.InvestmentGrowController.show()))
+        case Some(_) =>
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.NewProductController.show().toString())
+          Future.successful(Redirect(routes.InvestmentGrowController.show()))
         case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }

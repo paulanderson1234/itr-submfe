@@ -16,13 +16,14 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+
 import scala.concurrent.Future
 import views.html.investment.UsedInvestmentReasonBefore
 
@@ -49,8 +50,14 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Valid
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
         validFormData.usedInvestmentReasonBefore match {
-          case "Yes"  => Redirect(routes.PreviousBeforeDOFCSController.show())
-          case "No"   => Redirect(routes.NewGeographicalMarketController.show())
+          case Constants.StandardRadioButtonYesValue  => {
+
+            Redirect(routes.PreviousBeforeDOFCSController.show())
+          }
+          case Constants.StandardRadioButtonNoValue   => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.UsedInvestmentReasonBeforeController.show().toString())
+            Redirect(routes.NewGeographicalMarketController.show())
+          }
         }
       }
     )

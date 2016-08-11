@@ -38,22 +38,30 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    def routeRequest(backUrl: String) = {
-      keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket) map {
-        case Some(data) => Ok(NewGeographicalMarket(newGeographicalMarketForm.fill(data), backUrl))
-        case None => Ok(NewGeographicalMarket(newGeographicalMarketForm, backUrl))
+    def routeRequest(backUrl: Option[String]) = {
+      if(backUrl.isDefined) {
+        keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket) map {
+          case Some(data) => Ok(NewGeographicalMarket(newGeographicalMarketForm.fill(data), backUrl.get))
+          case None => Ok(NewGeographicalMarket(newGeographicalMarketForm, backUrl.get))
+        }
       }
+      else Future.successful(Redirect(routes.WhatWillUseForController.show()))
     }
 
     for {
-      link <- getBackLink
+      link <- loadBackLinkURL
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = Action.async { implicit request =>
     newGeographicalMarketForm.bindFromRequest.fold(
-      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(NewGeographicalMarket(invalidForm, url)))),
+      invalidForm =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc).flatMap {
+          case Some(data) => Future.successful(BadRequest(views.html.investment.NewGeographicalMarket(invalidForm, data)))
+          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+
+      },
       validForm => {
         keyStoreConnector.saveFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, validForm)
         Future.successful(Redirect(routes.NewProductController.show()))
@@ -61,22 +69,11 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
     )
   }
 
-  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(whatWillUseFor: Option[WhatWillUseForModel], usedInvestReason : Option[UsedInvestmentReasonBeforeModel],
-                     prevBeforeDOFCS: Option[PreviousBeforeDOFCSModel]): String = {
-      (whatWillUseFor,usedInvestReason,prevBeforeDOFCS) match {
-        case (Some(whatWillUseFor), None , None) => routes.WhatWillUseForController.show().toString
-        case (_,Some(usedInvestReason), None) => routes.UsedInvestmentReasonBeforeController.show().toString()
-        case (_,_,Some(prevBeforeDOFCS)) => routes.PreviousBeforeDOFCSController.show().toString()
-        case _ => routes.WhatWillUseForController.show().toString
-      }
-    }
+  def loadBackLinkURL(implicit hc: HeaderCarrier): Future[Option[String]] = {
 
-    for {
-      whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
-      usedInvestReason <- keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore)
-      prevBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
-      route <- Future.successful(routeRequest(whatWillUseFor,usedInvestReason,prevBeforeDOFCS))
-    } yield route
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc).flatMap{
+      case Some(data) => Future.successful(Some(data))
+      case None => Future.successful(None)
+    }
   }
 }

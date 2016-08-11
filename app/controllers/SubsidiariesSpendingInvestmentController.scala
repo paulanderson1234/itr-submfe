@@ -34,10 +34,9 @@ package controllers
 
 import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
-
 import controllers.predicates.ValidActiveSession
 import forms.SubsidiariesSpendingInvestmentForm._
-import models._
+import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc.Action
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -54,51 +53,45 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-
-    def routeRequest(backUrl: String) = {
-      keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
-        case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data),backUrl))
-        case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm,backUrl))
+    def routeRequest(backUrl: Option[String]) = {
+      if(backUrl.isDefined) {
+        keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
+          case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
+          case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
+        }
       }
+      else Future.successful(Redirect(routes.WhatWillUseForController.show()))
     }
 
     for {
-      link <- getBackLink
+      link <- loadBackLinkURL
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = Action.async { implicit request =>
     subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
-      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(investment.SubsidiariesSpendingInvestment(invalidForm, url)))),
+      invalidForm =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc).flatMap {
+          case Some(data) => Future.successful(BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
+          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+      },
       validForm => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
         validForm.subSpendingInvestment match {
           case  Constants.StandardRadioButtonYesValue  => Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
-          case  Constants.StandardRadioButtonNoValue   => Future.successful(Redirect(routes.InvestmentGrowController.show()))
+          case  Constants.StandardRadioButtonNoValue   =>
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesSpendingInvestmentController.show().toString())
+            Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }
       }
     )
   }
 
-  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(newProduct: Option[NewProductModel], previousBeforeDOFCS : Option[PreviousBeforeDOFCSModel],
-                     whatWillUseFor: Option[WhatWillUseForModel]): String = {
-      (newProduct,previousBeforeDOFCS,whatWillUseFor) match {
-        case (Some(newProduct),_,_) => routes.NewProductController.show.toString()
-        case (None,Some(previousBeforeDOFCS),_) => routes.PreviousBeforeDOFCSController.show.toString()
-        case (None,None,Some(whatWillUseFor)) => routes.WhatWillUseForController.show.toString()
-        case _ => routes.WhatWillUseForController.show.toString()
-      }
+  def loadBackLinkURL(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc).flatMap {
+      case Some(data) => Future.successful(Some(data))
+      case None => Future.successful(None)
     }
-
-    for {
-      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
-      whatWillUseFor<- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
-      route <- Future.successful(routeRequest(newProduct,previousBeforeDOFCS,whatWillUseFor))
-    } yield route
-
   }
-
 }
