@@ -17,12 +17,11 @@
 package models
 
 import play.api.libs.json.Json
+import utils.CostFormatter
 
-case class ProposedInvestmentModel(investmentAmount : Int) {
+case class ProposedInvestmentModel(investmentAmount : Int)
 
-}
-
-object ProposedInvestmentModel {
+object ProposedInvestmentModel extends CostFormatter{
 
   implicit val format = Json.format[ProposedInvestmentModel]
   implicit val writes = Json.writes[ProposedInvestmentModel]

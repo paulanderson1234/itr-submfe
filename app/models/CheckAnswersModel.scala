@@ -34,6 +34,7 @@ case class CheckAnswersModel(
                               usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
                               previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
                               newGeographicalMarketModel: Option[NewGeographicalMarketModel],
+                              newProductModel: Option[NewProductModel],
                               subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
                               investmentGrowModel: Option[InvestmentGrowModel]

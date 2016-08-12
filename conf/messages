@@ -391,6 +391,32 @@ summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physi
 summaryQuestion.tenYearPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
 
+#summary questions section three
+page.summaryQuestion.companyDetailsSectionThree=Section 3: This investment
+page.summaryQuestion.proposedInvestment=Amount to be raised
+page.summaryQuestion.usedRAndD=Used for research and development
+page.summaryQuestion.whatWillUseFor=What you''ll use it for
+page.summaryQuestion.usedInvestReasonBefore=Same reason as a previous investment
+page.summaryQuestion.previousBeforeDOFCS=Got the investment before [DoFCS+7years]
+page.summaryQuestion.newGeoMarket=Launching somewhere new
+page.summaryQuestion.newProduct=Entering a new product market
+page.summaryQuestion.subsSpendingInvest=Company owned or controlled by [company name] to spend this investment
+page.summaryQuestion.subNinetyOwned=[Company name] owns more than 90% of that company
+page.summaryQuestion.investmentGrow=How the investment will help your company grow
+
+#summary ids section three
+page.summaryId.companyDetailsSectionThree = companyDetailsSectionThree
+page.summaryId.proposedInvestment =proposedInvestment
+page.summaryId.usedRAndD =usedRAndD
+page.summaryId.whatWillUseFor =whatUseFor
+page.summaryId.usedInvestReasonBefore =usedInvestReasonBefore
+page.summaryId.previousBeforeDOFCS =previousBeforeDOFCS
+page.summaryId.newGeoMarket =newGeoMarket
+page.summaryId.newProduct =newProduct
+page.summaryId.subsSpendingInvest =subsSpendingInvest
+page.summaryId.subNinetyOwned =subNinetyOwned
+page.summaryId.investmentGrow =investmentGrow
+
 #supply contact address
 page.contactInformation.ContactAddress.heading=What''s their address?
 page.contactInformation.ContactAddress.title=Contact address
