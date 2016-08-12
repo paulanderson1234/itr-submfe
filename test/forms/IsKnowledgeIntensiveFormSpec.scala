@@ -16,7 +16,8 @@
 
 package forms
 
-import models.{IsKnowledgeIntensiveModel}
+import common.Constants
+import models.IsKnowledgeIntensiveModel
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -65,7 +66,7 @@ class IsKnowledgeIntensiveFormSpec extends UnitSpec {
   "The Is Knowledge Intensive Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> "Yes"
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -80,7 +81,7 @@ class IsKnowledgeIntensiveFormSpec extends UnitSpec {
   "The Is Knowledge Intensive Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> "No"
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -108,7 +109,7 @@ class IsKnowledgeIntensiveFormSpec extends UnitSpec {
     "call apply corrctly on the model" in {
       implicit val formats = Json.format[IsKnowledgeIntensiveModel]
       val isKnowledgeIntensiveForm =IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm.fill(isKnowledgeIntensiveModel)
-      isKnowledgeIntensiveForm.get.isKnowledgeIntensive shouldBe "Yes"
+      isKnowledgeIntensiveForm.get.isKnowledgeIntensive shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

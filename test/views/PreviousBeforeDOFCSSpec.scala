@@ -19,6 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.{PreviousBeforeDOFCSController, routes}
 import models.PreviousBeforeDOFCSModel
@@ -29,7 +30,6 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val previousBeforeDOFCSModel = new PreviousBeforeDOFCSModel("Yes")
+  val previousBeforeDOFCSModel = new PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val emptyPreviousBeforeDOFCSModel = new PreviousBeforeDOFCSModel("")
 
   class SetupPage {

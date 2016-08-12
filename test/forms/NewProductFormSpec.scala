@@ -16,6 +16,7 @@
 
 package forms
 
+import common.Constants
 import models.NewProductModel
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -78,7 +79,7 @@ class NewProductFormSpec extends UnitSpec {
   "TheNew Product Before Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "isNewProduct" -> "No"
+        "isNewProduct" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -106,7 +107,7 @@ class NewProductFormSpec extends UnitSpec {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[NewProductModel]
       val newProductForm = NewProductForm.newProductForm.fill(newProductModel)
-      newProductForm.get.isNewProduct shouldBe "Yes"
+      newProductForm.get.isNewProduct shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

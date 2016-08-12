@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -44,11 +45,11 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = IsKnowledgeIntensiveModel("Yes")
-  val modelNo = IsKnowledgeIntensiveModel("No")
+  val modelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = IsKnowledgeIntensiveModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedIsKnowledgeIntensive = IsKnowledgeIntensiveModel("Yes")
+  val keyStoreSavedIsKnowledgeIntensive = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -98,7 +99,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     "redirect to the operating costs page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> "Yes")
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -112,7 +113,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> "No")
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

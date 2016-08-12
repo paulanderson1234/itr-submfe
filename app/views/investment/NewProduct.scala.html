@@ -1,5 +1,6 @@
 @import models.NewProductModel
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
 @(newProductForm: Form[NewProductModel])(implicit request: Request[_])
@@ -26,8 +27,8 @@
             @formInputRadioGroup(
             field = newProductForm("isNewProduct"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue-> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
             '_legend -> Messages("page.investment.NewProduct.heading"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,

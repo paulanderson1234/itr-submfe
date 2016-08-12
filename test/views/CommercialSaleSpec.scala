@@ -18,8 +18,8 @@ package views
 
 import java.util.UUID
 
+import common.Constants
 import connectors.KeystoreConnector
-
 import controllers.{CommercialSaleController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.CommercialSaleModel
@@ -38,9 +38,9 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val commercialSaleModelValidNo = new CommercialSaleModel("No", None, None, None)
-  val commercialSaleModelValidYes = new CommercialSaleModel("Yes", Some(10), Some(25), Some(2015))
-  val commercialSaleModelInvalidYes = new CommercialSaleModel("Yes", None, Some(25), Some(2015))
+  val commercialSaleModelValidNo = new CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
+  val commercialSaleModelValidYes = new CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(10), Some(25), Some(2015))
+  val commercialSaleModelInvalidYes = new CommercialSaleModel(Constants.StandardRadioButtonYesValue, None, Some(25), Some(2015))
   val emptyCommercialSaleModel = new CommercialSaleModel("", None, None, None)
 
   class SetupPage {
@@ -59,7 +59,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidYes)))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasCommercialSale" -> "Yes",
+          "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
           "commercialSaleDay" -> "10",
           "commercialSaleMonth" -> "25",
           "commercialSaleYear" -> "2015"
@@ -88,7 +88,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidNo)))
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
-          "hasCommercialSale" -> "No",
+          "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
           "commercialSaleDay" -> "",
           "commercialSaleMonth" -> "",
           "commercialSaleYear" -> ""

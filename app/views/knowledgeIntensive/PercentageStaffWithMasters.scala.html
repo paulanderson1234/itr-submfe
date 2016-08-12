@@ -1,5 +1,6 @@
 @import models.PercentageStaffWithMastersModel
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
 @(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_])
@@ -20,8 +21,8 @@
             @formInputRadioGroup(
             field = percentageStaffWithMastersForm("staffWithMasters"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
             '_legend -> Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,

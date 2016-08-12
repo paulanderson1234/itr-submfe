@@ -45,40 +45,4 @@ trait SupportingDocumentsController extends FrontendController with ValidActiveS
   val submit = Action.async { implicit request =>
     Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
-
-  /*
-  // EXAMPLE USING COMMON BACKLINK METHOD FOR INVALID FORM SUBMISSION
-  // NOTE: THIS IS JUST AN EXAMPLE - THE KeystoreKeys.backLinkSupportingDocs NEEDS CHANGING TO CORRECT KEY
-  // THE NONE CASE IS WHAT WE DO IF NO BACK LINK IS FOUND IN KEYSTORE
-  val submit = Action.async { implicit request =>
-    subsidiariesForm.bindFromRequest.fold(
-      invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
-          case Some(data) => Future.successful(BadRequest(Subsidiaries(invalidForm, data)))
-          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
-        },
-      validForm => {
-        keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
-        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-      }
-    )
-  }
-  */
-
-//  val showeM = ValidateSession.async { implicit request =>
-//
-//    keyStoreConnector.fetchAndGetFormData[String](KeystoreKeys.backLinkSupportingDocs).flatMap {
-//      case Some(data) => Future.successful(Ok(views.html.supportingDocuments.SupportingDocuments(data)))
-//      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-//    }
-//  }
-
-  //  val showit = ValidateSession.async { implicit request =>
-  //
-  //    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs)(hc).flatMap {
-  //      case Some(data) => Future.successful(Ok(views.html.supportingDocuments.SupportingDocuments(data)))
-  //      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-  //    }
-  //  }
-
 }

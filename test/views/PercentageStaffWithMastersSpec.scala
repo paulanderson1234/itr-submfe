@@ -19,9 +19,10 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.{PercentageStaffWithMastersController, routes}
-import models.{PercentageStaffWithMastersModel}
+import models.PercentageStaffWithMastersModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -37,7 +38,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val percentageStaffWithMastersModel = new PercentageStaffWithMastersModel("Yes")
+  val percentageStaffWithMastersModel = new PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
   val emptyPercentageStaffWithMastersModel = new PercentageStaffWithMastersModel("")
 
   class SetupPage {

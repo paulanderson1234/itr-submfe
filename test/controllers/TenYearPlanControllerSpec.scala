@@ -44,11 +44,11 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = TenYearPlanModel("Yes", Some("Text"))
+  val model = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("Text"))
   val emptyModel = TenYearPlanModel("", None)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel("Yes", Some("abcd"))
-  val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel("No", None)
+  val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("abcd"))
+  val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
 
 
   def showWithSession(test: Future[Result] => Any) {

@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -98,7 +99,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hadPreviousRFI" -> "Yes")
+        "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -112,7 +113,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hadPreviousRFI" -> "No")
+        "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

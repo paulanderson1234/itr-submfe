@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -45,13 +45,13 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = SubsidiariesModel("Yes")
-  val modelNo = SubsidiariesModel("No")
+  val modelYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = SubsidiariesModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedSubsidiaries = SubsidiariesModel("Yes")
+  val keyStoreSavedSubsidiaries = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(2),Some(3),Some(2016))
-  val keyStoreSavedIsKnowledgeIntensiveYes = IsKnowledgeIntensiveModel("Yes")
+  val keyStoreSavedIsKnowledgeIntensiveYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -113,7 +113,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "subsidiaries" -> "Yes")
+        "subsidiaries" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -129,7 +129,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "subsidiaries" -> "No")
+        "subsidiaries" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

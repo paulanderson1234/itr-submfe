@@ -1,6 +1,7 @@
 @import models.NewGeographicalMarketModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+@import common.Constants
 
 @(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_])
 
@@ -27,8 +28,8 @@
             @formInputRadioGroup(
             field = newGeographicalMarketForm("isNewGeographicalMarket"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
             '_legend -> Messages("page.investment.NewGeographicalMarket.heading"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,

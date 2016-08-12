@@ -16,7 +16,8 @@
 
 package forms
 
-import models.{SubsidiariesModel}
+import common.Constants
+import models.SubsidiariesModel
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -41,7 +42,7 @@ class SubsidiariesFormSpec extends UnitSpec {
   }
 
   val subsidiariesJson = """{"ownSubsidiaries":"Yes"}"""
-  val subsidiariesModel = SubsidiariesModel("Yes")
+  val subsidiariesModel = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
 
   // address line 1 validation
   "The Subsidiaries Form" should {
@@ -65,7 +66,7 @@ class SubsidiariesFormSpec extends UnitSpec {
   "The Subsidiaries Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "subsidiaries" -> "Yes"
+        "subsidiaries" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -80,7 +81,7 @@ class SubsidiariesFormSpec extends UnitSpec {
   "The Subsidiaries Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "subsidiaries" -> "No"
+        "subsidiaries" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -108,7 +109,7 @@ class SubsidiariesFormSpec extends UnitSpec {
     "call apply corrctly on the model" in {
       implicit val formats = Json.format[SubsidiariesModel]
       val subsidiariesForm =SubsidiariesForm.subsidiariesForm.fill(subsidiariesModel)
-      subsidiariesForm.get.ownSubsidiaries shouldBe "Yes"
+      subsidiariesForm.get.ownSubsidiaries shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

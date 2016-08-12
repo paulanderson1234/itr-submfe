@@ -21,7 +21,7 @@ import java.util.UUID
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesController, routes}
 import controllers.helpers.FakeRequestHelper
-import models.{PercentageStaffWithMastersModel, IsKnowledgeIntensiveModel, DateOfIncorporationModel, SubsidiariesModel}
+import models.{DateOfIncorporationModel, IsKnowledgeIntensiveModel, PercentageStaffWithMastersModel, SubsidiariesModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -32,7 +32,7 @@ import play.api.test.Helpers._
 import java.time.ZoneId
 import java.util.{Date, UUID}
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -45,10 +45,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val subsidiariesModelYes = new SubsidiariesModel("Yes")
-  val subsidiariesModelNo = new SubsidiariesModel("No")
+  val subsidiariesModelYes = new SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val subsidiariesModelNo = new SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val emptySubsidiariesModel = new SubsidiariesModel("")
-  val model = SubsidiariesModel("Yes")
+  val model = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val emptyModel = SubsidiariesModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
 
@@ -109,7 +109,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -139,7 +139,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -169,7 +169,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -199,7 +199,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -230,7 +230,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -260,7 +260,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -290,7 +290,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -321,7 +321,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20No)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -351,7 +351,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -381,7 +381,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "No"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -497,7 +497,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -528,7 +528,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -559,7 +559,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -590,7 +590,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -621,7 +621,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -652,7 +652,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -684,7 +684,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20Yes)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
@@ -716,7 +716,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedPercentageMastersOver20No)))
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "ownSubsidiaries" -> "Yes"
+          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }

@@ -16,7 +16,8 @@
 
 package forms
 
-import models.{PreviousBeforeDOFCSModel}
+import common.Constants
+import models.PreviousBeforeDOFCSModel
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -65,7 +66,7 @@ class PreviousBeforeDOFCSFormSpec extends UnitSpec {
   "The Previous Before DOFCS Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "Yes"
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -80,7 +81,7 @@ class PreviousBeforeDOFCSFormSpec extends UnitSpec {
   "The Previous Before DOFCS Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "No"
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -108,7 +109,7 @@ class PreviousBeforeDOFCSFormSpec extends UnitSpec {
     "call apply corrctly on the model" in {
       implicit val formats = Json.format[PreviousBeforeDOFCSModel]
       val previousBeforeDOFCSForm =PreviousBeforeDOFCSForm.previousBeforeDOFCSForm.fill(previousBeforeDOFCSModel)
-      previousBeforeDOFCSForm.get.previousBeforeDOFCS shouldBe "Yes"
+      previousBeforeDOFCSForm.get.previousBeforeDOFCS shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

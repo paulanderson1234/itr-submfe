@@ -19,6 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.{HadPreviousRFIController, routes}
 import models.HadPreviousRFIModel
@@ -29,7 +30,6 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val hadPreviousRFIModel = new HadPreviousRFIModel("Yes")
+  val hadPreviousRFIModel = new HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
   val emptyHadPreviousRFIModel = new HadPreviousRFIModel("")
 
   class SetupPage {

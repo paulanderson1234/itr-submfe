@@ -1,5 +1,6 @@
 @import models.IsKnowledgeIntensiveModel
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary, formInputRadioGroup}
 
 @(isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel])(implicit request: Request[_])
@@ -39,8 +40,8 @@
             @formInputRadioGroup(
             field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
             '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,
