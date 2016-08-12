@@ -20,6 +20,7 @@ import java.time.ZoneId
 import java.util.{Date, UUID}
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -68,18 +69,13 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = CommercialSaleModel("Yes", Some(23),Some(11),Some(1993))
+  val model = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(23),Some(11),Some(1993))
   val emptyModel = CommercialSaleModel("", None, None, None)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedCommercialSale = CommercialSaleModel("Yes", Some(15),Some(3),Some(1996))
+  val keyStoreSavedCommercialSale = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(15),Some(3),Some(1996))
   val keyStoreSavedDateOfIncorporation3Years = DateOfIncorporationModel(Some(date3YearsAgoDay),Some(date3YearsAgoMonth),Some(date3YearsAgoYear))
   val keyStoreSavedDateOfIncorporation3YearsLessOneDay = DateOfIncorporationModel(Some(date3YearsLessOneDayDay),Some(date3YearsLessOneDayMonth),Some(date3YearsLessOneDayYear))
   val keyStoreSavedDateOfIncorporation3YearsAndOneDay = DateOfIncorporationModel(Some(date3YearsOneDayDay),Some(date3YearsOneDayMonth),Some(date3YearsOneDayYear))
-
-//  val commercialSaleModelValidNo = new CommercialSaleModel("No", None, None, None)
-//  val commercialSaleModelValidYes = new CommercialSaleModel("Yes", Some(10), Some(25), Some(2015))
-//  val commercialSaleModelInvalidYes = new CommercialSaleModel("Yes", None, Some(25), Some(2015))
-//  val emptyCommercialSaleModel = new CommercialSaleModel("", None, None, None)
 
 
   def showWithSession(test: Future[Result] => Any) {
@@ -130,7 +126,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid Yes form submission to the CommercialSaleController" should {
     "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "Yes",
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
@@ -148,7 +144,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid Yes form submission to the CommercialSaleController" should {
     "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "Yes",
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
@@ -166,7 +162,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid Yes form submission to the CommercialSaleController" should {
     "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "Yes",
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
@@ -185,7 +181,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid No form submission to the CommercialSaleController" should {
     "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "No",
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
@@ -203,7 +199,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid No form submission to the CommercialSaleController" should {
     "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "No",
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
@@ -221,7 +217,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid No form submission to the CommercialSaleController" should {
     "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "No",
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
@@ -239,7 +235,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid No form submission to the CommercialSaleController" should {
     "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "No",
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
@@ -257,7 +253,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid Yes form submission to the CommercialSaleController" should {
     "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "Yes",
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "12",
         "commercialSaleMonth" -> "1",
         "commercialSaleYear" -> "2016")
@@ -312,7 +308,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to itself" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "Yes",
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "12",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "")

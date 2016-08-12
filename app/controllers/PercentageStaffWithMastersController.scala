@@ -16,13 +16,14 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.PercentageStaffWithMastersForm._
 import models.PercentageStaffWithMastersModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+
 import scala.concurrent.Future
 import views.html._
 
@@ -49,8 +50,8 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
         validFormData.staffWithMasters match {
-          case "Yes"  => Redirect(routes.SubsidiariesController.show)
-          case "No"   => Redirect(routes.TenYearPlanController.show)
+          case Constants.StandardRadioButtonYesValue  => Redirect(routes.SubsidiariesController.show)
+          case Constants.StandardRadioButtonNoValue   => Redirect(routes.TenYearPlanController.show)
         }
       }
     )

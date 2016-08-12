@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -44,11 +45,11 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = UsedInvestmentReasonBeforeModel("Yes")
-  val modelNo = UsedInvestmentReasonBeforeModel("No")
+  val modelYes = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = UsedInvestmentReasonBeforeModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedUsedInvestmentReasonBefore = UsedInvestmentReasonBeforeModel("Yes")
+  val keyStoreSavedUsedInvestmentReasonBefore = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -98,7 +99,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> "Yes")
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -112,7 +113,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> "No")
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

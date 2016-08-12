@@ -16,14 +16,14 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
-
 import controllers.predicates.ValidActiveSession
 import forms.IsKnowledgeIntensiveForm._
 import models.IsKnowledgeIntensiveModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+
 import scala.concurrent.Future
 import views.html._
 
@@ -50,8 +50,8 @@ trait IsKnowledgeIntensiveController extends FrontendController with ValidActive
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
         validFormData.isKnowledgeIntensive match {
-          case "Yes"  => Redirect(routes.OperatingCostsController.show)
-          case "No"   => Redirect(routes.SubsidiariesController.show)
+          case Constants.StandardRadioButtonYesValue  => Redirect(routes.OperatingCostsController.show)
+          case Constants.StandardRadioButtonNoValue   => Redirect(routes.SubsidiariesController.show)
         }
       }
     )

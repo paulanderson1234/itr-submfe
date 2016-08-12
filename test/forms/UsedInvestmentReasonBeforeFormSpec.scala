@@ -16,6 +16,7 @@
 
 package forms
 
+import common.Constants
 import models.UsedInvestmentReasonBeforeModel
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -64,7 +65,7 @@ class UsedInvestmentReasonBeforeFormSpec extends UnitSpec {
   "The Used Investment Reason Before Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> "Yes"
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -78,7 +79,7 @@ class UsedInvestmentReasonBeforeFormSpec extends UnitSpec {
   "The Used Investment Reason Before Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> "No"
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -106,7 +107,7 @@ class UsedInvestmentReasonBeforeFormSpec extends UnitSpec {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[UsedInvestmentReasonBeforeModel]
       val usedInvestmentReasonBeforeForm = UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm.fill(usedInvestmentReasonBeforeModel)
-      usedInvestmentReasonBeforeForm.get.usedInvestmentReasonBefore shouldBe "Yes"
+      usedInvestmentReasonBeforeForm.get.usedInvestmentReasonBefore shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

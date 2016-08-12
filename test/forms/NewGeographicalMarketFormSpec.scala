@@ -16,6 +16,7 @@
 
 package forms
 
+import common.Constants
 import models.NewGeographicalMarketModel
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -64,7 +65,7 @@ class NewGeographicalMarketFormSpec extends UnitSpec {
   "TheNew Product Before Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "Yes"
+        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -78,7 +79,7 @@ class NewGeographicalMarketFormSpec extends UnitSpec {
   "TheNew Product Before Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "No"
+        "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -106,7 +107,7 @@ class NewGeographicalMarketFormSpec extends UnitSpec {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[NewGeographicalMarketModel]
       val newGeographicalMarketForm = NewGeographicalMarketForm.newGeographicalMarketForm.fill(newGeographicalMarketModel)
-      newGeographicalMarketForm.get.isNewGeographicalMarket shouldBe "Yes"
+      newGeographicalMarketForm.get.isNewGeographicalMarket shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

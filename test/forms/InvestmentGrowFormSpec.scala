@@ -55,8 +55,6 @@ class InvestmentGrowFormSpec extends UnitSpec {
     "fourth image. Female brought signs days life tree also You're brought beginning night over stars is Can't " +
     "divided i male creature green days herb also."
 
-  //TODO:
-  // the test needs to be included once fix found for the formTextInput helper currently rendering incorrect error
     "The Investment Grow Form" should {
     "return an error if investmentGrowDesc is empty" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(

@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -45,14 +45,14 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = NewProductModel("Yes")
-  val modelNo = NewProductModel("No")
+  val modelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = NewProductModel("")
-  val modelSubsidiariesYes = SubsidiariesModel("Yes")
-  val modelSubsidiariesNo = SubsidiariesModel("No")
+  val modelSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val modelSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val emptySubsidiariesModel = SubsidiariesModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedNewProduct = NewProductModel("Yes")
+  val keyStoreSavedNewProduct = NewProductModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -104,7 +104,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "Yes")
+        "isNewProduct" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -120,7 +120,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "Yes")
+        "isNewProduct" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -136,7 +136,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "Yes")
+        "isNewProduct" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -156,7 +156,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "No")
+        "isNewProduct" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -172,7 +172,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "No")
+        "isNewProduct" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -188,7 +188,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewProduct" -> "No")
+        "isNewProduct" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

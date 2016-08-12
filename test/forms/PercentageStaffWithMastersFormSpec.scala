@@ -16,6 +16,7 @@
 
 package forms
 
+import common.Constants
 import models.{IsKnowledgeIntensiveModel, PercentageStaffWithMastersModel}
 import play.api.data.FormError
 import play.api.i18n.Messages
@@ -64,7 +65,7 @@ class PercentageStaffWithMastersFormSpec extends UnitSpec {
   "The Percentage Staff With Masters Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "staffWithMasters" -> "Yes"
+        "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -79,7 +80,7 @@ class PercentageStaffWithMastersFormSpec extends UnitSpec {
   "The Percentage Staff With Masters Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "staffWithMasters" -> "No"
+        "staffWithMasters" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {

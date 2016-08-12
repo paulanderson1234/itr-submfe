@@ -1,5 +1,6 @@
 @import models.SubsidiariesModel
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary, formInputRadioGroup}
 
 @(subsidiariesForm: Form[SubsidiariesModel], backlinkUrl: String)(implicit request: Request[_])
@@ -18,8 +19,8 @@
     @formInputRadioGroup(
     field = subsidiariesForm("subsidiaries"),
     Seq(
-    "Yes"->Messages("common.radioYesLabel"),
-    "No"->Messages("common.radioNoLabel")),
+    Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+    Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
     '_legend -> Messages("page.companyDetails.Subsidiaries.heading"),
     '_legendClass -> "visuallyhidden",
     '_labelAfter -> true,
