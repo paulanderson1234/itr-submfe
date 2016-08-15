@@ -36,7 +36,7 @@ trait SupportingDocumentsController extends FrontendController with ValidActiveS
 
   val show = ValidateSession.async { implicit request =>
 
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector).flatMap {
       case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
       case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
     }
