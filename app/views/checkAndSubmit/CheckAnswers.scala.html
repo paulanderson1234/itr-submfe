@@ -1,10 +1,10 @@
 @import models.CheckAnswersModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.backButton
-@import views.html.helpers.summaryTableHeaderHelper
-@import views.html.helpers.summaryTextRowHelperBasic
-@import views.html.helpers.summaryTextRowHelperMultiLine
-@import views.html.helpers.summaryTextSubSectionHelper
+@import views.html.helpers.summary.tableHeaderHelper
+@import views.html.helpers.summary.textRowHelperBasic
+@import views.html.helpers.summary.textRowHelperMultiLine
+@import views.html.helpers.summary.textSubSectionHelper
 
 @(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_])
 
@@ -20,56 +20,56 @@
 
         <table id="company-details-table">
             <!-- Header -->
-            @summaryTableHeaderHelper(Messages("summaryId.companyDetailsSection"),Messages("summaryQuestion.companyDetailsSection"))
+            @tableHeaderHelper(Messages("summaryId.companyDetailsSection"),Messages("summaryQuestion.companyDetailsSection"))
             <!-- Data Rows-->
             <tbody>
             <!-- Company Name-->
-            @summaryTextRowHelperBasic(Messages("summaryId.companyName"), Messages("summaryQuestion.companyName"),Messages("common.notAvailable"), Some(controllers.routes.IntroductionController.show().toString))
+            @textRowHelperBasic(Messages("summaryId.companyName"), Messages("summaryQuestion.companyName"),Messages("common.notAvailable"), Some(controllers.routes.IntroductionController.show().toString))
             <!-- Company UTR-->
             @if(checkAnswersModel.taxpayerReferenceModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.utr"), Messages("summaryQuestion.utr"),checkAnswersModel.taxpayerReferenceModel.get.utr, Some(controllers.routes.TaxpayerReferenceController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.utr"), Messages("summaryQuestion.utr"),checkAnswersModel.taxpayerReferenceModel.get.utr, Some(controllers.routes.TaxpayerReferenceController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.utr"), Messages("summaryQuestion.utr"),Messages("common.notAvailable"), Some(controllers.routes.TaxpayerReferenceController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.utr"), Messages("summaryQuestion.utr"),Messages("common.notAvailable"), Some(controllers.routes.TaxpayerReferenceController.show().toString))
             }
             <!-- Company Registered Address-->
             @if(checkAnswersModel.registeredAddressModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.registeredAddress"), Messages("summaryQuestion.registeredAddress"), checkAnswersModel.registeredAddressModel.get.postcode,Some(controllers.routes.RegisteredAddressController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.registeredAddress"), Messages("summaryQuestion.registeredAddress"), checkAnswersModel.registeredAddressModel.get.postcode,Some(controllers.routes.RegisteredAddressController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.registeredAddress"), Messages("summaryQuestion.registeredAddress"), Messages("common.notAvailable"),Some(controllers.routes.RegisteredAddressController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.registeredAddress"), Messages("summaryQuestion.registeredAddress"), Messages("common.notAvailable"),Some(controllers.routes.RegisteredAddressController.show().toString))
             }
             <!-- Date of Incorporation -->
             @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
                 @defining(checkAnswersModel.dateOfIncorporationModel.get) { dateOfIncorporationModel =>
-                    @summaryTextRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.routes.DateOfIncorporationController.show().toString))
+                    @textRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.routes.DateOfIncorporationController.show().toString))
                 }
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), Messages("common.notAvailable"), Some(controllers.routes.DateOfIncorporationController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.dateOfIncorporation"), Messages("summaryQuestion.dateOfIncorporation"), Messages("common.notAvailable"), Some(controllers.routes.DateOfIncorporationController.show().toString))
             }
             <!-- Nature Of Business -->
             @if(checkAnswersModel.natureOfBusinessModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.natureOfBusiness"), Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.routes.NatureOfBusinessController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.natureOfBusiness"), Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.routes.NatureOfBusinessController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.natureOfBusiness"), Messages("summaryQuestion.natureOfBusiness"), Messages("common.notAvailable"), Some(controllers.routes.NatureOfBusinessController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.natureOfBusiness"), Messages("summaryQuestion.natureOfBusiness"), Messages("common.notAvailable"), Some(controllers.routes.NatureOfBusinessController.show().toString))
             }
             <!-- Has made Commercial Sale -->
             @if(checkAnswersModel.commercialSaleModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.hasCommercialSale"), Messages("summaryQuestion.hasCommercialSale"),checkAnswersModel.commercialSaleModel.get.hasCommercialSale, Some(controllers.routes.CommercialSaleController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.hasCommercialSale"), Messages("summaryQuestion.hasCommercialSale"),checkAnswersModel.commercialSaleModel.get.hasCommercialSale, Some(controllers.routes.CommercialSaleController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.hasCommercialSale"), Messages("summaryQuestion.hasCommercialSale"),  Messages("common.notAvailable"), Some(controllers.routes.CommercialSaleController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.hasCommercialSale"), Messages("summaryQuestion.hasCommercialSale"),  Messages("common.notAvailable"), Some(controllers.routes.CommercialSaleController.show().toString))
             }
             <!-- Date of First Commercial Sale -->
             @if(checkAnswersModel.commercialSaleModel.isDefined){
                 @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>
                     @if(commercialSaleModel.hasCommercialSale.equals(Messages("common.radioYesLabel"))){
-                        @summaryTextRowHelperBasic(Messages("summaryId.commercialSaleDate"), Messages("summaryQuestion.commercialSaleDate"), CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get),Some(controllers.routes.CommercialSaleController.show().toString))
+                        @textRowHelperBasic(Messages("summaryId.commercialSaleDate"), Messages("summaryQuestion.commercialSaleDate"), CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get),Some(controllers.routes.CommercialSaleController.show().toString))
                     }
                 }
             }
             <!--Is Knowledge Intensive -->
             @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.knowledgeIntensive"), Messages("summaryQuestion.knowledgeIntensive"),checkAnswersModel.isKnowledgeIntensiveModel.get.isKnowledgeIntensive, Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.knowledgeIntensive"), Messages("summaryQuestion.knowledgeIntensive"),checkAnswersModel.isKnowledgeIntensiveModel.get.isKnowledgeIntensive, Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.knowledgeIntensive"), Messages("summaryQuestion.knowledgeIntensive"), Messages("common.notAvailable"), Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
+                @textRowHelperBasic(Messages("summaryId.knowledgeIntensive"), Messages("summaryQuestion.knowledgeIntensive"), Messages("common.notAvailable"), Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
             }
             <!--If Knowledge Intensive is Yes-->
             @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
@@ -78,44 +78,44 @@
                     @if(checkAnswersModel.operatingCostsModel.isDefined){
                         @defining(checkAnswersModel.operatingCostsModel.get) { operatingAndRDCosts =>
                             <!-- Operating Costs -->
-                            @summaryTextRowHelperMultiLine(Messages("summaryId.operatingCosts"), Messages("summaryQuestion.operatingCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
+                           @textRowHelperMultiLine(Messages("summaryId.operatingCosts"), Messages("summaryQuestion.operatingCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
                                                             OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts2ndYear,Messages("page.companyDetails.OperatingCosts.row.heading.two")),
                                                             OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts3rdYear,Messages("page.companyDetails.OperatingCosts.row.heading.three"))),
                                                             Some(controllers.routes.OperatingCostsController.show().toString))
                             <!-- R&D Costs -->
-                            @summaryTextRowHelperMultiLine(Messages("summaryId.rdCosts"), Messages("summaryQuestion.rdCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
+                           @textRowHelperMultiLine(Messages("summaryId.rdCosts"), Messages("summaryQuestion.rdCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
                                                             OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts2ndYear,Messages("page.companyDetails.OperatingCosts.row.heading.two")),
                                                             OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts3rdYear,Messages("page.companyDetails.OperatingCosts.row.heading.three"))),
                                                             Some(controllers.routes.OperatingCostsController.show().toString))
                         }
                     }else{
-                        @summaryTextRowHelperBasic(Messages("summaryId.operatingCosts"), Messages("summaryQuestion.operatingCosts"), Messages("common.notAvailable"),Some(controllers.routes.OperatingCostsController.show().toString))
-                        @summaryTextRowHelperBasic(Messages("summaryId.rdCosts"), Messages("summaryQuestion.rdCosts"), Messages("common.notAvailable"), Some(controllers.routes.OperatingCostsController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.operatingCosts"), Messages("summaryQuestion.operatingCosts"), Messages("common.notAvailable"),Some(controllers.routes.OperatingCostsController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.rdCosts"), Messages("summaryQuestion.rdCosts"), Messages("common.notAvailable"), Some(controllers.routes.OperatingCostsController.show().toString))
                     }
                     <!-- Percentage of Staff with Masters -->
                     @if(checkAnswersModel.percentageStaffWithMastersModel.isDefined){
-                        @summaryTextRowHelperBasic(Messages("summaryId.percentageStaffWithMasters"), Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.percentageStaffWithMasters"), Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                     }else{
-                        @summaryTextRowHelperBasic(Messages("summaryId.percentageStaffWithMasters"), Messages("summaryQuestion.percentageStaffWithMasters"), Messages("common.notAvailable"), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.percentageStaffWithMasters"), Messages("summaryQuestion.percentageStaffWithMasters"), Messages("common.notAvailable"), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                     }
                     <!--Ten Year Plan-->
                     @if(checkAnswersModel.tenYearPlanModel.isDefined){
-                        @summaryTextRowHelperBasic(Messages("summaryId.tenYearPlan"), Messages("summaryQuestion.tenYearPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.tenYearPlan"), Messages("summaryQuestion.tenYearPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
                         @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan.equals(Messages("common.radioYesLabel"))){
                             <!--Ten Year Plan Desc-->
-                            @summaryTextRowHelperBasic(Messages("summaryId.tenYearPlanDesc"), Messages("summaryQuestion.tenYearPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
+                           @textRowHelperBasic(Messages("summaryId.tenYearPlanDesc"), Messages("summaryQuestion.tenYearPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
                         }
                     }else{
-                        @summaryTextRowHelperBasic(Messages("summaryId.tenYearPlan"), Messages("summaryQuestion.tenYearPlan"), Messages("common.notAvailable"), Some(controllers.routes.TenYearPlanController.show().toString))
+                       @textRowHelperBasic(Messages("summaryId.tenYearPlan"), Messages("summaryQuestion.tenYearPlan"), Messages("common.notAvailable"), Some(controllers.routes.TenYearPlanController.show().toString))
                     }
 
                 }
             }
             <!--Subsidiaries-->
             @if(checkAnswersModel.subsidiariesModel.isDefined){
-                @summaryTextRowHelperBasic(Messages("summaryId.subsidiaries"), Messages("summaryQuestion.subsidiaries"), checkAnswersModel.subsidiariesModel.get.ownSubsidiaries, Some(controllers.routes.SubsidiariesController.show().toString))
+               @textRowHelperBasic(Messages("summaryId.subsidiaries"), Messages("summaryQuestion.subsidiaries"), checkAnswersModel.subsidiariesModel.get.ownSubsidiaries, Some(controllers.routes.SubsidiariesController.show().toString))
             }else{
-                @summaryTextRowHelperBasic(Messages("summaryId.subsidiaries"), Messages("summaryQuestion.subsidiaries"), Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesController.show().toString))
+               @textRowHelperBasic(Messages("summaryId.subsidiaries"), Messages("summaryQuestion.subsidiaries"), Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesController.show().toString))
             }
 
             </tbody>
@@ -123,10 +123,10 @@
 
         <table id="previous-rfi-table">
             <!-- Header -->
-            @summaryTableHeaderHelper(Messages("summaryId.previousRFISection"),Messages("summaryQuestion.previousRFISection"))
+            @tableHeaderHelper(Messages("summaryId.previousRFISection"),Messages("summaryQuestion.previousRFISection"))
             <!-- Data Rows-->
             <tbody>
-            @summaryTextSubSectionHelper(Messages("summaryId.emptyPreviousRFISection"),Messages("common.notAvailable"),Some(controllers.routes.HadPreviousRFIController.show().toString))
+           @textSubSectionHelper(Messages("summaryId.emptyPreviousRFISection"),Messages("common.notAvailable"),Some(controllers.routes.HadPreviousRFIController.show().toString))
             </tbody>
         </table>
     </div>
@@ -134,62 +134,62 @@
     <div id="section-three" class="full-width">
         <table>
         <!-- Header -->
-        @summaryTableHeaderHelper(Messages("page.summaryId.companyDetailsSectionThree"),Messages("page.summaryQuestion.companyDetailsSectionThree"))
+        @tableHeaderHelper(Messages("page.summaryId.companyDetailsSectionThree"),Messages("page.summaryQuestion.companyDetailsSectionThree"))
             <!--Data rows-->
             <tbody>
                 <!--Proposed Investment-->
                 @if(checkAnswersModel.proposedInvestmentModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.routes.ProposedInvestmentController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.routes.ProposedInvestmentController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), Messages("common.notAvailable"), Some(controllers.routes.ProposedInvestmentController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), Messages("common.notAvailable"), Some(controllers.routes.ProposedInvestmentController.show().toString))
                 }
                 <!--What will use for page-->
                 @if(checkAnswersModel.whatWillUseForModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), WhatWillUseForModel.purposeTransformation(checkAnswersModel.whatWillUseForModel.get.whatWillUseFor), Some(controllers.routes.WhatWillUseForController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), WhatWillUseForModel.purposeTransformation(checkAnswersModel.whatWillUseForModel.get.whatWillUseFor), Some(controllers.routes.WhatWillUseForController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), Messages("common.notAvailable"), Some(controllers.routes.WhatWillUseForController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), Messages("common.notAvailable"), Some(controllers.routes.WhatWillUseForController.show().toString))
                 }
                 <!--Used investment reason before page-->
                 @if(checkAnswersModel.usedInvestmentReasonBeforeModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"), checkAnswersModel.usedInvestmentReasonBeforeModel.get.usedInvestmentReasonBefore, Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"), checkAnswersModel.usedInvestmentReasonBeforeModel.get.usedInvestmentReasonBefore, Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"),  Messages("common.notAvailable"), Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"),  Messages("common.notAvailable"), Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
                 }
                 <!--Previous before DOFCS page-->
                 @if(checkAnswersModel.previousBeforeDOFCSModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"), checkAnswersModel.previousBeforeDOFCSModel.get.previousBeforeDOFCS, Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"), checkAnswersModel.previousBeforeDOFCSModel.get.previousBeforeDOFCS, Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"),  Messages("common.notAvailable"), Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"),  Messages("common.notAvailable"), Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
                 }
                 <!-- New Geographical Market page-->
                 @if(checkAnswersModel.newGeographicalMarketModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"), checkAnswersModel.newGeographicalMarketModel.get.isNewGeographicalMarket, Some(controllers.routes.NewGeographicalMarketController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"), checkAnswersModel.newGeographicalMarketModel.get.isNewGeographicalMarket, Some(controllers.routes.NewGeographicalMarketController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"),  Messages("common.notAvailable"), Some(controllers.routes.NewGeographicalMarketController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"),  Messages("common.notAvailable"), Some(controllers.routes.NewGeographicalMarketController.show().toString))
                 }
                 <!-- New product market page-->
                 @if(checkAnswersModel.newProductModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.routes.NewProductController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.routes.NewProductController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"),  Messages("common.notAvailable"), Some(controllers.routes.NewProductController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"),  Messages("common.notAvailable"), Some(controllers.routes.NewProductController.show().toString))
                 }
                 <!-- Subsidiaries Spending Investment page-->
                 @if(checkAnswersModel.subsidiariesSpendingInvestmentModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"), checkAnswersModel.subsidiariesSpendingInvestmentModel.get.subSpendingInvestment, Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"), checkAnswersModel.subsidiariesSpendingInvestmentModel.get.subSpendingInvestment, Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
                 }
                 <!-- Subsidiaries 90% Owned page-->
                 @if(checkAnswersModel.subsidiariesNinetyOwnedModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"), checkAnswersModel.subsidiariesNinetyOwnedModel.get.ownNinetyPercent, Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"), checkAnswersModel.subsidiariesNinetyOwnedModel.get.ownNinetyPercent, Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
                 }
                 <!-- Investment Grow page-->
                 @if(checkAnswersModel.investmentGrowModel.isDefined){
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"), checkAnswersModel.investmentGrowModel.get.investmentGrowDesc, Some(controllers.routes.InvestmentGrowController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"), checkAnswersModel.investmentGrowModel.get.investmentGrowDesc, Some(controllers.routes.InvestmentGrowController.show().toString))
                 }else{
-                    @summaryTextRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"),  Messages("common.notAvailable"), Some(controllers.routes.InvestmentGrowController.show().toString))
+                   @textRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"),  Messages("common.notAvailable"), Some(controllers.routes.InvestmentGrowController.show().toString))
                 }
             </tbody>
         </table>
