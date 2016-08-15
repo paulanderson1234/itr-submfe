@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -45,13 +45,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = PreviousBeforeDOFCSModel("Yes")
-  val modelNo = PreviousBeforeDOFCSModel("No")
+  val modelYes = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = PreviousBeforeDOFCSModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedPreviousBeforeDOFCS = PreviousBeforeDOFCSModel("Yes")
-  val keyStoreSavedSubsidiariesYes = SubsidiariesModel("Yes")
-  val keyStoreSavedSubsidiariesNo = SubsidiariesModel("No")
+  val keyStoreSavedPreviousBeforeDOFCS = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -101,7 +101,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     "redirect to new geographical market" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "No")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -117,7 +117,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "Yes")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -133,7 +133,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "Yes")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -149,7 +149,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "No")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -165,7 +165,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "No")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -181,7 +181,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "Yes")
+        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

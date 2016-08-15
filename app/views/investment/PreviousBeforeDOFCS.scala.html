@@ -1,6 +1,7 @@
 @import models.PreviousBeforeDOFCSModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers._
+@import common.Constants
 
 @(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel])(implicit request: Request[_])
 
@@ -18,8 +19,8 @@
             @formInputRadioGroup(
             field = previousBeforeDOFCSForm("previousBeforeDOFCS"),
             Seq(
-            "Yes"->Messages("common.radioYesLabel"),
-            "No"->Messages("common.radioNoLabel")),
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
             '_legend -> Messages("page.previousInvestment.previousBeforeDOFCS.heading"),
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,

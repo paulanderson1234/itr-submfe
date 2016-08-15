@@ -1,7 +1,9 @@
-@(subSectionId: String, subHeading: String, link: String)
+@(subSectionId: String, subHeading: String,  link: Option[String] = None)
 <tr>
     <td id="@{subSectionId}-subHeading" valign="top"><h2 class="heading-small">@subHeading</h2></td>
     <td></td>
-    <td class="numeric"><a id="@{subSectionId}-link" href=@link>@Messages("common.base.change")</a></td>
+    <td class="numeric">@if(link.isDefined) {
+        <a id="@{subSectionId}-link" href=@link>@Messages("common.base.change")</a>
+        }</td>
 </tr>
 

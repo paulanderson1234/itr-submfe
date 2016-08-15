@@ -4,6 +4,7 @@
 @import views.html.helpers.summaryTableHeaderHelper
 @import views.html.helpers.summaryTextRowHelperBasic
 @import views.html.helpers.summaryTextRowHelperMultiLine
+@import views.html.helpers.summaryTextSubSectionHelper
 
 @(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_])
 
@@ -15,13 +16,9 @@
 
     <p id="description">@Messages("page.checkAndSubmit.checkAnswers.description")</p>
 
-    <div class = "form-group">
-        <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
-    </div>
-
     <div id="yourAnswers" class="full-width">
 
-        <table>
+        <table id="company-details-table">
             <!-- Header -->
             @summaryTableHeaderHelper(Messages("summaryId.companyDetailsSection"),Messages("summaryQuestion.companyDetailsSection"))
             <!-- Data Rows-->
@@ -123,6 +120,19 @@
 
             </tbody>
         </table>
+
+        <table id="previous-rfi-table">
+            <!-- Header -->
+            @summaryTableHeaderHelper(Messages("summaryId.previousRFISection"),Messages("summaryQuestion.previousRFISection"))
+            <!-- Data Rows-->
+            <tbody>
+            @summaryTextSubSectionHelper(Messages("summaryId.emptyPreviousRFISection"),Messages("common.notAvailable"),Some(controllers.routes.CheckAnswersController.show().toString))
+            </tbody>
+        </table>
+    </div>
+
+    <div class = "form-group">
+        <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
     </div>
 
     @form(action = controllers.routes.CheckAnswersController.submit()) {

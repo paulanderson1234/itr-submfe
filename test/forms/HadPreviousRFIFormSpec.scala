@@ -16,7 +16,8 @@
 
 package forms
 
-import models.{HadPreviousRFIModel}
+import common.Constants
+import models.HadPreviousRFIModel
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -65,7 +66,7 @@ class HadPreviousRFIFormSpec extends UnitSpec {
   "The Had Previous RFI Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "hadPreviousRFI" -> "Yes"
+        "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -80,7 +81,7 @@ class HadPreviousRFIFormSpec extends UnitSpec {
   "The Had Previous RFI Form" should {
     "not return an error if the 'No' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "hadPreviousRFI" -> "No"
+        "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -108,7 +109,7 @@ class HadPreviousRFIFormSpec extends UnitSpec {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[HadPreviousRFIModel]
       val hadPreviousRFIForm =HadPreviousRFIForm.hadPreviousRFIForm.fill(hadPreviousRFIModel)
-      hadPreviousRFIForm.get.hadPreviousRFI shouldBe "Yes"
+      hadPreviousRFIForm.get.hadPreviousRFI shouldBe Constants.StandardRadioButtonYesValue
     }
 
     // form json to model - unapply

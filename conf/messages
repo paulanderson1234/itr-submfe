@@ -30,7 +30,7 @@ common.year=Year
 common.base.change = Change
 error.required=This field is required
 common.pound = £
-common.notAvailable=N/A
+common.notAvailable=None
 common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
 
@@ -373,6 +373,8 @@ summaryId.percentageStaffWithMasters =percentageStaffWithMasters
 summaryId.tenYearPlan =tenYearPlan
 summaryId.tenYearPlanDesc =tenYearPlanDesc
 summaryId.subsidiaries =subsidiaries
+summaryId.previousRFISection = previousRFISection
+summaryId.emptyPreviousRFISection = emptyPreviousRFISection
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Company details
@@ -390,6 +392,7 @@ summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's de
 summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
 summaryQuestion.tenYearPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
+summaryQuestion.previousRFISection =Section 2: Previous schemes
 
 #supply contact address
 page.contactInformation.ContactAddress.heading=What''s their address?

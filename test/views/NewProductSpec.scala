@@ -40,9 +40,9 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val isNewProductModel = new NewProductModel("Yes")
+  val isNewProductModel = new NewProductModel(Constants.StandardRadioButtonYesValue)
   val emptyNewProductModel = new NewProductModel("")
-  val modelSubsidiariesNo = SubsidiariesModel("No")
+  val modelSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(isNewProductModel)))
 
   class SetupPage {

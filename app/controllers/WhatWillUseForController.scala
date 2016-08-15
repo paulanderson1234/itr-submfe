@@ -25,6 +25,8 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc.{Action, Result}
 import utils.Validation
 import views.html.investment.WhatWillUseFor
+import common.Constants
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
@@ -50,45 +52,38 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
 
       def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
         KIFlag match {
-          case IsKnowledgeIntensiveModel("Yes") => "10"
-          case _ => "7"
-        }
-      }
-
-      def subsidiariesCheck(hasSub: Option[SubsidiariesModel]): Future[Result] = {
-        hasSub match {
-          case Some(hasSub) => if (hasSub.ownSubsidiaries.equals("Yes")) {
-            Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-          } else {
-            Future.successful(Redirect(routes.InvestmentGrowController.show()))
-          }
-          case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
+          case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => Constants.IsKnowledgeIntesnsiveYears
+          case _ => Constants.IsNotKnowledgeIntesnsiveYears
         }
       }
 
       comSale match {
-        case Some(comSale) => if (comSale.hasCommercialSale.equals("Yes")) {
+        case Some(comSale) => if (comSale.hasCommercialSale.equals(Constants.StandardRadioButtonYesValue)) {
           prevRFI match {
-            case Some(prevRFI) => if (prevRFI.hadPreviousRFI.equals("Yes")) {
+            case Some(prevRFI) => if (prevRFI.hadPreviousRFI.equals(Constants.StandardRadioButtonYesValue)) {
               Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
             }
             else { kIFlag match {
               case Some(kIFlag) =>
                 if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get,getAgeLimit(kIFlag))) {
+                  keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
                   Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
                 }
-                else {subsidiariesCheck(HasSub)}
+                else {subsidiariesCheck(hc, HasSub)}
 
 
               //TODO: Redirect to commercial sale as you should not be able to skip commercial sale or KI.
-              case None => Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+              case None => {
+                keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.WhatWillUseForController.show().toString())
+                Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+                }
               }
 
             }
             case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
         }
-        else {subsidiariesCheck(HasSub)}
+        else {subsidiariesCheck(hc, HasSub)}
 
         case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
       }
@@ -111,5 +106,18 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
         } yield route
       }
     )
+  }
+
+  def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
+    hasSub match {
+      case Some(hasSub) => if (hasSub.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.WhatWillUseForController.show().toString())
+        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+      } else {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.WhatWillUseForController.show().toString())
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
+      }
+      case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
+    }
   }
 }

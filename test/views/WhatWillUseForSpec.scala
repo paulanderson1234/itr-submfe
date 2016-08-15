@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -42,14 +42,14 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   class SetupPage {
 
-    val controller = new WhatWillUseForController{
+    val controller = new WhatWillUseForController {
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 
   "Verify that the WhatWillUseFor page contains the correct elements " +
     "when a valid WhatWillUseForModel is passed as returned from keystore" in new SetupPage {
-    val document : Document = {
+    val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
@@ -64,15 +64,11 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("whatWillUseFor-preparationLabel").text() shouldBe Messages("page.investment.whatWillUseFor.preparing")
     document.getElementById("whatWillUseFor-r&dLabel").text() shouldBe Messages("page.investment.whatWillUseFor.rAndD")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
-
-
-
   }
 
   "Verify that WhatWillUseFor page contains the correct elements when an empty model " +
     "is passed because nothing was returned from keystore" in new SetupPage {
-    val document : Document = {
+    val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
@@ -90,7 +86,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
   }
 
   "Verify that WhatWillUseForModel page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
-    val document : Document = {
+    val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
       val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))

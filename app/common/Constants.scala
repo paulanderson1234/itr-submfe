@@ -23,4 +23,6 @@ trait Constants {
   val StandardRadioButtonNoValue = "No"
   def taxYearFormattedAnswer(value: String, taxYear: String) : String= s"£$value in $taxYear tax year"
   val SuggestedTextMaxLength: Int = 2048
+  val IsKnowledgeIntesnsiveYears : String = "10"
+  val IsNotKnowledgeIntesnsiveYears : String = "7"
 }

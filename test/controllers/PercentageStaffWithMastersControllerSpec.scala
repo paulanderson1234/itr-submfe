@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -44,11 +45,11 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val modelYes = PercentageStaffWithMastersModel("Yes")
-  val modelNo = PercentageStaffWithMastersModel("No")
+  val modelYes = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
+  val modelNo = PercentageStaffWithMastersModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = PercentageStaffWithMastersModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedPercentageStaffWithMasters = PercentageStaffWithMastersModel("Yes")
+  val keyStoreSavedPercentageStaffWithMasters = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -98,7 +99,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "staffWithMasters" -> "Yes")
+        "staffWithMasters" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -112,7 +113,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       val request = FakeRequest().withFormUrlEncodedBody(
-        "staffWithMasters" -> "No")
+        "staffWithMasters" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

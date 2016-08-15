@@ -19,6 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.{IsKnowledgeIntensiveController, routes}
 import models.IsKnowledgeIntensiveModel
@@ -29,7 +30,6 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -38,7 +38,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val isKnowledgeIntensiveModel = new IsKnowledgeIntensiveModel("Yes")
+  val isKnowledgeIntensiveModel = new IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
   val emptyIsKnowledgeIntensiveModel = new IsKnowledgeIntensiveModel("")
 
   class SetupPage {
@@ -72,10 +72,6 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isKnowledgeIntensive-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
-
-
-
   }
 
   "Verify that isKnowledgeIntensive page contains the correct elements when an empty model " +

@@ -24,6 +24,8 @@ trait DateFormatter {
     Try {
       val inFormat= new SimpleDateFormat("dd/MM/yyyy")
       val outFormat = new SimpleDateFormat("dd MMMM yyyy")
+      outFormat.setLenient(false)
+      inFormat.setLenient(false)
       val formattedDate = outFormat.format(inFormat.parse(s"$day/$month/$year"))
       formattedDate
 
