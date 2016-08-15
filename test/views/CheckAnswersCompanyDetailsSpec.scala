@@ -51,7 +51,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
+class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -78,6 +78,7 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
   val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
   val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
   val newGeographicalMarketModel = NewGeographicalMarketModel("")
+  val newProductModel = NewProductModel("")
   val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
   val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
   val investmentGrowModel = InvestmentGrowModel("")
@@ -135,6 +136,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -299,6 +302,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -421,6 +426,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -577,6 +584,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -699,6 +708,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -856,6 +867,8 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -874,11 +887,11 @@ class CheckAnswersSpec extends UnitSpec with WithFakeApplication with MockitoSug
 
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
-      //Previous RFI Nne
+      //Previous RFI None
       document.getElementById("previous-rfi-table").select("tbody").select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
         Messages("common.notAvailable")
       document.getElementById("previous-rfi-table").select("tbody").select("tr").get(0).getElementById("emptyPreviousRFISection-link")
-        .attr("href") shouldEqual routes.CheckAnswersController.show().toString()
+        .attr("href") shouldEqual routes.HadPreviousRFIController.show().toString()
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().toString()

@@ -126,13 +126,9 @@
             @summaryTableHeaderHelper(Messages("summaryId.previousRFISection"),Messages("summaryQuestion.previousRFISection"))
             <!-- Data Rows-->
             <tbody>
-            @summaryTextSubSectionHelper(Messages("summaryId.emptyPreviousRFISection"),Messages("common.notAvailable"),Some(controllers.routes.CheckAnswersController.show().toString))
+            @summaryTextSubSectionHelper(Messages("summaryId.emptyPreviousRFISection"),Messages("common.notAvailable"),Some(controllers.routes.HadPreviousRFIController.show().toString))
             </tbody>
         </table>
-    </div>
-
-    <div class = "form-group">
-        <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
     </div>
 
     <div id="section-three" class="full-width">
@@ -197,6 +193,10 @@
                 }
             </tbody>
         </table>
+    </div>
+
+    <div class = "form-group">
+        <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
     </div>
 
     @form(action = controllers.routes.CheckAnswersController.submit()) {

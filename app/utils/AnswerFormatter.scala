@@ -40,5 +40,6 @@ trait AnswerFormatter {
     case("Business") => Messages("page.investment.whatWillUseFor.business")
     case("Preparation") => Messages("page.investment.whatWillUseFor.preparing")
     case("R&D") => Messages("page.investment.whatWillUseFor.rAndD")
+    case _ => Messages("common.notAvailable")
   }
 }

@@ -373,8 +373,6 @@ summaryId.percentageStaffWithMasters =percentageStaffWithMasters
 summaryId.tenYearPlan =tenYearPlan
 summaryId.tenYearPlanDesc =tenYearPlanDesc
 summaryId.subsidiaries =subsidiaries
-summaryId.previousRFISection = previousRFISection
-summaryId.emptyPreviousRFISection = emptyPreviousRFISection
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Company details
@@ -392,6 +390,13 @@ summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's de
 summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
 summaryQuestion.tenYearPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
+
+
+#summaryIds section two
+summaryId.previousRFISection = previousRFISection
+summaryId.emptyPreviousRFISection = emptyPreviousRFISection
+
+#summary questions section two
 summaryQuestion.previousRFISection =Section 2: Previous schemes
 
 #summary questions section three

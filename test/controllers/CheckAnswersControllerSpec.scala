@@ -79,6 +79,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
   val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
   val newGeographicalMarketModel = NewGeographicalMarketModel("")
+  val newProductModel = NewProductModel("")
   val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
   val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
   val investmentGrowModel = InvestmentGrowModel("")
@@ -143,6 +144,8 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
@@ -191,6 +194,8 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
