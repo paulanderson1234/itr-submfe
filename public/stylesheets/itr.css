@@ -149,3 +149,11 @@ related ul {
 .error-border {
   border: 4px solid #b10e1e !important;
 }
+
+.summaryQuestion {
+    width: 250px;
+}
+
+.summaryLink {
+    width: 1em;
+}

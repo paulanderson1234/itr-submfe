@@ -1,8 +1,8 @@
 @(rowId: String, question: String, answerLines: Array[String], link: Option[String] = None)
 
 <tr>
-    <td id="@{rowId}-question" valign="top">@question</td>
-    <td id="@{rowId}-answer" valign="top">
+    <td id="@{rowId}-question" class="summaryQuestion" valign="top">@question</td>
+    <td id="@{rowId}-answer" class="summaryAnswer" valign="top">
 
         @for(line <- answerLines) {
             @line
@@ -10,7 +10,7 @@
         }
 
     </td>
-    <td class="numeric">@if(link.isDefined) {
+    <td class="numeric" class="summaryLink">@if(link.isDefined) {
         <a id="@{rowId}-link" href=@link>@Messages("common.base.change")</a>
         }</td>
 </tr>
