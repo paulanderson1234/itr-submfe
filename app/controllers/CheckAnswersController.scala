@@ -53,6 +53,7 @@ trait CheckAnswersController extends FrontendController with ValidActiveSession 
     usedInvestmentReasonBefore <- keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore)
     previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
     newGeographicalMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+    newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
     subsidiariesSpendingInvestment <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
     subsidiariesNinetyOwned <- keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
     investmentGrowModel <- keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
@@ -60,7 +61,7 @@ trait CheckAnswersController extends FrontendController with ValidActiveSession 
   }yield new CheckAnswersModel(yourCompanyNeed,taxPayerReference,registeredAddress,dateOfIncorporation
     ,natureOfBusiness,commercialSale,isKnowledgeIntensive,operatingCosts
     ,percentageStaffWithMasters,tenYearPlan,subsidiaries,hadPreviousRFI,proposedInvestment,whatWillUseFor
-    ,usedInvestmentReasonBefore,previousBeforeDOFCS,newGeographicalMarket,subsidiariesSpendingInvestment
+    ,usedInvestmentReasonBefore,previousBeforeDOFCS,newGeographicalMarket,newProduct,subsidiariesSpendingInvestment
     ,subsidiariesNinetyOwned,investmentGrowModel)
 
 

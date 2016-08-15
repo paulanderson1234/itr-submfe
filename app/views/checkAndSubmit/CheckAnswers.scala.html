@@ -135,6 +135,70 @@
         <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>
     </div>
 
+    <div id="section-three" class="full-width">
+        <table>
+        <!-- Header -->
+        @summaryTableHeaderHelper(Messages("page.summaryId.companyDetailsSectionThree"),Messages("page.summaryQuestion.companyDetailsSectionThree"))
+            <!--Data rows-->
+            <tbody>
+                <!--Proposed Investment-->
+                @if(checkAnswersModel.proposedInvestmentModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.routes.ProposedInvestmentController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.proposedInvestment"), Messages("page.summaryQuestion.proposedInvestment"), Messages("common.notAvailable"), Some(controllers.routes.ProposedInvestmentController.show().toString))
+                }
+                <!--What will use for page-->
+                @if(checkAnswersModel.whatWillUseForModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), WhatWillUseForModel.purposeTransformation(checkAnswersModel.whatWillUseForModel.get.whatWillUseFor), Some(controllers.routes.WhatWillUseForController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.whatWillUseFor"), Messages("page.summaryQuestion.whatWillUseFor"), Messages("common.notAvailable"), Some(controllers.routes.WhatWillUseForController.show().toString))
+                }
+                <!--Used investment reason before page-->
+                @if(checkAnswersModel.usedInvestmentReasonBeforeModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"), checkAnswersModel.usedInvestmentReasonBeforeModel.get.usedInvestmentReasonBefore, Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.usedInvestReasonBefore"), Messages("page.summaryQuestion.usedInvestReasonBefore"),  Messages("common.notAvailable"), Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
+                }
+                <!--Previous before DOFCS page-->
+                @if(checkAnswersModel.previousBeforeDOFCSModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"), checkAnswersModel.previousBeforeDOFCSModel.get.previousBeforeDOFCS, Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.previousBeforeDOFCS"), Messages("page.summaryQuestion.previousBeforeDOFCS"),  Messages("common.notAvailable"), Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
+                }
+                <!-- New Geographical Market page-->
+                @if(checkAnswersModel.newGeographicalMarketModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"), checkAnswersModel.newGeographicalMarketModel.get.isNewGeographicalMarket, Some(controllers.routes.NewGeographicalMarketController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.newGeoMarket"), Messages("page.summaryQuestion.newGeoMarket"),  Messages("common.notAvailable"), Some(controllers.routes.NewGeographicalMarketController.show().toString))
+                }
+                <!-- New product market page-->
+                @if(checkAnswersModel.newProductModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.routes.NewProductController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.newProduct"), Messages("page.summaryQuestion.newProduct"),  Messages("common.notAvailable"), Some(controllers.routes.NewProductController.show().toString))
+                }
+                <!-- Subsidiaries Spending Investment page-->
+                @if(checkAnswersModel.subsidiariesSpendingInvestmentModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"), checkAnswersModel.subsidiariesSpendingInvestmentModel.get.subSpendingInvestment, Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.subsSpendingInvest"), Messages("page.summaryQuestion.subsSpendingInvest"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
+                }
+                <!-- Subsidiaries 90% Owned page-->
+                @if(checkAnswersModel.subsidiariesNinetyOwnedModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"), checkAnswersModel.subsidiariesNinetyOwnedModel.get.ownNinetyPercent, Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.subNinetyOwned"), Messages("page.summaryQuestion.subNinetyOwned"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
+                }
+                <!-- Investment Grow page-->
+                @if(checkAnswersModel.investmentGrowModel.isDefined){
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"), checkAnswersModel.investmentGrowModel.get.investmentGrowDesc, Some(controllers.routes.InvestmentGrowController.show().toString))
+                }else{
+                    @summaryTextRowHelperBasic(Messages("page.summaryId.investmentGrow"), Messages("page.summaryQuestion.investmentGrow"),  Messages("common.notAvailable"), Some(controllers.routes.InvestmentGrowController.show().toString))
+                }
+            </tbody>
+        </table>
+    </div>
+
     @form(action = controllers.routes.CheckAnswersController.submit()) {
         <div class="form-group">
             <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkAnswers.button.confirm")</button>

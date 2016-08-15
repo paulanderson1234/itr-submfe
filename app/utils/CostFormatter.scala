@@ -26,4 +26,9 @@ trait CostFormatter {
     val transformedValue = Transfomers.integerToFormattedNumber(value.toInt)
     Constants.taxYearFormattedAnswer(transformedValue,taxYear)
   }
+
+  def getAmountAsFormattedString(value: Int): String = {
+    val transformedValue = Transfomers.integerToFormattedNumber(value)
+    Constants.amountFormattedAnswer(transformedValue)
+  }
 }
