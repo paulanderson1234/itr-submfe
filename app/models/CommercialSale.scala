@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json.Json
+import utils.DateFormatter
 
 case class CommercialSaleModel(hasCommercialSale : String, commercialSaleDay: Option[Int],
                                commercialSaleMonth: Option[Int], commercialSaleYear: Option[Int]){
@@ -25,7 +26,7 @@ case class CommercialSaleModel(hasCommercialSale : String, commercialSaleDay: Op
     else ""
 }
 
-object CommercialSaleModel {
+object CommercialSaleModel extends DateFormatter{
   implicit val format = Json.format[CommercialSaleModel]
   implicit val writes = Json.writes[CommercialSaleModel]
 }

@@ -16,6 +16,8 @@
 
 package utils
 
+import java.text.NumberFormat
+
 import scala.util.{Failure, Success, Try}
 
 object Transfomers {
@@ -41,4 +43,8 @@ object Transfomers {
   }
 
   val booleanToString: Boolean => String = (input) => if (input) "Yes" else "No"
+
+  val integerToFormattedNumber: Int => String = {
+    (value) => NumberFormat.getNumberInstance.format(value)
+  }
 }

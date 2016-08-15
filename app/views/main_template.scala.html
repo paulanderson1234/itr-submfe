@@ -30,9 +30,9 @@ sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Re
 }
 
 @contentLayout = {
-@if(articleLayout) {
-    @layouts.article(mainContent)
-    } else {
+    @if(articleLayout) {
+        @layouts.article(mainContent)
+    }else{
         @mainContent
     }
 }
@@ -45,7 +45,7 @@ sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Re
     bodyClasses = bodyClasses,
     sidebar = sidebar,
     contentHeader = Some(contentHeader),
-    mainContent = layouts.article(mainContent),
+    mainContent = contentLayout,
     serviceInfoContent = serviceInfoContent,
     scriptElem = scriptElem
 )

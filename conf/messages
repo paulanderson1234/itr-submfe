@@ -29,6 +29,8 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 error.required=This field is required
+common.pound = £
+common.notAvailable=None
 common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
 
@@ -269,6 +271,8 @@ page.investment.help.link.text=You''ll still be eligible for the scheme, as long
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
 page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master''s degrees?
 page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
+page.percentageStaffWithMasters.more = More than 20%
+page.percentageStaffWithMasters.less = Less than 20%
 
 #used investment reason before page
 page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
@@ -354,6 +358,74 @@ page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
+
+#summaryIds
+summaryId.companyDetailsSection = companyDetailsSection
+summaryId.companyName =companyName
+summaryId.utr =utr
+summaryId.registeredAddress =registeredAddress
+summaryId.dateOfIncorporation =dateOfIncorporation
+summaryId.natureOfBusiness =natureOfBusiness
+summaryId.hasCommercialSale =hasCommercialSale
+summaryId.commercialSaleDate =commercialSaleDate
+summaryId.knowledgeIntensive =knowledgeIntensive
+summaryId.operatingCosts =operatingCosts
+summaryId.rdCosts =rdCosts
+summaryId.percentageStaffWithMasters =percentageStaffWithMasters
+summaryId.tenYearPlan =tenYearPlan
+summaryId.tenYearPlanDesc =tenYearPlanDesc
+summaryId.subsidiaries =subsidiaries
+
+#summaryQuestions
+summaryQuestion.companyDetailsSection =Section 1: Company details
+summaryQuestion.companyName =Company name
+summaryQuestion.utr =Company Unique Taxpayer Reference
+summaryQuestion.registeredAddress =Registered address
+summaryQuestion.dateOfIncorporation =Date of incorporation
+summaryQuestion.natureOfBusiness =What your company does
+summaryQuestion.hasCommercialSale = Has made commercial sale
+summaryQuestion.commercialSaleDate =Date of first commercial sale
+summaryQuestion.knowledgeIntensive =Knowledge intensive
+summaryQuestion.operatingCosts =Operating costs
+summaryQuestion.rdCosts =Research and development costs
+summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's degrees
+summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
+summaryQuestion.tenYearPlanDesc =How your company will do that
+summaryQuestion.subsidiaries =Own or control any other companies
+
+
+#summaryIds section two
+summaryId.previousRFISection = previousRFISection
+summaryId.emptyPreviousRFISection = emptyPreviousRFISection
+
+#summary questions section two
+summaryQuestion.previousRFISection =Section 2: Previous schemes
+
+#summary questions section three
+page.summaryQuestion.companyDetailsSectionThree=Section 3: This investment
+page.summaryQuestion.proposedInvestment=Amount to be raised
+page.summaryQuestion.usedRAndD=Used for research and development
+page.summaryQuestion.whatWillUseFor=What you''ll use it for
+page.summaryQuestion.usedInvestReasonBefore=Same reason as a previous investment
+page.summaryQuestion.previousBeforeDOFCS=Got the investment before [DoFCS+7years]
+page.summaryQuestion.newGeoMarket=Launching somewhere new
+page.summaryQuestion.newProduct=Entering a new product market
+page.summaryQuestion.subsSpendingInvest=Company owned or controlled by [company name] to spend this investment
+page.summaryQuestion.subNinetyOwned=[Company name] owns more than 90% of that company
+page.summaryQuestion.investmentGrow=How the investment will help your company grow
+
+#summary ids section three
+page.summaryId.companyDetailsSectionThree = companyDetailsSectionThree
+page.summaryId.proposedInvestment =proposedInvestment
+page.summaryId.usedRAndD =usedRAndD
+page.summaryId.whatWillUseFor =whatUseFor
+page.summaryId.usedInvestReasonBefore =usedInvestReasonBefore
+page.summaryId.previousBeforeDOFCS =previousBeforeDOFCS
+page.summaryId.newGeoMarket =newGeoMarket
+page.summaryId.newProduct =newProduct
+page.summaryId.subsSpendingInvest =subsSpendingInvest
+page.summaryId.subNinetyOwned =subNinetyOwned
+page.summaryId.investmentGrow =investmentGrow
 
 #supply contact address
 page.contactInformation.ContactAddress.heading=What''s their address?

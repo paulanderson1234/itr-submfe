@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.Json
-import utils.DateFormatter
+import java.text.NumberFormat
 
-case class DateOfIncorporationModel(day:Option[Int], month:Option[Int], year:Option[Int])
+import common.Constants
 
-object DateOfIncorporationModel extends DateFormatter{
-  implicit val format = Json.format[DateOfIncorporationModel]
-  implicit val writes = Json.writes[DateOfIncorporationModel]
+trait CostFormatter {
+
+  def getOperatingAndRDCostsAsFormattedString(value: String, taxYear: String): String= {
+    val transformedValue = Transfomers.integerToFormattedNumber(value.toInt)
+    Constants.taxYearFormattedAnswer(transformedValue,taxYear)
+  }
+
+  def getAmountAsFormattedString(value: Int): String = {
+    val transformedValue = Transfomers.integerToFormattedNumber(value)
+    Constants.amountFormattedAnswer(transformedValue)
+  }
 }
-
