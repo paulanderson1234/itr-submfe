@@ -165,6 +165,7 @@ related ul {
        -moz-hyphens: auto;
        -webkit-hyphens: auto;
        hyphens: auto;
+       white-space: pre-wrap;
 }
 
 .summaryLink {
