@@ -149,17 +149,20 @@ class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication w
         Jsoup.parse(contentAsString(result))
       }
 
+
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
       document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
+      lazy val previousRfiTableTbody = document.getElementById("previous-rfi-table").select("tbody")
+
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
       //Previous RFI None
-      document.getElementById("previous-rfi-table").select("tbody").select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
+      previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
         Messages("common.notAvailable")
-      document.getElementById("previous-rfi-table").select("tbody").select("tr").get(0).getElementById("emptyPreviousRFISection-link")
+      previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-link")
         .attr("href") shouldEqual routes.HadPreviousRFIController.show().toString()
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")

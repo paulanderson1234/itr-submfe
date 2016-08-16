@@ -1,0 +1,369 @@
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+  * Copyright 2016 HM Revenue & Customs
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with the License.
+  * You may obtain a copy of the License at
+  *
+  * http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  */
+
+package views
+
+import java.util.UUID
+
+import common.{Constants, KeystoreKeys}
+import connectors.KeystoreConnector
+import controllers.{CheckAnswersController, routes}
+import controllers.helpers.FakeRequestHelper
+import models._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mock.MockitoSugar
+import play.api.i18n.Messages
+import play.api.test.Helpers._
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+import scala.concurrent.Future
+
+class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
+
+  val mockKeystoreConnector = mock[KeystoreConnector]
+
+    // Data for investment section tests
+  val proposedInvestmentModel = ProposedInvestmentModel(5000000)
+  val whatWillUseForModel = WhatWillUseForModel("Research and development")
+  val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
+  val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("Test")
+  val newGeographicalMarketModel = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue)
+  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
+  val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonNoValue)
+  val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
+    "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
+    "sunt in culpa qui officia deserunt mollitia animi, tid est laborum etttt dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. " +
+    "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihili impedit quo minus id quod maxime placeat facere possimus")
+
+  // data for other section not being tested here
+  val yourCompanyNeedModel = YourCompanyNeedModel("AA")
+  val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
+  val registeredAddressModel = RegisteredAddressModel("SY26GA")
+  val dateOfIncorporationModel = DateOfIncorporationModel(Some(20), Some(4), Some(1990))
+  val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
+  val commercialSaleModelYes = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(4), Some(8), Some(1995))
+  val commercialSaleModelNo = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
+  val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+  val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+  val operatingCostsModel = OperatingCostsModel("28976", "12348", "77725", "99883", "23321", "65436")
+  val percentageStaffWithMastersModel = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
+  val tenYearPlanModelYes = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium " +
+    "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
+    "sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. " +
+    "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus"))
+  val tenYearPlanModelNo = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
+  val subsidiariesModel = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val hadPreviousRFIModel = HadPreviousRFIModel("")
+
+  class SetupPage {
+
+    val controller = new CheckAnswersController {
+      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+    }
+  }
+
+  override def beforeEach() {
+    reset(mockKeystoreConnector)
+  }
+
+  "The Check Answers page" should {
+
+    "Verify that the Check Answers page contains the correct elements for Section 3: Investment" +
+      " when it is fully populated with investment models" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+
+        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(whatWillUseForModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(investmentGrowModel)))
+
+
+        when(mockKeystoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.eq(KeystoreKeys.taxpayerReference))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(registeredAddressModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(dateOfIncorporationModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(natureOfBusinessModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(commercialSaleModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(isKnowledgeIntensiveModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(operatingCostsModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(percentageStaffWithMastersModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(tenYearPlanModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+
+
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
+        Jsoup.parse(contentAsString(result))
+      }
+
+
+      lazy val investmentTableTbody = document.getElementById("investment-table").select("tbody")
+
+      //Section table heading
+       document.getElementById("companyDetailsSectionThree-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
+
+      //proposed investment
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-question").text() shouldBe
+        Messages("page.summaryQuestion.proposedInvestment")
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-answer").text() shouldBe
+        ProposedInvestmentModel.getAmountAsFormattedString(proposedInvestmentModel.investmentAmount)
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-link")
+        .attr("href") shouldEqual routes.ProposedInvestmentController.show().toString
+
+      //what use investment for
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-question").text() shouldBe
+        Messages("page.summaryQuestion.whatWillUseFor")
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-answer").text() shouldBe
+        WhatWillUseForModel.purposeTransformation(whatWillUseForModel.whatWillUseFor)
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-link")
+        .attr("href") shouldEqual routes.WhatWillUseForController.show().toString
+
+      // same reason as before
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-question").text() shouldBe
+        Messages("page.summaryQuestion.usedInvestReasonBefore")
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-answer").text() shouldBe
+        usedInvestmentReasonBeforeModel.usedInvestmentReasonBefore
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-link")
+        .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString
+
+      // previous docfs
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-question").text() shouldBe
+        Messages("page.summaryQuestion.previousBeforeDOFCS")
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-answer").text() shouldBe
+        previousBeforeDOFCSModel.previousBeforeDOFCS
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-link")
+        .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().toString
+
+      // new geographical market
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-question").text() shouldBe
+        Messages("page.summaryQuestion.newGeoMarket")
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-answer").text() shouldBe
+        newGeographicalMarketModel.isNewGeographicalMarket
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-link")
+        .attr("href") shouldEqual routes.NewGeographicalMarketController.show().toString
+
+      // new prodcut
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-question").text() shouldBe
+        Messages("page.summaryQuestion.newProduct")
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-answer").text() shouldBe
+        newGeographicalMarketModel.isNewGeographicalMarket
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-link")
+        .attr("href") shouldEqual routes.NewProductController.show().toString
+
+      // subsidiaries spending investment
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-question").text() shouldBe
+        Messages("page.summaryQuestion.subsSpendingInvest")
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-answer").text() shouldBe
+        subsidiariesSpendingInvestmentModel.subSpendingInvestment
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-link")
+        .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().toString
+
+      // 90% owned
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-question").text() shouldBe
+        Messages("page.summaryQuestion.subNinetyOwned")
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-answer").text() shouldBe
+        subsidiariesNinetyOwnedModel.ownNinetyPercent
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-link")
+        .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().toString
+
+      // investment Grow
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-question").text() shouldBe
+        Messages("page.summaryQuestion.investmentGrow")
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-answer").text() shouldBe
+        investmentGrowModel.investmentGrowDesc
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-link")
+        .attr("href") shouldEqual routes.InvestmentGrowController.show().toString
+
+    }
+  }
+
+
+  "The Check Answers page" should {
+
+    "Verify that the Check Answers page contains the correct elements for Section 3: Investment" +
+      " when the investment models are empty" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+
+        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+
+        when(mockKeystoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.eq(KeystoreKeys.taxpayerReference))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(registeredAddressModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(dateOfIncorporationModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(natureOfBusinessModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(commercialSaleModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(isKnowledgeIntensiveModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(operatingCostsModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(percentageStaffWithMastersModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(tenYearPlanModelYes)))
+        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(subsidiariesModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+
+
+        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
+        Jsoup.parse(contentAsString(result))
+      }
+
+
+      lazy val investmentTableTbody = document.getElementById("investment-table").select("tbody")
+
+      //Section table heading
+      document.getElementById("companyDetailsSectionThree-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
+
+      //proposed investment
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-question").text() shouldBe
+        Messages("page.summaryQuestion.proposedInvestment")
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-link")
+        .attr("href") shouldEqual routes.ProposedInvestmentController.show().toString
+
+      //what use investment for
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-question").text() shouldBe
+        Messages("page.summaryQuestion.whatWillUseFor")
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(1).getElementById("whatUseFor-link")
+        .attr("href") shouldEqual routes.WhatWillUseForController.show().toString
+
+      // same reason as before
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-question").text() shouldBe
+        Messages("page.summaryQuestion.usedInvestReasonBefore")
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-link")
+        .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString
+
+      // previous docfs
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-question").text() shouldBe
+        Messages("page.summaryQuestion.previousBeforeDOFCS")
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-link")
+        .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().toString
+
+      // new geographical market
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-question").text() shouldBe
+        Messages("page.summaryQuestion.newGeoMarket")
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-link")
+        .attr("href") shouldEqual routes.NewGeographicalMarketController.show().toString
+
+      // new prodcut
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-question").text() shouldBe
+        Messages("page.summaryQuestion.newProduct")
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(5).getElementById("newProduct-link")
+        .attr("href") shouldEqual routes.NewProductController.show().toString
+
+      // subsidiaries spending investment
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-question").text() shouldBe
+        Messages("page.summaryQuestion.subsSpendingInvest")
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-link")
+        .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().toString
+
+      // 90% owned
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-question").text() shouldBe
+        Messages("page.summaryQuestion.subNinetyOwned")
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-link")
+        .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().toString
+
+      // investment Grow
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-question").text() shouldBe
+        Messages("page.summaryQuestion.investmentGrow")
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-answer").text() shouldBe Messages("common.notAvailable")
+      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-link")
+        .attr("href") shouldEqual routes.InvestmentGrowController.show().toString
+
+    }
+  }
+}
