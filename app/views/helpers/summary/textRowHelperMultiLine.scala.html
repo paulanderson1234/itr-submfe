@@ -1,13 +1,20 @@
-@(rowId: String, question: String, answerLines: Array[String], link: Option[String] = None)
+@(rowId: String, question: String, answerLines: Array[String], link: Option[String] = None, addExtraLineBreaks: Option[Boolean] = None)
 
 <tr>
     <td id="@{rowId}-question" class="summaryQuestion" valign="top">@question</td>
     <td id="@{rowId}-answer" class="summaryAnswerMultiLine" valign="top">
 
-        @for(line <- answerLines) {
-            @line
-            <br><br>
-        }
+        @for((line, index) <- answerLines.zipWithIndex) {
+            <span id="@{rowId}-Line@{index}">@line</span>
+
+            @if(addExtraLineBreaks.isDefined) {
+                <br><br>
+            }
+
+            @if(!addExtraLineBreaks.isDefined) {
+                <br>
+            }
+       }
 
     </td>
     <td class="numeric" class="summaryLink">@if(link.isDefined) {

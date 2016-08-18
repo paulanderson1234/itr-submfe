@@ -37,6 +37,7 @@ case class CheckAnswersModel(
                               newProductModel: Option[NewProductModel],
                               subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
+                              contactDetailsModel: Option[ContactDetailsModel],
                               investmentGrowModel: Option[InvestmentGrowModel]
                               )
 

@@ -38,7 +38,7 @@ import java.util.{Date, UUID}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
-import models._
+import models.{ContactDetailsModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -83,6 +83,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
   val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
   val investmentGrowModel = InvestmentGrowModel("")
+  val contactDetailsModel = ContactDetailsModel("", "", "", "")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -150,6 +151,8 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(Option(contactDetailsModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
 
@@ -200,6 +203,8 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
+        Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))

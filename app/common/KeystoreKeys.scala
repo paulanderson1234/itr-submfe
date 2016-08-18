@@ -19,10 +19,6 @@ object KeystoreKeys extends KeystoreKeys
 
 trait KeystoreKeys {
   // form keys
-  val companyAddressExample = "examples:companyAddress"
-  val contactDetailsExample = "examples:contactDetails"
-  val dateOfFirstSaleExample = "examples:dateOfFirstSale"
-  val doSubmissionExample = "examples:doSubmissionExample"
   val taxpayerReference = "companyDetails:taxpayerReference"
   val yourCompanyNeed = "introduction:yourCompanyNeed"
   val commercialSale = "companyDetails:commercialSale"
@@ -46,6 +42,7 @@ trait KeystoreKeys {
   val investmentGrow ="investment:investmentGrow"
   val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
   val checkYourAnswers ="checkAndSubmit:checkYourAnswers"
+  val contactDetails = "examples:contactDetails"
   val contactAddress = "contactInformation:contactAddress"
 
   // backlink keys

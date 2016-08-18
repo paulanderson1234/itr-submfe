@@ -38,7 +38,7 @@ trait ContactDetailsController extends FrontendController with ValidActiveSessio
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetailsExample).map {
+    keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails).map {
       case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
       case None => Ok(ContactDetails(contactDetailsForm))
     }
@@ -50,7 +50,7 @@ trait ContactDetailsController extends FrontendController with ValidActiveSessio
         BadRequest(ContactDetails(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.contactDetailsExample, validFormData)
+        keyStoreConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
         Redirect(routes.ConfirmCorrespondAddressController.show())
       }
     )
