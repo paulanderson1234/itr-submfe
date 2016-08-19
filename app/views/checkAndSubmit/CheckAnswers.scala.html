@@ -16,7 +16,7 @@
 
     <p id="description">@Messages("page.checkAndSubmit.checkAnswers.description")</p>
 
-    <div id="yourAnswers" class="full-width">
+    <div id="section-one" class="full-width">
 
         <table id="company-details-table">
             <!-- Header -->
@@ -120,7 +120,9 @@
 
             </tbody>
         </table>
+    </div>
 
+    <div id="section-two">
         <table id="previous-rfi-table">
             <!-- Header -->
             @tableHeaderHelper("previousRFISection", Messages("summaryQuestion.previousRFISection"))
@@ -217,9 +219,26 @@
             </tbody>
         </table>
 
+        <table id="supporting-docs-heading-table">
+            @tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))
+        </table>
 
+        <p id="supportingDocs-sub-text">@Messages("page.summaryQuestion.supportingDocsSectionSubText")</p>
+
+        <table id="supporting-docs-body-table">
+            <tbody>
+                <tr>
+                    <td id="supportingDocs-company-accounts">@Messages("page.introduction.HowToApply.number.sendOne")</td>
+                </tr><tr>
+                    <td id="supportingDocs-subsidiary-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>
+                </tr><tr>
+                    <td id="supportingDocs-articles">@Messages("page.introduction.HowToApply.number.sendTwo")</td>
+                </tr><tr>
+                    <td id="supportingDocs-prospectus">@Messages("page.introduction.HowToApply.number.sendThree")</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-
 
     <div class = "form-group">
         <p><a id="print-this-page" href="javascript:window.print()" class="print-link print-hidden js-visible">@Messages("page.checkAndSubmit.checkAnswers.print.text")</a></p>

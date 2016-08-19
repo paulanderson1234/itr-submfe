@@ -359,6 +359,26 @@ page.checkAndSubmit.checkAnswers.description=You are applying for an assurance l
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
 
+#Acknowledgment page
+page.checkAndSubmit.Acknowledgement.title=Submission complete
+
+#summaryIds
+summaryId.companyDetailsSection = companyDetailsSection
+summaryId.companyName =companyName
+summaryId.utr =utr
+summaryId.registeredAddress =registeredAddress
+summaryId.dateOfIncorporation =dateOfIncorporation
+summaryId.natureOfBusiness =natureOfBusiness
+summaryId.hasCommercialSale =hasCommercialSale
+summaryId.commercialSaleDate =commercialSaleDate
+summaryId.knowledgeIntensive =knowledgeIntensive
+summaryId.operatingCosts =operatingCosts
+summaryId.rdCosts =rdCosts
+summaryId.percentageStaffWithMasters =percentageStaffWithMasters
+summaryId.tenYearPlan =tenYearPlan
+summaryId.tenYearPlanDesc =tenYearPlanDesc
+summaryId.subsidiaries =subsidiaries
+
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Company details
 summaryQuestion.companyName =Company name
@@ -412,3 +432,7 @@ page.contactInformation.contactDetails.forename.label=Forename
 page.contactInformation.contactDetails.surname.label=Surname
 page.contactInformation.contactDetails.phoneNumber.label=Telephone number
 page.contactInformation.contactDetails.email.label=Email address
+
+#summary questions section five
+page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
+page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:
