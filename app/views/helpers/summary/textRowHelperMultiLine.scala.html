@@ -1,8 +1,8 @@
 @(rowId: String, question: String, answerLines: Array[String], link: Option[String] = None, addExtraLineBreaks: Option[Boolean] = None)
 
 <tr>
-    <td id="@{rowId}-question" class="summaryQuestion" valign="top">@question</td>
-    <td id="@{rowId}-answer" class="summaryAnswerMultiLine" valign="top">
+    <td id="@{rowId}-question" class="summaryQuestion">@question</td>
+    <td id="@{rowId}-answer" class="summaryAnswerMultiLine">
 
         @for((line, index) <- answerLines.zipWithIndex) {
             <span id="@{rowId}-Line@{index}">@line</span>
@@ -17,7 +17,7 @@
        }
 
     </td>
-    <td class="numeric" class="summaryLink">@if(link.isDefined) {
+    <td class="summaryLink">@if(link.isDefined) {
         <a id="@{rowId}-link" href=@link>@Messages("common.base.change")</a>
         }</td>
 </tr>
