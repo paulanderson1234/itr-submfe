@@ -144,7 +144,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       lazy val investmentTableTbody = document.getElementById("investment-table").select("tbody")
 
       //Section table heading
-      document.getElementById("companyDetailsSectionThree-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
+      document.getElementById("investmentSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
 
       //proposed investment
       investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-question").text() shouldBe
@@ -285,7 +285,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       lazy val notAvailableMessage = Messages("common.notAvailable")
 
       //Section table heading
-      document.getElementById("companyDetailsSectionThree-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
+      document.getElementById("investmentSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
 
       //proposed investment
       investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-question").text() shouldBe

@@ -133,7 +133,7 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
       lazy val contactDetailsTable = document.getElementById("contactDetails-table").select("tbody")
 
       //Section table heading
-      document.getElementById("companyDetailsSectionFour-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
+      document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
       // fullname
       contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
@@ -242,7 +242,7 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
       lazy val notAvailableMessage = Messages("common.notAvailable")
 
       //Section table heading
-      document.getElementById("companyDetailsSectionFour-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
+      document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
       // fullname
       contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
