@@ -412,3 +412,7 @@ page.contactInformation.contactDetails.forename.label=Forename
 page.contactInformation.contactDetails.surname.label=Surname
 page.contactInformation.contactDetails.phoneNumber.label=Telephone number
 page.contactInformation.contactDetails.email.label=Email address
+
+#summary questions section five
+page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
+page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:
