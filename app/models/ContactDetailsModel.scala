@@ -21,7 +21,10 @@ import play.api.libs.json.Json
 case class ContactDetailsModel(forename : String,
                           surname : String,
                           telephoneNumber: String,
-                          email : String )
+                          email : String ) {
+
+  val fullName =  s"$forename $surname"
+}
 
 object ContactDetailsModel {
   implicit val format = Json.format[ContactDetailsModel]

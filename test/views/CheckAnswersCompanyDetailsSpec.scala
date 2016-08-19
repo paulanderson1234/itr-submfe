@@ -72,17 +72,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
     "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus"))
   val tenYearPlanModelNo = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
   val subsidiariesModel = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val hadPreviousRFIModel = HadPreviousRFIModel("")
-  val proposedInvestmentModel = ProposedInvestmentModel(0)
-  val whatWillUseForModel = WhatWillUseForModel("")
-  val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
-  val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
-  val newGeographicalMarketModel = NewGeographicalMarketModel("")
-  val newProductModel = NewProductModel("")
-  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
-  val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
-  val investmentGrowModel = InvestmentGrowModel("")
-
 
   class SetupPage {
 
@@ -125,31 +114,34 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(whatWillUseForModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowModel)))
+          .thenReturn(Future.successful(None))
 
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
       
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
@@ -162,7 +154,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-question").text() shouldBe
         Messages("summaryQuestion.companyName")
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-link")
        .attr("href") shouldEqual routes.IntroductionController.show().toString()
       //Taxpayer Reference
@@ -214,18 +206,38 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         isKnowledgeIntensiveModelYes.isKnowledgeIntensive
       companyDetailsTableTBody.select("tr").get(7).getElementById("knowledgeIntensive-link")
         .attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+
+
       //Operating costs
       companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-question").text() shouldBe
         Messages("summaryQuestion.operatingCosts")
-      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-answer").text() should contain
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line1").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
+
+
       //R&D costs
       companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-question").text() shouldBe
         Messages("summaryQuestion.rdCosts")
-      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-answer").text() should contain
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line1").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
       //Percentage of staff with masters
@@ -310,6 +322,8 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
           Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
 
@@ -318,6 +332,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       }
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
@@ -330,56 +345,56 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-question").text() shouldBe
         Messages("summaryQuestion.companyName")
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-link")
         .attr("href") shouldEqual routes.IntroductionController.show().toString()
       //Taxpayer Reference
       companyDetailsTableTBody.select("tr").get(1).getElementById("utr-question").text() shouldBe
         Messages("summaryQuestion.utr")
       companyDetailsTableTBody.select("tr").get(1).getElementById("utr-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(1).getElementById("utr-link")
         .attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
       //Registered address
       companyDetailsTableTBody.select("tr").get(2).getElementById("registeredAddress-question").text() shouldBe
         Messages("summaryQuestion.registeredAddress")
       companyDetailsTableTBody.select("tr").get(2).getElementById("registeredAddress-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(2).getElementById("registeredAddress-link")
         .attr("href") shouldEqual routes.RegisteredAddressController.show().toString()
       //Date of incorporation
       companyDetailsTableTBody.select("tr").get(3).getElementById("dateOfIncorporation-question").text() shouldBe
         Messages("summaryQuestion.dateOfIncorporation")
       companyDetailsTableTBody.select("tr").get(3).getElementById("dateOfIncorporation-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(3).getElementById("dateOfIncorporation-link")
         .attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
       //Nature of business
       companyDetailsTableTBody.select("tr").get(4).getElementById("natureOfBusiness-question").text() shouldBe
         Messages("summaryQuestion.natureOfBusiness")
       companyDetailsTableTBody.select("tr").get(4).getElementById("natureOfBusiness-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(4).getElementById("natureOfBusiness-link")
         .attr("href") shouldEqual routes.NatureOfBusinessController.show().toString()
       //Has had commercial sale
       companyDetailsTableTBody.select("tr").get(5).getElementById("hasCommercialSale-question").text() shouldBe
         Messages("summaryQuestion.hasCommercialSale")
       companyDetailsTableTBody.select("tr").get(5).getElementById("hasCommercialSale-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(5).getElementById("hasCommercialSale-link")
         .attr("href") shouldEqual routes.CommercialSaleController.show().toString()
       //Is Knowledge Intensive
       companyDetailsTableTBody.select("tr").get(6).getElementById("knowledgeIntensive-question").text() shouldBe
         Messages("summaryQuestion.knowledgeIntensive")
       companyDetailsTableTBody.select("tr").get(6).getElementById("knowledgeIntensive-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(6).getElementById("knowledgeIntensive-link")
         .attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
       //Subsidiaries
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-question").text() shouldBe
         Messages("summaryQuestion.subsidiaries")
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-link")
         .attr("href") shouldEqual routes.SubsidiariesController.show().toString()
 
@@ -419,31 +434,34 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(whatWillUseForModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowModel)))
+          .thenReturn(Future.successful(None))
 
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
@@ -456,7 +474,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-question").text() shouldBe
         Messages("summaryQuestion.companyName")
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-link")
         .attr("href") shouldEqual routes.IntroductionController.show().toString()
       //Taxpayer Reference
@@ -504,15 +522,33 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       //Operating costs
       companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-question").text() shouldBe
         Messages("summaryQuestion.operatingCosts")
-      companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-answer").text() should contain
+
+      // check multi line field
+      companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+
+      companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-Line1").text() shouldBe
       OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(7).getElementById("operatingCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
       //R&D costs
       companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-question").text() shouldBe
         Messages("summaryQuestion.rdCosts")
-      companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-answer").text() should contain
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
+      // check multi line field
+      companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-Line1").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(8).getElementById("rdCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
       //Percentage of staff with masters
@@ -579,31 +615,34 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(whatWillUseForModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowModel)))
+          .thenReturn(Future.successful(None))
 
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
@@ -616,7 +655,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-question").text() shouldBe
         Messages("summaryQuestion.companyName")
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-link")
         .attr("href") shouldEqual routes.IntroductionController.show().toString()
       //Taxpayer Reference
@@ -705,31 +744,34 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModel)))
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(whatWillUseForModel)))
+          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-          Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
+          Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowModel)))
+          .thenReturn(Future.successful(None))
 
         val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
@@ -742,7 +784,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-question").text() shouldBe
         Messages("summaryQuestion.companyName")
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-answer").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       companyDetailsTableTBody.select("tr").get(0).getElementById("companyName-link")
         .attr("href") shouldEqual routes.IntroductionController.show().toString()
       //Taxpayer Reference
@@ -797,15 +839,29 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
       //Operating costs
       companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-question").text() shouldBe
         Messages("summaryQuestion.operatingCosts")
-      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-answer").text() should contain
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line1").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+      companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(8).getElementById("operatingCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
       //R&D costs
       companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-question").text() shouldBe
         Messages("summaryQuestion.rdCosts")
-      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-answer").text() should contain
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line0").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line1").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
+
+      companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-Line2").text() shouldBe
+        OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
+
       companyDetailsTableTBody.select("tr").get(9).getElementById("rdCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().toString()
       //Percentage of staff with masters

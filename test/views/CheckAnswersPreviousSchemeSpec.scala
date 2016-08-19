@@ -55,36 +55,7 @@ class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication w
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val yourCompanyNeedModel = YourCompanyNeedModel("AA")
-  val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
-  val registeredAddressModel = RegisteredAddressModel("SY26GA")
-  val dateOfIncorporationModel = DateOfIncorporationModel(Some(20), Some(4), Some(1990))
-  val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
-  val commercialSaleModelYes = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(4), Some(8), Some(1995))
-  val commercialSaleModelNo = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
-  val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
-  val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
-  val operatingCostsModel = OperatingCostsModel("28976", "12348", "77725", "99883", "23321", "65436")
-  val percentageStaffWithMastersModel = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
-  val tenYearPlanModelYes = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium " +
-    "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
-    "sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. " +
-    "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus"))
-  val tenYearPlanModelNo = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
-  val subsidiariesModel = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val hadPreviousRFIModel = HadPreviousRFIModel("")
-  val proposedInvestmentModel = ProposedInvestmentModel(0)
-  val whatWillUseForModel = WhatWillUseForModel("")
-  val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
-  val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
-  val newGeographicalMarketModel = NewGeographicalMarketModel("")
-  val newProductModel = NewProductModel("")
-  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
-  val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
-  val investmentGrowModel = InvestmentGrowModel("")
-
-
-  class SetupPage {
+   class SetupPage {
 
     val controller = new CheckAnswersController {
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
@@ -142,6 +113,8 @@ class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication w
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
           Matchers.any())).thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
+          Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
 
@@ -156,12 +129,13 @@ class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication w
       document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       lazy val previousRfiTableTbody = document.getElementById("previous-rfi-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
 
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
       //Previous RFI None
       previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
-        Messages("common.notAvailable")
+        notAvailableMessage
       previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-link")
         .attr("href") shouldEqual routes.HadPreviousRFIController.show().toString()
 
