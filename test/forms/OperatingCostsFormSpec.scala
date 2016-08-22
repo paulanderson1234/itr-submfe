@@ -112,7 +112,7 @@ class OperatingCostsFormSpec extends UnitSpec {
   "The Operating Costs Form" should {
     "not return an error if Operating Costs 1st Year regex pattern is at the borderline condition" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "operatingCosts1stYear" -> "9999999999999",
+        "operatingCosts1stYear" -> "999999999",
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
@@ -131,7 +131,7 @@ class OperatingCostsFormSpec extends UnitSpec {
   "The Operating Costs Form" should {
     "Return an error if Operating Costs 1st Year regex pattern is above borderline condition" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "operatingCosts1stYear" -> "99999999999991",
+        "operatingCosts1stYear" -> "9999999991",
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
@@ -220,7 +220,7 @@ class OperatingCostsFormSpec extends UnitSpec {
     "not return an error if Operating Costs 2nd Year regex pattern is at the borderline condition" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "800000",
-        "operatingCosts2ndYear" -> "999999999999",
+        "operatingCosts2ndYear" -> "999999999",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
@@ -239,7 +239,7 @@ class OperatingCostsFormSpec extends UnitSpec {
     "Return an error if Operating Costs 2nd Year regex pattern is above borderline condition" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "800000",
-        "operatingCosts2ndYear" -> "99999999999991",
+        "operatingCosts2ndYear" -> "9999999991",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
@@ -328,7 +328,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "800000",
         "operatingCosts2ndYear" -> "800000",
-        "operatingCosts3rdYear" -> "999999999999",
+        "operatingCosts3rdYear" -> "999999999",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
         "rAndDCosts3rdYear" -> "344000"
@@ -347,7 +347,7 @@ class OperatingCostsFormSpec extends UnitSpec {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "800000",
         "operatingCosts2ndYear" -> "800000",
-        "operatingCosts3rdYear" -> "99999999999991",
+        "operatingCosts3rdYear" -> "9999999991",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
         "rAndDCosts3rdYear" -> "344000"
@@ -436,7 +436,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts1stYear" -> "231000",
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
-        "rAndDCosts1stYear" -> "9999999999999",
+        "rAndDCosts1stYear" -> "999999999",
         "rAndDCosts2ndYear" -> "340000",
         "rAndDCosts3rdYear" -> "344000"
       )
@@ -455,7 +455,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts1stYear" -> "231000",
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
-        "rAndDCosts1stYear" -> "99999999999991",
+        "rAndDCosts1stYear" -> "9999999991",
         "rAndDCosts2ndYear" -> "340000",
         "rAndDCosts3rdYear" -> "344000"
       )
@@ -544,7 +544,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
-        "rAndDCosts2ndYear" -> "9999999999999",
+        "rAndDCosts2ndYear" -> "999999999",
         "rAndDCosts3rdYear" -> "344000"
       )
       bindWithError(request) match {
@@ -563,7 +563,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts2ndYear" -> "800000",
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
-        "rAndDCosts2ndYear" -> "99999999999991",
+        "rAndDCosts2ndYear" -> "9999999991",
         "rAndDCosts3rdYear" -> "344000"
       )
       bindWithError(request) match {
@@ -652,7 +652,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "9999999999999"
+        "rAndDCosts3rdYear" -> "999999999"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -671,7 +671,7 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "99999999999991"
+        "rAndDCosts3rdYear" -> "9999999991"
       )
       bindWithError(request) match {
         case Some(err) => {
