@@ -128,7 +128,7 @@ class CheckAnswersSupportingDocsSpec extends UnitSpec with WithFakeApplication w
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
       document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
-      lazy val supportingDocsTableBody = document.getElementById("supporting-docs-body-table").select("tbody")
+      lazy val supportingDocsTableBody = document.getElementById("supporting-docs-table").select("tbody")
 
       //Section 5 table heading
       document.getElementById("supportingDocsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.supportingDocsSection")

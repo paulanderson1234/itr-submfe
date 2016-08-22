@@ -152,6 +152,7 @@ related ul {
 
 .summaryQuestion {
     width: 250px;
+    vertical-align: text-top;
 }
 
 .summaryAnswer {
