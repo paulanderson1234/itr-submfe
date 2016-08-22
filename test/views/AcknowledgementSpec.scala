@@ -57,6 +57,7 @@ class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeReq
         document.body.getElementById("application-reference-number").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.applicationReferenceNumber")
         document.body.getElementById("company-name").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.companyName")
         //dropdown
+        document.body.getElementById("help").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.help")
         document.body.getElementById("send-us").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.sendUs")
         document.body.getElementById("business-plan").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.businessPlan")
         document.body.getElementById("company-accounts").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.companyAccounts")
@@ -69,6 +70,8 @@ class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeReq
         document.body.getElementById("course-of-action").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.courseOfAction")
         //back link
         document.body.getElementById("back-link").attr("href") shouldEqual routes.CheckAnswersController.show.toString()
+        //get help
+        document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     }
   }
 
