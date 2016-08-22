@@ -71,7 +71,7 @@ trait CheckAnswersController extends FrontendController with ValidActiveSession 
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.CheckAnswersController.show()))
+    Future.successful(Redirect(routes.AcknowledgementController.show()))
   }
 
 

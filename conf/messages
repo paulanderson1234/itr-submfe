@@ -233,12 +233,12 @@ page.companyDetails.OperatingCosts.col.heading.three = Research and Development 
 page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
 page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
 page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
-page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 13 numbers.
+page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Subsidiaries Page
 page.companyDetails.Subsidiaries.title = Subsidiaries
