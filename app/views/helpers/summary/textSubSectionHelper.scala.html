@@ -1,6 +1,6 @@
 @(subSectionId: String, subHeading: String,  link: Option[String] = None)
 <tr>
-    <td id="@{subSectionId}-subHeading" class="summaryQuestion" valign="top"><h2 class="heading-small">@subHeading</h2></td>
+    <td id="@{subSectionId}-subHeading" class="summaryQuestion"><span class="heading-small">@subHeading</span></td>
     <td class="summaryAnswer" ></td>
     <td class="summaryLink">@if(link.isDefined) {
         <a id="@{subSectionId}-link" href=@link>@Messages("common.base.change")</a>
