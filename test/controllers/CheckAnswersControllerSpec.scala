@@ -221,7 +221,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/acknowledgement")
         }
       )
     }
