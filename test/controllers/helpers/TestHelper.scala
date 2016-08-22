@@ -25,4 +25,11 @@ object TestHelper {
     linkText + " " + Messages("common.externalLink")
   }
 
+  def getExternalEmailText(emailText: String): String =
+  {
+    emailText + " " + "enterprise.centre@hmrc.gsi.gov.uk" + "."
+  }
+
+
 }
+

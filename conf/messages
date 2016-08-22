@@ -419,7 +419,7 @@ page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:
 
 #acknowledgement
 page.checkAndSubmit.acknowledgement.title=Submission complete
-page.checkAndSubmit.acknowledgement.submissionConfirmation=You've submitted your form
+page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve submitted your form
 page.checkAndSubmit.acknowledgement.refNumberHeading=Your application reference number is
 page.checkAndSubmit.acknowledgement.refNumber=HDJ2123F
 page.checkAndSubmit.acknowledgement.confirmEmail=We've sent a confirmation to the email address you gave us.

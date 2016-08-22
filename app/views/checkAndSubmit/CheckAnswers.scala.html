@@ -217,25 +217,48 @@
             </tbody>
         </table>
 
-        <table id="supporting-docs-heading-table">
+        <!--<table id="supporting-docs-heading-table">-->
+            <!--@tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))-->
+        <!--</table>-->
+
+        <!--<p id="supportingDocs-sub-text">@Messages("page.summaryQuestion.supportingDocsSectionSubText")</p>-->
+
+        <!--<table id="supporting-docs-body-table">-->
+            <!--&lt;!&ndash;@tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))&ndash;&gt;-->
+            <!--<tbody>-->
+            <!--<tr>-->
+                <!--<td id="supportingDocs-sub-text">@Messages("page.summaryQuestion.supportingDocsSectionSubText")</td>-->
+                <!--<td id="supportingDocs-company-accounts">@Messages("page.introduction.HowToApply.number.sendOne")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-subsidiary-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-articles">@Messages("page.introduction.HowToApply.number.sendTwo")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-prospectus">@Messages("page.introduction.HowToApply.number.sendThree")</td>-->
+            <!--</tr>-->
+            <!--</tbody>-->
+        <!--</table>-->
+
+        <table id="supporting-docs-table">
             @tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))
-        </table>
-
-        <p id="supportingDocs-sub-text">@Messages("page.summaryQuestion.supportingDocsSectionSubText")</p>
-
-        <table id="supporting-docs-body-table">
             <tbody>
+            <!--<tr>-->
+                <!--&lt;!&ndash;<td id="supportingDocs-sub-text">@Messages("page.summaryQuestion.supportingDocsSectionSubText")</td>&ndash;&gt;-->
+                <!--<td id="supportingDocs-company-accounts" class ="full-width">@Messages("page.introduction.HowToApply.number.sendOne")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-subsidiary-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-articles">@Messages("page.introduction.HowToApply.number.sendTwo")</td>-->
+            <!--</tr><tr>-->
+                <!--<td id="supportingDocs-prospectus">@Messages("page.introduction.HowToApply.number.sendThree")</td>-->
+            <!--</tr>-->
             <tr>
-                <td id="supportingDocs-company-accounts">@Messages("page.introduction.HowToApply.number.sendOne")</td>
-            </tr><tr>
-                <td id="supportingDocs-subsidiary-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>
-            </tr><tr>
-                <td id="supportingDocs-articles">@Messages("page.introduction.HowToApply.number.sendTwo")</td>
-            </tr><tr>
-                <td id="supportingDocs-prospectus">@Messages("page.introduction.HowToApply.number.sendThree")</td>
+                <td id="question" valign="top" colspan="3">question</td>
+                <td class="visuallyhidden">answer</td>
+                <td class="visuallyhidden">@Messages("common.base.change")</td>
             </tr>
             </tbody>
-        </table>
+            </table>
     </div>
 
 
