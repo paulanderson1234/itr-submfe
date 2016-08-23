@@ -18,6 +18,7 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController

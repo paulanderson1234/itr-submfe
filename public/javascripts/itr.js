@@ -1,6 +1,9 @@
 $("#ninetyPercentErrorSection").hide();
 
+
+
 $(document).ready($(function() {
+
     $('*[data-hidden]').each(function() {
 
         var $self = $(this);
@@ -33,7 +36,118 @@ $(document).ready($(function() {
                ClearRevealingContentInputs();
             }
         });
+
+
     });
+
+    //$("#hidden-other-scheme").hide();
+    //$("#hidden-investment-spent").hide();
+
+
+ //var $hiddenOtherScheme = $('#hidden-other-scheme')
+  // var $hiddenInvestmentSpent = $('#hidden-investment-spent')$('#hidden-investment-spent')
+
+
+
+
+    if ($('#schemeTypeDesc-another_scheme').is(":checked")) {
+        $('#hidden-other-scheme').show();
+
+    } else if ($('#schemeTypeDesc-another_scheme').is(":not(:checked)")) {
+        $('#hidden-other-scheme').hide();
+    }
+
+    if ($('#schemeTypeDesc-seed_enterprise_investment_scheme').is(":checked")) {
+            $($('#hidden-investment-spent')).show();
+
+    } else if ($('#schemeTypeDesc-seed_enterprise_investment_scheme').is(":not(:checked)")) {
+            $('#hidden-investment-spent').hide();
+    }
+
+
+//  $("input[type=checkbox]").each(function() {
+//            alert($(this.val()))
+//        });
+
+//  $('input[name="schemeTypeDesc"]').each(function () {
+//            alert($(this.val()))
+//        });
+
+////works
+//$("input[name='schemeTypeDesc']").each(function()  {
+//    alert($(this).attr('name'));
+//});
+
+$("input[name='schemeTypeDesc']").each(function()  {
+
+    var $checkbox = $(this)
+
+    //alert($checkbox.val());
+ //alert($(this).val());
+    //$('*[data-previous-investment]').each(function() {
+
+//        var $self = $(this);
+        var $hiddenOtherScheme = $('#hidden-other-scheme')
+        var $hiddenInvestmentSpent = $('#hidden-investment-spent')
+//        var $input = $self.find('input');
+
+
+
+//        if ($input.val() === 'Another scheme' && $input.prop('checked')) {
+//            alert('another checked');
+//            $hiddenOtherScheme.show();
+//            $hiddenInvestmentSpent.hide();
+//        }
+//
+//        if ($input.val() === 'Seed Enterprise Investment Scheme' && $input.prop('checked')){
+//            alert('seis checked');
+//            $hiddenInvestmentSpent.hide();
+//            $hiddenOtherScheme.hide();
+//        }
+
+
+//input[type=checkbox]
+
+
+
+//        $("#schemeTypeDesc").find(':checkbox').each(function() {
+//            alert($(this.val()))
+//        });
+
+
+        $checkbox.change(function() {
+
+            ClearRevealingContentInputs();
+
+            //alert('here');
+            //alert($checkbox.val());
+
+            //var $this = $(this);
+            // ClearRevealingContentInputs();
+            //alert('poof');
+
+
+            if ($checkbox.val() === 'Another scheme') {
+                 //alert($checkbox.val());
+                $hiddenOtherScheme.show();
+                $hiddenInvestmentSpent.hide();
+                ClearPageErrors();
+;
+            } else if($checkbox.val() === 'Seed Enterprise Investment Scheme') {
+                //alert($checkbox.val());
+               $hiddenOtherScheme.hide();
+               $hiddenInvestmentSpent.show();
+               ClearPageErrors();
+
+            }
+            else
+            {
+                 $hiddenOtherScheme.hide();
+                 $hiddenInvestmentSpent.hide();
+            }
+        });
+    });
+
 
     var radioOptions = $('input[type="radio"]');
 
@@ -70,7 +184,15 @@ $(document).ready($(function() {
          $(".form-group-day").children("input").val("");
          $(".form-group-month").children("input").val("");
          $(".form-group-year").children("input").val("");
-         //$("#tenYearPlanDesc").val("");
+         $("#otherSchemeName").val("");
+         $("#investmentSpent").val("");
+    }
+
+    function ClearPageErrors()
+    {
+        $("#error-summary-display").hide();
+        $(".form-field--error").removeClass("form-field--error");
+        $(".error-summary-show").removeClass("error-summary-show");
     }
 
     $("#ownNinetyPercent-no").on("click", function () {
@@ -88,6 +210,8 @@ $(document).ready($(function() {
             DisableNinetyPercentError();
         }
     });
+
+
 
 
 
@@ -110,6 +234,8 @@ function DisableNinetyPercentError()
     $("#ninetyPercentButtonDiv").show();
 
 }
+
+
 
 // <details> polyfill
 // http://caniuse.com/#feat=details

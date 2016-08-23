@@ -376,9 +376,21 @@ summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physi
 summaryQuestion.tenYearPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
 
+#previous schmeme
+page.investment.PreviousScheme.heading=Which schemes has your company used?
 
 #summary questions section two
 summaryQuestion.previousRFISection =Section 2: Previous schemes
+page.previousInvestment.schemeType.eis=Enterprise Investment Scheme
+page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
+page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
+page.previousInvestment.schemeType.vct=Venture Capital Trust
+page.previousInvestment.schemeType.other=Another scheme
+page.companyDetails.otherSchemeName.label=Name of that scheme
+page.investment.amount.label=Investment amount raised
+page.investment.amountSpent.label=How much of the investment have you spent?
+page.investment.dateOfShareIssue.label=Date of share issue
+
 
 #summary questions section three
 page.summaryQuestion.companyDetailsSectionThree=Section 3: This investment
