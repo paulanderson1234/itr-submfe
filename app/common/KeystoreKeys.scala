@@ -36,14 +36,15 @@ trait KeystoreKeys {
   val subsidiariesSpendingInvestment ="investment:subsidiariesSpendingInvestment"
   val newProduct = "investment:newProduct"
   val newGeographicalMarket = "investment:newGeographicalMarket"
-  val subsidiariesNinetyOwned="investment:subsidiariesNinetyOwned"
+  val subsidiariesNinetyOwned = "investment:subsidiariesNinetyOwned"
   val hadPreviousRFI ="previousInvestmentScheme:hadPreviousRFI"
-  val previousBeforeDOFCS ="previousInvestmentScheme:previousBeforeDOFCS"
+  val previousBeforeDOFCS = "previousInvestmentScheme:previousBeforeDOFCS"
   val investmentGrow ="investment:investmentGrow"
   val confirmContactAddress = "contactInformation:confirmCorrespondAddress"
   val checkYourAnswers ="checkAndSubmit:checkYourAnswers"
   val contactDetails = "examples:contactDetails"
   val contactAddress = "contactInformation:contactAddress"
+  val previousSchemes = "previousInvestmentScheme:previousInvestmentSchemes"
 
   // backlink keys
   val backLinkSupportingDocs ="backLink:SupportingDocs"

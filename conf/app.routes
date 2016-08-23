@@ -104,6 +104,12 @@ POST       /confirm-correspondence-address          controllers.ConfirmCorrespon
 GET        /check-your-answers                      controllers.CheckAnswersController.show
 POST       /check-your-answers                      controllers.CheckAnswersController.submit
 
+GET        /previous-investment                     controllers.PreviousSchemeController.show(id: Option[Int]?=None)
+POST       /previous-investment                     controllers.PreviousSchemeController.submit
+
+GET        /delete-previous-investment/:Id          controllers.PreviousSchemeController.delete(Id: Int)
+
+
 GET        /contact-address                         controllers.ContactAddressController.show
 POST       /contact-address                         controllers.ContactAddressController.submit
 
