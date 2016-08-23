@@ -66,7 +66,7 @@ trait ControllerHelpers {
                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
     val defaultId: Int = 1
-    
+
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val newId = data.last.processingId.get + 1
@@ -97,7 +97,7 @@ trait ControllerHelpers {
         else data
       }
       case None => Vector()
-    }.recover { case _ => Vector() }
+    }
     result.flatMap(updatedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, updatedVectorList))
   }
 
