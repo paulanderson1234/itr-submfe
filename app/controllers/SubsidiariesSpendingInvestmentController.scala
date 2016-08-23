@@ -34,6 +34,7 @@ package controllers
 
 import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
+import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
 import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
