@@ -48,7 +48,6 @@ trait ControllerHelpers {
 
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
-        println(data)
         val itemToRetrieveIndex = data.indexWhere(_.processingId.getOrElse(0) == modelProcessingIdToRetrieve)
         if (itemToRetrieveIndex != idNotFound) {
           Some(data(itemToRetrieveIndex))
@@ -57,6 +56,17 @@ trait ControllerHelpers {
       }
       case None => None
     }.recover { case _ => None }
+
+    result
+  }
+
+  def getAllInvestmentFromKeystore(keyStoreConnector: connectors.KeystoreConnector)
+                                       (implicit hc: HeaderCarrier): Future[Vector[PreviousSchemeModel]] = {
+
+    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+      case Some(data) => data
+      case None =>  Vector[PreviousSchemeModel]()
+    }.recover { case _ =>  Vector[PreviousSchemeModel]() }
 
     result
   }
