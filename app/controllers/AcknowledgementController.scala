@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.helpers
+package controllers
 
-import play.api.i18n.Messages
+import controllers.predicates.ValidActiveSession
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-object TestHelper {
+import scala.concurrent.Future
 
-  def getExternalLinkText(linkText: String): String =
-  {
-    linkText + " " + Messages("common.externalLink")
-  }
+object AcknowledgementController extends AcknowledgementController
 
-  def getExternalEmailText(emailText: String): String =
-  {
-    emailText + " " + "enterprise.centre@hmrc.gsi.gov.uk" + "."
-  }
-
-
+trait AcknowledgementController extends FrontendController with ValidActiveSession {
+  val show = ValidateSession.async { implicit request => Future.successful(Ok(views.html.checkAndSubmit.Acknowledgement()))}
 }
-

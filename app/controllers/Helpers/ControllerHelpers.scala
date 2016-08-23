@@ -66,9 +66,7 @@ trait ControllerHelpers {
                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
     val defaultId: Int = 1
-
-    println("in add========================")
-
+    
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val newId = data.last.processingId.get + 1
@@ -85,8 +83,6 @@ trait ControllerHelpers {
                                        previousSchemeModelToUpdate: PreviousSchemeModel)
                                       (implicit hc: HeaderCarrier): Future[CacheMap] = {
     val idNotFound: Int = -1
-
-    println("in update ========================")
 
     require(previousSchemeModelToUpdate.processingId.getOrElse(0) > 0,
       "The item to update processingId must be an integer > 0")

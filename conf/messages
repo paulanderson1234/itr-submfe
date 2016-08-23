@@ -233,12 +233,12 @@ page.companyDetails.OperatingCosts.col.heading.three = Research and Development 
 page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
 page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
 page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
-page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 13 numbers.
-page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 13 numbers.
+page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Subsidiaries Page
 page.companyDetails.Subsidiaries.title = Subsidiaries
@@ -424,3 +424,29 @@ page.contactInformation.contactDetails.forename.label=Forename
 page.contactInformation.contactDetails.surname.label=Surname
 page.contactInformation.contactDetails.phoneNumber.label=Telephone number
 page.contactInformation.contactDetails.email.label=Email address
+
+#summary questions section five
+page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
+page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:
+
+#acknowledgement
+page.checkAndSubmit.acknowledgement.title=Submission complete
+page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve submitted your form
+page.checkAndSubmit.acknowledgement.refNumberHeading=Your application reference number is
+page.checkAndSubmit.acknowledgement.refNumber=HDJ2123F
+page.checkAndSubmit.acknowledgement.confirmEmail=We''ve sent a confirmation to the email address you gave us.
+page.checkAndSubmit.acknowledgement.toDoNext=What to do next
+page.checkAndSubmit.acknowledgement.emailTo=Email your supporting documents to
+page.checkAndSubmit.acknowledgement.subjectLineInclude=In the subject line include your:
+page.checkAndSubmit.acknowledgement.applicationReferenceNumber=application reference number
+page.checkAndSubmit.acknowledgement.companyName= company name
+page.checkAndSubmit.acknowledgement.help=Which documents do I need to send?
+page.checkAndSubmit.acknowledgement.sendUs= Send us:
+page.checkAndSubmit.acknowledgement.businessPlan=your business plan
+page.checkAndSubmit.acknowledgement.companyAccounts=our company accounts from the past [year/three/five years]
+page.checkAndSubmit.acknowledgement.subsidiaryAccounts=[accounts for companies that [your company] owns or controls]
+page.checkAndSubmit.acknowledgement.shareholderAgreements=shareholder agreements, or drafts of them
+page.checkAndSubmit.acknowledgement.articlesOfAssociation=your memorandum and articles of association
+page.checkAndSubmit.acknowledgement.docsProspectus=documents like prospectuses that you’ll use to attract investment
+page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
+page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.

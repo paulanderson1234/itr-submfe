@@ -128,7 +128,7 @@ object Validation {
   }
 
   def mandatoryMaxTenNumberValidation(message: String) : Mapping[String] = {
-    val validNum = """[0-9]{1,13}""".r
+    val validNum = """[0-9]{1,9}""".r
     val numCharCheckConstraint: Constraint[String] =
       Constraint("contraints.mandatoryNumberCheck")({
         text =>

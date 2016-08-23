@@ -113,3 +113,5 @@ GET        /delete-previous-investment/:Id          controllers.PreviousSchemeCo
 GET        /contact-address                         controllers.ContactAddressController.show
 POST       /contact-address                         controllers.ContactAddressController.submit
 
+GET        /acknowledgement                        controllers.AcknowledgementController.show
+
