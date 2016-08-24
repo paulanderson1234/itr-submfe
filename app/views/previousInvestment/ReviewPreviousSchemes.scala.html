@@ -1,0 +1,48 @@
+@import models.PreviousSchemeModel
+@import config.FrontendAppConfig
+@(previousSchemes: Vector[PreviousSchemeModel])(implicit request: Request[_])
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField}
+
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
+
+@backButtonWithProgress(controllers.routes.NewGeographicalMarketController.show().toString, Messages("summaryQuestion.previousRFISection"))
+
+<div class="grid-column">
+    <div class="column-two-thirds">
+        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.start.welcome.heading")</h1>
+        <table>
+            <thead>
+            <tr>
+                <th>Scheme</th>
+                <th>Dates of share issue</th>
+                <th>Investment amount</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            @for((previousScheme, index) <- previousSchemes.zipWithIndex) {
+                <tr>
+                    <td>@previousScheme.schemeTypeDesc</td>
+                    <td>@PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)</td>
+                    <td>@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
+                    <td><a href="@routes.PreviousSchemeController.show(previousScheme.processingId).toString">Change</a></td>
+                    <!--<td><a class = "button" href="@routes.PreviousSchemeController.delete(previousScheme.processingId.getOrElse(0)).toString">Remove</a></td>-->
+                    <td> @form(action = controllers.routes.PreviousSchemeController.delete(previousScheme.processingId.getOrElse(0))) {
+                        <button class="button--link-style font-xsmall" type="submit" id="next">Remove</button>
+                        }</td>
+                </tr>
+            }
+            <tr>
+                <td><a href="@routes.PreviousSchemeController.show(None).toString">Add another scheme</a></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+}
