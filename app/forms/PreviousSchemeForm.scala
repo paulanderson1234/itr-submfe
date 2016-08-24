@@ -16,16 +16,18 @@
 
 package forms
 
+import common.Constants
 import utils.Transfomers._
-import utils.Validation._
 import models.PreviousSchemeModel
-import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
+import uk.gov.voa.play.form.ConditionalMappings._
+import play.api.data.Form
+import utils.Validation._
 
 object PreviousSchemeForm {
 
-  val maxAllowableAmount: Int = 5000000
+  val maxAllowableAmount: Int = 999999999
   val minAllowableAmount: Int = 1
 
   val previousSchemeForm = Form(
@@ -37,13 +39,12 @@ object PreviousSchemeForm {
         .transform[Int](stringToInteger, _.toString())
         .verifying(Messages("page.investment.amount.OutOfRange"), minIntCheck(minAllowableAmount))
         .verifying(Messages("page.investment.amount.OutOfRange"), maxIntCheck(maxAllowableAmount)),
-      "investmentSpent" -> optional(number),
-      "otherSchemeName" -> optional(text),
+      "investmentSpent" ->  mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeSeisValue, number),
+      "otherSchemeName" -> mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeAnotherValue, nonEmptyText),
       "investmentDay" -> optional(number),
       "investmentMonth" -> optional(number),
       "investmentYear" -> optional(number),
       "processingId" -> optional(number)
 
-    )(PreviousSchemeModel.apply)(PreviousSchemeModel.unapply)
-  )
+    )(PreviousSchemeModel.apply)(PreviousSchemeModel.unapply).verifying(previousSchemeValidation))
 }

@@ -40,16 +40,6 @@ $(document).ready($(function() {
 
     });
 
-    //$("#hidden-other-scheme").hide();
-    //$("#hidden-investment-spent").hide();
-
-
- //var $hiddenOtherScheme = $('#hidden-other-scheme')
-  // var $hiddenInvestmentSpent = $('#hidden-investment-spent')$('#hidden-investment-spent')
-
-
-
-
     if ($('#schemeTypeDesc-another_scheme').is(":checked")) {
         $('#hidden-other-scheme').show();
 
@@ -65,68 +55,49 @@ $(document).ready($(function() {
     }
 
 
-//  $("input[type=checkbox]").each(function() {
-//            alert($(this.val()))
+
+    // commercial-sale page handling
+//    $("input[name='hasCommercialSale']").each(function()  {
+//
+//        var $checkbox = $(this)
+//
+//        var $hiddenOtherScheme = $('#hidden-other-scheme')
+//        var $hiddenInvestmentSpent = $('#hidden-investment-spent')
+//
+//        $checkbox.change(function() {
+//
+//            ClearRevealingContentInputs();
+//            if ($checkbox.val() === 'Another scheme') {
+//                 //alert($checkbox.val());
+//                $hiddenOtherScheme.show();
+//                $hiddenInvestmentSpent.hide();
+//                ClearPageErrors();
+//;
+//            } else if($checkbox.val() === 'Seed Enterprise Investment Scheme') {
+//                //alert($checkbox.val());
+//               $hiddenOtherScheme.hide();
+//               $hiddenInvestmentSpent.show();
+//               ClearPageErrors();
+//
+//            }
+//            else
+//            {
+//                 $hiddenOtherScheme.hide();
+//                 $hiddenInvestmentSpent.hide();
+//            }
 //        });
+//    });
 
-//  $('input[name="schemeTypeDesc"]').each(function () {
-//            alert($(this.val()))
-//        });
+    $("input[name='schemeTypeDesc']").each(function()  {
 
-////works
-//$("input[name='schemeTypeDesc']").each(function()  {
-//    alert($(this).attr('name'));
-//});
+        var $checkbox = $(this)
 
-$("input[name='schemeTypeDesc']").each(function()  {
-
-    var $checkbox = $(this)
-
-    //alert($checkbox.val());
- //alert($(this).val());
-    //$('*[data-previous-investment]').each(function() {
-
-//        var $self = $(this);
         var $hiddenOtherScheme = $('#hidden-other-scheme')
         var $hiddenInvestmentSpent = $('#hidden-investment-spent')
-//        var $input = $self.find('input');
-
-
-
-//        if ($input.val() === 'Another scheme' && $input.prop('checked')) {
-//            alert('another checked');
-//            $hiddenOtherScheme.show();
-//            $hiddenInvestmentSpent.hide();
-//        }
-//
-//        if ($input.val() === 'Seed Enterprise Investment Scheme' && $input.prop('checked')){
-//            alert('seis checked');
-//            $hiddenInvestmentSpent.hide();
-//            $hiddenOtherScheme.hide();
-//        }
-
-
-//input[type=checkbox]
-
-
-
-//        $("#schemeTypeDesc").find(':checkbox').each(function() {
-//            alert($(this.val()))
-//        });
-
 
         $checkbox.change(function() {
 
             ClearRevealingContentInputs();
-
-            //alert('here');
-            //alert($checkbox.val());
-
-            //var $this = $(this);
-            // ClearRevealingContentInputs();
-            //alert('poof');
-
-
             if ($checkbox.val() === 'Another scheme') {
                  //alert($checkbox.val());
                 $hiddenOtherScheme.show();
@@ -181,9 +152,13 @@ $("input[name='schemeTypeDesc']").each(function()  {
          // clear them here by using the appropriate selectors and clearing the inputs.
 
          // clear any revealing date controls by selecting by class
-         $(".form-group-day").children("input").val("");
-         $(".form-group-month").children("input").val("");
-         $(".form-group-year").children("input").val("");
+         //$(".form-group-day").children("input").val("");
+         //$(".form-group-month").children("input").val("");
+         //$(".form-group-year").children("input").val("");
+
+         $("#commercialSaleDay").val("");
+         $("#commercialSaleMonth").val("");
+         $("#commercialSaleYear").val("");
          $("#otherSchemeName").val("");
          $("#investmentSpent").val("");
     }
@@ -210,10 +185,6 @@ $("input[name='schemeTypeDesc']").each(function()  {
             DisableNinetyPercentError();
         }
     });
-
-
-
-
 
 }));
 
@@ -370,15 +341,6 @@ function DisableNinetyPercentError()
       if (!NATIVE_DETAILS) {
 
         var twisty = document.createElement('i');
-
-//        if (openAttr === true) {
-//          twisty.className = 'arrow arrow-open';
-//          twisty.appendChild(document.createTextNode('\u25bc'));
-//        } else {
-//          twisty.className = 'arrow arrow-closed';
-//          twisty.appendChild(document.createTextNode('\u25ba'));
-//        }
-
         details.__summary.__twisty = details.__summary.insertBefore(twisty, details.__summary.firstChild);
         details.__summary.__twisty.setAttribute('aria-hidden', 'true');
 

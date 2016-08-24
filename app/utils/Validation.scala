@@ -16,15 +16,16 @@
 
 package utils
 
-import java.text.{ParseException, SimpleDateFormat}
+import java.text.SimpleDateFormat
 
-import models.{CommercialSaleModel, CompanyAddressModel, TenYearPlanModel}
+import models.{CommercialSaleModel, CompanyAddressModel, PreviousSchemeModel, TenYearPlanModel}
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
 import play.api.i18n.Messages
 import java.util.{Calendar, Date}
 
+import common.Constants
 import org.joda.time.DateTime
 
 import scala.util.{Failure, Success, Try}
@@ -36,6 +37,25 @@ object Validation {
   lazy val datePageFormat = new SimpleDateFormat("dd MMMM yyyy")
   lazy val datePageFormatNoZero = new SimpleDateFormat("d MMMM yyyy")
 
+  def previousSchemeValidation : Constraint[PreviousSchemeModel] = {
+
+    Constraint("constraints.previous_investment")({
+      investmentForm : PreviousSchemeModel => {
+        anyEmpty(investmentForm.day, investmentForm.month, investmentForm.year) match {
+          case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+          case false => isValidDate(investmentForm.day.get, investmentForm.month.get, investmentForm.year.get) match {
+            case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+            case true => dateNotInFuture(investmentForm.day.get,investmentForm.month.get,investmentForm.year.get) match {
+              case true => Valid
+              case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
+            }
+          }
+        }
+      }
+       
+    })
+  }
+
   def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
 
     def validateYes(dateForm :CommercialSaleModel) = {
@@ -45,7 +65,7 @@ object Validation {
           case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
           case true => dateNotInFuture(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
             case true => Valid
-            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateOfCommercialSale.Future"))))
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
           }
         }
       }
@@ -54,11 +74,12 @@ object Validation {
     Constraint("constraints.date_of_first_sale")({
       dateForm : CommercialSaleModel =>
         dateForm.hasCommercialSale match {
-          case "No" => allDatesEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
+          case Constants.StandardRadioButtonNoValue => allDatesEmpty(dateForm.commercialSaleDay,
+            dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
             case true => Valid
             case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
           }
-          case "Yes" => validateYes(dateForm)
+          case Constants.StandardRadioButtonYesValue => validateYes(dateForm)
         }
     })
   }
@@ -82,9 +103,9 @@ object Validation {
     Constraint("constraints.ten_year_plan")({
       tenYearForm : TenYearPlanModel =>
         tenYearForm.hasTenYearPlan match {
-          case "No" => if(tenYearForm.hasTenYearPlan.isEmpty)
+          case Constants.StandardRadioButtonNoValue => if(tenYearForm.hasTenYearPlan.isEmpty)
             Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired")))) else Valid
-          case "Yes" => validateYes(tenYearForm)
+          case Constants.StandardRadioButtonYesValue => validateYes(tenYearForm)
         }
     })
   }

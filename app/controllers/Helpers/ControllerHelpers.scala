@@ -44,12 +44,17 @@ trait ControllerHelpers {
 
     val idNotFound: Int = -1
 
+    println("here==============")
+
     require(modelProcessingIdToRetrieve > 0, "The item to retrieve processingId must be an integer > 0")
 
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val itemToRetrieveIndex = data.indexWhere(_.processingId.getOrElse(0) == modelProcessingIdToRetrieve)
+        println("inex ret==============" + itemToRetrieveIndex)
+        println("lokking for=============" + modelProcessingIdToRetrieve)
         if (itemToRetrieveIndex != idNotFound) {
+          println("found inex==============" + itemToRetrieveIndex)
           Some(data(itemToRetrieveIndex))
         }
         else None

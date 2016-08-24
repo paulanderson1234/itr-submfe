@@ -378,6 +378,11 @@ summaryQuestion.subsidiaries =Own or control any other companies
 
 #previous schmeme
 page.investment.PreviousScheme.heading=Which schemes has your company used?
+validation.error.ShareIssueDate.Future=Date of share issue cannot be a future date
+page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
+page.investment.PreviousScheme.companiesHouse = Companies House database
+page.investment.PreviousScheme.howToFind=How can you find this out?
+page.investment.PreviousScheme.title=Previous schemes
 
 #summary questions section two
 summaryQuestion.previousRFISection =Section 2: Previous schemes
@@ -390,7 +395,6 @@ page.companyDetails.otherSchemeName.label=Name of that scheme
 page.investment.amount.label=Investment amount raised
 page.investment.amountSpent.label=How much of the investment have you spent?
 page.investment.dateOfShareIssue.label=Date of share issue
-
 
 #summary questions section three
 page.summaryQuestion.companyDetailsSectionThree=Section 3: This investment
