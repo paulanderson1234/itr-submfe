@@ -17,14 +17,15 @@
 package controllers
 
 import connectors.KeystoreConnector
+import forms.PreviousSchemeForm
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.ControllerHelpers
-import forms.PreviousSchemeForm._
 
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.previousInvestment.PreviousScheme
+import forms.PreviousSchemeForm._
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -51,25 +52,26 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
   }
 
   def delete(id: Int): Action[AnyContent] = ValidateSession.async { implicit request =>
-    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id)
-    //TODO: change to go to the list of orevious investments screen
-    Future.successful(Redirect(routes.TaxpayerReferenceController.show()))
+    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
+      _=> Redirect(routes.ReviewPreviousSchemesController.show())
+    }
   }
 
   val submit = Action.async { implicit request =>
-    val response = previousSchemeForm.bindFromRequest().fold(
+    previousSchemeForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(PreviousScheme(formWithErrors))
+        Future.successful(BadRequest(PreviousScheme(formWithErrors)))
       },
       validFormData => {
         validFormData.processingId match {
-          case Some(id) => ControllerHelpers.updateKeystorePreviousInvestment(keyStoreConnector, validFormData)
-          case _ => ControllerHelpers.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData)
+          case Some(id) => ControllerHelpers.updateKeystorePreviousInvestment(keyStoreConnector, validFormData).map {
+            _ => Redirect(routes.ReviewPreviousSchemesController.show())
+          }
+          case None => ControllerHelpers.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map{
+            _ => Redirect(routes.ReviewPreviousSchemesController.show())
+          }
         }
-
-        Redirect(routes.TaxpayerReferenceController.show())
       }
     )
-    Future.successful(response)
   }
 }
