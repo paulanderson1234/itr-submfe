@@ -450,3 +450,9 @@ page.checkAndSubmit.acknowledgement.articlesOfAssociation=your memorandum and ar
 page.checkAndSubmit.acknowledgement.docsProspectus=documents like prospectuses that you’ll use to attract investment
 page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
 page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.
+
+#lifetime allowance exceeded page
+page.investment.LifetimeAllowanceExceeded.heading=You don''t qualify for the scheme
+page.investment.LifetimeAllowanceExceeded.title=Lifetime allowance Exceeded
+page.investment.LifetimeAllowanceExceeded.reason=You''ve already raised more than £12 million from tax relief investment schemes.
+page.investment.LifetimeAllowanceExceeded.link=Back to investment schemes
