@@ -40,19 +40,18 @@ object Validation {
   def previousSchemeValidation : Constraint[PreviousSchemeModel] = {
 
     Constraint("constraints.previous_investment")({
-      investmentForm : PreviousSchemeModel => {
+      investmentForm: PreviousSchemeModel => {
         anyEmpty(investmentForm.day, investmentForm.month, investmentForm.year) match {
           case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
           case false => isValidDate(investmentForm.day.get, investmentForm.month.get, investmentForm.year.get) match {
             case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
-            case true => dateNotInFuture(investmentForm.day.get,investmentForm.month.get,investmentForm.year.get) match {
+            case true => dateNotInFuture(investmentForm.day.get, investmentForm.month.get, investmentForm.year.get) match {
               case true => Valid
               case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
             }
           }
         }
       }
-       
     })
   }
 
@@ -317,8 +316,8 @@ object Validation {
   def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
 
   val yesNoCheck: String =>  Boolean = {
-    case "Yes" => true
-    case "No" => true
+    case Constants.StandardRadioButtonYesValue => true
+    case Constants.StandardRadioButtonNoValue => true
     case "" => true
     case _ => false
   }

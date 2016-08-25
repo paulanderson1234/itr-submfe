@@ -29,6 +29,7 @@ object PreviousSchemeForm {
 
   val maxAllowableAmount: Int = 999999999
   val minAllowableAmount: Int = 1
+  val otherSchemeMaxLength:Int = 50
 
   val previousSchemeForm = Form(
     mapping(
@@ -37,10 +38,16 @@ object PreviousSchemeForm {
         .verifying(Messages("validation.common.error.fieldRequired"), mandatoryCheck)
         .verifying(Messages("page.investment.amount.invalidAmount"), integerCheck)
         .transform[Int](stringToInteger, _.toString())
-        .verifying(Messages("page.investment.amount.OutOfRange"), minIntCheck(minAllowableAmount))
-        .verifying(Messages("page.investment.amount.OutOfRange"), maxIntCheck(maxAllowableAmount)),
-      "investmentSpent" ->  mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeSeisValue, number),
-      "otherSchemeName" -> mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeAnotherValue, nonEmptyText),
+        .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), minIntCheck(minAllowableAmount))
+        .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), maxIntCheck(maxAllowableAmount)),
+      "investmentSpent" ->  mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeSeisValue, text
+        .verifying(Messages("validation.common.error.fieldRequired"), mandatoryCheck)
+        .verifying(Messages("page.investment.amount.invalidAmount"), integerCheck)
+        .transform[Int](stringToInteger, _.toString())
+        .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), minIntCheck(minAllowableAmount))
+        .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), maxIntCheck(maxAllowableAmount))),
+      "otherSchemeName" -> mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeAnotherValue,
+        nonEmptyText.verifying(Messages("page.investment.PreviousScheme.otherScheme.OutOfRange"), (_.length <= otherSchemeMaxLength))),
       "investmentDay" -> optional(number),
       "investmentMonth" -> optional(number),
       "investmentYear" -> optional(number),
