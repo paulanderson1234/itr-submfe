@@ -35,18 +35,22 @@
                     <td id="scheme-type-@{index}">@previousScheme.schemeTypeDesc</td>
                     <td id="scheme-date-@{index}">@PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)</td>
                     <td id="scheme-amount-@{index}">@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
-                    <td id="change-@{index}"><a id="change-ref-@{index}" href="@routes.PreviousSchemeController.show(previousScheme.processingId).toString">@Messages("common.base.change")</a></td>
-                    <td id="remove-@{index}"> @form(action = controllers.routes.PreviousSchemeController.delete(previousScheme.processingId.getOrElse(0))) {
+<<<<<<< Updated upstream
+                    <td id="change-@{index}"><a id="change-ref-@{index}" href=@routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString">@Messages("common.base.change")</a></td>
+=======
+                    <td id="change-@{index}"><a id="change-ref-@{index}" href="@routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString">@Messages("common.base.change")</a></td>
+>>>>>>> Stashed changes
+                    <td id="remove-@{index}"> @form(action = controllers.routes.ReviewPreviousSchemesController.remove(previousScheme.processingId.getOrElse(0))) {
                         <button class="button--link-style font-xsmall" type="submit" id="remove-link-@{index}"> @Messages("common.base.remove")</button>
                         }</td>
                 </tr>
             }
             <tr>
-                <td id="add-scheme"><a href="@routes.PreviousSchemeController.show(None).toString">@Messages("page.previousInvestment.reviewPreviousSchemes.add")</a></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+<<<<<<< Updated upstream
+                <td id="add-scheme" colspan="5"><a href="@routes.ReviewPreviousSchemesController.add.toString">@Messages("page.previousInvestment.reviewPreviousSchemes.add")</a></td>
+=======
+                <td colspan="5" id="add-scheme"><a href="@routes.ReviewPreviousSchemesController.add.toString">@Messages("page.previousInvestment.reviewPreviousSchemes.add")</a></td>
+>>>>>>> Stashed changes
             </tr>
             </tbody>
         </table>

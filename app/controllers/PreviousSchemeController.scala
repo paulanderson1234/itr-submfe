@@ -16,12 +16,11 @@
 
 package controllers
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
-import forms.PreviousSchemeForm
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.ControllerHelpers
-
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.previousInvestment.PreviousScheme
@@ -37,41 +36,47 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
   val keyStoreConnector: KeystoreConnector
 
   def show(id: Option[Int]): Action[AnyContent] = ValidateSession.async { implicit request =>
-
-    id match {
-      case Some(id) => {
-        ControllerHelpers.getExistingInvestmentFromKeystore(keyStoreConnector, id).map {
-          case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data)))
-          case None => Ok(PreviousScheme(previousSchemeForm))
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        id match {
+          case Some(id) => {
+            ControllerHelpers.getExistingInvestmentFromKeystore(keyStoreConnector, id).map {
+              case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data), backUrl.get))
+              case None => Ok(PreviousScheme(previousSchemeForm, backUrl.get))
+            }
+          }
+          case None => {
+            Future.successful(Ok(PreviousScheme(previousSchemeForm, backUrl.get)))
+          }
         }
-      }
-      case None => {
-        Future.successful(Ok(PreviousScheme(previousSchemeForm)))
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
     }
-  }
-
-  def delete(id: Int): Action[AnyContent] = ValidateSession.async { implicit request =>
-    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
-      _=> Redirect(routes.ReviewPreviousSchemesController.show())
-    }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector)(hc)
+      route <- routeRequest(link)
+    } yield route
   }
 
   val submit = Action.async { implicit request =>
     previousSchemeForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(PreviousScheme(formWithErrors)))
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector).flatMap(url =>
+          Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
       },
       validFormData => {
         validFormData.processingId match {
           case Some(id) => ControllerHelpers.updateKeystorePreviousInvestment(keyStoreConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
-          case None => ControllerHelpers.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map{
+          case None => ControllerHelpers.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
         }
       }
     )
   }
+
 }
