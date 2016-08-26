@@ -90,6 +90,12 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to PreviousSchemeController" should {
     "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       showWithSession(None)(
         result => status(result) shouldBe OK
       )
@@ -99,6 +105,9 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       showWithSession(Some(1))(
         result => status(result) shouldBe OK
       )
@@ -109,6 +118,9 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(emptyVectorList)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
     showWithSession(Some(1))(
       result => status(result) shouldBe OK
     )
@@ -118,6 +130,9 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
     showWithSession(Some(3))(
       result => status(result) shouldBe OK
     )
@@ -125,10 +140,15 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid new form submit to the PreviousSchemeController" should {
     "create a new item and redirect to the review previous investments page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(),
+        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "12345",
@@ -151,10 +171,14 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid updated form submit to the PreviousSchemeController" should {
     "update the item and redirect to the review previous investments page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapUpdated)
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(),
+        Matchers.any())).thenReturn(cacheMapUpdated)
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "666",
@@ -177,10 +201,14 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController" should {
     "not create the item and redirect to itself with errors as a bad request" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(),
+        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "",
@@ -190,7 +218,6 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         "investmentMonth" -> "8",
         "investmentYear" -> "1988",
         "processingId" -> ""
-
       )
       submitWithSession(request)(
         result => {
@@ -202,10 +229,14 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a invalid (no amount) updated form submit to the PreviousSchemeController" should {
     "not update the item and redirect to itself with errors as a bad request" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapUpdated)
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(cacheMapUpdated)
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeVctValue,
         "investmentAmount" -> "",

@@ -27,19 +27,14 @@
                     <td>@previousScheme.schemeTypeDesc</td>
                     <td>@PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)</td>
                     <td>@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
-                    <td><a href="@routes.PreviousSchemeController.show(previousScheme.processingId).toString">Change</a></td>
-                    <!--<td><a class = "button" href="@routes.PreviousSchemeController.delete(previousScheme.processingId.getOrElse(0)).toString">Remove</a></td>-->
-                    <td> @form(action = controllers.routes.PreviousSchemeController.delete(previousScheme.processingId.getOrElse(0))) {
+                    <td><a href="@routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString">Change</a></td>
+                    <td> @form(action = controllers.routes.ReviewPreviousSchemesController.remove(previousScheme.processingId.getOrElse(0))) {
                         <button class="button--link-style font-xsmall" type="submit" id="next">Remove</button>
                         }</td>
                 </tr>
             }
             <tr>
-                <td><a href="@routes.PreviousSchemeController.show(None).toString">Add another scheme</a></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="5"><a href="@routes.ReviewPreviousSchemesController.add.toString">Add another scheme</a></td>
             </tr>
             </tbody>
         </table>
