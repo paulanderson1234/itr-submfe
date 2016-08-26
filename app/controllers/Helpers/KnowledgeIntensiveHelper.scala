@@ -33,6 +33,15 @@ trait KnowledgeIntensiveHelper {
 
   val keyStoreConnector: KeystoreConnector
 
+  def validateInput(date: Option[DateOfIncorporationModel], rAndCost: Option[OperatingCostsModel],
+              percentageStaffMasters: Option[PercentageStaffWithMastersModel]) : Future[Boolean] = (date, rAndCost, percentageStaffMasters) match {
+
+    case (Some(date), Some(rAndCost), Some(percentageStaffMasters)) => {
+      Future.successful(Some(true))
+    }
+    case _ => Future.successful(false)
+  }
+
   def checkRAndDCosts(rAndDCost: OperatingCostsModel) : Boolean = {
 
     def findCosts(operatingCosts: scala.Double, divideBy: String) : Double = {
@@ -57,38 +66,36 @@ trait KnowledgeIntensiveHelper {
     else false
   }
 
-  def getKI(implicit hc: HeaderCarrier) : Future[Boolean] = {
+  def getKI(implicit hc: HeaderCarrier) : Future[Future[Option[Boolean]]] = {
 
-    def checkKI(kiFlag: IsKnowledgeIntensiveModel, date: DateOfIncorporationModel, rAndCost: OperatingCostsModel,
-                percentageStaffMasters: PercentageStaffWithMastersModel, tenYearPlan: Option[TenYearPlanModel]) : Boolean = {
+    def checkKI(date: Option[DateOfIncorporationModel], rAndCost: Option[OperatingCostsModel],
+                percentageStaffMasters: Option[PercentageStaffWithMastersModel], tenYearPlan: Option[TenYearPlanModel]) : Future[Option[Boolean]] = {
 
-      if(kiFlag.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue) {
-        calculateKI(date, rAndCost, percentageStaffMasters, tenYearPlan)
+      validateInput(date, rAndCost, percentageStaffMasters).map{
+        case true => {
+          tenYearPlan match {
+            case (Some(tenYearPlan)) =>
+              if (checkDateAndCosts(date.get, rAndCost.get) && (tenYearPlan.hasTenYearPlan == Constants.StandardRadioButtonYesValue)
+                || percentageStaffMasters.get.staffWithMasters == Constants.StandardRadioButtonYesValue) Some(true)
+              else
+                Some(false)
+
+            case (None) => if (checkDateAndCosts(date.get, rAndCost.get) &&
+              percentageStaffMasters.get.staffWithMasters == Constants.StandardRadioButtonYesValue) Some(true)
+            else
+              Some(false)
+          }
+        }
+        case false => None
       }
-      else false
-    }
-
-    def calculateKI(date: DateOfIncorporationModel, rAndCost: OperatingCostsModel, percentageStaffMasters: PercentageStaffWithMastersModel,
-                    tenYearPlan: Option[TenYearPlanModel]) : Boolean = tenYearPlan match {
-
-      case (Some(tenYearPlan)) =>
-        if(checkDateAndCosts(date, rAndCost) && (tenYearPlan.hasTenYearPlan == Constants.StandardRadioButtonYesValue)
-          || percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue) true
-         else
-          false
-
-      case (None) => if(checkDateAndCosts(date, rAndCost) && percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue) true
-      else
-        false
     }
 
     for {
-      kiFlag <- keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive)
       date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       masters <- keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters)
       tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
       operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
-      isKI <- Future.successful(checkKI(kiFlag.get, date.get, operatingCosts.get, masters.get, tenYearPlan))
+      isKI <- Future.successful(checkKI(date, operatingCosts, masters, tenYearPlan))
     } yield isKI
   }
 }

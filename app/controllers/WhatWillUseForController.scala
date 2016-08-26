@@ -46,27 +46,29 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
       case None => Ok(WhatWillUseFor(whatWillUseForForm))
     }
   }
+//      def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
+//      KIFlag match {
+//        case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => Constants.IsKnowledgeIntesnsiveYears
+//        case _ => Constants.IsNotKnowledgeIntesnsiveYears
+//      }
+//    }
+
+  def getAgeLimit(isKI: Boolean): String = {
+    if (isKI) {
+      Constants.IsKnowledgeIntesnsiveYears
+    }
+    else
+      Constants.IsNotKnowledgeIntesnsiveYears
+  }
+
+  def checkAgeRule(comSale: Option[CommercialSaleModel]) : Future[Result] = {
+
+  }
 
   val submit = Action.async { implicit request =>
 
     def calcRoute(prevRFI: Option[HadPreviousRFIModel], comSale: Option[CommercialSaleModel],
                   HasSub: Option[SubsidiariesModel], kIFlag: Option[IsKnowledgeIntensiveModel]): Future[Result] = {
-
-//      def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
-//        KIFlag match {
-//          case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => Constants.IsKnowledgeIntesnsiveYears
-//          case _ => Constants.IsNotKnowledgeIntesnsiveYears
-//        }
-//      }
-
-      def getAgeLimit(isKI: Boolean): String = {
-        if (isKI) {
-          Constants.IsKnowledgeIntesnsiveYears
-        }
-        else
-          Constants.IsNotKnowledgeIntesnsiveYears
-
-      }
 
       comSale match {
         case Some(comSale) => if (comSale.hasCommercialSale.equals(Constants.StandardRadioButtonYesValue)) {
@@ -76,14 +78,20 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
             }
             else { kIFlag match {
               case Some(kIFlag) =>
-                KnowledgeIntensiveHelper.getKI(hc)
+                KnowledgeIntensiveHelper.getKI(hc).map {
+                  x => x.map {case Some(true) =>
+                    if (Validation.checkAgeRule(comSale.commercialSaleDay.get, comSale.commercialSaleMonth.get, comSale.commercialSaleYear.get,
+                     Constants.IsKnowledgeIntesnsiveYears)) {
+                      keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
+                      Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+                    }
+                    else {
+                      subsidiariesCheck(hc, HasSub)
+                    }
 
-                if (Validation.checkAgeRule(comSale.commercialSaleDay.get,comSale.commercialSaleMonth.get,comSale.commercialSaleYear.get, getAgeLimit())) {
-//                  getAgeLimit(kIFlag))) {
-                    keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
-                    Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-                }
-                else {subsidiariesCheck(hc, HasSub)}
+                  case None => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+
+                }}
 
               //TODO: Redirect to commercial sale as you should not be able to skip commercial sale or KI.
               case None => {
@@ -132,10 +140,10 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
     }
   }
 
-
-  def getKI() : Boolean = {
-    KnowledgeIntensiveHelper.getKI(hc).map(
-     i => i
-    )
+  def getKI(flag : Option[Future[Boolean]]) : Boolean = {
+    KnowledgeIntensiveHelper.getKI(hc).map{
+      case Some(data) => data
+      case None => false
+    }
   }
 }
