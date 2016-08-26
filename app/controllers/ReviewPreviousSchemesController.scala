@@ -35,11 +35,9 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
 trait ReviewPreviousSchemesController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
-  def previousSchemes(implicit headerCarrier: HeaderCarrier) : Future[Vector[PreviousSchemeModel]] =
-    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector)
 
   val show = ValidateSession.async { implicit request =>
-    previousSchemes.flatMap(previousSchemes =>
+    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
   }
 
@@ -61,7 +59,7 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
   }
 
   val submit = Action.async { implicit request =>
-    previousSchemes.flatMap(previousSchemes =>
+    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       if(!previousSchemes.isEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }

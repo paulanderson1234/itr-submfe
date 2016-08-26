@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.{KeystoreKeys, Constants}
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
 import models._
@@ -46,9 +47,17 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val previousSchemesList = Vector(PreviousSchemeModel("Enterprise Investment Scheme",23000,None,None,Some(23),Some(11),Some(1993),Some(1)),
-    PreviousSchemeModel("Enterprise Investment Scheme",1101,None,None,Some(9),Some(11),Some(2015),Some(2)))
-  val emptyPreviousSchemesList  = Vector[PreviousSchemeModel]()
+  val model = PreviousSchemeModel("Enterprise Investment Scheme", 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
+  val model2 = PreviousSchemeModel("Seed Enterprise Investment Scheme", 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
+  val model3 = PreviousSchemeModel("Social Investment Tax Relief", 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+  val previousSchemeVectorList = Vector(model, model2, model3)
+  val previousSchemeVectorListDeleted = Vector(model2, model3)
+
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
+  val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
+  val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -62,7 +71,12 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     test(result)
   }
 
-
+  def removeWithSession(processingId: Option[Int])(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = ReviewPreviousSchemesController.remove(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+  
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -78,7 +92,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a GET request to ReviewPreviousSchemesController" should {
     "return a 200 OK when a populated vector is returned from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-              .thenReturn(Future.successful(Option(previousSchemesList)))
+              .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -86,7 +100,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
     "return a 200 OK when a empty vector is returned from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyPreviousSchemesList)))
+        .thenReturn(Future.successful(Option(emptyVectorList)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -104,7 +118,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Posting to the continue button on the ReviewPreviousSchemesController" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemesList)))
+        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSession(request)(
@@ -128,5 +142,52 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
   }
+
+//  "Sending a Post request to PreviousSchemeController delete method" should {
+//        "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
+//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+//            .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
+//          removeWithSession(Some(1))(
+//            result => {
+//              status(result) shouldBe SEE_OTHER
+//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+//            }
+//          )
+//        }
+//
+//        "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" in {
+//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+//            .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+//          removeWithSession(Some(10))(
+//            result => {
+//              status(result) shouldBe SEE_OTHER
+//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+//            }
+//          )
+//        }
+//
+//        "redirect to 'Review previous scheme' when the vector is empty" in {
+//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+//            .thenReturn(Future.successful(None))
+//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
+//          removeWithSession(Some(1))(
+//            result => {
+//              status(result) shouldBe SEE_OTHER
+//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+//            }
+//          )
+//        }
+//
+//        "throw error when processingId < 0" in {
+//          intercept[IllegalArgumentException] {
+//            removeWithSession(Some(-1))
+//          }
+//        }
+//      }
 
 }

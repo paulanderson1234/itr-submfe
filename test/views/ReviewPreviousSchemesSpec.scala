@@ -19,6 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.Constants
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{ReviewPreviousSchemesController, routes}
@@ -29,7 +30,9 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -38,10 +41,15 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val previousSchemesList = Vector(PreviousSchemeModel("Enterprise Investment Scheme",23000,None,None,Some(23),Some(11),Some(1993),Some(1)),
-    PreviousSchemeModel("Enterprise Investment Scheme",1101,None,None,Some(9),Some(11),Some(2015),Some(2)))
-  val emptyPreviousSchemesList  = Vector[PreviousSchemeModel]()
+  val model = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
+  val model2 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
+  val model3 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
 
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+  val previousSchemeVectorList = Vector(model, model2, model3)
 
   class SetupPage {
 
@@ -57,7 +65,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(previousSchemesList)))
+          .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
         Jsoup.parse(contentAsString(result))
       }
@@ -77,7 +85,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
       reviewSchemesTableHead.select("tr").get(0).getElementById("amount-table-heading").text() shouldBe
         Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmount")
       //body
-      for((previousScheme, index) <- previousSchemesList.zipWithIndex) {
+      for((previousScheme, index) <- previousSchemeVectorList.zipWithIndex) {
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-type-$index").text() shouldBe
           previousScheme.schemeTypeDesc
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-date-$index").text() shouldBe
@@ -87,7 +95,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"change-$index").text() shouldBe
           Messages("common.base.change")
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"change-$index").getElementById(s"change-ref-$index").attr("href")shouldBe
-          routes.PreviousSchemeController.show(previousScheme.processingId).toString
+          routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"remove-$index").text() shouldBe
           Messages("common.base.remove")
       }
