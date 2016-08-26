@@ -107,13 +107,15 @@ POST       /check-your-answers                      controllers.CheckAnswersCont
 GET        /previous-investment                     controllers.PreviousSchemeController.show(id: Option[Int]?=None)
 POST       /previous-investment                     controllers.PreviousSchemeController.submit
 
-POST       /delete-previous-investment/:Id          controllers.PreviousSchemeController.delete(Id: Int)
-
 GET        /contact-address                         controllers.ContactAddressController.show
 POST       /contact-address                         controllers.ContactAddressController.submit
 
 GET        /review-previous-schemes                 controllers.ReviewPreviousSchemesController.show
 POST       /review-previous-schemes                 controllers.ReviewPreviousSchemesController.submit
+
+GET        /review-previous-schemes-add             controllers.ReviewPreviousSchemesController.add
+GET        /review-previous-schemes-change/:Id      controllers.ReviewPreviousSchemesController.change(Id: Int)
+POST       /review-previous-schemes-remove/:Id      controllers.ReviewPreviousSchemesController.remove(Id: Int)
 
 GET        /acknowledgement                         controllers.AcknowledgementController.show
 

@@ -16,13 +16,12 @@
 
 package controllers
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
-import play.api.mvc.Action
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.checkAndSubmit.CheckAnswers
-import views.html.introduction.start
 import views.html.previousInvestment.ReviewPreviousSchemes
 
 import scala.concurrent.Future
@@ -38,6 +37,23 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
   val show = ValidateSession.async { implicit request =>
     ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
+  }
+
+  def add: Action[AnyContent] = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
+  }
+
+  def change(id: Int): Action[AnyContent] = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
+  }
+
+  def remove(id: Int): Action[AnyContent] = ValidateSession.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
+      _ => Redirect(routes.ReviewPreviousSchemesController.show())
+    }
   }
 
   val submit = Action.async { implicit request =>

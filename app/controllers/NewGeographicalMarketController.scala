@@ -50,7 +50,7 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
     }
 
     for {
-      link <- loadBackLinkURL
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
@@ -68,13 +68,5 @@ trait NewGeographicalMarketController extends FrontendController with ValidActiv
         Future.successful(Redirect(routes.NewProductController.show()))
       }
     )
-  }
-
-  def loadBackLinkURL(implicit hc: HeaderCarrier): Future[Option[String]] = {
-
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc).flatMap{
-      case Some(data) => Future.successful(Some(data))
-      case None => Future.successful(None)
-    }
   }
 }

@@ -58,16 +58,16 @@ trait HadPreviousRFIController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = hadPreviousRFIForm.bindFromRequest().fold(
+    hadPreviousRFIForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(previousInvestment.HadPreviousRFI(formWithErrors))
+        Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors)))
       },
       validFormData => {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
         keyStoreConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-        Redirect(routes.ProposedInvestmentController.show)
+        Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
       }
     )
-    Future.successful(response)
   }
 }
 
