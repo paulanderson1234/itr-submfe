@@ -28,4 +28,9 @@ trait Constants {
   val IsNotKnowledgeIntesnsiveYears : String = "7"
   val lifetimeLogicLimitKi : Int = 20000000
   val lifetimeLogicLimitNotKi : Int = 12000000
+  val PageInvestmentSchemeEisValue : String = "Enterprise Investment Scheme"
+  val PageInvestmentSchemeSeisValue : String = "Seed Enterprise Investment Scheme"
+  val PageInvestmentSchemeSitrValue : String = "Social Investment Tax Relief"
+  val PageInvestmentSchemeVctValue : String = "Venture Capital Trust"
+  val PageInvestmentSchemeAnotherValue : String = "Another scheme"
 }
