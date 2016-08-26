@@ -3,6 +3,7 @@ common.button.next=Next
 common.button.continue=Continue
 common.button.continueNextSection=Continue to next section
 common.button.continueFirstSection=Continue to first section
+common.button.continueThirdSection=Continue to Section 3
 common.button.snc=Save and continue
 common.button.sign-in=Sign in
 common.button.back=Back
@@ -28,6 +29,7 @@ common.day=Day
 common.month=Month
 common.year=Year
 common.base.change = Change
+common.base.remove = Remove
 error.required=This field is required
 common.pound = £
 common.notAvailable=None
@@ -463,3 +465,11 @@ page.checkAndSubmit.acknowledgement.articlesOfAssociation=your memorandum and ar
 page.checkAndSubmit.acknowledgement.docsProspectus=documents like prospectuses that you’ll use to attract investment
 page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
 page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.
+
+#review previous schemes
+page.previousInvestment.reviewPreviousSchemes.title=Review previous schemes
+page.previousInvestment.reviewPreviousSchemes.heading=Previous schemes
+page.previousInvestment.reviewPreviousSchemes.scheme=Scheme
+page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue=Dates of share issue
+page.previousInvestment.reviewPreviousSchemes.investmentAmount=Investment Amount
+page.previousInvestment.reviewPreviousSchemes.add=Add another scheme
