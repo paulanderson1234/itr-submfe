@@ -20,6 +20,8 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
+import models.PreviousSchemeModel
+import uk.gov.hmrc.play.http.HeaderCarrier
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.previousInvestment.ReviewPreviousSchemes
@@ -30,7 +32,7 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with ValidActiveSession {
+trait ReviewPreviousSchemesController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
@@ -57,6 +59,8 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
   }
 
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
+      if(!previousSchemes.isEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+      else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }
 }
