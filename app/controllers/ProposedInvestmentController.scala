@@ -44,16 +44,15 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
   }
 
   val submit = Action.async { implicit request =>
-    val response = proposedInvestmentForm.bindFromRequest().fold(
+    proposedInvestmentForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(ProposedInvestment(formWithErrors))
+        Future.successful(BadRequest(ProposedInvestment(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         //TODO: needs to go to what will use investment for page
-        Redirect(routes.WhatWillUseForController.show())
+        Future.successful(Redirect(routes.WhatWillUseForController.show()))
       }
     )
-    Future.successful(response)
   }
 }

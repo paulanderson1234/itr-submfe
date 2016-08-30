@@ -44,16 +44,15 @@ trait ContactAddressController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = contactAddressForm.bindFromRequest().fold(
+    contactAddressForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(contactInformation.ContactAddress(formWithErrors))
+        Future.successful(BadRequest(contactInformation.ContactAddress(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
         keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show.toString())
-        Redirect(routes.SupportingDocumentsController.show)
+        Future.successful(Redirect(routes.SupportingDocumentsController.show))
       }
     )
-    Future.successful(response)
   }
 }

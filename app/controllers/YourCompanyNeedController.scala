@@ -30,7 +30,7 @@ object YourCompanyNeedController extends YourCompanyNeedController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with ValidActiveSession{
+trait YourCompanyNeedController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
@@ -42,15 +42,14 @@ trait YourCompanyNeedController extends FrontendController with ValidActiveSessi
   }
 
   val submit = Action.async { implicit request =>
-    val response = yourCompanyNeedForm.bindFromRequest().fold(
+    yourCompanyNeedForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(introduction.YourCompanyNeed(formWithErrors))
+        Future.successful(BadRequest(introduction.YourCompanyNeed(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
-        Redirect(routes.QualifyingForSchemeController.show)
+        Future.successful(Redirect(routes.QualifyingForSchemeController.show))
       }
     )
-    Future.successful(response)
   }
 }

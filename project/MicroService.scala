@@ -19,20 +19,19 @@ trait MicroService {
   lazy val playSettings : Seq[Setting[_]] = Seq.empty
 
   lazy val scoverageSettings = {
+    // Semicolon-separated list of regexs matching classes to exclude
     import scoverage.ScoverageKeys
     Seq(
-      // Semicolon-separated list of regexs matching classes to exclude
-      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;.*AuthService.*;models\\.data\\..*;views.html.helpers.*;uk.gov.hmrc.BuildInfo;app.*;nr.*;res.*;prod.*;config.*;controllers.SessionCacheController",
-      ScoverageKeys.coverageMinimum := 90,
+      ScoverageKeys.coverageExcludedPackages := "<empty>;Reverse.*;models/.data/..*;view.*;models.*;config.*;.*(AuthService|BuildInfo|Routes).*",
+      ScoverageKeys.coverageMinimum := 80,
       ScoverageKeys.coverageFailOnMinimum := false,
       ScoverageKeys.coverageHighlighting := true
     )
   }
 
-
   lazy val microservice = Project(appName, file("."))
     .enablePlugins(Seq(play.PlayScala) ++ plugins : _*)
-    .settings(playSettings : _*)
+    .settings(playSettings ++ scoverageSettings : _*)
     .settings(scalaSettings: _*)
     .settings(publishingSettings: _*)
     .settings(defaultSettings(): _*)
@@ -55,6 +54,7 @@ trait MicroService {
       parallelExecution in IntegrationTest := false)
     .settings(resolvers += Resolver.bintrayRepo("hmrc", "releases"))
 }
+
 
 private object TestPhases {
 
