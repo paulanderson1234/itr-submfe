@@ -18,6 +18,7 @@ package views
 
 import java.util.UUID
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 
 import controllers.{ProposedInvestmentController, routes}
@@ -54,8 +55,13 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(proposedInvestmentModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[String]
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+
         val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
           "investmentAmount" -> "5000000"
         )))
@@ -70,16 +76,20 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
 
     "Verify that the proposed investment page contains the correct elements when an invalid ProposedInvestmentModel is passed" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyProposedInvestmentModel)))
+        when(mockKeystoreConnector.fetchAndGetFormData[String]
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
+
         val result = controller.submit.apply((fakeRequestWithSession))
         Jsoup.parse(contentAsString(result))
       }
@@ -92,6 +102,32 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show.toString()
+      document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
+    }
+
+    "Verify that the proposed investment page contains the correct elements when an None ProposedInvestmentModel is passed" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockKeystoreConnector.fetchAndGetFormData[String]
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+
+        val result = controller.submit.apply((fakeRequestWithSession))
+        Jsoup.parse(contentAsString(result))
+      }
+      document.title() shouldBe Messages("page.investment.amount.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.amount.heading")
+      document.getElementById("label-amount").select("span").hasClass("visuallyhidden") shouldBe true
+      document.getElementById("label-amount").select(".visuallyhidden").text() shouldBe Messages("page.investment.amount.heading")
+      document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
+      document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
+      document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ReviewPreviousSchemesController.show.toString()
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

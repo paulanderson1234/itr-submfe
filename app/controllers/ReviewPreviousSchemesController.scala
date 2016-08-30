@@ -59,6 +59,7 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
   }
 
   val submit = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
     ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       if(!previousSchemes.isEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
