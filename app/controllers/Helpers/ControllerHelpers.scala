@@ -44,7 +44,7 @@ trait ControllerHelpers {
 
     val idNotFound: Int = -1
 
-    require(modelProcessingIdToRetrieve > 0, "The item to retrieve processingId must be an integer > 0")
+   require(modelProcessingIdToRetrieve > 0, "The item to retrieve processingId must be an integer > 0")
 
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
@@ -74,14 +74,12 @@ trait ControllerHelpers {
   def addPreviousInvestmentToKeystore(keyStoreConnector: connectors.KeystoreConnector,
                                       previousSchemeModelToAdd: PreviousSchemeModel)
                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
-
     val defaultId: Int = 1
 
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val newId = data.last.processingId.get + 1
-        val newModelWithId = previousSchemeModelToAdd.copy(processingId = Some(newId))
-        data :+ newModelWithId
+        data :+ previousSchemeModelToAdd.copy(processingId = Some(newId))
       }
       case None => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId))
     }.recover { case _ => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId)) }
@@ -106,7 +104,7 @@ trait ControllerHelpers {
         }
         else data
       }
-      case None => Vector()
+      case None => Vector[PreviousSchemeModel]()
     }
     result.flatMap(updatedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, updatedVectorList))
   }
@@ -118,8 +116,8 @@ trait ControllerHelpers {
 
     val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data.filter(_.processingId.getOrElse(0) != modelProcessingIdToremove)
-      case None => Vector()
-    }.recover { case _ => Vector() }
+      case None => Vector[PreviousSchemeModel]()
+    }.recover { case _ => Vector[PreviousSchemeModel]() }
     result.flatMap(deletedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, deletedVectorList))
   }
 

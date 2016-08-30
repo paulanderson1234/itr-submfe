@@ -52,7 +52,7 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
     }
 
     for {
-      link <- loadBackLinkURL
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
@@ -69,12 +69,5 @@ trait InvestmentGrowController extends FrontendController with ValidActiveSessio
         Future.successful(Redirect(routes.ContactDetailsController.show()))
       }
     )
-  }
-
-  def loadBackLinkURL(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap{
-      case Some(data) => Future.successful(Some(data))
-      case None => Future.successful(None)
-    }
   }
 }

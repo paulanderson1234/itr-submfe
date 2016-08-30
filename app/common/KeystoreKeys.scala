@@ -51,4 +51,5 @@ trait KeystoreKeys {
   val backLinkNewGeoMarket ="backLink:NewGeoMarket"
   val backLinkSubSpendingInvestment ="backLink:SubSpendingInvestment"
   val backLinkInvestmentGrow ="backLink:InvestmentGrow"
+  val backLinkPreviousScheme ="backLink:previousScheme"
 }

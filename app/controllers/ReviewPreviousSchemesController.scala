@@ -16,13 +16,14 @@
 
 package controllers
 
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
-import play.api.mvc.Action
+import models.PreviousSchemeModel
+import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.checkAndSubmit.CheckAnswers
-import views.html.introduction.start
 import views.html.previousInvestment.ReviewPreviousSchemes
 
 import scala.concurrent.Future
@@ -31,7 +32,7 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with ValidActiveSession {
+trait ReviewPreviousSchemesController extends FrontendController with ValidActiveSession{
 
   val keyStoreConnector: KeystoreConnector
 
@@ -40,7 +41,26 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
       Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
   }
 
+  def add: Action[AnyContent] = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
+  }
+
+  def change(id: Int): Action[AnyContent] = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
+  }
+
+  def remove(id: Int): Action[AnyContent] = ValidateSession.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
+    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
+      _ => Redirect(routes.ReviewPreviousSchemesController.show())
+    }
+  }
+
   val submit = Action.async { implicit request =>
-    Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
+      if(!previousSchemes.isEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+      else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }
 }
