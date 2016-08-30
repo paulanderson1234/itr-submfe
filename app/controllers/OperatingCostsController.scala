@@ -42,15 +42,14 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = operatingCostsForm.bindFromRequest().fold(
+    operatingCostsForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(OperatingCosts(formWithErrors))
+        Future.successful(BadRequest(OperatingCosts(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        Redirect(routes.PercentageStaffWithMastersController.show())
+        Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
       }
     )
-    Future.successful(response)
   }
 }

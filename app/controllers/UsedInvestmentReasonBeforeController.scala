@@ -43,24 +43,22 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Valid
   }
 
   val submit = Action.async { implicit request =>
-    val response = usedInvestmentReasonBeforeForm.bindFromRequest().fold(
+    usedInvestmentReasonBeforeForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(UsedInvestmentReasonBefore(formWithErrors))
+        Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
         validFormData.usedInvestmentReasonBefore match {
-          case Constants.StandardRadioButtonYesValue  => {
-
-            Redirect(routes.PreviousBeforeDOFCSController.show())
+          case Constants.StandardRadioButtonYesValue => {
+            Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
           }
-          case Constants.StandardRadioButtonNoValue   => {
+          case Constants.StandardRadioButtonNoValue => {
             keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.UsedInvestmentReasonBeforeController.show().toString())
-            Redirect(routes.NewGeographicalMarketController.show())
+            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
           }
         }
       }
     )
-    Future.successful(response)
   }
 }

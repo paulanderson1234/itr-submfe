@@ -16,21 +16,28 @@
 
 package controllers
 
+import common.KeystoreKeys
+import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededController
+object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededController {
+  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+}
 
 trait LifetimeAllowanceExceededController extends FrontendController with ValidActiveSession {
+
+  val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
     Future.successful(Ok(views.html.investment.LifetimeAllowanceExceeded()))
   }
 
   val submit = Action.async { implicit request =>
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
     Future.successful(Redirect(routes.ProposedInvestmentController.show()))
   }
 }

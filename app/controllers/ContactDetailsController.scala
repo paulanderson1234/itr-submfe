@@ -33,7 +33,7 @@ object ContactDetailsController extends ContactDetailsController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ContactDetailsController extends FrontendController with ValidActiveSession{
+trait ContactDetailsController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
@@ -45,15 +45,14 @@ trait ContactDetailsController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = contactDetailsForm.bindFromRequest().fold(
+    contactDetailsForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(ContactDetails(formWithErrors))
+        Future.successful(BadRequest(ContactDetails(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
-        Redirect(routes.ConfirmCorrespondAddressController.show())
+        Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
       }
     )
-    Future.successful(response)
   }
 }

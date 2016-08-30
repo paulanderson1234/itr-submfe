@@ -44,15 +44,14 @@ trait TaxpayerReferenceController extends FrontendController with ValidActiveSes
   }
 
   val submit = Action.async { implicit request =>
-    val response = taxPayerReferenceForm.bindFromRequest().fold(
+    taxPayerReferenceForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(TaxpayerReference(formWithErrors))
+        Future.successful(BadRequest(TaxpayerReference(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
-        Redirect(routes.RegisteredAddressController.show)
+        Future.successful(Redirect(routes.RegisteredAddressController.show))
       }
     )
-    Future.successful(response)
   }
 }

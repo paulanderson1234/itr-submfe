@@ -19,6 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -77,8 +78,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   "Sending a GET request to ProposedInvestmentController" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -86,8 +91,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+
+      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -96,6 +106,10 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit to the ProposedInvestmentController" should {
     "redirect to the  company's registered address page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentAmount" -> "1234567")
       submitWithSession(request)(
@@ -109,6 +123,9 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
     "redirect with a bad request" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentAmount" -> "fff")
       submitWithSession(request)(

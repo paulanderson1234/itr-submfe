@@ -43,18 +43,20 @@ trait IsKnowledgeIntensiveController extends FrontendController with ValidActive
   }
 
   val submit = Action.async { implicit request =>
-    val response = isKnowledgeIntensiveForm.bindFromRequest().fold(
+    isKnowledgeIntensiveForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(companyDetails.IsKnowledgeIntensive(formWithErrors))
+        Future.successful(BadRequest(companyDetails.IsKnowledgeIntensive(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
         validFormData.isKnowledgeIntensive match {
-          case Constants.StandardRadioButtonYesValue  => Redirect(routes.OperatingCostsController.show)
-          case Constants.StandardRadioButtonNoValue   => Redirect(routes.SubsidiariesController.show)
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.OperatingCostsController.show))
+          case Constants.StandardRadioButtonNoValue => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show))
+          }
         }
       }
     )
-    Future.successful(response)
   }
 }

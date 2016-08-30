@@ -18,6 +18,7 @@ package views
 
 import java.util.UUID
 
+import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{LifetimeAllowanceExceededController, HowToApplyController, routes}
 import org.jsoup.Jsoup
@@ -29,9 +30,12 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
+  val mockKeystoreConnector = mock[KeystoreConnector]
+
   class SetupPage {
 
     val controller = new LifetimeAllowanceExceededController {
+      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
 
@@ -51,7 +55,6 @@ class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication wi
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show.toString()
       document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-
 
     }
   }

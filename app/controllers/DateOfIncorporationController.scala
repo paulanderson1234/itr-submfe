@@ -43,16 +43,15 @@ trait DateOfIncorporationController extends FrontendController with ValidActiveS
   }
 
   val submit = Action.async { implicit request =>
-    val response = dateOfIncorporationForm.bindFromRequest().fold(
+    dateOfIncorporationForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(DateOfIncorporation(formWithErrors))
+        Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        Redirect(routes.NatureOfBusinessController.show)
+        Future.successful(Redirect(routes.NatureOfBusinessController.show))
       }
     )
-    Future.successful(response)
   }
 }
 

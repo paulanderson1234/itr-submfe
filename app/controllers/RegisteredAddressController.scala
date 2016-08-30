@@ -44,15 +44,14 @@ trait RegisteredAddressController extends FrontendController with ValidActiveSes
   }
 
   val submit = Action.async { implicit request =>
-    val response = registeredAddressForm.bindFromRequest().fold(
+    registeredAddressForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(companyDetails.RegisteredAddress(formWithErrors))
+        Future.successful(BadRequest(companyDetails.RegisteredAddress(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.registeredAddress, validFormData)
-        Redirect(routes.DateOfIncorporationController.show)
+        Future.successful(Redirect(routes.DateOfIncorporationController.show))
       }
     )
-    Future.successful(response)
   }
 }

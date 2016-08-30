@@ -79,6 +79,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController" should {
     "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
@@ -93,6 +96,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
@@ -109,6 +115,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'Yes' form submit to the SubsidiariesController" should {
     "redirect to the previous investment before page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -125,6 +134,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'No' form submit to the SubsidiariesController" should {
     "redirect to the previous investment before page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
@@ -141,6 +153,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending an invalid form submission with validation errors to the SubsidiariesController" should {
     "redirect to itself with errors" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(),

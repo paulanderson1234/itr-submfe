@@ -21,10 +21,14 @@ import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.ControllerHelpers
+
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
+import models.PreviousSchemeModel
+import  play.api.data.Form
+
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -78,5 +82,4 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
       }
     )
   }
-
 }
