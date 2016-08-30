@@ -47,17 +47,22 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = PreviousSchemeModel("Enterprise Investment Scheme", 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
-  val model2 = PreviousSchemeModel("Seed Enterprise Investment Scheme", 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
-  val model3 = PreviousSchemeModel("Social Investment Tax Relief", 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+  val model = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
+  val model2 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
+  val model3 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
 
   val emptyVectorList = Vector[PreviousSchemeModel]()
   val previousSchemeVectorList = Vector(model, model2, model3)
   val previousSchemeVectorListDeleted = Vector(model2, model3)
+  val backLink = "/investment-tax-relief/previous-investment"
 
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
   val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))
+  val cacheMapBackLink: CacheMap = CacheMap("", Map("" -> Json.toJson(backLink)))
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -71,9 +76,15 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     test(result)
   }
 
-  def removeWithSession(processingId: Option[Int])(test: Future[Result] => Any) {
+  def addWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesController.remove(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = ReviewPreviousSchemesControllerTest.add.apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+
+  def removeWithSession(processingId: Option[Int] = None)(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = ReviewPreviousSchemesControllerTest.remove(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
   
@@ -143,51 +154,70 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-//  "Sending a Post request to PreviousSchemeController delete method" should {
-//        "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
-//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
-//          removeWithSession(Some(1))(
-//            result => {
-//              status(result) shouldBe SEE_OTHER
-//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
-//            }
-//          )
-//        }
-//
-//        "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" in {
-//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-//          removeWithSession(Some(10))(
-//            result => {
-//              status(result) shouldBe SEE_OTHER
-//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
-//            }
-//          )
-//        }
-//
-//        "redirect to 'Review previous scheme' when the vector is empty" in {
-//          when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-//            (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(None))
-//          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
-//          removeWithSession(Some(1))(
-//            result => {
-//              status(result) shouldBe SEE_OTHER
-//              redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
-//            }
-//          )
-//        }
-//
-//        "throw error when processingId < 0" in {
-//          intercept[IllegalArgumentException] {
-//            removeWithSession(Some(-1))
-//          }
-//        }
-//      }
+  "Sending a Post request to PreviousSchemeController delete method" should {
+    "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
+      removeWithSession(Some(1))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+        }
+      )
+    }
+
+    "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      removeWithSession(Some(10))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+        }
+      )
+    }
+
+    "redirect to 'Review previous scheme' when the vector is empty" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
+      removeWithSession(Some(1))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+        }
+      )
+    }
+  }
+
+  "Sending a GET request to ReviewPreviousSchemeController add method" should {
+    "redirect to the previous investment scheme page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+      addWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a GET request to ReviewPreviousSchemeController change method" should {
+    "redirect to the previous investment scheme page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+      addWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+        }
+      )
+    }
+  }
+
 
 }
