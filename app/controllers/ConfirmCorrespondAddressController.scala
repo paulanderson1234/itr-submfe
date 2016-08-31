@@ -31,21 +31,21 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ConfirmCorrespondAddressController extends FrontendController with ValidActiveSession{
+trait ConfirmCorrespondAddressController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async{ implicit request =>
+  val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress).map {
       case Some(data) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(data)))
       case None => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm))
     }
   }
 
-  val submit = Action.async{ implicit  request =>
-    val response = confirmCorrespondAddressForm.bindFromRequest().fold(
+  val submit = Action.async { implicit request =>
+    confirmCorrespondAddressForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(ConfirmCorrespondAddress(formWithErrors))
+        Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
@@ -53,12 +53,11 @@ trait ConfirmCorrespondAddressController extends FrontendController with ValidAc
         validFormData.contactAddressUse match {
           case Constants.StandardRadioButtonYesValue => {
             keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ConfirmCorrespondAddressController.show.toString())
-            Redirect(routes.SupportingDocumentsController.show)
+            Future.successful(Redirect(routes.SupportingDocumentsController.show))
           }
-          case Constants.StandardRadioButtonNoValue  => Redirect(routes.ContactAddressController.show)
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.ContactAddressController.show))
         }
       }
     )
-    Future.successful(response)
   }
 }

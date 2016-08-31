@@ -17,6 +17,7 @@
 package controllers
 
 import connectors.KeystoreConnector
+import controllers.Helpers.ControllerHelpers
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.ProposedInvestmentModel
@@ -36,24 +37,37 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
-      case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data)))
-      case None => Ok(ProposedInvestment(proposedInvestmentForm))
+  val show: Action[AnyContent] = ValidateSession.async { implicit request =>
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
+          case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data), backUrl.get))
+          case None => Ok(ProposedInvestment(proposedInvestmentForm, backUrl.get))
+        }
+
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+      }
     }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector)(hc)
+      route <- routeRequest(link)
+    } yield route
   }
 
   val submit = Action.async { implicit request =>
-    val response = proposedInvestmentForm.bindFromRequest().fold(
+    proposedInvestmentForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(ProposedInvestment(formWithErrors))
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector).flatMap(url =>
+          Future.successful(BadRequest(ProposedInvestment(formWithErrors, url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         //TODO: needs to go to what will use investment for page
-        Redirect(routes.WhatWillUseForController.show())
+        Future.successful(Redirect(routes.WhatWillUseForController.show()))
       }
     )
-    Future.successful(response)
   }
+
 }

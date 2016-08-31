@@ -46,8 +46,10 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
 
     def routeRequest(date: Option[DateOfIncorporationModel]): Future[Result] = {
       date match {
-        case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) =>
+        case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) => {
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
           Future.successful(Redirect(routes.SubsidiariesController.show))
+      }
         case Some(_) => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
         case None => Future.successful(Redirect(routes.DateOfIncorporationController.show))
       }

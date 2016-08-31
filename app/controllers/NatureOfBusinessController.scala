@@ -44,15 +44,14 @@ trait NatureOfBusinessController extends FrontendController with ValidActiveSess
   }
 
   val submit = Action.async { implicit request =>
-    val response = natureOfBusinessForm.bindFromRequest().fold(
+    natureOfBusinessForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(NatureOfBusiness(formWithErrors))
+        Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-        Redirect(routes.CommercialSaleController.show)
+        Future.successful(Redirect(routes.CommercialSaleController.show))
       }
     )
-    Future.successful(response)
   }
 }

@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json.Json
+import utils.{CostFormatter, DateFormatter}
 
 case class PreviousSchemeModel (schemeTypeDesc : String,
                                 investmentAmount : Int,
@@ -28,7 +29,7 @@ case class PreviousSchemeModel (schemeTypeDesc : String,
                                 processingId: Option[Int]
                                )
 
-object PreviousSchemeModel {
+object PreviousSchemeModel extends DateFormatter with CostFormatter{
   implicit val format = Json.format[PreviousSchemeModel]
   implicit val writes = Json.writes[PreviousSchemeModel]
 

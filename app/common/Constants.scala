@@ -28,4 +28,9 @@ trait Constants {
   val IsNotKnowledgeIntensiveYears : String = "7"
   val KI10Percent : Int = 10
   val KI15Percent : Int = 15
+  val PageInvestmentSchemeEisValue : String = "Enterprise Investment Scheme"
+  val PageInvestmentSchemeSeisValue : String = "Seed Enterprise Investment Scheme"
+  val PageInvestmentSchemeSitrValue : String = "Social Investment Tax Relief"
+  val PageInvestmentSchemeVctValue : String = "Venture Capital Trust"
+  val PageInvestmentSchemeAnotherValue : String = "Another scheme"
 }

@@ -3,9 +3,10 @@ import uk.gov.hmrc.SbtAutoBuildPlugin
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
 import uk.gov.hmrc.versioning.SbtGitVersioning
 
+
 object FrontendBuild extends Build with MicroService {
 
-  val appName = "investment-tax-relief-submission-frontend"
+ val appName = "investment-tax-relief-submission-frontend"
 
   override lazy val plugins: Seq[Plugins] = Seq(
     SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin
@@ -29,6 +30,7 @@ private object AppDependencies {
   private val hmrcTestVersion = "1.6.0"
   private val cachingClientVersion = "5.3.0"
   private val mongoCachingVersion = "3.2.0"
+  private val playConditionalMappingVersion = "0.2.0"
 
   val compile = Seq(
     ws,
@@ -41,7 +43,8 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-health" % playHealthVersion,
     "uk.gov.hmrc" %% "play-ui" % playUiVersion,
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
-    "uk.gov.hmrc" %% "mongo-caching" % mongoCachingVersion
+    "uk.gov.hmrc" %% "mongo-caching" % mongoCachingVersion,
+    "uk.gov.hmrc" %% "play-conditional-form-mapping" % playConditionalMappingVersion
   )
 
   trait TestDependencies {
