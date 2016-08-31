@@ -65,14 +65,18 @@ trait HadPreviousRFIController extends FrontendController with ValidActiveSessio
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
         validFormData.hadPreviousRFI match {
-          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.PreviousSchemeController.show()))
+
+          case Constants.StandardRadioButtonYesValue => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+            Future.successful(Redirect(routes.PreviousSchemeController.show()))
+          }
           case Constants.StandardRadioButtonNoValue => {
             keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
             Future.successful(Redirect(routes.ProposedInvestmentController.show()))
           }
+
         }
-       }
-      )
+      }
+    )
   }
 }
-
