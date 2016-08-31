@@ -117,7 +117,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }

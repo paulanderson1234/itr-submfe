@@ -16,7 +16,7 @@
 
 package controllers
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 
 import controllers.predicates.ValidActiveSession
@@ -63,11 +63,16 @@ trait HadPreviousRFIController extends FrontendController with ValidActiveSessio
         Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
         keyStoreConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-        Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
-      }
-    )
+        validFormData.hadPreviousRFI match {
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.PreviousSchemeController.show()))
+          case Constants.StandardRadioButtonNoValue => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
+            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+          }
+        }
+       }
+      )
   }
 }
 
