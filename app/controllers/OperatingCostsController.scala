@@ -18,6 +18,7 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.Helpers.KnowledgeIntensiveHelper
 import controllers.predicates.ValidActiveSession
 import forms.OperatingCostsForm._
 import models.OperatingCostsModel
@@ -48,6 +49,10 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
+        if(KnowledgeIntensiveHelper.checkRAndDCosts(validFormData)){
+          Redirect(routes.PercentageStaffWithMastersController.show())
+        }else
+        //TODO: Redirect to not qualify page
         Redirect(routes.PercentageStaffWithMastersController.show())
       }
     )

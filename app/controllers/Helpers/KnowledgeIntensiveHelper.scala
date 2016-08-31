@@ -16,86 +16,57 @@
 
 package controllers.Helpers
 
-import common.{Constants, KeystoreKeys}
-import connectors.KeystoreConnector
-import models._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import common.Constants
+import models.{DateOfIncorporationModel, OperatingCostsModel, PercentageStaffWithMastersModel, TenYearPlanModel}
 import utils.Validation
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+
 }
 
 trait KnowledgeIntensiveHelper {
 
-  val keyStoreConnector: KeystoreConnector
+  def validateInput(date: Option[DateOfIncorporationModel], percentageStaffMasters: Option[PercentageStaffWithMastersModel]):
+                    Boolean = (date, percentageStaffMasters) match {
 
-  def validateInput(date: Option[DateOfIncorporationModel], rAndCost: Option[OperatingCostsModel],
-              percentageStaffMasters: Option[PercentageStaffWithMastersModel]) : Future[Boolean] = (date, rAndCost, percentageStaffMasters) match {
-
-    case (Some(date), Some(rAndCost), Some(percentageStaffMasters)) => {
-      Future.successful(Some(true))
-    }
-    case _ => Future.successful(false)
+    case (Some(date), Some(percentageStaffMasters)) => true
+    case _ => false
   }
 
-  def checkRAndDCosts(rAndDCost: OperatingCostsModel) : Boolean = {
+  def checkRAndDCosts(rAndDCost: OperatingCostsModel): Boolean =  {
 
-    def findCosts(operatingCosts: scala.Double, divideBy: String) : Double = {
-      val amount = (operatingCosts / 100) * divideBy.toInt
+    def findCosts(operatingCosts: scala.Double, divideBy: Int): Double = {
+      val amount = (operatingCosts / 100) * divideBy
       amount
     }
 
-    if((rAndDCost.rAndDCosts1stYear.toDouble > findCosts(rAndDCost.operatingCosts1stYear.toDouble, "10") &&
-      rAndDCost.rAndDCosts2ndYear.toDouble > findCosts(rAndDCost.operatingCosts2ndYear.toDouble, "10") &&
-      rAndDCost.rAndDCosts3rdYear.toDouble > findCosts(rAndDCost.operatingCosts3rdYear.toDouble, "10")) ||
-      (rAndDCost.rAndDCosts1stYear.toDouble > findCosts(rAndDCost.operatingCosts1stYear.toDouble, "15") ||
-        rAndDCost.rAndDCosts2ndYear.toDouble > findCosts(rAndDCost.operatingCosts2ndYear.toDouble, "15") ||
-        rAndDCost.rAndDCosts3rdYear.toDouble > findCosts(rAndDCost.operatingCosts3rdYear.toDouble, "15")))
+    if ((rAndDCost.rAndDCosts1stYear.toDouble >= findCosts(rAndDCost.operatingCosts1stYear.toDouble, Constants.KI10Percent) &&
+      rAndDCost.rAndDCosts2ndYear.toDouble >= findCosts(rAndDCost.operatingCosts2ndYear.toDouble, Constants.KI10Percent) &&
+      rAndDCost.rAndDCosts3rdYear.toDouble >= findCosts(rAndDCost.operatingCosts3rdYear.toDouble, Constants.KI10Percent)) ||
+      (rAndDCost.rAndDCosts1stYear.toDouble >= findCosts(rAndDCost.operatingCosts1stYear.toDouble, Constants.KI15Percent) ||
+        rAndDCost.rAndDCosts2ndYear.toDouble >= findCosts(rAndDCost.operatingCosts2ndYear.toDouble, Constants.KI15Percent) ||
+        rAndDCost.rAndDCosts3rdYear.toDouble >= findCosts(rAndDCost.operatingCosts3rdYear.toDouble, Constants.KI15Percent)))
       true
     else
       false
   }
 
-  def checkDateAndCosts(date: DateOfIncorporationModel, rAndCost: OperatingCostsModel) : Boolean = {
-    if(Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) && checkRAndDCosts(rAndCost))
+  def checkKI(date: DateOfIncorporationModel, percentageStaffMasters: PercentageStaffWithMastersModel,
+              tenYearPlan : Boolean, tenYearPlanModel : Option[TenYearPlanModel]) : Boolean = {
+
+    if(tenYearPlan)
+      if (Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) &&
+        tenYearPlanModel.get.hasTenYearPlan == Constants.StandardRadioButtonYesValue
+        || percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue)
+        true
+      else
+        false
+    else
+    if(Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) &&
+      percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue)
       true
-    else false
-  }
-
-  def getKI(implicit hc: HeaderCarrier) : Future[Future[Option[Boolean]]] = {
-
-    def checkKI(date: Option[DateOfIncorporationModel], rAndCost: Option[OperatingCostsModel],
-                percentageStaffMasters: Option[PercentageStaffWithMastersModel], tenYearPlan: Option[TenYearPlanModel]) : Future[Option[Boolean]] = {
-
-      validateInput(date, rAndCost, percentageStaffMasters).map{
-        case true => {
-          tenYearPlan match {
-            case (Some(tenYearPlan)) =>
-              if (checkDateAndCosts(date.get, rAndCost.get) && (tenYearPlan.hasTenYearPlan == Constants.StandardRadioButtonYesValue)
-                || percentageStaffMasters.get.staffWithMasters == Constants.StandardRadioButtonYesValue) Some(true)
-              else
-                Some(false)
-
-            case (None) => if (checkDateAndCosts(date.get, rAndCost.get) &&
-              percentageStaffMasters.get.staffWithMasters == Constants.StandardRadioButtonYesValue) Some(true)
-            else
-              Some(false)
-          }
-        }
-        case false => None
-      }
-    }
-
-    for {
-      date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      masters <- keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters)
-      tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
-      operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
-      isKI <- Future.successful(checkKI(date, operatingCosts, masters, tenYearPlan))
-    } yield isKI
+    else
+      false
   }
 }

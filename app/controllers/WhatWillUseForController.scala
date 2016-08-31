@@ -46,29 +46,13 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
       case None => Ok(WhatWillUseFor(whatWillUseForForm))
     }
   }
-//      def getAgeLimit(KIFlag: IsKnowledgeIntensiveModel): String = {
-//      KIFlag match {
-//        case IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue) => Constants.IsKnowledgeIntesnsiveYears
-//        case _ => Constants.IsNotKnowledgeIntesnsiveYears
-//      }
-//    }
-
-  def getAgeLimit(isKI: Boolean): String = {
-    if (isKI) {
-      Constants.IsKnowledgeIntesnsiveYears
-    }
-    else
-      Constants.IsNotKnowledgeIntesnsiveYears
-  }
-
-  def checkAgeRule(comSale: Option[CommercialSaleModel]) : Future[Result] = {
-
-  }
 
   val submit = Action.async { implicit request =>
 
     def calcRoute(prevRFI: Option[HadPreviousRFIModel], comSale: Option[CommercialSaleModel],
-                  HasSub: Option[SubsidiariesModel], kIFlag: Option[IsKnowledgeIntensiveModel]): Future[Result] = {
+                  HasSub: Option[SubsidiariesModel], kIFlag: Option[IsKnowledgeIntensiveModel],
+                  operatingCosts: Option[OperatingCostsModel], date: Option[DateOfIncorporationModel],
+                  percentageStaffMasters: Option[PercentageStaffWithMastersModel], tenYearPlan: Option[TenYearPlanModel]): Future[Result] = {
 
       comSale match {
         case Some(comSale) => if (comSale.hasCommercialSale.equals(Constants.StandardRadioButtonYesValue)) {
@@ -76,29 +60,8 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
             case Some(prevRFI) => if (prevRFI.hadPreviousRFI.equals(Constants.StandardRadioButtonYesValue)) {
               Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
             }
-            else { kIFlag match {
-              case Some(kIFlag) =>
-                KnowledgeIntensiveHelper.getKI(hc).map {
-                  x => x.map {case Some(true) =>
-                    if (Validation.checkAgeRule(comSale.commercialSaleDay.get, comSale.commercialSaleMonth.get, comSale.commercialSaleYear.get,
-                     Constants.IsKnowledgeIntesnsiveYears)) {
-                      keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
-                      Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-                    }
-                    else {
-                      subsidiariesCheck(hc, HasSub)
-                    }
-
-                  case None => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
-
-                }}
-
-              //TODO: Redirect to commercial sale as you should not be able to skip commercial sale or KI.
-              case None => {
-                keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.WhatWillUseForController.show().toString())
-                Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-                }
-              }
+            else {
+              getKIRoute(hc, comSale, HasSub, kIFlag, operatingCosts, date, percentageStaffMasters, tenYearPlan)
             }
             case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
@@ -121,10 +84,19 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
           comSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
           hasSub <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
           kIFlag <- keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive)
-          route <- calcRoute(prevRFI, comSale, hasSub, kIFlag)
+          operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
+          date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+          percentageStaffMasters <- keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters)
+          tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
+          route <- calcRoute(prevRFI, comSale, hasSub, kIFlag, operatingCosts, date, percentageStaffMasters, tenYearPlan)
         } yield route
       }
     )
+  }
+
+  def getAgeLimit(isKI: Boolean): String = {
+    if(isKI) Constants.IsKnowledgeIntensiveYears
+    else Constants.IsNotKnowledgeIntensiveYears
   }
 
   def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
@@ -140,10 +112,41 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
     }
   }
 
-  def getKI(flag : Option[Future[Boolean]]) : Boolean = {
-    KnowledgeIntensiveHelper.getKI(hc).map{
-      case Some(data) => data
-      case None => false
+  def checkKI(kIFlag: IsKnowledgeIntensiveModel, operatingCosts: OperatingCostsModel,
+  date: Option[DateOfIncorporationModel], percentageStaffMasters: Option[PercentageStaffWithMastersModel],
+  tenYearPlan: Option[TenYearPlanModel]) : Boolean = {
+
+    if(kIFlag.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue) {
+      if (KnowledgeIntensiveHelper.checkRAndDCosts(operatingCosts)) {
+        if (KnowledgeIntensiveHelper.validateInput(date, percentageStaffMasters)) {
+          if (KnowledgeIntensiveHelper.checkKI(date.get, percentageStaffMasters.get, tenYearPlan.isDefined, tenYearPlan)) {
+            true
+          } else false
+        } else false
+      } else false
+    } else false
+  }
+
+  def getKIRoute(implicit hc: HeaderCarrier, comSale: CommercialSaleModel, HasSub: Option[SubsidiariesModel],
+                 kIFlag: Option[IsKnowledgeIntensiveModel], operatingCosts: Option[OperatingCostsModel],
+                 date: Option[DateOfIncorporationModel], percentageStaffMasters: Option[PercentageStaffWithMastersModel],
+                 tenYearPlan: Option[TenYearPlanModel]): Future[Result] = kIFlag match {
+
+    case Some(kIFlag) => {
+      operatingCosts match {
+        case Some(operatingCosts) => {
+          if (Validation.checkAgeRule(comSale.commercialSaleDay.get, comSale.commercialSaleMonth.get, comSale
+            .commercialSaleYear.get, getAgeLimit(checkKI(kIFlag, operatingCosts, date, percentageStaffMasters, tenYearPlan)))) {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
+            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+          }
+          else subsidiariesCheck(hc, HasSub)
+        }
+      case None =>  Future.successful(Redirect(routes.OperatingCostsController.show()))
+      }
     }
+    case None =>
+      keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.WhatWillUseForController.show().toString())
+      Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
   }
 }
