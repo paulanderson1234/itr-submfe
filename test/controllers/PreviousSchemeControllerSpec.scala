@@ -138,6 +138,36 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     )
   }
 
+  "navigate to start of flow if no backlink provided even if a valid matching moddel returned" in {
+    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    showWithSession(Some(3))(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+      }
+    )
+  }
+
+  "navigate to start of flow if no backlink provided if a new add scheme" in {
+    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(previousSchemeVectorList)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    showWithSession(None)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+      }
+    )
+  }
+
   "Sending a valid new form submit to the PreviousSchemeController" should {
     "create a new item and redirect to the review previous investments page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(),

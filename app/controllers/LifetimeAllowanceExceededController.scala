@@ -19,40 +19,25 @@ package controllers
 import common.KeystoreKeys
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
-import forms.ContactAddressForm._
-import models.ContactAddressModel
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html._
 
 import scala.concurrent.Future
 
-object ContactAddressController extends ContactAddressController
-{
+object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait ContactAddressController extends FrontendController with ValidActiveSession {
+trait LifetimeAllowanceExceededController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ContactAddressModel](KeystoreKeys.contactAddress).map {
-      case Some(data) => Ok(contactInformation.ContactAddress(contactAddressForm.fill(data)))
-      case None => Ok(contactInformation.ContactAddress(contactAddressForm))
-    }
+    Future.successful(Ok(views.html.investment.LifetimeAllowanceExceeded()))
   }
 
   val submit = Action.async { implicit request =>
-    contactAddressForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(contactInformation.ContactAddress(formWithErrors)))
-      },
-      validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show.toString())
-        Future.successful(Redirect(routes.SupportingDocumentsController.show))
-      }
-    )
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
+    Future.successful(Redirect(routes.ProposedInvestmentController.show()))
   }
 }

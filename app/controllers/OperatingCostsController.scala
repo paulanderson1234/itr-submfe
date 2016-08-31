@@ -18,6 +18,7 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.Helpers.KnowledgeIntensiveHelper
 import controllers.predicates.ValidActiveSession
 import forms.OperatingCostsForm._
 import models.OperatingCostsModel
@@ -42,15 +43,20 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
   }
 
   val submit = Action.async { implicit request =>
-    val response = operatingCostsForm.bindFromRequest().fold(
+    operatingCostsForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(OperatingCosts(formWithErrors))
+        Future.successful(BadRequest(OperatingCosts(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        Redirect(routes.PercentageStaffWithMastersController.show())
+        if (KnowledgeIntensiveHelper.checkRAndDCosts(validFormData)) {
+          Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
+        } else {
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+          Future.successful(Redirect(routes.IneligibleForKIController.show()))
+        }
+
       }
     )
-    Future.successful(response)
   }
 }

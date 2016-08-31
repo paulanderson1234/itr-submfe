@@ -24,8 +24,16 @@ trait Constants {
   def taxYearFormattedAnswer(value: String, taxYear: String) : String= s"£$value in $taxYear tax year"
   def amountFormattedAnswer(value: String) : String= s"£$value"
   val SuggestedTextMaxLength: Int = 2048
+
+  val IsKnowledgeIntensiveYears : String = "10"
+  val IsNotKnowledgeIntensiveYears : String = "7"
+  val KI10Percent : Int = 10
+  val KI15Percent : Int = 15
+
   val IsKnowledgeIntesnsiveYears : String = "10"
   val IsNotKnowledgeIntesnsiveYears : String = "7"
+  val lifetimeLogicLimitKi : Int = 20000000
+  val lifetimeLogicLimitNotKi : Int = 12000000
 
   val PageInvestmentSchemeEisValue : String = "Enterprise Investment Scheme"
   val PageInvestmentSchemeSeisValue : String = "Seed Enterprise Investment Scheme"

@@ -18,8 +18,9 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.Helpers.ControllerHelpers
 import controllers.predicates.ValidActiveSession
-import models.{PercentageStaffWithMastersModel, IsKnowledgeIntensiveModel, DateOfIncorporationModel, SubsidiariesModel}
+import models.{DateOfIncorporationModel, IsKnowledgeIntensiveModel, PercentageStaffWithMastersModel, SubsidiariesModel}
 import forms.SubsidiariesForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -40,57 +41,35 @@ trait SubsidiariesController extends FrontendController with ValidActiveSession 
 
   val show = ValidateSession.async { implicit request =>
 
-    def routeRequest(backUrl: String) = {
-      keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
-        case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), backUrl))
-        case None => Ok(Subsidiaries(subsidiariesForm, backUrl))
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+
+        keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
+          case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), backUrl.get))
+          case None => Ok(Subsidiaries(subsidiariesForm, backUrl.get))
+        }
+      }
+      else {
+        // no back link - user skipping - redirect to start of flow point
+        Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
     }
 
     for {
-      link <- getBackLink
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, keyStoreConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = Action.async { implicit request =>
     subsidiariesForm.bindFromRequest.fold(
-      invalidForm => getBackLink.flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url)))),
+      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, keyStoreConnector)(hc)
+        .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.
+          getOrElse(routes.DateOfIncorporationController.show().toString))))),
       validForm => {
         keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
         Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
     )
-  }
-
-  /** Generates the back link based on the data captured on a previous form and stored in keystore.
-   *
-   * The date of incorporation iss retrieved from keystore and used to determine the backlink Url required form the Subsidiaries view.
-   * This is the same intrinsic logic used in the CommercialSale view to deetermine how this page is reached and the back button location required.
-   * If the date of incorporation is not found in keystore that becomes the backlink value.
-   */
-  def getBackLink(implicit hc: HeaderCarrier): Future[String] = {
-    def routeRequest(date: Option[DateOfIncorporationModel], ki : Option[IsKnowledgeIntensiveModel],
-                     masters: Option[PercentageStaffWithMastersModel]): String = {
-      (date,ki,masters) match {
-        case (Some(date),_,_) if Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) =>
-          routes.CommercialSaleController.show().toString
-        case (Some(date),Some(ki),Some(masters)) => if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("No")) {
-                                                    routes.TenYearPlanController.show().toString()
-                                                    }else if (ki.isKnowledgeIntensive.equals("Yes") && masters.staffWithMasters.equals("Yes")){
-                                                      routes.PercentageStaffWithMastersController.show().toString()
-                                                    }else routes.IsKnowledgeIntensiveController.show().toString()
-        case (Some(date),_,_) => routes.IsKnowledgeIntensiveController.show().toString()
-        case _ => routes.DateOfIncorporationController.show().toString
-      }
-    }
-
-    for {
-      date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      ki <- keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive)
-      masters <- keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters)
-      route <- Future.successful(routeRequest(date,ki,masters))
-    } yield route
-
   }
 }

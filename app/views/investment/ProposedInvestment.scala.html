@@ -2,11 +2,11 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
 
-@(proposedInvestmentForm: Form[ProposedInvestmentModel])(implicit request: Request[_])
+@(proposedInvestmentForm: Form[ProposedInvestmentModel], backlinkUrl: String)(implicit request: Request[_])
 
 @main_template(Messages("page.investment.amount.title")) {
 
-@backButtonWithProgress(controllers.routes.HadPreviousRFIController.show().toString, Messages("common.section.progress.company.details.three"))
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
 
 <div class="grid-row">
     <div class="column-two-thirds">

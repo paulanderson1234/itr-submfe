@@ -31,28 +31,27 @@ object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedControll
   val keyStoreConnector: KeystoreConnector =  KeystoreConnector
 }
 
-trait SubsidiariesNinetyOwnedController extends FrontendController with ValidActiveSession{
+trait SubsidiariesNinetyOwnedController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async{ implicit request =>
+  val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
       case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
       case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
     }
   }
 
-  val submit = Action.async{ implicit  request =>
-    val response = subsidiariesNinetyOwnedForm.bindFromRequest().fold(
+  val submit = Action.async { implicit request =>
+    subsidiariesNinetyOwnedForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(SubsidiariesNinetyOwned(formWithErrors))
+        Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
         keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().toString())
-        Redirect(routes.InvestmentGrowController.show())
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
     )
-    Future.successful(response)
   }
 }

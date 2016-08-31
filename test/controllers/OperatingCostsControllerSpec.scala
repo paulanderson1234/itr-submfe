@@ -52,7 +52,9 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   val model = OperatingCostsModel("200000", "225000", "270000", "177000", "188000", "19000")
   val emptyModel = OperatingCostsModel("", "", "", "", "", "")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedOperatingCosts = OperatingCostsModel("200000", "225000", "270000", "177000", "188000", "19000")
+  val keyStoreSaved0PercOperatingCCosts = OperatingCostsModel("4100200", "3600050", "4252500", "0", "0", "0")
+  val keyStoreSaved10PercBoundaryOC = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
+  val keyStoreSaved15PercBoundaryOC = OperatingCostsModel("755500", "900300", "523450", "37775", "135045", "0")
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -82,7 +84,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
+        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -104,7 +106,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
+        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "750000",
@@ -123,11 +125,35 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a valid form submit to the OperatingCostsController but not KI" should {
+    "redirect to the Percentage Of Staff With Masters page" in {
+
+      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "750000",
+        "operatingCosts2ndYear" -> "750000",
+        "operatingCosts3rdYear" -> "934000",
+        "rAndDCosts1stYear" -> "0",
+        "rAndDCosts2ndYear" -> "0",
+        "rAndDCosts3rdYear" -> "0")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+        }
+      )
+    }
+  }
+
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
     "redirect to itself" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedOperatingCosts)))
+        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "",

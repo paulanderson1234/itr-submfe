@@ -19,6 +19,10 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
+import connectors.KeystoreConnector
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -30,15 +34,22 @@ import scala.concurrent.Future
 
 class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
 
+
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+
+  object IneligibleForKIControllerTest extends IneligibleForKIController {
+    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+  }
+
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = IneligibleForKIController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
+    val result = IneligibleForKIControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
   def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
-    val result = IneligibleForKIController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
+    val result = IneligibleForKIControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
     test(result)
   }
 
@@ -50,12 +61,13 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with With
         result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Posting to the IneligibleForKIController" should {
     "redirect to 'Subsidiaries' page" in {
-
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSession(request)(

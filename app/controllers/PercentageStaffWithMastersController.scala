@@ -43,18 +43,21 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
   }
 
   val submit = Action.async { implicit request =>
-    val response = percentageStaffWithMastersForm.bindFromRequest().fold(
+    percentageStaffWithMastersForm.bindFromRequest().fold(
       formWithErrors => {
-        BadRequest(knowledgeIntensive.PercentageStaffWithMasters(formWithErrors))
+        Future.successful(BadRequest(knowledgeIntensive.PercentageStaffWithMasters(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
         validFormData.staffWithMasters match {
-          case Constants.StandardRadioButtonYesValue  => Redirect(routes.SubsidiariesController.show)
-          case Constants.StandardRadioButtonNoValue   => Redirect(routes.TenYearPlanController.show)
+          case Constants.StandardRadioButtonYesValue => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+              routes.PercentageStaffWithMastersController.show().toString)
+            Future.successful(Redirect(routes.SubsidiariesController.show))
+          }
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TenYearPlanController.show))
         }
       }
     )
-    Future.successful(response)
   }
 }
