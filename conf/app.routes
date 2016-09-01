@@ -43,6 +43,9 @@ POST       /what-we-ask-you                         controllers.WhatWeAskYouCont
 GET        /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.show
 POST       /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.submit
 
+GET        /ineligible-for-knowledge-intensive      controllers.IneligibleForKIController.show
+POST       /ineligible-for-knowledge-intensive      controllers.IneligibleForKIController.submit
+
 GET        /subsidiaries                            controllers.SubsidiariesController.show
 POST       /subsidiaries                            controllers.SubsidiariesController.submit
 

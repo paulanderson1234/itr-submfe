@@ -225,6 +225,13 @@ page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need eit
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master''s degree level
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren''t physical
 
+#Ineligible for Knowledge Intensive Page
+page.knowledgeIntensive.IneligibleForKI.title = Ineligible for knowledge intensive company
+page.knowledgeIntensive.IneligibleForKI.heading = You don''t qualify for the knowledge intensive scheme
+page.knowledgeIntensive.IneligibleForKI.description.one = From the information you have given us, you aren''t eligible to be a knowledge intensive company.
+page.knowledgeIntensive.IneligibleForKI.description.two = You can still continue with your application as you might still be eligible for other tax relief schemes.
+
+#Operating Costs Page
 page.companyDetails.OperatingCosts.title = Operating costs
 page.companyDetails.OperatingCosts.heading = In the past 3 tax years how much have you spent on running your company?
 page.companyDetails.OperatingCosts.hint.one = Operating costs include office rent, wages and marketing.

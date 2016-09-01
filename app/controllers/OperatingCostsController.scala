@@ -49,11 +49,12 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        if(KnowledgeIntensiveHelper.checkRAndDCosts(validFormData)){
+        if (KnowledgeIntensiveHelper.checkRAndDCosts(validFormData)) {
           Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
-        }else
-        //TODO: Redirect to not qualify page
-          Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
+        } else {
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+          Future.successful(Redirect(routes.IneligibleForKIController.show()))
+        }
 
       }
     )
