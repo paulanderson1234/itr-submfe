@@ -28,7 +28,7 @@ private object AppDependencies {
   private val playAuthorisedFrontendVersion = "5.5.0"
   private val playConfigVersion = "2.0.1"
   private val hmrcTestVersion = "1.6.0"
-  private val cachingClientVersion = "5.5.0"
+  private val cachingClientVersion = "5.6.0"
   private val mongoCachingVersion = "3.2.0"
   private val playConditionalMappingVersion = "0.2.0"
 
