@@ -104,6 +104,20 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
+  "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore" should {
+    "redirect to the beginning of the flow" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSession(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+        }
+      )
+    }
+  }
+
   "Sending a valid form submit to the ProposedInvestmentController" should {
     "redirect to the  company's registered address page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]

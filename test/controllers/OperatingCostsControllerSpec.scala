@@ -126,7 +126,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid form submit to the OperatingCostsController but not KI" should {
-    "redirect to the Percentage Of Staff With Masters page" in {
+    "redirect to the Ineligible For KI page" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
@@ -143,7 +143,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
         }
       )
     }

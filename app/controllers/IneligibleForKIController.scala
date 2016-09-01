@@ -41,8 +41,8 @@ trait IneligibleForKIController extends FrontendController with ValidActiveSessi
         Future.successful(Ok(IneligibleForKI(backUrl.get)))
       } else {
         // no back link - send back to same page
-        Future.successful(Ok(IneligibleForKI("")))
-        //Future.successful(Redirect(routes.IneligibleForKIController.show()))
+        //Future.successful(Ok(IneligibleForKI("")))
+        Future.successful(Redirect(routes.OperatingCostsController.show()))
       }
     }
     for {
@@ -51,7 +51,10 @@ trait IneligibleForKIController extends FrontendController with ValidActiveSessi
     } yield route
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Action.async { implicit request => {
+    keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().toString())
     Future.successful(Redirect(routes.SubsidiariesController.show()))
+    }
   }
+
 }
