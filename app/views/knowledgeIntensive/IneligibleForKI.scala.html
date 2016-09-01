@@ -1,0 +1,30 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButton}
+
+@(backlinkUrl: String)(implicit request: Request[_])
+
+@main_template(Messages("page.knowledgeIntensive.IneligibleForKI.title")) {
+
+@backButton(backlinkUrl)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.knowledgeIntensive.IneligibleForKI.heading")</h1>
+
+        <p id="description-one">@Messages("page.knowledgeIntensive.IneligibleForKI.description.one")</p>
+        <p id="description-two">@Messages("page.knowledgeIntensive.IneligibleForKI.description.two")</p>
+
+        <br>
+
+        <div class="form-group">
+            @form(action = controllers.routes.IneligibleForKIController.submit()) {
+            <button class="btn button" type="submit" id="next">@Messages("common.button.continueNextSection")</button>
+            }
+        </div>
+    </div>
+</div>
+
+}
+
+
+

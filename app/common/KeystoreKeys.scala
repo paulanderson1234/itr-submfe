@@ -54,4 +54,6 @@ trait KeystoreKeys {
   val backLinkSubsidiaries: String = "backLink:subsidiaries"
   val backLinkPreviousScheme: String = "backLink:previousScheme"
   val backLinkProposedInvestment: String = "backLink:proposedInvestment"
+  val backLinkIneligibleForKI: String = "backLink:IneligibleForKI"
+
 }
