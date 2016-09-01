@@ -40,8 +40,7 @@ trait IneligibleForKIController extends FrontendController with ValidActiveSessi
       if (backUrl.isDefined) {
         Future.successful(Ok(IneligibleForKI(backUrl.get)))
       } else {
-        // no back link - send back to same page
-        //Future.successful(Ok(IneligibleForKI("")))
+        // no back link - send back to start of flow
         Future.successful(Redirect(routes.OperatingCostsController.show()))
       }
     }

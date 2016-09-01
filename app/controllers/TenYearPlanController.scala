@@ -49,14 +49,15 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
         validFormData.hasTenYearPlan match {
           case Constants.StandardRadioButtonYesValue =>
             keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
           case _ =>
             // don't save a description if No is selected
             keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,
               TenYearPlanModel(validFormData.hasTenYearPlan, None))
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
+            Future.successful(Redirect(routes.IneligibleForKIController.show()))
         }
-
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
-        Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     )
   }
