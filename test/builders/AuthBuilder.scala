@@ -40,6 +40,6 @@ trait AuthBuilder {
   }
 
   private[builders] def createUserAuthority(userId: String, accounts: Accounts = Accounts()): Authority = {
-    Authority(userId, accounts, None, None, CredentialStrength.Weak, ConfidenceLevel.L50)
+    Authority(userId, accounts, None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, None)
   }
 }

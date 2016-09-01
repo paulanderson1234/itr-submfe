@@ -30,7 +30,7 @@ trait SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     fakeRequest.withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      //SessionKeys.token -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)
   }
 
@@ -38,7 +38,7 @@ trait SessionBuilder {
     val sessionId = s"session-${UUID.randomUUID}"
     FakeRequest().withSession(
       SessionKeys.sessionId -> sessionId,
-      SessionKeys.token -> "RANDOMTOKEN",
+      //SessionKeys.token -> "RANDOMTOKEN",
       SessionKeys.userId -> userId)
   }
 }
