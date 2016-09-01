@@ -68,9 +68,8 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
         document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
         document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-        document.getElementById("helpTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-        document.getElementById("headerTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
-        document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
+        document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
+        document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
         document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
         document.getElementById("labelTextId").hasClass("visuallyhidden")
         document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
@@ -97,7 +96,6 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("message-text-id").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
@@ -122,7 +120,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.getElementById("helpTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
+      document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
@@ -145,7 +143,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().toString()
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("headerTextPanel1").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

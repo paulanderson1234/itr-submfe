@@ -104,7 +104,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
         }
       )
     }
