@@ -47,4 +47,9 @@ object Transfomers {
   val integerToFormattedNumber: Int => String = {
     (value) => NumberFormat.getNumberInstance.format(value)
   }
+
+  val integerToString: Int => String = (input) => Try(input.toString) match {
+    case Success(value) => value
+    case Failure(_) => ""
+  }
 }

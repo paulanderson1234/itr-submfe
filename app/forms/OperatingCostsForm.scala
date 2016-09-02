@@ -19,13 +19,26 @@ package forms
 import models.OperatingCostsModel
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.i18n.Messages
+import utils.Transfomers._
+import utils.Validation._
 
 object OperatingCostsForm {
+
+  val maxAllowableAmount: Int = 999999999
+  val minAllowableAmount: Int = 1
+
+  //    "operatingCosts1stYear" -> text
+  //        .verifying(Messages("validation.common.error.fieldRequired"), mandatoryCheck)
+  //        .verifying(Messages("page.companyDetails.OperatingCosts.amount.invalidAmount"), integerCheck)
+  //        .verifying(Messages("page.companyDetails.OperatingCosts.amount.OutOfRange"), minIntCheckString(minAllowableAmount))
+  //        .verifying(Messages("page.companyDetails.OperatingCosts.amount.OutOfRange"), maxIntCheckString(maxAllowableAmount)),
+
   val operatingCostsForm = Form(
     mapping(
-      "operatingCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.one"),
-      "operatingCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.two"),
-      "operatingCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.three"),
+      "operatingCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.OperatingCosts.error.field.one"),
+      "operatingCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.OperatingCosts.error.field.two"),
+      "operatingCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.OperatingCosts.error.field.three"),
       "rAndDCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.four"),
       "rAndDCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.five"),
       "rAndDCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.six")
