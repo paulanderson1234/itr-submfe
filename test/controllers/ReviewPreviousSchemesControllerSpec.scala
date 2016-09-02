@@ -64,6 +64,8 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))
   val cacheMapBackLink: CacheMap = CacheMap("", Map("" -> Json.toJson(backLink)))
 
+  val testId = 1
+
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
     val result = ReviewPreviousSchemesControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
@@ -79,6 +81,12 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   def addWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
     val result = ReviewPreviousSchemesControllerTest.add.apply(SessionBuilder.buildRequestWithSession(sessionId))
+    test(result)
+  }
+
+  def changeWithSession(processingId: Option[Int] = None)(test: Future[Result] => Any) {
+    val sessionId = s"user-${UUID.randomUUID}"
+    val result = ReviewPreviousSchemesControllerTest.change(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
     test(result)
   }
 
@@ -210,10 +218,10 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a GET request to ReviewPreviousSchemeController change method" should {
     "redirect to the previous investment scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      addWithSession(
+      changeWithSession(Some(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment?id=" + testId)
         }
       )
     }
