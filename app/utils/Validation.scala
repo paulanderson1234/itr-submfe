@@ -329,17 +329,6 @@ object Validation {
   def maxIntCheck (maxInteger: Int) : Int => Boolean = (input) => input <= maxInteger
   def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
 
-  def maxIntCheckString (maxInteger: Int) : String => Boolean = (input) => Try(input.trim.toInt) match {
-    case Success(value) => value <= maxInteger
-    case Failure(_) => false
-  }
-
-  def minIntCheckString (minInteger: Int) : String => Boolean = (input) => Try(input.trim.toInt) match {
-    case Success(value) => value >= minInteger
-    case Failure(_) => false
-  }
-
-
   val yesNoCheck: String =>  Boolean = {
     case Constants.StandardRadioButtonYesValue => true
     case Constants.StandardRadioButtonNoValue => true
