@@ -151,6 +151,27 @@ class OperatingCostsFormSpec extends UnitSpec {
     }
   }
 
+  "The Operating Costs Form" should {
+    "Return an error if Operating Costs 1st Year is 0" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "0",
+        "operatingCosts2ndYear" -> "555555",
+        "operatingCosts3rdYear" -> "934000",
+        "rAndDCosts1stYear" -> "231000",
+        "rAndDCosts2ndYear" -> "340000",
+        "rAndDCosts3rdYear" -> "344000"
+      )
+      bindWithError(request) match {
+        case Some(err) =>
+          err.key shouldBe "operatingCosts1stYear"
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.one")
+          err.args shouldBe Array()
+        case _ =>
+          fail("Missing error")
+      }
+    }
+  }
+
   // operating Costs 2nd Year validation
   "The Operating Costs Form" should {
     "Return an error if Operating Costs 2nd Year is empty" in {
@@ -258,6 +279,27 @@ class OperatingCostsFormSpec extends UnitSpec {
     }
   }
 
+  "The Operating Costs Form" should {
+    "Return an error if Operating Costs 2nd Year is 0" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "555555",
+        "operatingCosts2ndYear" -> "0",
+        "operatingCosts3rdYear" -> "934000",
+        "rAndDCosts1stYear" -> "231000",
+        "rAndDCosts2ndYear" -> "340000",
+        "rAndDCosts3rdYear" -> "344000"
+      )
+      bindWithError(request) match {
+        case Some(err) =>
+          err.key shouldBe "operatingCosts2ndYear"
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.two")
+          err.args shouldBe Array()
+        case _ =>
+          fail("Missing error")
+      }
+    }
+  }
+
   // operating Costs 3rd Year validation
   "The Operating Costs Form" should {
     "Return an error if Operating Costs 3rd Year is empty" in {
@@ -361,6 +403,27 @@ class OperatingCostsFormSpec extends UnitSpec {
         case _ => {
           fail("Missing error")
         }
+      }
+    }
+  }
+
+  "The Operating Costs Form" should {
+    "Return an error if Operating Costs 3rd Year is 0" in {
+      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "555555",
+        "operatingCosts2ndYear" -> "555555",
+        "operatingCosts3rdYear" -> "0",
+        "rAndDCosts1stYear" -> "231000",
+        "rAndDCosts2ndYear" -> "340000",
+        "rAndDCosts3rdYear" -> "344000"
+      )
+      bindWithError(request) match {
+        case Some(err) =>
+          err.key shouldBe "operatingCosts3rdYear"
+          err.message shouldBe Messages("page.companyDetails.OperatingCosts.error.field.three")
+          err.args shouldBe Array()
+        case _ =>
+          fail("Missing error")
       }
     }
   }
