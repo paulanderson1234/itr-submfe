@@ -161,6 +161,20 @@ object Validation {
     text.verifying(numCharCheckConstraint)
   }
 
+  def mandatoryMaxTenNumberNonZeroValidation(message: String) : Mapping[String] = {
+    val validNum = """^[1-9][0-9]{0,8}$""".r
+    val numCharCheckConstraint: Constraint[String] =
+      Constraint("contraints.mandatoryNumberCheck")({
+        text =>
+          val error = text match {
+            case validNum() => Nil
+            case _ => Seq(ValidationError(Messages(message)))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text.verifying(numCharCheckConstraint)
+  }
+
   def optionalAddressLineCheck: Mapping[String] = {
     val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,26}""".r
     val addresssLineCheckConstraint: Constraint[String] =
@@ -314,6 +328,17 @@ object Validation {
 
   def maxIntCheck (maxInteger: Int) : Int => Boolean = (input) => input <= maxInteger
   def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
+
+  def maxIntCheckString (maxInteger: Int) : String => Boolean = (input) => Try(input.trim.toInt) match {
+    case Success(value) => value <= maxInteger
+    case Failure(_) => false
+  }
+
+  def minIntCheckString (minInteger: Int) : String => Boolean = (input) => Try(input.trim.toInt) match {
+    case Success(value) => value >= minInteger
+    case Failure(_) => false
+  }
+
 
   val yesNoCheck: String =>  Boolean = {
     case Constants.StandardRadioButtonYesValue => true
