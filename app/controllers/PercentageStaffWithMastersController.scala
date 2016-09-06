@@ -87,8 +87,8 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
         for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
-          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(Some(percentageWithMasters),
-            if (kiModel.isDefined) kiModel.get.hasTenYearPlan else None) //TO DO - PROPER API CALL
+          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(percentageWithMasters,
+            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false) //TO DO - PROPER API CALL
           route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
         } yield route
       }
