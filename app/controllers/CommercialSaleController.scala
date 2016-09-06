@@ -20,11 +20,11 @@ import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.{CommercialSaleModel, DateOfIncorporationModel}
+import models.{CommercialSaleModel, KiProcessingModel}
 import common._
 import forms.CommercialSaleForm._
-import views.html.companyDetails.{CommercialSale, DateOfIncorporation}
-import utils.Validation
+import views.html.companyDetails.CommercialSale
+
 import scala.concurrent.Future
 
 object CommercialSaleController extends CommercialSaleController {
@@ -44,14 +44,20 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
 
   val submit = Action.async { implicit request =>
 
-    def routeRequest(date: Option[DateOfIncorporationModel]): Future[Result] = {
-      date match {
-        case Some(data) if Validation.dateAfterIncorporationRule(data.day.get, data.month.get, data.year.get) => {
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
-          Future.successful(Redirect(routes.SubsidiariesController.show))
-      }
-        case Some(_) => Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show))
-        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show))
+    def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {
+      kiModel match {
+        case Some(data) if data.dateConditionMet.isEmpty =>
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        case Some(dataWithDateCondition) => {
+          if (dataWithDateCondition.dateConditionMet.get) {
+            Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+          }
+          else {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
     }
 
@@ -61,10 +67,9 @@ trait CommercialSaleController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-
         for {
-          date <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-          route <- routeRequest(date)
+          model <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          route <- routeRequest(model)
         } yield route
       }
     )

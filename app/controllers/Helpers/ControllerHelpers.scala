@@ -16,9 +16,6 @@
 
 package controllers.Helpers
 
-import common.KeystoreKeys
-import models.PreviousSchemeModel
-import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -36,89 +33,6 @@ trait ControllerHelpers {
       case Some(data) => Future.successful(Some(data))
       case None => Future.successful(None)
     }
-  }
-
-  def getExistingInvestmentFromKeystore(keyStoreConnector: connectors.KeystoreConnector,
-                                        modelProcessingIdToRetrieve: Int)
-                                       (implicit hc: HeaderCarrier): Future[Option[PreviousSchemeModel]] = {
-
-    val idNotFound: Int = -1
-
-   require(modelProcessingIdToRetrieve > 0, "The item to retrieve processingId must be an integer > 0")
-
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => {
-        val itemToRetrieveIndex = data.indexWhere(_.processingId.getOrElse(0) == modelProcessingIdToRetrieve)
-        if (itemToRetrieveIndex != idNotFound) {
-          Some(data(itemToRetrieveIndex))
-        }
-        else None
-      }
-      case None => None
-    }.recover { case _ => None }
-
-    result
-  }
-
-  def getAllInvestmentFromKeystore(keyStoreConnector: connectors.KeystoreConnector)
-                                       (implicit hc: HeaderCarrier): Future[Vector[PreviousSchemeModel]] = {
-
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => data
-      case None =>  Vector[PreviousSchemeModel]()
-    }.recover { case _ =>  Vector[PreviousSchemeModel]() }
-
-    result
-  }
-
-  def addPreviousInvestmentToKeystore(keyStoreConnector: connectors.KeystoreConnector,
-                                      previousSchemeModelToAdd: PreviousSchemeModel)
-                                     (implicit hc: HeaderCarrier): Future[CacheMap] = {
-    val defaultId: Int = 1
-
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => {
-        val newId = data.last.processingId.get + 1
-        data :+ previousSchemeModelToAdd.copy(processingId = Some(newId))
-      }
-      case None => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId))
-    }.recover { case _ => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId)) }
-
-    result.flatMap(newVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, newVectorList))
-  }
-
-  def updateKeystorePreviousInvestment(keyStoreConnector: connectors.KeystoreConnector,
-                                       previousSchemeModelToUpdate: PreviousSchemeModel)
-                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
-    val idNotFound: Int = -1
-
-    require(previousSchemeModelToUpdate.processingId.getOrElse(0) > 0,
-      "The item to update processingId must be an integer > 0")
-
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => {
-        val itemToUpdateIndex = data.indexWhere(_.processingId.getOrElse(0) ==
-          previousSchemeModelToUpdate.processingId.getOrElse(0))
-        if (itemToUpdateIndex != idNotFound) {
-          data.updated(itemToUpdateIndex, previousSchemeModelToUpdate)
-        }
-        else data
-      }
-      case None => Vector[PreviousSchemeModel]()
-    }
-    result.flatMap(updatedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, updatedVectorList))
-  }
-
-  def removeKeystorePreviousInvestment(keyStoreConnector: connectors.KeystoreConnector, modelProcessingIdToremove: Int)
-                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
-
-    require(modelProcessingIdToremove > 0, "The modelProcessingIdToremove must be an integer > 0")
-
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => data.filter(_.processingId.getOrElse(0) != modelProcessingIdToremove)
-      case None => Vector[PreviousSchemeModel]()
-    }.recover { case _ => Vector[PreviousSchemeModel]() }
-    result.flatMap(deletedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, deletedVectorList))
   }
 
 }

@@ -16,14 +16,15 @@
 
 package controllers
 
-import connectors.KeystoreConnector
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.TenYearPlanModel
+import models.{KiProcessingModel, TenYearPlanModel}
 import common._
 import forms.TenYearPlanForm._
 import views.html.knowledgeIntensive.TenYearPlan
+
 import scala.concurrent.Future
 
 object TenYearPlanController extends TenYearPlanController {
@@ -40,26 +41,61 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
       case None => Ok(TenYearPlan(tenYearPlanForm))
     }
   }
+
   val submit = Action.async { implicit request =>
+
+    def routeRequest(kiModel: Option[KiProcessingModel], hasTenYearPlan: Boolean,
+                     isSecondaryKiConditionsMet: Option[Boolean]): Future[Result] = {
+      kiModel match {
+        // check previous answers present
+        case Some(data) if isMissingData(data) =>
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
+          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+        case Some(dataWithPreviousValid) => {
+          // all good - save the cost condition result returned from API and navigate accordingly
+          val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
+            hasTenYearPlan = Some(hasTenYearPlan))
+          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+
+          // check the current model to see if valid as this is last page but user could navigate via url out of sequence
+          if (updatedModel.isKi) {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
+          }
+          else {
+            // KI condition not met. end of the road..
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
+            Future.successful(Redirect(routes.IneligibleForKIController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
     tenYearPlanForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(TenYearPlan(formWithErrors)))
       },
       validFormData => {
-        validFormData.hasTenYearPlan match {
-          case Constants.StandardRadioButtonYesValue =>
-            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
-            Future.successful(Redirect(routes.SubsidiariesController.show()))
-          case _ =>
-            // don't save a description if No is selected
-            keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan,
-              TenYearPlanModel(validFormData.hasTenYearPlan, None))
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
-            Future.successful(Redirect(routes.IneligibleForKIController.show()))
-        }
+        keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+        val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
+          Constants.StandardRadioButtonYesValue) true
+        else false
+        for {
+          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          // Call API
+          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(
+            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters else None, Some(hasTenYearPlan)) //TO DO - PROPER API CALL
+          route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
+        } yield route
       }
     )
+  }
+
+  def isMissingData(data: KiProcessingModel): Boolean = {
+    data.dateConditionMet.isEmpty || data.companyAssertsIsKi.isEmpty ||
+      data.costsConditionMet.isEmpty || data.hasPercentageWithMasters.isEmpty
   }
 
 }

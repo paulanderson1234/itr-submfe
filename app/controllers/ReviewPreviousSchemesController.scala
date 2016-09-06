@@ -18,10 +18,8 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
-import controllers.Helpers.ControllerHelpers
+import controllers.Helpers.PreviousSchemesHelper
 import controllers.predicates.ValidActiveSession
-import models.PreviousSchemeModel
-import uk.gov.hmrc.play.http.HeaderCarrier
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.previousInvestment.ReviewPreviousSchemes
@@ -37,7 +35,7 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
   val keyStoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
+    PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
   }
 
@@ -53,15 +51,15 @@ trait ReviewPreviousSchemesController extends FrontendController with ValidActiv
 
   def remove(id: Int): Action[AnyContent] = ValidateSession.async { implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
-    ControllerHelpers.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
+    PreviousSchemesHelper.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
       _ => Redirect(routes.ReviewPreviousSchemesController.show())
     }
   }
 
   val submit = Action.async { implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
-    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
-      if(!previousSchemes.isEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+    PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
+      if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }
 }

@@ -16,14 +16,16 @@
 
 package controllers
 
-import common.KeystoreKeys
-import connectors.KeystoreConnector
+import common.{Constants, KeystoreKeys}
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.Helpers.KnowledgeIntensiveHelper
 import controllers.predicates.ValidActiveSession
+import forms.IsKnowledgeIntensiveForm._
 import forms.OperatingCostsForm._
-import models.OperatingCostsModel
-import play.api.mvc.Action
+import models.{KiProcessingModel, OperatingCostsModel}
+import play.api.mvc.{Action, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.companyDetails.IsKnowledgeIntensive
 import views.html.knowledgeIntensive.OperatingCosts
 
 import scala.concurrent.Future
@@ -33,30 +35,66 @@ object OperatingCostsController extends OperatingCostsController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait OperatingCostsController extends FrontendController with ValidActiveSession{
+trait OperatingCostsController extends FrontendController with ValidActiveSession {
   val keyStoreConnector: KeystoreConnector
+
   val show = ValidateSession.async { implicit request =>
-   keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
-     case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
-     case None => Ok(OperatingCosts(operatingCostsForm))
-   }
+    keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
+      case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
+      case None => Ok(OperatingCosts(operatingCostsForm))
+    }
   }
 
   val submit = Action.async { implicit request =>
+
+    def routeRequest(kiModel: Option[KiProcessingModel], isCostConditionMet: Option[Boolean]): Future[Result] = {
+      kiModel match {
+        case Some(data) if isMissingData(data) => {
+          // missing expected data - send user back
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        }
+        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
+          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+        }
+        case Some(dataWithDateConditionMet) => {
+          // all good - save the cost condition returned from API and navigate accordingly
+          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
+          if (isCostConditionMet.getOrElse(false)) Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
+          else {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+            Future.successful(Redirect(routes.IneligibleForKIController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
     operatingCostsForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(OperatingCosts(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-        if (KnowledgeIntensiveHelper.checkRAndDCosts(validFormData)) {
-          Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
-        } else {
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
-          Future.successful(Redirect(routes.IneligibleForKIController.show()))
-        }
 
+        for {
+          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          // Call API
+          costConditionMet <- SubmissionConnector.validateKiCostConditions(
+            validFormData.operatingCosts1stYear.toInt,
+            validFormData.operatingCosts2ndYear.toInt,
+            validFormData.operatingCosts3rdYear.toInt,
+            validFormData.rAndDCosts1stYear.toInt,
+            validFormData.rAndDCosts2ndYear.toInt,
+            validFormData.rAndDCosts3rdYear.toInt
+          ) //TO DO - PROPER API CALL
+          route <- routeRequest(kiModel, costConditionMet)
+        } yield route
       }
     )
   }
+
+  def isMissingData(data: KiProcessingModel): Boolean = {
+    data.dateConditionMet.isEmpty || data.companyAssertsIsKi.isEmpty
+  }
+
 }

@@ -45,35 +45,35 @@ trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveS
 
   val submit = Action.async { implicit request =>
 
-  def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
-    date match {
-      case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().toString())
-        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-      case Some(_) =>
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().toString())
-        Future.successful(Redirect(routes.InvestmentGrowController.show()))
-      case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
-    }
-  }
-
-  previousBeforeDOFCSForm.bindFromRequest().fold(
-    formWithErrors => {
-      Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors)))
-    },
-    validFormData => {
-      keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
-      validFormData.previousBeforeDOFCS match {
-        case Constants.StandardRadioButtonNoValue => {
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().toString())
-          Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-        }
-        case Constants.StandardRadioButtonYesValue => for {
-          subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-          route <- routeRequest(subsidiaries)
-        } yield route
+    def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
+      date match {
+        case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().toString())
+          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+        case Some(_) =>
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().toString())
+          Future.successful(Redirect(routes.InvestmentGrowController.show()))
+        case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }
-  )
-}
+
+    previousBeforeDOFCSForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors)))
+      },
+      validFormData => {
+        keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
+        validFormData.previousBeforeDOFCS match {
+          case Constants.StandardRadioButtonNoValue => {
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().toString())
+            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+          }
+          case Constants.StandardRadioButtonYesValue => for {
+            subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            route <- routeRequest(subsidiaries)
+          } yield route
+        }
+      }
+    )
+  }
 }

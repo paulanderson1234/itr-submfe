@@ -16,10 +16,13 @@
 
 package controllers.Helpers
 
-import common.Constants
-import models.{DateOfIncorporationModel, OperatingCostsModel, PercentageStaffWithMastersModel, TenYearPlanModel}
+import common.KeystoreKeys
+import models._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
 
@@ -27,46 +30,35 @@ object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
 
 trait KnowledgeIntensiveHelper {
 
-  def validateInput(date: Option[DateOfIncorporationModel], percentageStaffMasters: Option[PercentageStaffWithMastersModel]):
-                    Boolean = (date, percentageStaffMasters) match {
+  def setKiDateCondition(keyStoreConnector: connectors.KeystoreConnector, dateDay:Int, dateMonth:Int, dateYear:Int)
+                        (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
-    case (Some(date), Some(percentageStaffMasters)) => true
-    case _ => false
-  }
+    // check params
+    require(dateDay > 0 && dateDay < 32, "The item to update processingId must be an integer > 0")
+    require(dateMonth > 0 && dateMonth < 13, "The item to update processingId must be an integer > 0")
+    require(dateYear >= 1000, "The item to update processingId must be an integer > 0")
 
-  def checkRAndDCosts(rAndDCost: OperatingCostsModel): Boolean =  {
-
-    def findCosts(operatingCosts: scala.Double, divideBy: Int): Double = {
-      val amount = (operatingCosts / 100) * divideBy
-      amount
+    // update kimodel (or create first) and  dateConditionMet to
+    val result = keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+      case Some(data) => {
+        data.copy(dateConditionMet = Some(!Validation.dateAfterIncorporationRule(dateDay, dateMonth, dateYear)))
+      }
+      case None => KiProcessingModel(dateConditionMet = Some(!Validation.dateAfterIncorporationRule(dateDay, dateMonth, dateYear)))
     }
-
-    if ((rAndDCost.rAndDCosts1stYear.toDouble >= findCosts(rAndDCost.operatingCosts1stYear.toDouble, Constants.KI10Percent) &&
-      rAndDCost.rAndDCosts2ndYear.toDouble >= findCosts(rAndDCost.operatingCosts2ndYear.toDouble, Constants.KI10Percent) &&
-      rAndDCost.rAndDCosts3rdYear.toDouble >= findCosts(rAndDCost.operatingCosts3rdYear.toDouble, Constants.KI10Percent)) ||
-      (rAndDCost.rAndDCosts1stYear.toDouble >= findCosts(rAndDCost.operatingCosts1stYear.toDouble, Constants.KI15Percent) ||
-        rAndDCost.rAndDCosts2ndYear.toDouble >= findCosts(rAndDCost.operatingCosts2ndYear.toDouble, Constants.KI15Percent) ||
-        rAndDCost.rAndDCosts3rdYear.toDouble >= findCosts(rAndDCost.operatingCosts3rdYear.toDouble, Constants.KI15Percent)))
-      true
-    else
-      false
+    result.flatMap(updatedKiModel => keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
   }
 
-  def checkKI(date: DateOfIncorporationModel, percentageStaffMasters: PercentageStaffWithMastersModel,
-              tenYearPlan : Boolean, tenYearPlanModel : Option[TenYearPlanModel]) : Boolean = {
+  def setCompanyAssertsKi(keyStoreConnector: connectors.KeystoreConnector, companyAssertsIsKi: Boolean)
+                         (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
-    if(tenYearPlan)
-      if (Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) &&
-        tenYearPlanModel.get.hasTenYearPlan == Constants.StandardRadioButtonYesValue
-        || percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue)
-        true
-      else
-        false
-    else
-    if(Validation.dateAfterIncorporationRule(date.day.get, date.month.get, date.year.get) &&
-      percentageStaffMasters.staffWithMasters == Constants.StandardRadioButtonYesValue)
-      true
-    else
-      false
+    // update kimodel (or create first) and  dateConditionMet to
+    val result = keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+      case Some(data) => {
+
+        data.copy(companyAssertsIsKi = Some(companyAssertsIsKi))
+      }
+      case None => KiProcessingModel(companyAssertsIsKi = Some(companyAssertsIsKi))
+    }
+    result.flatMap(updatedKiModel => keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
   }
 }

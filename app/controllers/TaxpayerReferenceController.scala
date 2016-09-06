@@ -22,7 +22,6 @@ import play.api.mvc._
 import models.TaxpayerReferenceModel
 import common._
 import forms.TaxPayerReferenceForm._
-
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.companyDetails.TaxpayerReference
@@ -50,7 +49,7 @@ trait TaxpayerReferenceController extends FrontendController with ValidActiveSes
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
-        Future.successful(Redirect(routes.RegisteredAddressController.show))
+        Future.successful(Redirect(routes.RegisteredAddressController.show()))
       }
     )
   }

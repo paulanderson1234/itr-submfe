@@ -20,12 +20,13 @@ import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import forms.IsKnowledgeIntensiveForm._
-import models.IsKnowledgeIntensiveModel
+import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 
 import scala.concurrent.Future
 import views.html._
+import views.html.companyDetails.IsKnowledgeIntensive
 
 object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
@@ -43,19 +44,53 @@ trait IsKnowledgeIntensiveController extends FrontendController with ValidActive
   }
 
   val submit = Action.async { implicit request =>
+
+    def routeRequest(kiModel: Option[KiProcessingModel], isKnowledgeIntensive: Boolean): Future[Result] = {
+      kiModel match {
+        case Some(data) if data.dateConditionMet.isEmpty => {
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        }
+        case Some(dataWithDateCondition) => {
+          if (!isKnowledgeIntensive & dataWithDateCondition.companyAssertsIsKi.getOrElse(false)) {
+            // user changed from yes to no. Clear the processing data (keeping the date and isKi info)
+            keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel,
+              KiProcessingModel(companyAssertsIsKi = Some(isKnowledgeIntensive),
+                dateConditionMet = dataWithDateCondition.dateConditionMet))
+
+            // clear real data: TODO: it will work for now but we should probably clear the real data to ..how do this??
+            //keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, Option[OperatingCostsModel] = None)
+            //keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, Option[TenYearPlanModel] = None)
+            //keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersModel] = None)
+
+            // go to subsidiaries
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
+
+          }
+          else {
+            keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateCondition.copy(companyAssertsIsKi = Some(isKnowledgeIntensive)))
+            if (isKnowledgeIntensive) Future.successful(Redirect(routes.OperatingCostsController.show()))
+            else {
+              keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+              Future.successful(Redirect(routes.SubsidiariesController.show()))
+            }
+          }
+
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
     isKnowledgeIntensiveForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(companyDetails.IsKnowledgeIntensive(formWithErrors)))
+        Future.successful(BadRequest(IsKnowledgeIntensive(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
-        validFormData.isKnowledgeIntensive match {
-          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.OperatingCostsController.show))
-          case Constants.StandardRadioButtonNoValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
-            Future.successful(Redirect(routes.SubsidiariesController.show))
-          }
-        }
+        for {
+          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          route <- routeRequest(kiModel, if (validFormData.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue) true else false)
+        } yield route
       }
     )
   }

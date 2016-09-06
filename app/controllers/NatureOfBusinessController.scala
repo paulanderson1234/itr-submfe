@@ -22,7 +22,6 @@ import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
-
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.companyDetails.NatureOfBusiness
@@ -50,7 +49,7 @@ trait NatureOfBusinessController extends FrontendController with ValidActiveSess
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-        Future.successful(Redirect(routes.CommercialSaleController.show))
+        Future.successful(Redirect(routes.CommercialSaleController.show()))
       }
     )
   }

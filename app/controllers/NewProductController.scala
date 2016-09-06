@@ -44,8 +44,8 @@ trait NewProductController extends FrontendController with ValidActiveSession {
 
   val submit = Action.async { implicit request =>
 
-    def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
-      date match {
+    def routeRequest(hasSubsidiaries: Option[SubsidiariesModel]): Future[Result] = {
+      hasSubsidiaries match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
           keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.NewProductController.show().toString())
           Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
@@ -63,14 +63,14 @@ trait NewProductController extends FrontendController with ValidActiveSession {
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
         validFormData.isNewProduct match {
-          // TODO: Uncomment below with correct behaviour for 'No' error once decided
-          // i.e. replaces existing case Constants.StandardRadioButtonNoValue with line below
-          //case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TOBeDecidedController.show))
-          case Constants.StandardRadioButtonNoValue => for {
-            date <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-            route <- routeRequest(date)
+          case Constants.StandardRadioButtonYesValue => for {
+            hasSubsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            route <- routeRequest(hasSubsidiaries)
           } yield route
           case _ => for {
+            // TODO: Uncomment below with correct behaviour for 'No' error once decided (goes to ERR2)
+            // i.e. replaces existing case Constants.StandardRadioButtonNoValue with line below
+            //case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TOBeDecidedController.show))
             date <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
             route <- routeRequest(date)
           } yield route
