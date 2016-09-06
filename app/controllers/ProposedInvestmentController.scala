@@ -93,9 +93,11 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
           // Call API
+
           isLifeTimeAllowanceExceeded <- SubmissionConnector.checkLifetimeAllowanceExceeded(
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount) //TO DO - PROPER API CALL
+
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded)
         } yield route
       }
