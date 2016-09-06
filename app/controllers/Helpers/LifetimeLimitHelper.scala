@@ -20,7 +20,6 @@ import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.Validation
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -37,15 +36,14 @@ trait LifetimeLimitHelper {
 
   //Future of all previous schemes as vector
   def previousSchemesFut(implicit headerCarrier: HeaderCarrier): Future[Vector[PreviousSchemeModel]] = {
-    ControllerHelpers.getAllInvestmentFromKeystore(keyStoreConnector)
+    PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector)
   }
-
 
   def previousSchemesAmount()(implicit headerCarrier: HeaderCarrier): Future[Int] = {
     previousSchemesFut.map(previousSchemes => previousSchemes.foldLeft(0)(_ + _.investmentAmount))
   }
 
-  def exceedsLifetimeLogic(isKi: Boolean)(implicit headerCarrier: HeaderCarrier) : Future[Boolean] = {
+  def exceedsLifetimeLogic(isKi: Boolean)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
     // Future of proposed investment,
     val proposedInvestmentAmountFut = keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
       case Some(proposedInvestment) => proposedInvestment.investmentAmount
@@ -54,8 +52,8 @@ trait LifetimeLimitHelper {
 
     // Addition of two future Int values, returns Future of combined value
     val combinedAmount = for {
-      proposedInvestment <- proposedInvestmentAmountFut.map(proposedInvestmentAmountFut=>proposedInvestmentAmountFut)
-      previousSchemesAmount <- previousSchemesAmount().map(previousSchemesAmountFut=>previousSchemesAmountFut)
+      proposedInvestment <- proposedInvestmentAmountFut.map(proposedInvestmentAmountFut => proposedInvestmentAmountFut)
+      previousSchemesAmount <- previousSchemesAmount().map(previousSchemesAmountFut => previousSchemesAmountFut)
     } yield proposedInvestment + previousSchemesAmount
 
     //match statement returns an integer value (12 or 20 million) depending on the KI flag which the map uses to check if combined value is less than
@@ -64,6 +62,5 @@ trait LifetimeLimitHelper {
       case false => Constants.lifetimeLogicLimitNotKi
     }))
   }
-
 
 }

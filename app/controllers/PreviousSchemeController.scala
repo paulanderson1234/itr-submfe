@@ -20,15 +20,13 @@ import common.KeystoreKeys
 import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import controllers.Helpers.ControllerHelpers
+import controllers.Helpers
+import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 
 import scala.concurrent.Future
 import controllers.predicates.ValidActiveSession
 import views.html.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
-import models.PreviousSchemeModel
-import  play.api.data.Form
-
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -43,8 +41,8 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         id match {
-          case Some(id) => {
-            ControllerHelpers.getExistingInvestmentFromKeystore(keyStoreConnector, id).map {
+          case Some(idVal) => {
+            PreviousSchemesHelper.getExistingInvestmentFromKeystore(keyStoreConnector, idVal).map {
               case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data), backUrl.get))
               case None => Ok(PreviousScheme(previousSchemeForm, backUrl.get))
             }
@@ -72,10 +70,10 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
       },
       validFormData => {
         validFormData.processingId match {
-          case Some(id) => ControllerHelpers.updateKeystorePreviousInvestment(keyStoreConnector, validFormData).map {
+          case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(keyStoreConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
-          case None => ControllerHelpers.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map {
+          case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
         }

@@ -16,11 +16,11 @@
 
 package controllers
 
-import connectors.KeystoreConnector
-import controllers.Helpers.ControllerHelpers
+import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.ProposedInvestmentModel
+import models.{KiProcessingModel, ProposedInvestmentModel}
 import common._
 import forms.ProposedInvestmentForm._
 
@@ -57,17 +57,73 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
   }
 
   val submit = Action.async { implicit request =>
+
+    def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean]): Future[Result] = {
+      kiModel match {
+        // check previous answers present
+        case Some(data) if isMissingKiData(data) => {
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        }
+        case Some(dataWithPreviousValid) => {
+          // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
+          keyStoreConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
+
+          // if it's exceeded go to the error page
+          if (isLifeTimeAllowanceExceeded.getOrElse(false)) {
+            Future.successful(Redirect(routes.LifetimeAllowanceExceededController.show()))
+          }
+          else {
+            // not exceeded - continue
+            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
     proposedInvestmentForm.bindFromRequest().fold(
       formWithErrors => {
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector).flatMap(url =>
-          Future.successful(BadRequest(ProposedInvestment(formWithErrors, url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
+          Future.successful(BadRequest(ProposedInvestment(formWithErrors,
+            url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
-        //TODO: needs to go to what will use investment for page
-        Future.successful(Redirect(routes.WhatWillUseForController.show()))
+        for {
+          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
+          // Call API
+          isLifeTimeAllowanceExceeded <- SubmissionConnector.checkLifetimeAllowanceExceeded(
+            if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
+            validFormData.investmentAmount) //TO DO - PROPER API CALL
+          route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded)
+        } yield route
       }
     )
   }
 
+  def isMissingKiData(data: KiProcessingModel): Boolean = {
+
+    false
+//    if (data.dateConditionMet.isEmpty) {
+//      println("===================1")
+//      true
+//    }
+//    else if (data.dateConditionMet.get) {
+//      println("===================2")
+//      data.companyAssertsIsKi.isEmpty
+//    }
+//    else if (data.companyAssertsIsKi.get && !data.costsConditionMet.getOrElse(false)) {
+//      println("===================3")
+//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty
+//    }
+//    else if (data.companyAssertsIsKi.get && data.costsConditionMet.getOrElse(false)) {
+//      println("===================4")
+//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty || data.secondaryCondtionsMet.isEmpty
+//    } else {
+//      println("===================5")
+//      false
+//    }
+  }
 }
+

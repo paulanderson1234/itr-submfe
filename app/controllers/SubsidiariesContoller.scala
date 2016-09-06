@@ -24,8 +24,6 @@ import models.{DateOfIncorporationModel, IsKnowledgeIntensiveModel, PercentageSt
 import forms.SubsidiariesForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.Validation
 
 import scala.concurrent.Future
 import views.html._

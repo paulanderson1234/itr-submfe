@@ -17,15 +17,17 @@
 package controllers
 
 import common.{Constants, KeystoreKeys}
-import connectors.KeystoreConnector
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.predicates.ValidActiveSession
+import forms.OperatingCostsForm._
 import forms.PercentageStaffWithMastersForm._
-import models.PercentageStaffWithMastersModel
+import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 
 import scala.concurrent.Future
 import views.html._
+import views.html.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters}
 
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
@@ -43,21 +45,57 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
   }
 
   val submit = Action.async { implicit request =>
+
+    def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,
+                     isSecondaryKiConditionsMet: Option[Boolean]) = {
+      kiModel match {
+        // check previous answers present
+        case Some(data) if isMissingData(data) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
+          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+        }
+        case Some(dataWithPreviousValid) => {
+          // all good - save the cost condition result returned from API and navigate accordingly
+          val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
+            hasPercentageWithMasters = Some(percentageWithMasters))
+          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+
+          if (updatedModel.isKi) {
+            // it's all good - no need to ask more KI questions
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+              routes.PercentageStaffWithMastersController.show().toString())
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
+          }
+          else {
+            // Non cost KI condition not met. Try other conditions.
+            Future.successful(Redirect(routes.TenYearPlanController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
     percentageStaffWithMastersForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(knowledgeIntensive.PercentageStaffWithMasters(formWithErrors)))
+        Future.successful(BadRequest(PercentageStaffWithMasters(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
-        validFormData.staffWithMasters match {
-          case Constants.StandardRadioButtonYesValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
-              routes.PercentageStaffWithMastersController.show().toString)
-            Future.successful(Redirect(routes.SubsidiariesController.show))
-          }
-          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TenYearPlanController.show))
-        }
+        val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
+          Constants.StandardRadioButtonYesValue) true
+        else false
+        for {
+          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          // Call API
+          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(Some(percentageWithMasters),
+            if (kiModel.isDefined) kiModel.get.hasTenYearPlan else None) //TO DO - PROPER API CALL
+          route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
+        } yield route
       }
     )
+  }
+
+  def isMissingData(data: KiProcessingModel): Boolean = {
+    data.dateConditionMet.isEmpty || data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty
   }
 }

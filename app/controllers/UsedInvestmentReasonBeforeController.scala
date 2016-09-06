@@ -54,7 +54,8 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Valid
             Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
           }
           case Constants.StandardRadioButtonNoValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.UsedInvestmentReasonBeforeController.show().toString())
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+              routes.UsedInvestmentReasonBeforeController.show().toString())
             Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
           }
         }

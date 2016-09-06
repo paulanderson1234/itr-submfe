@@ -23,7 +23,6 @@ import play.api.mvc.Action
 import models.ContactDetailsModel
 import forms.ContactDetailsForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 import views.html.contactInformation.ContactDetails
 
 import scala.concurrent.Future

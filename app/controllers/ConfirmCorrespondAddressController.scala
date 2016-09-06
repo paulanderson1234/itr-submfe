@@ -52,10 +52,11 @@ trait ConfirmCorrespondAddressController extends FrontendController with ValidAc
 
         validFormData.contactAddressUse match {
           case Constants.StandardRadioButtonYesValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ConfirmCorrespondAddressController.show.toString())
-            Future.successful(Redirect(routes.SupportingDocumentsController.show))
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
+              routes.ConfirmCorrespondAddressController.show().toString())
+            Future.successful(Redirect(routes.SupportingDocumentsController.show()))
           }
-          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.ContactAddressController.show))
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.ContactAddressController.show()))
         }
       }
     )

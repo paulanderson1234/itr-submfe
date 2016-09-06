@@ -18,6 +18,7 @@ package controllers
 
 import common.KeystoreKeys
 import connectors.KeystoreConnector
+import controllers.Helpers.KnowledgeIntensiveHelper
 import controllers.predicates.ValidActiveSession
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
@@ -49,9 +50,9 @@ trait DateOfIncorporationController extends FrontendController with ValidActiveS
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
+        KnowledgeIntensiveHelper.setKiDateCondition(keyStoreConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
         Future.successful(Redirect(routes.NatureOfBusinessController.show))
       }
     )
   }
 }
-

@@ -46,6 +46,10 @@ trait KeystoreKeys {
   val contactAddress: String = "contactInformation:contactAddress"
   val previousSchemes: String = "previousInvestmentScheme:previousInvestmentSchemes"
 
+  // processing Keys
+  val kiProcessingModel: String = "processing:kiProcessingModel"
+  val lifeTimeAllowanceExceeded: String = "processing:lifeTimeAllowanceExceeded"
+
   // backlink keys
   val backLinkSupportingDocs: String = "backLink:SupportingDocs"
   val backLinkNewGeoMarket: String = "backLink:NewGeoMarket"

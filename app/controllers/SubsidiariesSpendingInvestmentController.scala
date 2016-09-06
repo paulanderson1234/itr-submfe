@@ -40,7 +40,6 @@ import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc.Action
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html._
 
 import scala.concurrent.Future
@@ -63,7 +62,6 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
       }
       else Future.successful(Redirect(routes.WhatWillUseForController.show()))
     }
-
     for {
       link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc)
       route <- routeRequest(link)
@@ -74,15 +72,18 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
     subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc).flatMap {
-          case Some(data) => Future.successful(BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
+          case Some(data) => Future.successful(
+            BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
           case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
       },
       validForm => {
         keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
         validForm.subSpendingInvestment match {
-          case  Constants.StandardRadioButtonYesValue  => Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
-          case  Constants.StandardRadioButtonNoValue   =>
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesSpendingInvestmentController.show().toString())
+          case  Constants.StandardRadioButtonYesValue  =>
+            Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
+          case  Constants.StandardRadioButtonNoValue =>
+            keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+              routes.SubsidiariesSpendingInvestmentController.show().toString())
             Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }
       }

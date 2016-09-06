@@ -24,8 +24,6 @@ import forms.NewGeographicalMarketForm._
 import models.{NewGeographicalMarketModel, PreviousBeforeDOFCSModel, UsedInvestmentReasonBeforeModel, WhatWillUseForModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.Validation
 
 import scala.concurrent.Future
 import views.html.investment.NewGeographicalMarket
