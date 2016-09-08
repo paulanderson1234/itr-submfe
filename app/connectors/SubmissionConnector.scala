@@ -40,7 +40,7 @@ trait SubmissionConnector {
                                rAndDCostsYear1: Int, rAndDCostsYear2: Int, rAndDCostsYear3: Int)
                               (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/rd-costs-checker/costs/" +
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/check-ki-costs/" +
       s"operating-costs/$operatingCostYear1/$operatingCostYear2/$operatingCostYear3/" +
       s"rd-costs/$rAndDCostsYear1/$rAndDCostsYear2/$rAndDCostsYear3")
   }
@@ -49,7 +49,7 @@ trait SubmissionConnector {
                                     hasTenYearPlan: Boolean)
                                    (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/secondary-conditions/has-percentage-with-masters/" +
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/check-secondary-conditions/has-percentage-with-masters/" +
       s"$hasPercentageWithMasters/has-ten-year-plan/$hasTenYearPlan")
   }
 
