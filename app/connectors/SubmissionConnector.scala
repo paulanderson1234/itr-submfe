@@ -92,7 +92,7 @@ trait SubmissionConnector {
     proposedAmount: Int)
                             (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief//lifetime-allowance/lifetime-allowance-checker/is-knowledge-intensive/" +
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/is-knowledge-intensive/" +
       s"$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
 
   }

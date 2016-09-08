@@ -50,6 +50,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedProposedInvestment = ProposedInvestmentModel(1234568)
 
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
+
+  val EISSchemeModel = PreviousSchemeModel("Enterprise Investment Scheme", 30000, None, None, None, None, None, None)
+  val SEISSchemeModel = PreviousSchemeModel("Seed Enterprise Investment Scheme", 30000000, None, None, None, None, None, None)
+  val emptySchemeModel = PreviousSchemeModel("", 0, None, None, None, None, None, None)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"

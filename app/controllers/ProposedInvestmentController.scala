@@ -68,13 +68,19 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
           // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
           keyStoreConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
 
-          // if it's exceeded go to the error page
-          if (isLifeTimeAllowanceExceeded.getOrElse(false)) {
-            Future.successful(Redirect(routes.LifetimeAllowanceExceededController.show()))
-          }
-          else {
-            // not exceeded - continue
-            Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          isLifeTimeAllowanceExceeded match {
+            case Some(data) =>
+              // if it's exceeded go to the error page
+              if (data) {
+                Future.successful(Redirect(routes.LifetimeAllowanceExceededController.show()))
+              }
+              else {
+                // not exceeded - continue
+                Future.successful(Redirect(routes.WhatWillUseForController.show()))
+              }
+
+            // if none, redirect back to HadPreviousRFI page.
+            case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
         }
         case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
@@ -96,7 +102,7 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
 
           isLifeTimeAllowanceExceeded <- SubmissionConnector.checkLifetimeAllowanceExceeded(
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
-            validFormData.investmentAmount) //TO DO - PROPER API CALL
+            validFormData.investmentAmount)
 
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded)
         } yield route
