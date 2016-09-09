@@ -19,8 +19,9 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.KeystoreKeys
-import connectors.KeystoreConnector
+import common.{Constants, KeystoreKeys}
+import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.Helpers.PreviousSchemesHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -45,11 +46,41 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
+  val model1 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
+  val model2 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
+  val model3 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+  val model4 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 19999999, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+  val model5 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 1, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+  val model6 = PreviousSchemeModel(
+    Constants.PageInvestmentSchemeAnotherValue, 11999999, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
+
+
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+  val previousSchemeTrueKIVectorList = Vector(model1, model2, model3)
+  val previousSchemeOverTrueKIVectorList = Vector(model4, model5, model5)
+  val previousSchemeFalseKIVectorList = Vector(model1, model2, model3)
+  val previousSchemeOverFalseKIVectorList = Vector(model4, model5, model6)
+
+
   val model = ProposedInvestmentModel(5000000)
   val emptyModel = ProposedInvestmentModel(0)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedProposedInvestment = ProposedInvestmentModel(1234568)
 
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
+
+  val EISSchemeModel = PreviousSchemeModel("Enterprise Investment Scheme", 30000, None, None, None, None, None, None)
+  val SEISSchemeModel = PreviousSchemeModel("Seed Enterprise Investment Scheme", 30000000, None, None, None, None, None, None)
+  val emptySchemeModel = PreviousSchemeModel("", 0, None, None, None, None, None, None)
+
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -118,11 +149,15 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit to the ProposedInvestmentController" should {
-    "redirect to the  company's registered address page" in {
+  "Sending a valid form submit with not exceeding the lifetime allowance (true KI) to the ProposedInvestmentController" should {
+    "redirect to the what will use for page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentAmount" -> "1234567")
@@ -135,6 +170,93 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
+  "Sending a valid form submit with exceeded lifetime allowance (true KI) to the ProposedInvestmentController" should {
+    "redirect to the exceeded lifetime limit page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "1234567")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController" should {
+    "redirect to the what will do page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "1234567")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController" should {
+    "redirect to the exceeded lifetime limit page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "1234567")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit with No KIModel to the ProposedInvestmentController" should {
+    "redirect to the DateOfIncorporation page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(falseKIModel.isKi, EISSchemeModel.investmentAmount, model.investmentAmount))
+        .thenReturn(Future.successful(None))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "1234567")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
   "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
     "redirect with a bad request" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
@@ -142,6 +264,36 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       val request = FakeRequest().withFormUrlEncodedBody(
         "investmentAmount" -> "fff")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form submission with value 0 to the ProposedInvestmentController" should {
+    "redirect with a bad request" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "0")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController" should {
+    "redirect with a bad request" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "investmentAmount" -> "5000001")
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST

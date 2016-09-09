@@ -57,25 +57,8 @@ trait SubmissionConnector {
     proposedAmount: Int)
                             (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
-    // dodgy code for now
-    println("========================== IM IN checklifetimeAllowanceExceeded")
-    println(s"========================== isKi is: $isKi")
-    println(s"========================== proposed invest is: $proposedAmount")
-    println(s"========================== previousInvestmentSchemesTotal is: $previousInvestmentSchemesTotal")
-    Future(Some(false))
-
-    val maxKi: Int = 20000000
-    val maxNonKi: Int = 12000000
-
-    if(isKi)
-      {
-        Future(Some(proposedAmount + previousInvestmentSchemesTotal > maxKi))
-      }
-    else
-    {
-      Future(Some(proposedAmount + previousInvestmentSchemesTotal > maxNonKi))
-    }
-
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/is-knowledge-intensive/" +
+      s"$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
 
   }
 
