@@ -16,11 +16,10 @@
 
 package controllers
 
-import java.time.ZoneId
-import java.util.{Date, UUID}
+import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -32,7 +31,7 @@ import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 
@@ -42,40 +41,19 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
-  // set up border line conditions of today and future date (tomorrow)
-  val date = new Date();
-  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-  val date3YearsAgo = localDate.minusYears(3)
-  val date3YearsAgoDay: Int = date3YearsAgo.getDayOfMonth
-  val date3YearsAgoMonth: Int = date3YearsAgo.getMonthValue
-  val date3YearsAgoYear: Int = date3YearsAgo.getYear
-
-  val date3YearsOneDay = localDate.minusYears(3).minusDays(1)
-  val date3YearsOneDayDay: Int = date3YearsOneDay.getDayOfMonth
-  val date3YearsOneDayMonth: Int = date3YearsOneDay.getMonthValue
-  val date3YearsOneDayYear: Int = date3YearsOneDay.getYear
-
-  val date3YearsLessOneDay = localDate.minusYears(3).plusDays(1)
-  val date3YearsLessOneDayDay: Int = date3YearsLessOneDay.getDayOfMonth
-  val date3YearsLessOneDayMonth: Int = date3YearsLessOneDay.getMonthValue
-  val date3YearsLessOneDayYear: Int = date3YearsLessOneDay.getYear
-
-  val todayDay:String = localDate.getDayOfMonth.toString
-  val todayMonth: String = localDate.getMonthValue.toString
-  val todayYear: String = localDate.getYear.toString
-
-
   object CommercialSaleControllerTest extends CommercialSaleController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val model = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(23),Some(11),Some(1993))
-  val emptyModel = CommercialSaleModel("", None, None, None)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedCommercialSale = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(15),Some(3),Some(1996))
-  val keyStoreSavedDateOfIncorporation3Years = DateOfIncorporationModel(Some(date3YearsAgoDay),Some(date3YearsAgoMonth),Some(date3YearsAgoYear))
-  val keyStoreSavedDateOfIncorporation3YearsLessOneDay = DateOfIncorporationModel(Some(date3YearsLessOneDayDay),Some(date3YearsLessOneDayMonth),Some(date3YearsLessOneDayYear))
-  val keyStoreSavedDateOfIncorporation3YearsAndOneDay = DateOfIncorporationModel(Some(date3YearsOneDayDay),Some(date3YearsOneDayMonth),Some(date3YearsOneDayYear))
+
+  val model = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(23),Some(11),Some(1993))
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
+
+  val savedKIDateconditionMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
+  val savedKIDateconditionNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+
+  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(21),Some(2),Some(2015))
 
 
   def showWithSession(test: Future[Result] => Any) {
@@ -120,36 +98,19 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => status(result) shouldBe OK
       )
     }
-
   }
 
   "Sending a valid Yes form submission to the CommercialSaleController" should {
-    "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
+    "redirect to the KI page if the KI date condition is met" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
-        }
-      )
-    }
-  }
-
-  "Sending a valid Yes form submission to the CommercialSaleController" should {
-    "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
-        "commercialSaleDay" -> "23",
-        "commercialSaleMonth" -> "11",
-        "commercialSaleYear" -> "1993")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -160,69 +121,16 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid Yes form submission to the CommercialSaleController" should {
-    "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
+    "redirect to the subsidiaries page if the KI date condition is not met" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
-        }
-      )
-    }
-  }
-
-
-  "Sending a valid No form submission to the CommercialSaleController" should {
-    "redirect to the subsidiaries page if date of incorporation is exactly 3 years from today" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
-        "commercialSaleDay" -> "",
-        "commercialSaleMonth" -> "",
-        "commercialSaleYear" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3Years)))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
-        }
-      )
-    }
-  }
-
-  "Sending a valid No form submission to the CommercialSaleController" should {
-    "redirect to the subsidiaries page if date of incorporation is more than 3 years from today" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
-        "commercialSaleDay" -> "",
-        "commercialSaleMonth" -> "",
-        "commercialSaleYear" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsAndOneDay)))
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
-        }
-      )
-    }
-  }
-
-  "Sending a valid No form submission to the CommercialSaleController" should {
-    "redirect to the knowledge intensive page if date of incorporation is less than 3 years from today" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
-        "commercialSaleDay" -> "",
-        "commercialSaleMonth" -> "",
-        "commercialSaleYear" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -233,90 +141,40 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a valid No form submission to the CommercialSaleController" should {
-    "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
+    "redirect to the KI page if the KI date condition is met" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
         }
       )
     }
   }
 
-  "Sending a valid Yes form submission to the CommercialSaleController" should {
-    "redirect to the date of incorporation page if no date of incorporation is retrieved from keystore" in {
+  "Sending a valid No form submission to the CommercialSaleController" should {
+    "redirect to the subsidiaries page if the KI date condition is not met" in {
       val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
-        "commercialSaleDay" -> "12",
-        "commercialSaleMonth" -> "1",
-        "commercialSaleYear" -> "2016")
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
-    "redirect to itself" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "",
-        "commercialSaleDay" -> "",
-        "commercialSaleMonth" -> "",
-        "commercialSaleYear" -> "")
-
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
-        }
-      )
-    }
-  }
-
-  "Sending an an invalid form submission with both No and a date to the CommercialSaleController" should {
-    "redirect to itself with validation errors" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> "",
-        "commercialSaleDay" -> "",
-        "commercialSaleMonth" -> "",
-        "commercialSaleYear" -> "")
-
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
-        }
-      )
-    }
-  }
-
-  "Sending an invalid form with missing data submission with validation errors to the CommercialSaleController" should {
-    "redirect to itself" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
-        "commercialSaleDay" -> "12",
-        "commercialSaleMonth" -> "11",
-        "commercialSaleYear" -> "")
-
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
         }
       )
     }

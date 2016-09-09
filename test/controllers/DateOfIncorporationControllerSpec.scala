@@ -16,9 +16,11 @@
 
 package controllers
 
-import java.util.UUID
+import java.time.ZoneId
+import java.util.{Date, UUID}
 
 import builders.SessionBuilder
+import common.KeystoreKeys
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -38,6 +40,30 @@ import scala.concurrent.Future
 
 class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
+  // set up border line conditions of today and future date (tomorrow)
+  val date = new Date()
+  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+  val todayDay: String = localDate.getDayOfMonth.toString
+  val todayMonth: String = localDate.getMonthValue.toString
+  val todayYear: String = localDate.getYear.toString
+
+  // 3 year boundary dates (at, below, above) from today
+  val date3YearsAgo = localDate.minusYears(3)
+  val date3YearsAgoDay: Int = date3YearsAgo.getDayOfMonth
+  val date3YearsAgoMonth: Int = date3YearsAgo.getMonthValue
+  val date3YearsAgoYear: Int = date3YearsAgo.getYear
+
+  val date3YearsOneDay = localDate.minusYears(3).minusDays(1)
+  val date3YearsOneDayDay: Int = date3YearsOneDay.getDayOfMonth
+  val date3YearsOneDayMonth: Int = date3YearsOneDay.getMonthValue
+  val date3YearsOneDayYear: Int = date3YearsOneDay.getYear
+
+  val date3YearsLessOneDay = localDate.minusYears(3).plusDays(1)
+  val date3yearsLessOneDayDay: Int = date3YearsLessOneDay.getDayOfMonth
+  val date3YearsLessOneDayMonth: Int = date3YearsLessOneDay.getMonthValue
+  val date3YearsLessOneDayYear: Int = date3YearsLessOneDay.getYear
+
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object DateOfIncorporationControllerTest extends DateOfIncorporationController {
@@ -49,7 +75,11 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   val model = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
   val emptyModel = DateOfIncorporationModel(None, None, None)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
+
   val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
+  val savedKIData = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+  val updatedKIData = KiProcessingModel(Some(true),Some(false), Some(false), Some(false), Some(false))
+  val updatedKiCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(updatedKIData)))
 
 
   def showWithSession(test: Future[Result] => Any) {
@@ -106,6 +136,23 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
       submitWithSession(request)(
         result => {
+
+//          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+//            .thenReturn(Future.successful(updatedKiCacheMap))
+
+//          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any()), Matchers.any())
+//            .thenReturn(Future.successful(updatedKIData))
+
+          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
+          when(mockKeyStoreConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+          when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(savedKIData)))
+
+//          when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+//            .thenReturn(Future.successful(Option(savedKIData)))
+//          //when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
+//          when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
+//          when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.dateOfIncorporation), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
         }
