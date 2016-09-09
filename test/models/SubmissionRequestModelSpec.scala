@@ -32,7 +32,7 @@ class SubmissionRequestModelSpec extends UnitSpec {
     val sub = new SubmissionRequest(cd, yd)
 
     val json = Json.toJson(sub)
-    json shouldBe testJson
+    json.toString() shouldBe testJson
     println(json)
   }
 
