@@ -44,11 +44,41 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   }
 
+  val validResponse = true
+  val trueResponse = true
+  val falseResponse = false
+
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
-  "Calling checkLifetimeAllowanceExceeded" should {
+  "Calling validateKiCostConditions" should {
 
-    val validResponse = true
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val operatingCostData: Int = 1000
+      val rAndDCostData: Int = 100
+
+      val result = TargetSubmissionConnector.validateKiCostConditions(operatingCostData,operatingCostData,operatingCostData,rAndDCostData,rAndDCostData,rAndDCostData)
+      await(result) shouldBe Some(trueResponse)
+    }
+  }
+
+  "Calling validateSecondaryKiConditions" should {
+
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val hasPercentageWithMasters: Boolean = true
+      val hasTenYearPlan: Boolean = true
+
+      val result = TargetSubmissionConnector.validateSecondaryKiConditions(hasPercentageWithMasters,hasTenYearPlan)
+      await(result) shouldBe Some(trueResponse)
+    }
+  }
+
+  "Calling checkLifetimeAllowanceExceeded" should {
 
     when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
 
