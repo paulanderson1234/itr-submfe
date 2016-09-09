@@ -59,10 +59,18 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
         case Some(dataWithDateConditionMet) => {
           // all good - save the cost condition returned from API and navigate accordingly
           keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
-          if (isCostConditionMet.getOrElse(false)) Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
-          else {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
-            Future.successful(Redirect(routes.IneligibleForKIController.show()))
+
+          isCostConditionMet match {
+            case Some(data) =>
+
+              if(data){
+                Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
+              } else {
+                keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+                Future.successful(Redirect(routes.IneligibleForKIController.show()))
+              }
+              //will only hit case none if the back end isn't running.
+            case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
           }
         }
         case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
