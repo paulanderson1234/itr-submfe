@@ -49,18 +49,17 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   "Calling checkLifetimeAllowanceExceeded" should {
 
     val validResponse = true
-    val trueResponse = true
-    val falseResponse = false
 
     when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
 
     "return a valid response" in {
 
-      val isKi: Boolean = true
-      val previousInvestmentSchemesTotal: Int = 1000
-      val proposedAmount: Int = 1000
+      val hadPrevRFI = true
+      val isKi = true
+      val previousInvestmentSchemesTotal= 1000
+      val proposedAmount = 1000
 
-      val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(isKi, previousInvestmentSchemesTotal, proposedAmount)
+      val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(hadPrevRFI, isKi, previousInvestmentSchemesTotal, proposedAmount)
       await(result) shouldBe Some(validResponse)
     }
   }
