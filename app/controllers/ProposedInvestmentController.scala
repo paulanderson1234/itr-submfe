@@ -80,6 +80,7 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
               }
 
             // if none, redirect back to HadPreviousRFI page.
+            // Will only hit this if there is no backend connected.
             case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
         }
