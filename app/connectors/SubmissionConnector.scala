@@ -18,9 +18,11 @@ package connectors
 
 import common.Constants
 import config.{TavcSessionCache, WSHttp}
+import models.{SubmissionRequest}
+import play.api.libs.json.{Json, JsValue}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, HttpPut}
+import uk.gov.hmrc.play.http._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -95,6 +97,10 @@ trait SubmissionConnector {
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/is-knowledge-intensive/" +
       s"$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
 
+  }
+
+  def submitAdvancedAssurance(submissionRequest: SubmissionRequest)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/submit", Json.toJson(submissionRequest))
   }
 
 }

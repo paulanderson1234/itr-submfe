@@ -15,7 +15,6 @@
  */
 
 package models
-import model.SubmissionResponse
 import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
@@ -25,7 +24,7 @@ class SubmissionRequestModelSpec extends UnitSpec {
   val testJson = """{"contactDetails":{"forename":"gary","surname":"hull","telephoneNumber":"01952 256555","email":"fred@fred.com"},"yourCompanyNeedModel":{"needAAorCS":"AA"}}"""
 
   // form json to model - unapply
-  "call unapply successfully to create ss Json" in {
+  "call unapply successfully to create as Json" in {
     implicit val formats = Json.format[SubmissionRequest]
     val cd = ContactDetailsModel("gary", "hull", "01952 256555", "fred@fred.com")
     val yd = YourCompanyNeedModel("AA")
@@ -33,7 +32,6 @@ class SubmissionRequestModelSpec extends UnitSpec {
 
     val json = Json.toJson(sub)
     json.toString() shouldBe testJson
-    println(json)
   }
 
 

@@ -16,13 +16,21 @@
 
 package controllers
 
+import common.Constants
+import connectors.SubmissionConnector
 import controllers.predicates.ValidActiveSession
+import models.{SubmissionResponse}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController
 
 trait AcknowledgementController extends FrontendController with ValidActiveSession {
-  val show = ValidateSession.async { implicit request => Future.successful(Ok(views.html.checkAndSubmit.Acknowledgement()))}
+  val show = ValidateSession.async { implicit request =>
+    /** Dummy implementation. Will be replaced by final Submission model**/
+    val submissionResponseModel = SubmissionConnector.submitAdvancedAssurance(Constants.dummySubmissionRequestModelValid)
+    submissionResponseModel.map { submissionResponse =>
+      Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+    }
+  }
 }

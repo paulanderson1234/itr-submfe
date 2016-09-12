@@ -46,8 +46,7 @@ class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeReq
         //banner
         document.body.getElementById("submission-confirmation").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.submissionConfirmation")
         document.body.getElementById("ref-number-heading").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.refNumberHeading")
-        document.body.getElementById("ref-number").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.refNumber")
-        //email
+        document.body.getElementById("ref-number").text() should fullyMatch regex """^FBUND[0-9]{8}$"""
         document.body.getElementById("confirm-email").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.confirmEmail")
         //'what to do next' section
         document.body.getElementById("what-next").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.toDoNext")
