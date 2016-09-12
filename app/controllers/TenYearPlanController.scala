@@ -86,7 +86,7 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(
-            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters else None, Some(hasTenYearPlan)) //TO DO - PROPER API CALL
+            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan) //TO DO - PROPER API CALL
           route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
         } yield route
       }

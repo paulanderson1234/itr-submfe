@@ -17,7 +17,7 @@
 package Forms
 
 import forms.TaxPayerReferenceForm
-import models.TaxpayerReferenceModel
+import models.{ContactDetailsModel, SubmissionRequest, TaxpayerReferenceModel, YourCompanyNeedModel}
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -353,6 +353,17 @@ class TaxPayerReferenceFormSpec extends UnitSpec {
       val taxPayerReferenceForm = TaxPayerReferenceForm.taxPayerReferenceForm.fill(taxpayerReferenceModel)
       val formJson = Json.toJson(taxPayerReferenceForm.get).toString()
       formJson shouldBe taxpayerReferenceJson
+    }
+
+    // form json to model - unapply
+    "call unapply successfully to create ss Json" in {
+      implicit val formats = Json.format[SubmissionRequest]
+      val cd = ContactDetailsModel("gary", "hull", "01952 256555", "fred@fred.com")
+      val yd = YourCompanyNeedModel("AA")
+      val sub = new SubmissionRequest(cd,yd)
+
+      val json = Json.toJson(sub)
+      println(json)
     }
   }
 }

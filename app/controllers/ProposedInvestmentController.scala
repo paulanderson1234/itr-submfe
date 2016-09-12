@@ -20,8 +20,9 @@ import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.{KiProcessingModel, ProposedInvestmentModel}
+import models.{HadPreviousRFIModel, KiProcessingModel, ProposedInvestmentModel}
 import common._
+import common.Constants._
 import forms.ProposedInvestmentForm._
 
 import scala.concurrent.Future
@@ -98,10 +99,12 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          hadPrevRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
           previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
           // Call API
 
           isLifeTimeAllowanceExceeded <- SubmissionConnector.checkLifetimeAllowanceExceeded(
+            if(hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
 
