@@ -66,23 +66,52 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   }
 
+  val validResponse = true
+  val trueResponse = true
+  val falseResponse = false
+
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
-  "Calling checkLifetimeAllowanceExceeded" should {
-
-    val validResponse = true
-    val trueResponse = true
-    val falseResponse = false
+  "Calling validateKiCostConditions" should {
 
     when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
 
     "return a valid response" in {
 
-      val isKi: Boolean = true
-      val previousInvestmentSchemesTotal: Int = 1000
-      val proposedAmount: Int = 1000
+      val operatingCostData: Int = 1000
+      val rAndDCostData: Int = 100
 
-      val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(isKi, previousInvestmentSchemesTotal, proposedAmount)
+      val result = TargetSubmissionConnector.validateKiCostConditions(operatingCostData,operatingCostData,operatingCostData,rAndDCostData,rAndDCostData,rAndDCostData)
+      await(result) shouldBe Some(trueResponse)
+    }
+  }
+
+  "Calling validateSecondaryKiConditions" should {
+
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val hasPercentageWithMasters: Boolean = true
+      val hasTenYearPlan: Boolean = true
+
+      val result = TargetSubmissionConnector.validateSecondaryKiConditions(hasPercentageWithMasters,hasTenYearPlan)
+      await(result) shouldBe Some(trueResponse)
+    }
+  }
+
+  "Calling checkLifetimeAllowanceExceeded" should {
+
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val hadPrevRFI = true
+      val isKi = true
+      val previousInvestmentSchemesTotal= 1000
+      val proposedAmount = 1000
+
+      val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(hadPrevRFI, isKi, previousInvestmentSchemesTotal, proposedAmount)
       await(result) shouldBe Some(validResponse)
     }
   }

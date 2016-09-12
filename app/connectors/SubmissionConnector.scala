@@ -41,61 +41,26 @@ trait SubmissionConnector {
   def validateKiCostConditions(operatingCostYear1: Int, operatingCostYear2: Int, operatingCostYear3: Int,
                                rAndDCostsYear1: Int, rAndDCostsYear2: Int, rAndDCostsYear3: Int)
                               (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    
-    //http.GET[Option[..TODO pass correct params, call API with params, check response (return an object not just bool)
 
-    // dodgy code just for now - ripped off existing..
-    println("========================== IM IN validateKiCostConditions")
-    println(s"========================== rd1 is: $rAndDCostsYear1")
-    println(s"========================== rd2 is: $rAndDCostsYear2")
-    println(s"========================== rd3 is: $rAndDCostsYear3")
-    println(s"========================== oc1 is: $operatingCostYear1")
-    println(s"========================== oc2 is: $operatingCostYear2")
-    println(s"========================== oc3 is: $operatingCostYear3")
-
-    def findCosts(operatingCosts: scala.Double, divideBy: Int): Double = {
-      val amount = (operatingCosts / 100) * divideBy
-      amount
-    }
-
-    if ((rAndDCostsYear1.toDouble >= findCosts(operatingCostYear1.toDouble, Constants.KI10Percent) &&
-      rAndDCostsYear2.toDouble >= findCosts(operatingCostYear2.toDouble, Constants.KI10Percent) &&
-      rAndDCostsYear3.toDouble >= findCosts(operatingCostYear3.toDouble, Constants.KI10Percent)) ||
-      (rAndDCostsYear1.toDouble >= findCosts(operatingCostYear1.toDouble, Constants.KI15Percent) ||
-        rAndDCostsYear2.toDouble >= findCosts(operatingCostYear2.toDouble, Constants.KI15Percent) ||
-        rAndDCostsYear3.toDouble >= findCosts(operatingCostYear3.toDouble, Constants.KI15Percent)))
-      Future(Some(true))
-    else
-      Future(Some(false))
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/check-ki-costs/" +
+      s"operating-costs/$operatingCostYear1/$operatingCostYear2/$operatingCostYear3/" +
+      s"rd-costs/$rAndDCostsYear1/$rAndDCostsYear2/$rAndDCostsYear3")
   }
 
-  def validateSecondaryKiConditions(hasPercentageWithMasters: Option[Boolean],
-                                    hasTenYearPlan: Option[Boolean])
+  def validateSecondaryKiConditions(hasPercentageWithMasters: Boolean,
+                                    hasTenYearPlan: Boolean)
                                    (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    //http.GET[Option[..TODO pass correct params, call API with params, check response (return an object not just bool)
-                     // Handle errors..?
 
-    // dodgy code just for now
-    println("========================== IM IN validateSecondaryKiConditions")
-    println(s"========================== hasPercentageWithMasters is: $hasPercentageWithMasters")
-    println(s"========================== hasTenYearPlan is: $hasTenYearPlan")
-    if (hasPercentageWithMasters.getOrElse(false) || hasTenYearPlan.getOrElse(false))
-      {
-        println("================== result is true")
-        Future(Some(true))
-      }
-    else {
-      println("================== result is false")
-      Future(Some(false))
-    }
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/knowledge-intensive/check-secondary-conditions/has-percentage-with-masters/" +
+      s"$hasPercentageWithMasters/has-ten-year-plan/$hasTenYearPlan")
   }
 
-  def checkLifetimeAllowanceExceeded(isKi: Boolean, previousInvestmentSchemesTotal: Int,
+  def checkLifetimeAllowanceExceeded(hadPrevRFI: Boolean, isKi: Boolean, previousInvestmentSchemesTotal: Int,
     proposedAmount: Int)
                             (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/is-knowledge-intensive/" +
-      s"$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/had-previous-rfi/" +
+      s"$hadPrevRFI/is-knowledge-intensive/$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
 
   }
 
