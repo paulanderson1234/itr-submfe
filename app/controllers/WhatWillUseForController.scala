@@ -93,24 +93,26 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
 
   def isMissingKiData(data: KiProcessingModel): Boolean = {
 
-    if(data.companyAssertsIsKi.isEmpty){
-      true
-    }
-    else if (data.companyAssertsIsKi.get){
-      if(data.costsConditionMet.isEmpty){
-        true
-      } else {
-        if (!data.costsConditionMet.get){
-          data.secondaryCondtionsMet.isEmpty
-        } else false
-      }
-    }
-    else if (data.dateConditionMet.isEmpty) {
-      true
-    }
-    else {
-      false
-    }
+    false
+
+//    if(data.companyAssertsIsKi.isEmpty){
+//      true
+//    }
+//    else if (data.companyAssertsIsKi.get){
+//      if(data.costsConditionMet.isEmpty){
+//        true
+//      } else {
+//        if (!data.costsConditionMet.get){
+//          data.secondaryCondtionsMet.isEmpty
+//        } else false
+//      }
+//    }
+//    else if (data.dateConditionMet.isEmpty) {
+//      true
+//    }
+//    else {
+//      false
+//    }
   }
 
   def getAgeLimit(isKI: Boolean): Int = {
