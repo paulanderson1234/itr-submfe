@@ -16,19 +16,34 @@
 
 package views
 
+import common.KeystoreKeys
+import connectors.KeystoreConnector
 import controllers.{routes, AcknowledgementController}
 import controllers.helpers.{TestHelper, FakeRequestHelper}
+import models.{YourCompanyNeedModel, ContactDetailsModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.specs2.mock.Mockito
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import play.api.test.Helpers._
 
-class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper{
+import scala.concurrent.Future
 
-    class SetupPage {
+class AcknowledgementSpec extends UnitSpec with WithFakeApplication with Mockito with FakeRequestHelper{
+
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+
+  val contactValid = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
+  val yourCompanyNeed = YourCompanyNeedModel("AA")
+
+
+  class SetupPage {
 
       val controller = new AcknowledgementController{
+        val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
       }
     }
 
@@ -37,6 +52,10 @@ class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeReq
       "contain the correct elements when loaded" in new SetupPage {
         val document: Document = {
           //val userId = s"user-${UUID.randomUUID}"
+          when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(contactValid)))
+          when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(yourCompanyNeed)))
           val result = controller.show.apply(fakeRequestWithSession)
           Jsoup.parse(contentAsString(result))
         }

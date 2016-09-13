@@ -69,6 +69,12 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val validResponse = true
   val trueResponse = true
   val falseResponse = false
+  val dummySubmissionRequestModelValid = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@gmail.com"),YourCompanyNeedModel("AA"))
+  val dummySubmissionRequestModelBad = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@badrequest.com"),YourCompanyNeedModel("AA"))
+  val dummySubmissionRequestModelInternalServerError = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@internalservererrorrequestgmail.com"),YourCompanyNeedModel("AA"))
+  val dummySubmissionRequestModelForbidden = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@forbiddengmail.com"),YourCompanyNeedModel("AA"))
+  val dummySubmissionRequestModelServiceUnavailable = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@serviceunavailablerequestgmail.com"),YourCompanyNeedModel("AA"))
+  val dummySubmissionResponseModel = SubmissionResponse(true,"FBUND93821077","Submission Request Successful")
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
@@ -120,7 +126,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a OK" in {
 
-      val validRequest = Constants.dummySubmissionRequestModelValid
+      val validRequest = dummySubmissionRequestModelValid
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest)
@@ -132,7 +138,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a BAD_REQUEST error" in {
 
-      val badRequest = Constants.dummySubmissionRequestModelBad
+      val badRequest = dummySubmissionRequestModelBad
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(badRequest)
@@ -145,7 +151,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a FORBIDDEN Error" in {
 
-      val forbiddenRequest = Constants.dummySubmissionRequestModelForbidden
+      val forbiddenRequest = dummySubmissionRequestModelForbidden
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(FORBIDDEN)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(forbiddenRequest)
@@ -158,7 +164,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a SERVICE UNAVAILABLE ERROR" in {
 
-      val unavailableRequest = Constants.dummySubmissionRequestModelServiceUnavailable
+      val unavailableRequest = dummySubmissionRequestModelServiceUnavailable
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(unavailableRequest)
@@ -170,7 +176,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a INTERNAL SERVER ERROR" in {
 
-      val internalErrorRequest = Constants.dummySubmissionRequestModelInternalServerError
+      val internalErrorRequest = dummySubmissionRequestModelInternalServerError
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(internalErrorRequest)

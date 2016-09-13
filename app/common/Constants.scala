@@ -42,10 +42,4 @@ trait Constants {
   val PageInvestmentSchemeVctValue : String = "Venture Capital Trust"
   val PageInvestmentSchemeAnotherValue : String = "Another scheme"
 
-  val dummySubmissionRequestModelValid = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@gmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelBad = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@badrequest.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelInternalServerError = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@internalservererrorrequestgmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelForbidden = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@forbiddengmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelServiceUnavailable = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@serviceunavailablerequestgmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionResponseModel = SubmissionResponse(true,"FBUND93821077","Submission Request Successful")
 }

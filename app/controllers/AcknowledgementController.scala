@@ -16,19 +16,33 @@
 
 package controllers
 
-import common.Constants
-import connectors.SubmissionConnector
+import common.{KeystoreKeys, Constants}
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.predicates.ValidActiveSession
-import models.{SubmissionResponse}
+import models.{YourCompanyNeedModel, ContactDetailsModel, SubmissionRequest, SubmissionResponse}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 
-object AcknowledgementController extends AcknowledgementController
+object AcknowledgementController extends AcknowledgementController{
+  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+}
+
 
 trait AcknowledgementController extends FrontendController with ValidActiveSession {
+
+  val keyStoreConnector: KeystoreConnector
+
   val show = ValidateSession.async { implicit request =>
     /** Dummy implementation. Will be replaced by final Submission model**/
-    val submissionResponseModel = SubmissionConnector.submitAdvancedAssurance(Constants.dummySubmissionRequestModelValid)
+
+    val subModel =for {
+      contactDetails <- keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+      yourCompanyNeed <- keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed)
+    }yield SubmissionRequest(contactDetails.get,yourCompanyNeed.get)
+
+    val submissionResponseModel = subModel.flatMap{ model =>
+      SubmissionConnector.submitAdvancedAssurance(model)
+    }
     submissionResponseModel.map { submissionResponse =>
       Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
     }
