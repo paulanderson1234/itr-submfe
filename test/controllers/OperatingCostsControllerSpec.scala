@@ -40,9 +40,11 @@ import scala.concurrent.Future
 class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   object OperatingCostsControllerTest extends OperatingCostsController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }
 
   val operatingCostsAsJson =
@@ -58,6 +60,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   val keyStoreSaved15PercBoundaryOC = OperatingCostsModel("755500", "900300", "523450", "37775", "135045", "0")
 
   val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val dateConditionMetKIModel = KiProcessingModel(Some(true),Some(true), None, None, None, None)
   val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
   val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
   val missingKIModel = KiProcessingModel(None,Some(true),None, None, None, None)
@@ -68,8 +71,6 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   val operatingCostsTrueKIVectorList = Vector(keyStoreSaved15PercBoundaryOC)
   val operatingCostsFalseKIVectorList = Vector(operatingCosts1, operatingCosts1, operatingCosts1,rAndDCosts2,rAndDCosts2,rAndDCosts2)
-
-  val mockSubmissionConnector = mock[SubmissionConnector]
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -118,6 +119,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the OperatingCostsController" should {
     "redirect to the Percentage Of Staff With Masters page (for now)" in {
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
@@ -141,7 +144,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the OperatingCostsController but not KI" should {
     "redirect to the Ineligible For KI page" in {
-
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
@@ -188,7 +192,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an empty KI Model to the OperatingCostsController" should {
     "redirect to DateOfIncorporation page" in {
-
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
@@ -210,9 +215,35 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a KI Model set as None to the OperatingCostsController" should {
+    "redirect to DateOfIncorporation page" in {
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "operatingCosts1stYear" -> "100",
+        "operatingCosts2ndYear" -> "100",
+        "operatingCosts3rdYear" -> "100",
+        "rAndDCosts1stYear" -> "10",
+        "rAndDCosts2ndYear" -> "10",
+        "rAndDCosts3rdYear" -> "10")
+
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
   "Sending an KI Model with missing data to the OperatingCostsController" should {
     "redirect to DateOfIncorporation page" in {
-
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingKIModel)))
@@ -236,7 +267,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an non KI Model to the OperatingCostsController" should {
     "redirect to IsKI page" in {
-
+      when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))

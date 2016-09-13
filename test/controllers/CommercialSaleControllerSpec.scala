@@ -52,6 +52,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   val savedKIDateconditionMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
   val savedKIDateconditionNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+  val savedKIDateConditionEmpty = KiProcessingModel(Some(true), None, Some(false), Some(false), Some(false))
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
 
   val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(21),Some(2),Some(2015))
 
@@ -140,6 +142,26 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a valid No form submission with a empty KI Model to the CommercialSaleController" should {
+    "redirect to the date of incorporation page" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
+        "commercialSaleDay" -> "23",
+        "commercialSaleMonth" -> "11",
+        "commercialSaleYear" -> "1993")
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
   "Sending a valid No form submission to the CommercialSaleController" should {
     "redirect to the KI page if the KI date condition is met" in {
       val request = FakeRequest().withFormUrlEncodedBody(
@@ -155,6 +177,26 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending a valid No form submission with a Ki Model which has missing data to the CommercialSaleController" should {
+    "redirect to the date of incorporation page" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
+        "commercialSaleDay" -> "",
+        "commercialSaleMonth" -> "",
+        "commercialSaleYear" -> "")
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
         }
       )
     }

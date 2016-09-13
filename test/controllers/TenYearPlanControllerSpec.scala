@@ -18,8 +18,8 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
-import connectors.KeystoreConnector
+import common.{Constants, KeystoreKeys}
+import connectors.{KeystoreConnector, SubmissionConnector}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -39,9 +39,11 @@ import scala.concurrent.Future
 class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   object TenYearPlanControllerTest extends TenYearPlanController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }
 
   val model = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("Text"))
@@ -49,7 +51,11 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("abcd"))
   val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
-
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(true), Some(false), Some(false), Some(false), None, Some(false))
+  val isKiKIModel = KiProcessingModel(Some(false), Some(true), Some(true), Some(true), Some(true), Some(true))
+  val noMastersKIModel = KiProcessingModel(Some(true), Some(true), Some(true), None, Some(true), Some(true))
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -80,6 +86,8 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -89,6 +97,8 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(emptyKIModel)))
       showWithSession(
         result => status(result) shouldBe OK
       )
@@ -96,11 +106,73 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   }
 
+  "Sending a valid No form submission to the TenYearPlanController with a false KI Model" should {
+    "redirect to the subsidiaries page if no and and no description" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
+        "tenYearPlanDesc" -> "")
+
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(isKiKIModel)))
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+        }
+      )
+    }
+  }
+
+  "Sending a valid No form submission to the TenYearPlanController without a KI Model" should {
+    "redirect to the subsidiaries page if no and and no description" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
+        "tenYearPlanDesc" -> "")
+
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
+  "Sending a valid No form submission to the TenYearPlanController without hasPercentageWithMasters in the KI Model" should {
+    "redirect to the subsidiaries page if no and and no description" in {
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
+        "tenYearPlanDesc" -> "")
+
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(noMastersKIModel)))
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")
+
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -115,6 +187,10 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       val request = FakeRequest().withFormUrlEncodedBody(
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(true)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER

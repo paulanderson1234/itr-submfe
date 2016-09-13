@@ -129,6 +129,20 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   "Sending a valid form submit to the DateOfIncorporationController" should {
     "redirect to the itself" in {
 
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+
+      when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel),
+        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
+
+      when(mockKeyStoreConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation),
+        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(savedKIData)))
+
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
+
       val request = FakeRequest().withFormUrlEncodedBody(
         "incorporationDay" -> "23",
         "incorporationMonth" -> "11",
@@ -143,10 +157,6 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 //          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any()), Matchers.any())
 //            .thenReturn(Future.successful(updatedKIData))
 
-          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
-          when(mockKeyStoreConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-          when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Option(savedKIData)))
 
 //          when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
 //            .thenReturn(Future.successful(Option(savedKIData)))
