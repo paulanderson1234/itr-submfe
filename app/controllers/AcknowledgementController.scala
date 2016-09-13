@@ -25,26 +25,31 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 object AcknowledgementController extends AcknowledgementController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
 }
 
 
 trait AcknowledgementController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = ValidateSession.async { implicit request =>
     /** Dummy implementation. Will be replaced by final Submission model**/
 
-    val subModel =for {
+    def subModel =for {
       contactDetails <- keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
       yourCompanyNeed <- keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed)
     }yield SubmissionRequest(contactDetails.get,yourCompanyNeed.get)
 
     val submissionResponseModel = subModel.flatMap{ model =>
-      SubmissionConnector.submitAdvancedAssurance(model)
+      submissionConnector.submitAdvancedAssurance(model)
     }
     submissionResponseModel.map { submissionResponse =>
-      Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+      submissionResponse.status match {
+        case OK => Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+        case _ => InternalServerError
+      }
     }
   }
 }

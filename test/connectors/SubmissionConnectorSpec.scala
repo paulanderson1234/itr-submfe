@@ -53,8 +53,7 @@ import scala.concurrent.Future
 
 class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
 
- // val mockHttp = mock[HttpGet with HttpPost with HttpPut]
- val mockHttp : WSHttp = mock[WSHttp]
+  val mockHttp : WSHttp = mock[WSHttp]
   val mockSessionCache = mock[SessionCache]
   val sessionId = UUID.randomUUID.toString
 
