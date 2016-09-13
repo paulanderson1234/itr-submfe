@@ -81,10 +81,6 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
   val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
   val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
-  val missingDateKIModel = KiProcessingModel(Some(false),None, Some(false), Some(false), None, Some(false))
-  val missingCostConditionKIModel = KiProcessingModel(Some(true),Some(true), None, Some(true), None, Some(true))
-  val missingSecondaryConditionKIModel = KiProcessingModel(Some(true), Some(true),Some(false),Some(true),None, None)
-  val missingIsKiKIModel = KiProcessingModel(None,Some(true),Some(true),Some(true),None,Some(false))
 
   val EISSchemeModel = PreviousSchemeModel("Enterprise Investment Scheme", 30000, None, None, None, None, None, None)
   val SEISSchemeModel = PreviousSchemeModel("Seed Enterprise Investment Scheme", 30000000, None, None, None, None, None, None)
@@ -298,106 +294,6 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with a missing date in the KIModel to the ProposedInvestmentController" should {
-    "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingDateKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with a missing cost condition in the KIModel to the ProposedInvestmentController" should {
-    "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingCostConditionKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with a missing secondary condition in the KIModel to the ProposedInvestmentController" should {
-    "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingSecondaryConditionKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with a missing companyAssertsIsKi in the KIModel to the ProposedInvestmentController" should {
-    "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingIsKiKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 

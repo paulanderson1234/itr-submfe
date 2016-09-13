@@ -294,90 +294,6 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid form submit to the WhatWillUseForController with missing CompanyAssertsIsKi KiModel" should {
-    "redirect to date of incorporation page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingCompanyAssertsIsKiKiModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit to the WhatWillUseForController with missing costsConditionMet KiModel" should {
-    "redirect to date of incorporation page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingCostsConditionKiModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit to the WhatWillUseForController with missing secondaryConditionsMet KiModel" should {
-    "redirect to date of incorporation page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingSecondaryConditionsKiModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit to the WhatWillUseForController with missing dateConditionsMet KiModel" should {
-    "redirect to date of incorporation page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingDateConditionMetKiModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
-        }
-      )
-    }
-  }
-
   //Gary Tests
 
   //4
@@ -1137,7 +1053,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with KI but with no DOI and percentagesStaffWuithMasters" should {
+  "Sending a valid form submit to the WhatWillUseForController for the first investment with KI but with no DOI and percentagesStaffWithMasters" should {
     "redirect to subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
