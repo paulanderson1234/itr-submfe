@@ -127,19 +127,15 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
   "Sending a valid form submit to the DateOfIncorporationController" should {
-    "redirect to the itself" in {
+    "redirect to nature of business page" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-
       when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
-
       when(mockKeyStoreConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIData)))
-
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
 
@@ -150,19 +146,6 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
       submitWithSession(request)(
         result => {
-
-//          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(updatedKiCacheMap))
-
-//          when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any()), Matchers.any())
-//            .thenReturn(Future.successful(updatedKIData))
-
-
-//          when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-//            .thenReturn(Future.successful(Option(savedKIData)))
-//          //when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
-//          when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.kiProcessingModel), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
-//          when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.dateOfIncorporation), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
         }
@@ -171,7 +154,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
   "Sending an invalid form submission with validation errors to the DateOfIncorporationController" should {
-    "redirect to itself" in {
+    "return a bad request" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "incorporationDay" -> "",
@@ -181,7 +164,6 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       submitWithSession(request)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.CompanyDetailsController.show.toString())
         }
       )
     }

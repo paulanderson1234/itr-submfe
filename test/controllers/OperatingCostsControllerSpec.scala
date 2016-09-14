@@ -168,7 +168,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending a invalid form submit to the OperatingCostsController" should {
-    "return a 400 error" in {
+    "return a bad request" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
@@ -184,7 +184,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       submitWithSession(request)(
         result => {
-          status(result) shouldBe 400
+          status(result) shouldBe BAD_REQUEST
         }
       )
     }
@@ -291,7 +291,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
-    "redirect to itself" in {
+    "return a bad request" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
@@ -306,7 +306,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       submitWithSession(request)(
         result => {
-          status(result) shouldBe 400
+          status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
         }
       )
@@ -315,7 +315,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
 
   "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController" should {
-    "redirect to itself" in {
+    "return a bad request" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "230000",
@@ -327,7 +327,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       submitWithSession(request)(
         result => {
-          status(result) shouldBe 400
+          status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
         }
       )
@@ -335,7 +335,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController" should {
-    "redirect to itself" in {
+    "return a bad request" in {
 
       val request = FakeRequest().withFormUrlEncodedBody(
         "operatingCosts1stYear" -> "230000",
@@ -347,7 +347,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       submitWithSession(request)(
         result => {
-          status(result) shouldBe 400
+          status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
         }
       )
