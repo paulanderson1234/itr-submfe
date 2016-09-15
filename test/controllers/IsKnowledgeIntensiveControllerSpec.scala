@@ -19,7 +19,7 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -50,6 +50,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
   val emptyModel = IsKnowledgeIntensiveModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedIsKnowledgeIntensive = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+
+  val updatedKIModel = KiProcessingModel(Some(true),Some(false), Some(false), Some(false), None, Some(false))
+  val falseKIModel = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), None, Some(false))
+  val missingDateKIModel = KiProcessingModel(Some(true),None, Some(false), Some(false), None, Some(false))
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -98,6 +102,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
   "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController" should {
     "redirect to the operating costs page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(updatedKIModel)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue)
       submitWithSession(request)(
@@ -109,9 +115,59 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
+  "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController" should {
+    "redirect to the date of incorporation page" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(missingDateKIModel)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue)
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveController" should {
+    "redirect to the subsidiaries" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController" should {
+    "redirect to the date of incorporation" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+        }
+      )
+    }
+  }
+
   "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController" should {
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(updatedKIModel)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
       submitWithSession(request)(

@@ -19,8 +19,7 @@ package views
 import java.util.UUID
 
 import common.KeystoreKeys
-import connectors.KeystoreConnector
-
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.{ProposedInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.ProposedInvestmentModel
@@ -38,6 +37,7 @@ import scala.concurrent.Future
 class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   val proposedInvestmentModel = new ProposedInvestmentModel(5000000)
   val emptyProposedInvestmentModel = new ProposedInvestmentModel(0)
@@ -46,6 +46,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
 
     val controller = new ProposedInvestmentController{
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
   }
 

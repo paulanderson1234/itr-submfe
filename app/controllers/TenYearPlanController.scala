@@ -29,11 +29,13 @@ import scala.concurrent.Future
 
 object TenYearPlanController extends TenYearPlanController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
 }
 
 trait TenYearPlanController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
@@ -49,6 +51,7 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
       kiModel match {
         // check previous answers present
         case Some(data) if isMissingData(data) =>
+          /**not sure if we are still using isMissingData**/
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
           Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
@@ -85,7 +88,7 @@ trait TenYearPlanController extends FrontendController with ValidActiveSession {
         for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
-          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(
+          isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
             if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan) //TO DO - PROPER API CALL
           route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
         } yield route

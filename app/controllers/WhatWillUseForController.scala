@@ -95,18 +95,22 @@ trait WhatWillUseForController extends FrontendController with ValidActiveSessio
 
     false
 
-//    if (data.dateConditionMet.isEmpty) {
-//      false
+//    if(data.companyAssertsIsKi.isEmpty){
+//      true
 //    }
-//    else if (data.dateConditionMet.get) {
-//      data.companyAssertsIsKi.isEmpty
+//    else if (data.companyAssertsIsKi.get){
+//      if(data.costsConditionMet.isEmpty){
+//        true
+//      } else {
+//        if (!data.costsConditionMet.get){
+//          data.secondaryCondtionsMet.isEmpty
+//        } else false
+//      }
 //    }
-//    else if (data.companyAssertsIsKi.get && !data.costsConditionMet.getOrElse(false)) {
-//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty
+//    else if (data.dateConditionMet.isEmpty) {
+//      true
 //    }
-//    else if (data.companyAssertsIsKi.get && data.costsConditionMet.getOrElse(false)) {
-//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty || data.secondaryCondtionsMet.isEmpty
-//    } else {
+//    else {
 //      false
 //    }
   }

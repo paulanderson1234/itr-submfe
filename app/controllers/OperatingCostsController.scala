@@ -33,10 +33,12 @@ import scala.concurrent.Future
 
 object OperatingCostsController extends OperatingCostsController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
 }
 
 trait OperatingCostsController extends FrontendController with ValidActiveSession {
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
@@ -87,7 +89,7 @@ trait OperatingCostsController extends FrontendController with ValidActiveSessio
         for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
-          costConditionMet <- SubmissionConnector.validateKiCostConditions(
+          costConditionMet <- submissionConnector.validateKiCostConditions(
             validFormData.operatingCosts1stYear.toInt,
             validFormData.operatingCosts2ndYear.toInt,
             validFormData.operatingCosts3rdYear.toInt,
