@@ -37,7 +37,6 @@ trait LifetimeAllowanceExceededController extends FrontendController with ValidA
   }
 
   val submit = Action.async { implicit request =>
-    //keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
-    Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+    Future.successful(Redirect(routes.ProposedInvestmentController.show()))
   }
 }

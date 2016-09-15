@@ -14,6 +14,22 @@
  * limitations under the License.
  */
 
+///*
+// * Copyright 2016 HM Revenue & Customs
+// *
+// * Licensed under the Apache License, Version 2.0 (the "License");
+// * you may not use this file except in compliance with the License.
+// * You may obtain a copy of the License at
+// *
+// *     http://www.apache.org/licenses/LICENSE-2.0
+// *
+// * Unless required by applicable law or agreed to in writing, software
+// * distributed under the License is distributed on an "AS IS" BASIS,
+// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// * See the License for the specific language governing permissions and
+// * limitations under the License.
+// */
+//
 package controllers
 
 import java.time.ZoneId
@@ -46,60 +62,61 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  //Gary TEST SCENARIOS
-  /*
-
-    3) Investment previously(some previous RFI = Yes) and Commercial sale (Some) => Same Reason AS Before
-
-    4) This is first Investment Scheme(some previous RFI = No) and it is more than 7 years from first commercial sale(SOME > 7 years i.e. (7 years plus one day))
-       and NOT deemed knowledge intensive (None) => New Geo Market
-
-   4a) This is first Investment Scheme(some previous RFI = No) and it is more than 10 years from first commercial sale(SOME > 10 years (i.e. 10 years plus one day))
-       and it is deemed knowledge intensive(Some) => New Geo Market
-
-    5) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 7 years from first commercial sale(SOME < 7 years (i.e. 7 years less one day))
-       and NOT deemed knowledge intensive(No) and has subsidiaries(Some) => subsidiaries spending investment
-
-      5 boundary) ** BOUNDARY TESTS for the above: repeat above but with exactly 7 years from commercial sale (still not more than 7 years)
-            => subsidiaries spending investment
-
-    5a) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 10 years from first commercial sale(SOME < 10 years (i.e. 10 years less one day))
-        and IS deemed knowledge intensive(some) and has subsidiaries(Some) => subsidiaries spending investment
-
-       5a boundary ** BOUNDARY TESTS for the above: repeat above but with exactly 10 years from commercial sale (still not more than ten years)
-            => subsidiaries spending investment
-
-    5b) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 7 years from first commercial sale(SOME < 7 years (i.e. 7 years less one day))
-        and NOT deemed knowledge intensive(None) and DOES NOT HAVE subsidiaries(Nome) => How plan use investment (Investment grow)
-
-        5b boundary ** BOUNDARY TESTS for the above: repeat above but with exactly 7 years from commercial sale (still not more than 7 years)
-            => How plan use investment (Investment grow)
-
-
-    5c) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 10 years from first commercial sale(SOME < 10 years (i.e. 10 years less one day))
-        and IS deemed knowledge intensive(some) and DOES NOT HAVE subsidiaries(Nome) => How plan use investment (Investment grow)
-
-       5c boundary  ** BOUNDARY TESTS for the above: repeat above but with exactly 10 years from commercial sale (still not more than 10 years)
-            => How plan use investment (Investment grow)
-
-   5d) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and IS KI(Some yes) and HAS subsidiaries(Some)
-		=>  subsidiaries spending investment
-
-   5e) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and IS KI(Some yes) and HAS subsidiaries(NONE)
-		=>  How plan use investment (Investment grow)
-
-   5f) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and NOT KI(None) and Does NOT have subsidaries(NONE)
-		=> How plan use investment (Investment grow)
-
-
-   5g) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and NOT KI(None) and HAS subsidaries(Some)
-		=> subsidiaries spending investment
-
-   OTHER: ANY other route 3 cases with previous investments and commercial sale existing should => 3 (Same Reason as Before)
-
-   6) These are tests that contain empty models to make sure the routing back to previous pages are being tested. These will also include routes for empty KI models
-
-   */
+//  //Gary TEST SCENARIOS
+//  /*
+//
+//    3) Investment previously(some previous RFI = Yes) and Commercial sale (Some) => Same Reason AS Before
+//
+//    4) This is first Investment Scheme(some previous RFI = No) and it is more than 7 years from first commercial sale(SOME > 7 years i.e. (7 years plus one day))
+//       and NOT deemed knowledge intensive (None) => New Geo Market
+//
+//   4a) This is first Investment Scheme(some previous RFI = No) and it is more than 10 years from first commercial sale(SOME > 10 years (i.e. 10 years plus one day))
+//       and it is deemed knowledge intensive(Some) => New Geo Market
+//
+//    5) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 7 years from first commercial sale(SOME < 7 years (i.e. 7 years less one day))
+//       and NOT deemed knowledge intensive(No) and has subsidiaries(Some) => subsidiaries spending investment
+//
+//      5 boundary) ** BOUNDARY TESTS for the above: repeat above but with exactly 7 years from commercial sale (still not more than 7 years)
+//            => subsidiaries spending investment
+//
+//    5a) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 10 years from first commercial sale(SOME < 10 years (i.e. 10 years less one day))
+//        and IS deemed knowledge intensive(some) and has subsidiaries(Some) => subsidiaries spending investment
+//
+//       5a boundary ** BOUNDARY TESTS for the above: repeat above but with exactly 10 years from commercial sale (still not more than ten years)
+//            => subsidiaries spending investment
+//
+//    5b) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 7 years from first commercial sale(SOME < 7 years (i.e. 7 years less one day))
+//        and NOT deemed knowledge intensive(None) and DOES NOT HAVE subsidiaries(Nome) => How plan use investment (Investment grow)
+//
+//        5b boundary ** BOUNDARY TESTS for the above: repeat above but with exactly 7 years from commercial sale (still not more than 7 years)
+//            => How plan use investment (Investment grow)
+//
+//
+//    5c) This is first Investment Scheme (some previous RFI = No) and it is NOT more than 10 years from first commercial sale(SOME < 10 years (i.e. 10 years less one day))
+//        and IS deemed knowledge intensive(some) and DOES NOT HAVE subsidiaries(Nome) => How plan use investment (Investment grow)
+//
+//       5c boundary  ** BOUNDARY TESTS for the above: repeat above but with exactly 10 years from commercial sale (still not more than 10 years)
+//            => How plan use investment (Investment grow)
+//
+//   5d) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and IS KI(Some yes) and HAS subsidiaries(Some)
+//		=>  subsidiaries spending investment
+//
+//   5e) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and IS KI(Some yes) and HAS subsidiaries(NONE)
+//		=>  How plan use investment (Investment grow)
+//
+//   5f) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and NOT KI(None) and Does NOT have subsidaries(NONE)
+//		=> How plan use investment (Investment grow)
+//
+//
+//   5g) This is first Investment Scheme (some previous RFI = No) and No commercial sale has been made (i.e Commercial sale is None) and NOT KI(None) and HAS subsidaries(Some)
+//		=> subsidiaries spending investment
+//
+//   OTHER: ANY other route 3 cases with previous investments and commercial sale existing should => 3 (Same Reason as Before)
+//
+//   6) These are tests that contain empty models to make sure the routing back to previous pages are being tested. These will also include routes for empty KI models
+//
+//   */
+//
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date()
@@ -124,6 +141,12 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   val date3yearsLessOneDayDay: Int = date3YearsLessOneDay.getDayOfMonth
   val date3YearsLessOneDayMonth: Int = date3YearsLessOneDay.getMonthValue
   val date3YearsLessOneDayYear: Int = date3YearsLessOneDay.getYear
+
+  // 1 year
+  val date1YearAgo = localDate.minusYears(1)
+  val date1YearAgoDay: Int = date1YearAgo.getDayOfMonth
+  val date1YearAgoMonth: Int = date1YearAgo.getMonthValue
+  val date1YearAgoYear: Int = date1YearAgo.getYear
 
   // 7 year boundary dates (at, below, above) from today
   val date7YearsAgo = localDate.minusYears(7)
@@ -157,25 +180,12 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   val date10YearsLessOneDayMonth: Int = date10YearsLessOneDay.getMonthValue
   val date10YearsLessOneDayYear: Int = date10YearsLessOneDay.getYear
 
-  val keyStoreSavedIsKnowledgeIntensiveYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
-  val keyStoreSavedIsKnowledgeIntensiveNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
-  val keyStoreSavedIsKnowledgeIntensiveEmpty = IsKnowledgeIntensiveModel("")
   val keyStoreSavedHadPreviousRFIYes = HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedHadPreviousRFINo = HadPreviousRFIModel(Constants.StandardRadioButtonNoValue)
   val keyStoreSavedHadPreviousRFIEmpty = HadPreviousRFIModel("")
   val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val keyStoreSavedSubsidiariesEmpty = SubsidiariesModel("")
-
-  val keyStoreSaved0PercOperatingCCosts = OperatingCostsModel("4100200", "3600050", "4252500", "0", "0", "0")
-  val keyStoreSaved10PercBoundaryOC = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
-  val keyStoreSaved15PercBoundaryOC = OperatingCostsModel("755500", "900300", "523450", "37775", "135045", "0")
-
-  val keyStoreSavedPercentageStaffWithMasters = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
-  val keyStoreSavedPercentageStaffWithNoMasters = PercentageStaffWithMastersModel(Constants.StandardRadioButtonNoValue)
-
-  val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("abcd"))
-  val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
 
   val keyStoreSavedCommercialSaleNo = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
   val keyStoreSavedCommercialSaleEmpty = CommercialSaleModel("", None, None, None)
@@ -198,11 +208,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   val keyStoreSavedCommercialSale7YearsLessOneDay = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
     Some(date7YearsLessOneDayDay), Some(date7YearsLessOneDayMonth), Some(date7YearsLessOneDayYear))
 
+  val keyStoreSavedCommercialSale1Year = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date1YearAgoDay), Some(date1YearAgoMonth), Some(date1YearAgoYear))
+
   //3 year from today bounder models Date of Incorporation
   val keyStoreSavedDOI3Years = DateOfIncorporationModel(Some(date3YearsAgoDay), Some(date3YearsAgoMonth), Some(date3YearsAgoYear))
   val keyStoreSavedDOI3YearsOneDay = DateOfIncorporationModel(Some(date3YearsOneDayDay), Some(date3YearsOneDayMonth), Some(date3YearsOneDayYear))
   val keyStoreSavedDOI3YearsLessOneDay = DateOfIncorporationModel(Some(date10YearsLessOneDayDay),
     Some(date10YearsLessOneDayMonth), Some(date10YearsLessOneDayYear))
+
+  val keyStoreSavedDOI10Years = DateOfIncorporationModel(Some(date10YearsAgoDay), Some(date10YearsAgoMonth), Some(date10YearsAgoYear))
 
   val modelBusiness = WhatWillUseForModel("Doing Business")
   val modelPrepare = WhatWillUseForModel("Getting ready to do business")
@@ -212,6 +227,15 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   val keyStoreSavedWhatWillUseForBusiness = WhatWillUseForModel("Doing Business")
   val keyStoreSavedWhatWillUseForPrepare = WhatWillUseForModel("Getting ready to do business")
   val keyStoreSavedWhatWillUseForRAndD = WhatWillUseForModel("Research and Development")
+
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
+  val optionKIModel = KiProcessingModel(Some(false), Some(true), Some(false), None, None, None)
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
+  val missingCompanyAssertsIsKiKiModel = KiProcessingModel(None, Some(true), Some(true), Some(true), None, Some(true))
+  val missingCostsConditionKiModel = KiProcessingModel(Some(true),Some(true),None, None, None, None)
+  val missingSecondaryConditionsKiModel = KiProcessingModel(Some(true),Some(true),Some(false),Some(true),Some(true),None)
+  val missingDateConditionMetKiModel = KiProcessingModel(Some(false),None,Some(true), None, None, None)
 
   def showWithSession(test: Future[Result] => Any) {
     val sessionId = s"user-${UUID.randomUUID}"
@@ -263,22 +287,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment when more than 7 years from " +
     "Commercial sale date when not deemed knowledge intensive" should {
     "redirect to new geographical market page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -292,24 +310,19 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   // 4a
   "Sending a valid form submit to the WhatWillUseForControlller for first investment when more than 10 years from " +
-    "Commercial sale date when it is deemed knowledge intensive and has 10% of Operating costs on R&D" should {
+    "Commercial sale date" should {
     "redirect to new geographical market page" in {
+
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -325,22 +338,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment when NOT more than 7 years from " +
     "Commercial sale date when not deemed knowledge intensive with subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -356,22 +363,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment when EXACTLY 7 years from " +
     "Commercial sale date when not deemed knowledge intensive with subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -387,22 +388,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment when NOT more than 10 years from " +
     "Commercial sale date when it is deemed knowledge intensive with subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -418,22 +413,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment when EXACTLY 10 years from " +
     "Commercial sale date when it is deemed knowledge intensive with subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -449,22 +438,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment is NOT more than 7 years from " +
     "Commercial sale date when it is NOT deemed knowledge intensive and without any subsidiaries" should {
     "redirect to new how-plan-to-use-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -480,22 +463,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for first investment is EXACTLY 7 years from " +
     "Commercial sale date when it is NOT deemed knowledge intensive and without any subsidiaries" should {
     "redirect to new how-plan-to-use-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -511,22 +488,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when NOT more than 10 years from " +
     "Commercial sale date and when it IS deemed knowledge intensive and without any subsidiaries" should {
     "redirect to new how-plan-to-use-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -542,22 +513,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when EXACTLY 10 years from " +
     "Commercial sale date and when it IS deemed knowledge intensive and without any subsidiaries" should {
     "redirect to new how-plan-to-use-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -573,22 +538,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when no commercial sale has been made " +
     "and when it IS deemed knowledge intensive and has subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -604,22 +563,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when no commercial sale has been made " +
     "and when it IS deemed knowledge intensive and does not have subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -635,22 +588,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when no commercial sale has been made " +
     "and when it IS NOT deemed knowledge intensive and does not have subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -666,22 +613,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid form submit to the WhatWillUseForController for the first investment when no commercial sale has been made " +
     "and when it IS NOT deemed knowledge intensive and has subsidiaries" should {
     "redirect to new subsidiaries-spending-investment page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -693,27 +634,43 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  // Route 3 tests - previous investment and commercial sale exists
-
-  //3
-  "Sending a valid form submit to the WhatWillUseForController when investment has been used previously and a commercial sale exists" should {
-    "redirect to reason used before page" in {
+  "Sending a valid form submit to the WhatWillUseForController when investment has been used previously and a commercial sale exists" +
+    "and has a date that isn't within the range" should {
+    "redirect to subsidiaries page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale1Year)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
+      val request = FakeRequest().withFormUrlEncodedBody(
+        "whatWillUseFor" -> "Research and Development")
+      submitWithSession(request)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  //3
+  "Sending a valid form submit to the WhatWillUseForController when investment has been used previously and a commercial sale exists" should {
+    "redirect to reason used before page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -726,24 +683,19 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   //3 variation - prove adding other models values has no affect on result
-  "fffSending a valid form submit to the WhatWillUseForController when investment has been used previously and a commercial sale exists" should {
+  "Sending a valid form submit to the WhatWillUseForController when investment has been used previously and a commercial sale exists" +
+    "but using different models" should {
     "redirect to reason used before page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -758,22 +710,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   // 6
   "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty PrevRFI" should {
     "redirect to used-investment-scheme-before page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -788,22 +734,16 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   // 6
   "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty Commercial sale" should {
     "redirect to commercial-sale page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
@@ -815,155 +755,29 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty operating costs" should {
-    "redirect to operating-costs page" in {
+  "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty KIProcessingModel" should {
+    "redirect to date-of-incorporation page" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
       val request = FakeRequest().withFormUrlEncodedBody(
         "whatWillUseFor" -> "Research and Development")
       submitWithSession(request)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
         }
       )
     }
   }
 
-  // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty subsidiaries model" should {
-    "redirect to subsidiaries page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
-        }
-      )
-    }
-  }
-
-  // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with an empty KIFlag" should {
-    "redirect to subsidiaries-spending-investment page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
-        }
-      )
-    }
-  }
-
-  // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with KI but with not enough spent on R&D" should {
-    "redirect to subsidiaries-spending-investment page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved0PercOperatingCCosts)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithNoMasters)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
-        }
-      )
-    }
-  }
-
-  // 6
-  "Sending a valid form submit to the WhatWillUseForController for the first investment with KI but with no DOI and percentagesStaffWuithMasters" should {
-    "redirect to subsidiaries-spending-investment page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensiveYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNoWithNoTenYearPlan)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
-        }
-      )
-    }
-  }
 
   "Sending an invalid form submission with validation errors to the WhatWillUseForController" should {
     "redirect to itself" in {

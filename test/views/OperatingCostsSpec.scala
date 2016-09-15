@@ -19,7 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
-import connectors.KeystoreConnector
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.{IsKnowledgeIntensiveController, OperatingCostsController, routes}
 import models.{IsKnowledgeIntensiveModel, OperatingCostsModel}
 import org.jsoup.Jsoup
@@ -36,6 +36,7 @@ import scala.concurrent.Future
 class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   val operatingCostsModel = OperatingCostsModel("750000", "800000", "934000", "231000", "340000", "344000")
   val emptyOperatingCostsModel = new OperatingCostsModel("", "", "", "", "", "")
@@ -44,6 +45,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
 
     val controller = new OperatingCostsController{
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
   }
 

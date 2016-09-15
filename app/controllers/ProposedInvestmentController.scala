@@ -32,11 +32,13 @@ import views.html.investment.ProposedInvestment
 object ProposedInvestmentController extends ProposedInvestmentController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
 }
 
 trait ProposedInvestmentController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show: Action[AnyContent] = ValidateSession.async { implicit request =>
     def routeRequest(backUrl: Option[String]) = {
@@ -103,7 +105,7 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
           previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
           // Call API
 
-          isLifeTimeAllowanceExceeded <- SubmissionConnector.checkLifetimeAllowanceExceeded(
+          isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
             if(hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
@@ -117,23 +119,23 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
   def isMissingKiData(data: KiProcessingModel): Boolean = {
 
     false
-//    if (data.dateConditionMet.isEmpty) {
-//      println("===================1")
+
+//    if(data.companyAssertsIsKi.isEmpty){
 //      true
 //    }
-//    else if (data.dateConditionMet.get) {
-//      println("===================2")
-//      data.companyAssertsIsKi.isEmpty
+//    else if (data.companyAssertsIsKi.get){
+//      if(data.costsConditionMet.isEmpty){
+//        true
+//      } else {
+//        if (!data.costsConditionMet.get){
+//          data.secondaryCondtionsMet.isEmpty
+//        } else false
+//      }
 //    }
-//    else if (data.companyAssertsIsKi.get && !data.costsConditionMet.getOrElse(false)) {
-//      println("===================3")
-//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty
+//    else if (data.dateConditionMet.isEmpty) {
+//      true
 //    }
-//    else if (data.companyAssertsIsKi.get && data.costsConditionMet.getOrElse(false)) {
-//      println("===================4")
-//      data.companyAssertsIsKi.isEmpty || data.costsConditionMet.isEmpty || data.secondaryCondtionsMet.isEmpty
-//    } else {
-//      println("===================5")
+//    else {
 //      false
 //    }
   }

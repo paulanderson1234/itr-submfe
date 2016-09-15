@@ -31,11 +31,13 @@ import views.html.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters
 
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
 }
 
 trait PercentageStaffWithMastersController extends FrontendController with ValidActiveSession {
 
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = ValidateSession.async { implicit request =>
     keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
@@ -87,7 +89,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Valid
         for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
-          isSecondaryKiConditionsMet <- SubmissionConnector.validateSecondaryKiConditions(percentageWithMasters,
+          isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
             if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false) //TO DO - PROPER API CALL
           route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
         } yield route

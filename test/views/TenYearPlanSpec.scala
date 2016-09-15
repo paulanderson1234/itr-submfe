@@ -19,7 +19,7 @@ package views
 import java.util.UUID
 
 import common.Constants
-import connectors.KeystoreConnector
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{CommercialSaleController, TenYearPlanController, routes}
 import models.{CommercialSaleModel, TenYearPlanModel}
@@ -37,6 +37,7 @@ import scala.concurrent.Future
 class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
   val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   val yesWithTenYearPlanModel = TenYearPlanModel("Yes", Some("abcd"))
   val noWithNoTenYearPlanModel = TenYearPlanModel("No", None)
@@ -47,6 +48,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
     val controller = new TenYearPlanController {
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
   }
 

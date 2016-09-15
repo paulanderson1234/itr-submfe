@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import common.Constants
-import connectors.KeystoreConnector
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.{PercentageStaffWithMastersController, routes}
 import models.PercentageStaffWithMastersModel
 import org.jsoup.Jsoup
@@ -37,6 +37,7 @@ import scala.concurrent.Future
 class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
 
   val percentageStaffWithMastersModel = new PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
   val emptyPercentageStaffWithMastersModel = new PercentageStaffWithMastersModel("")
@@ -45,6 +46,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
 
     val controller = new PercentageStaffWithMastersController{
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
   }
 
