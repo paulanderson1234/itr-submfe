@@ -20,7 +20,7 @@ import java.util.UUID
 
 import builders.SessionBuilder
 import common.KeystoreKeys
-import connectors.{SubmissionConnector, KeystoreConnector}
+import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -28,12 +28,12 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import org.specs2.mock.Mockito
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{HttpResponse, HeaderCarrier}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
@@ -61,6 +61,17 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
 
   implicit val hc = HeaderCarrier()
 
+  "AcknowledgementController" should {
+    "use the correct keystore connector" in {
+      AcknowledgementController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
+  "AcknowledgementController" should {
+    "use the correct submission connector" in {
+      AcknowledgementController.submissionConnector shouldBe SubmissionConnector
+    }
+  }
 
   "Sending a GET request to AcknowledgementController with a valid email address" should {
     "return a 200" in new SetupPage{
