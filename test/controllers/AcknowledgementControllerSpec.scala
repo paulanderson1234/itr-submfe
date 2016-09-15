@@ -19,32 +19,83 @@ package controllers
 import java.util.UUID
 
 import builders.SessionBuilder
+import common.KeystoreKeys
+import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.helpers.FakeRequestHelper
+import models._
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
+import org.specs2.mock.Mockito
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.ws.WSHttp
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class AcknowledgementControllerSpec extends UnitSpec  with WithFakeApplication{
+class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFakeApplication  with FakeRequestHelper{
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = AcknowledgementController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockHttp : WSHttp = mock[WSHttp]
+  val mockSubmission = mock[SubmissionConnector]
+
+  val contactValid = ContactDetailsModel("Frank","The Tank","01384 555678","email@gmail.com")
+  val contactInvalid = ContactDetailsModel("Frank","The Tank","01384 555678","email@badrequest.com")
+  val yourCompanyNeed = YourCompanyNeedModel("AA")
+  val submissionRequestValid = SubmissionRequest(contactValid,yourCompanyNeed)
+  val submissionRequestInvalid = SubmissionRequest(contactInvalid,yourCompanyNeed)
+  val submissionResponse = SubmissionResponse(true,"FBUND09889765", "Submission Request Successful")
+
+  class SetupPage {
+
+    val controller = new AcknowledgementController{
+      val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmission
+    }
   }
 
   implicit val hc = HeaderCarrier()
 
+  "AcknowledgementController" should {
+    "use the correct keystore connector" in {
+      AcknowledgementController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
 
-  "Sending a GET request to AcknowledgementController" should {
-    "return a 200" in {
-      showWithSession(
-        result => status(result) shouldBe OK
-      )
+  "AcknowledgementController" should {
+    "use the correct submission connector" in {
+      AcknowledgementController.submissionConnector shouldBe SubmissionConnector
+    }
+  }
+
+  "Sending a GET request to AcknowledgementController with a valid email address" should {
+    "return a 200" in new SetupPage{
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(contactValid)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(yourCompanyNeed)))
+      when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestValid))(Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+      val result = controller.show.apply(fakeRequestWithSession)
+      status(result) shouldBe OK
+    }
+  }
+
+  "Sending a GET request to AcknowledgementController with a invalid email address" should {
+    "return a 5xx" in new SetupPage{
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(contactInvalid)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(yourCompanyNeed)))
+      when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestInvalid))(Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+      val result = controller.show.apply(fakeRequestWithSession)
+      status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 }
