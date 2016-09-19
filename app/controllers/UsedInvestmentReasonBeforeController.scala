@@ -16,9 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -28,21 +29,23 @@ import scala.concurrent.Future
 import views.html.investment.UsedInvestmentReasonBefore
 
 object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeController{
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait UsedInvestmentReasonBeforeController extends FrontendController with ValidActiveSession {
+trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
       case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
       case None => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit userr => implicit request =>
     usedInvestmentReasonBeforeForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))

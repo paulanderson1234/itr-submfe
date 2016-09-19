@@ -17,8 +17,9 @@
 package controllers
 
 import java.util.UUID
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 import play.api.mvc._
@@ -32,22 +33,14 @@ object IntroductionController extends IntroductionController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait IntroductionController extends FrontendController with ValidActiveSession {
+trait IntroductionController extends FrontendController {
 
   implicit val hc = new HeaderCarrier()
   val keystoreConnector: KeystoreConnector = KeystoreConnector
 
   // this is the page that is called on a restart. It will populate the session keys if missing.
   val show = Action.async { implicit request =>
-    if (request.session.get(SessionKeys.sessionId).isEmpty) {
-      val sessionId = UUID.randomUUID.toString
-
-      Future.successful(Redirect(routes.IntroductionController.show())
-        .withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
-    }
-    else {
       Future.successful(Ok(start()))
-    }
   }
 
   val submit = Action.async { implicit request =>
@@ -57,6 +50,6 @@ trait IntroductionController extends FrontendController with ValidActiveSession 
   // this method is called on any restart - e.g. on session timeout
   def restart(): Action[AnyContent] = Action.async { implicit request =>
     keystoreConnector.clearKeystore()
-    Future.successful(Redirect(routes.StartController.start()))
+    Future.successful(Redirect(routes.IntroductionController.show()))
   }
 }

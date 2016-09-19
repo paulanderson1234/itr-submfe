@@ -16,16 +16,14 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.{KeystoreConnector, SubmissionConnector}
-import controllers.Helpers.KnowledgeIntensiveHelper
-import controllers.predicates.ValidActiveSession
-import forms.IsKnowledgeIntensiveForm._
 import forms.OperatingCostsForm._
 import models.{KiProcessingModel, OperatingCostsModel}
 import play.api.mvc.{Action, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.companyDetails.IsKnowledgeIntensive
 import views.html.knowledgeIntensive.OperatingCosts
 
 import scala.concurrent.Future
@@ -34,20 +32,22 @@ import scala.concurrent.Future
 object OperatingCostsController extends OperatingCostsController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait OperatingCostsController extends FrontendController with ValidActiveSession {
+trait OperatingCostsController extends FrontendController with AuthorisedForTAVC {
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
       case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
       case None => Ok(OperatingCosts(operatingCostsForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], isCostConditionMet: Option[Boolean]): Future[Result] = {
       kiModel match {

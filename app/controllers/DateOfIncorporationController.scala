@@ -16,13 +16,13 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.Helpers.KnowledgeIntensiveHelper
-import controllers.predicates.ValidActiveSession
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.companyDetails.DateOfIncorporation
 
@@ -31,19 +31,21 @@ import scala.concurrent.Future
 
 object DateOfIncorporationController extends DateOfIncorporationController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait DateOfIncorporationController extends FrontendController with ValidActiveSession {
+trait DateOfIncorporationController extends FrontendController with AuthorisedForTAVC {
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
       case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
       case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     dateOfIncorporationForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))

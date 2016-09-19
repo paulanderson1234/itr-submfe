@@ -16,13 +16,18 @@
 
 package controllers
 
-import controllers.predicates.ValidActiveSession
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object AcknowledgementController extends AcknowledgementController
+object AcknowledgementController extends AcknowledgementController{
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
+}
 
-trait AcknowledgementController extends FrontendController with ValidActiveSession {
-  val show = ValidateSession.async { implicit request => Future.successful(Ok(views.html.checkAndSubmit.Acknowledgement()))}
+
+trait AcknowledgementController extends FrontendController with AuthorisedForTAVC {
+  val show = Authorised.async { implicit user => implicit request => Future.successful(Ok(views.html.checkAndSubmit.Acknowledgement()))}
 }

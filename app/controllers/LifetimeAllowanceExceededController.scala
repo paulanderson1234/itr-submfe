@@ -16,27 +16,28 @@
 
 package controllers
 
-import common.KeystoreKeys
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
-import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait LifetimeAllowanceExceededController extends FrontendController with ValidActiveSession {
+trait LifetimeAllowanceExceededController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.investment.LifetimeAllowanceExceeded()))
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.ProposedInvestmentController.show()))
   }
 }

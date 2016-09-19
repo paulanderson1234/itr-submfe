@@ -16,28 +16,29 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import controllers.Helpers
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
-
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
 import views.html.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
 
 object PreviousSchemeController extends PreviousSchemeController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait PreviousSchemeController extends FrontendController with ValidActiveSession {
+trait PreviousSchemeController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  def show(id: Option[Int]): Action[AnyContent] = ValidateSession.async { implicit request =>
+  def show(id: Option[Int]): Action[AnyContent] = Authorised.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         id match {
@@ -62,7 +63,7 @@ trait PreviousSchemeController extends FrontendController with ValidActiveSessio
     } yield route
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit  user => implicit request =>
     previousSchemeForm.bindFromRequest().fold(
       formWithErrors => {
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector).flatMap(url =>

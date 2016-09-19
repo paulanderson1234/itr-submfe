@@ -16,9 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.NewProductForm._
 import models.{NewProductModel, SubsidiariesModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -29,20 +30,22 @@ import views.html.investment.NewProduct
 
 object NewProductController extends NewProductController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait NewProductController extends FrontendController with ValidActiveSession {
+trait NewProductController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct).map {
       case Some(data) => Ok(NewProduct(newProductForm.fill(data)))
       case None => Ok(NewProduct(newProductForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(hasSubsidiaries: Option[SubsidiariesModel]): Future[Result] = {
       hasSubsidiaries match {

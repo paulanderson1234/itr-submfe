@@ -16,9 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.IsKnowledgeIntensiveForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,20 +31,22 @@ import views.html.companyDetails.IsKnowledgeIntensive
 
 object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait IsKnowledgeIntensiveController extends FrontendController with ValidActiveSession {
+trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit  user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {
       case Some(data) => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm.fill(data)))
       case None => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], isKnowledgeIntensive: Boolean): Future[Result] = {
       kiModel match {

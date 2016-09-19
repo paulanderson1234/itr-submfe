@@ -16,14 +16,13 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.{KeystoreConnector, SubmissionConnector}
-import controllers.predicates.ValidActiveSession
-import forms.OperatingCostsForm._
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 
 import scala.concurrent.Future
 import views.html._
@@ -32,21 +31,23 @@ import views.html.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait PercentageStaffWithMastersController extends FrontendController with ValidActiveSession {
+trait PercentageStaffWithMastersController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
       case Some(data) => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
       case None => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,
                      isSecondaryKiConditionsMet: Option[Boolean]) = {

@@ -16,6 +16,8 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -23,26 +25,27 @@ import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
 import views.html.companyDetails.NatureOfBusiness
 
 object NatureOfBusinessController extends NatureOfBusinessController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with ValidActiveSession{
+trait NatureOfBusinessController extends FrontendController with AuthorisedForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
       case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
       case None => Ok(NatureOfBusiness(natureOfBusinessForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     natureOfBusinessForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))

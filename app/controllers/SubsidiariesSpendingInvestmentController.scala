@@ -32,27 +32,29 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
-import controllers.predicates.ValidActiveSession
 import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc.Action
 import views.html._
 
 import scala.concurrent.Future
 
 object SubsidiariesSpendingInvestmentController extends SubsidiariesSpendingInvestmentController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait SubsidiariesSpendingInvestmentController extends FrontendController with ValidActiveSession{
+trait SubsidiariesSpendingInvestmentController extends FrontendController with AuthorisedForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
         keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
@@ -68,7 +70,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with V
     } yield route
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc).flatMap {
