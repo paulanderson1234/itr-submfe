@@ -18,8 +18,10 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.{KeystoreConnector, SubmissionConnector}
 import models._
 import org.mockito.Matchers
@@ -43,6 +45,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object OperatingCostsControllerTest extends OperatingCostsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }

@@ -16,10 +16,14 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
+import auth.{MockConfig, MockAuthConnector}
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,8 +31,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -36,11 +38,13 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object ContactAddressControllerTest extends ContactAddressController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -48,18 +52,6 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   val emptyModel = ContactAddressModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedContactAddress = ContactAddressModel("LE5 5NN")
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ContactAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ContactAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -73,11 +65,11 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to ContactAddressController" should {
+  "Sending a GET request to ContactAddressController when authenticated" should {
     "return a 200 OK when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
-      showWithSession(
+      showWithSessionAndAuth(ContactAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -85,18 +77,54 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(ContactAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the ContactAddressController" should {
+  "Sending an Unauthenticated request with a session to ContactAddressController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(ContactAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to ContactAddressController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ContactAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ContactAddressController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ContactAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ContactAddressController when authenticated" should {
     "redirect to the Supporting Documents page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "postcode" -> "LE5 5NN")
-      submitWithSession(request)(
+      val formInput = "postcode" -> "LE5 5NN"
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
@@ -105,13 +133,48 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ContactAddressController" should {
+  "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "postcode" -> "")
-      submitWithSession(request)(
+      val formInput = "postcode" -> ""
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactAddressController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(ContactAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(ContactAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactAddressController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(ContactAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

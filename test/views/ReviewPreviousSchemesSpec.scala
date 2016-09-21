@@ -18,8 +18,10 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{ReviewPreviousSchemesController, routes}
@@ -54,6 +56,8 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
   class SetupPage {
 
     val controller = new ReviewPreviousSchemesController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -66,7 +70,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 

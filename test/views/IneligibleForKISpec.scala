@@ -17,7 +17,9 @@
 package views
 
 import java.util.UUID
+import auth.MockAuthConnector
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{IneligibleForKIController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -39,6 +41,8 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
   class SetupPage {
 
     val controller = new IneligibleForKIController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -53,7 +57,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
           (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
 
-        val result = controller.show.apply(fakeRequestWithSession)
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -75,7 +79,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
-          val result = controller.show.apply(fakeRequestWithSession)
+          val result = controller.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
 
@@ -100,7 +104,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(Option(routes.HowToApplyController.show().toString())))
 
-          val result = controller.show.apply(fakeRequestWithSession)
+          val result = controller.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
 

@@ -16,12 +16,16 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.time.ZoneId
 import java.util.{Date, UUID}
 
+import auth.{MockConfig, MockAuthConnector}
 import builders.SessionBuilder
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -38,7 +42,7 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date()
@@ -67,6 +71,8 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object DateOfIncorporationControllerTest extends DateOfIncorporationController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -82,17 +88,6 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   val updatedKiCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(updatedKIData)))
 
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = DateOfIncorporationControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = DateOfIncorporationControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -106,12 +101,12 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a GET request to DateOfIncorporationController" should {
+  "Sending a GET request to DateOfIncorporationController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      showWithSession(
+      showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -120,13 +115,50 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the DateOfIncorporationController" should {
+  "Sending an Unauthenticated request with a session to DateOfIncorporationController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(DateOfIncorporationControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to DateOfIncorporationController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(DateOfIncorporationControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to DateOfIncorporationController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(DateOfIncorporationControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the DateOfIncorporationController when authenticated" should {
     "redirect to nature of business page" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
@@ -139,12 +171,12 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "incorporationDay" -> "23",
         "incorporationMonth" -> "11",
         "incorporationYear" -> "1993")
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/nature-of-business")
@@ -153,17 +185,53 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending an invalid form submission with validation errors to the DateOfIncorporationController" should {
+  "Sending an invalid form submission with validation errors to the DateOfIncorporationController when authenticated" should {
     "return a bad request" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "incorporationDay" -> "",
         "incorporationMonth" -> "",
         "incorporationYear" -> "")
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the DateOfIncorporationController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(DateOfIncorporationControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(DateOfIncorporationControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the DateOfIncorporationController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(DateOfIncorporationControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

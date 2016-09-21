@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{SupportingDocumentsController, routes}
@@ -39,6 +41,8 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
 
   class SetupPage {
     val controller = new SupportingDocumentsController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -51,7 +55,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
 
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.show.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
 
@@ -80,7 +84,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
 
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.show.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
 

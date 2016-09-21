@@ -46,20 +46,12 @@ class IntroductionControllerSpec extends UnitSpec with WithFakeApplication {
   }
 
   "IntroductionController.show" should {
-    "when called with no session" should {
       object IntroductionTestDataItem extends fakeRequestTo("", IntroductionController.show())
-      "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
+      "return 200" in {
+        status(IntroductionTestDataItem.result) shouldBe OK
       }
-    }
-
-    "when called with a session" should {
-      object IntroductionWithSessionTestDataItem extends fakeRequestToWithSessionId("", IntroductionController.show())
-      "return a 200" in {
-        status(IntroductionWithSessionTestDataItem.result) shouldBe OK
-      }
-    }
   }
+
 
   "IntroductionController.submit" should {
     "when a submit is called" should{

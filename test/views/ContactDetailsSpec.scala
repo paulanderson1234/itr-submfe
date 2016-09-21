@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{ContactDetailsController, routes}
@@ -43,6 +45,8 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new ContactDetailsController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -55,7 +59,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "forename" -> "Jeff",
           "surname" -> "Stelling",
           "telephoneNumber" -> "01384 555678",
@@ -80,7 +84,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyContactDetailsModel)))
-        val result = controller.submit.apply(fakeRequestWithSession)
+        val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.contactInformation.contactDetails.title")

@@ -16,13 +16,79 @@
 
 package controllers.helpers
 
+import java.util.UUID
+
+import auth._
+import builders.SessionBuilder
+import play.api.mvc.{AnyContentAsFormUrlEncoded, Action, AnyContent, Result}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.SessionKeys
 
-trait FakeRequestHelper {
-  lazy val fakeRequest = FakeRequest()
-  lazy val fakeRequestWithSession = fakeRequest.withSession((SessionKeys.sessionId, ""))
+import scala.concurrent.Future
 
-  def fakeRequestToPOSTWithSession (input: (String, String)*) = fakeRequestWithSession.withFormUrlEncodedBody(input: _*)
+trait FakeRequestHelper{
+  val sessionId = UUID.randomUUID.toString
+  val fakeRequest = FakeRequest()
+  lazy val fakeRequestWithSession = fakeRequest.withSession(SessionKeys.sessionId -> s"session-$sessionId")
+  lazy val authorisedFakeRequest = authenticatedFakeRequest()
+  lazy val timedOutFakeRequest = timeoutFakeRequest()
+
+  def fakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
+    fakeRequest.withFormUrlEncodedBody(input: _*)
+  }
+
+  def fakeRequestWithSessionToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
+    fakeRequestWithSession.withFormUrlEncodedBody(input: _*)
+  }
+
+  def authorisedFakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
+    authorisedFakeRequest.withFormUrlEncodedBody(input: _*)
+  }
+
+  def timeoutFakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
+    timedOutFakeRequest.withFormUrlEncodedBody(input: _*)
+  }
+
+
+  def showWithSessionAndAuth(action: Action[AnyContent])(test: Future[Result] => Any) {
+    val result = action.apply(authorisedFakeRequest)
+    test(result)
+  }
+
+  def showWithSessionWithoutAuth(action: Action[AnyContent])(test: Future[Result] => Any) {
+    val result = action.apply(fakeRequestWithSession)
+    test(result)
+  }
+
+  def showWithoutSession(action: Action[AnyContent])(test: Future[Result] => Any){
+    val result = action.apply(fakeRequest)
+    test(result)
+  }
+
+  def showWithTimeout(action: Action[AnyContent])(test: Future[Result] => Any){
+    val result = action.apply(timedOutFakeRequest)
+    test(result)
+  }
+
+  def submitWithSessionAndAuth(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
+    val result = action.apply(authorisedFakeRequestToPOST(input: _*))
+    test(result)
+  }
+
+  def submitWithSessionWithoutAuth(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
+    val result = action.apply(fakeRequestWithSessionToPOST(input: _*))
+    test(result)
+  }
+
+  def submitWithoutSession(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
+    val result = action.apply(fakeRequestToPOST(input: _*))
+    test(result)
+  }
+
+  def submitWithTimeout(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
+    val result = action.apply(timeoutFakeRequestToPOST(input: _*))
+    test(result)
+  }
+
 }
 

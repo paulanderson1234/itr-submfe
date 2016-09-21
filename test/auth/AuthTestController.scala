@@ -14,12 +14,26 @@
  * limitations under the License.
  */
 
-package models
+package auth
 
-import play.api.libs.json.Json
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-case class SubmissionResponse(status: Boolean, formBundleId: String, message: String)
+import scala.concurrent.Future
 
-object SubmissionResponse {
-  implicit val formats = Json.format[SubmissionResponse]
+object AuthTestController extends AuthTestController {
+
+  override lazy val applicationConfig = mockConfig
+  override lazy val authConnector = mockAuthConnector
+}
+
+trait AuthTestController extends FrontendController with AuthorisedForTAVC {
+
+  val authorisedAsyncAction = Authorised.async {
+    implicit user =>  implicit request => Future.successful(Ok)
+  }
+
+  val authorisedAction = Authorised {
+    implicit user =>  implicit request => Ok
+  }
+
 }

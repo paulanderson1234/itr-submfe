@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.{ProposedInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -45,6 +47,8 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
   class SetupPage {
 
     val controller = new ProposedInvestmentController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
@@ -63,7 +67,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "investmentAmount" -> "5000000"
         )))
         Jsoup.parse(contentAsString(result))
@@ -91,7 +95,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
 
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.investment.amount.title")
@@ -117,7 +121,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
 
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.investment.amount.title")

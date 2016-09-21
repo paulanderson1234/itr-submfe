@@ -16,6 +16,9 @@
 
 package common
 
+import connectors.SubmissionConnector
+import models.{SubmissionResponse, YourCompanyNeedModel, ContactDetailsModel, SubmissionRequest}
+
 object Constants extends Constants
 
 trait Constants {
@@ -38,4 +41,5 @@ trait Constants {
   val PageInvestmentSchemeSitrValue : String = "Social Investment Tax Relief"
   val PageInvestmentSchemeVctValue : String = "Venture Capital Trust"
   val PageInvestmentSchemeAnotherValue : String = "Another scheme"
+
 }

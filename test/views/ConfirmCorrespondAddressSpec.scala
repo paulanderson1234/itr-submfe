@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{ConfirmCorrespondAddressController, routes}
@@ -44,6 +46,8 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
   class SetupPage {
 
     val controller = new ConfirmCorrespondAddressController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -56,7 +60,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
 
         when(mockKeystoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -82,7 +86,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
 
         when(mockKeystoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> ""
         ))
         Jsoup.parse(contentAsString(result))

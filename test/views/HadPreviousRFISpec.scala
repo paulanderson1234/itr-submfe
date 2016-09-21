@@ -18,9 +18,12 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{HadPreviousRFIController, routes}
 import models.HadPreviousRFIModel
 import org.jsoup.Jsoup
@@ -34,7 +37,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -44,6 +47,8 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new HadPreviousRFIController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -54,7 +59,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(hadPreviousRFIModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -80,7 +85,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyHadPreviousRFIModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -100,7 +105,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

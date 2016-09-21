@@ -16,10 +16,11 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.SessionBuilder
+import java.net.URLEncoder
+import auth.{MockConfig, MockAuthConnector}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -27,8 +28,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -36,11 +35,13 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object ContactDetailsControllerTest extends ContactDetailsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -49,18 +50,6 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedContactDetails = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
 
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ContactDetailsControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ContactDetailsControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -74,12 +63,12 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to ContactDetailsController" should {
+  "Sending a GET request to ContactDetailsController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
-      showWithSession(
+      showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -88,21 +77,58 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the ContactDetailsController" should {
+  "Sending an Unauthenticated request with a session to ContactDetailsController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(ContactDetailsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to ContactDetailsController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ContactDetailsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ContactDetailsController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ContactDetailsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ContactDetailsController when authenticated" should {
     "redirect to the Confirm Correspondence Address Controller page" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
         "telephoneNumber" -> "01385 236846",
         "email" -> "thisiavalidemail@valid.com"
       )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
@@ -111,16 +137,52 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ContactDetailsController" should {
+  "Sending an invalid form submission with validation errors to the ContactDetailsController when authenticated" should {
     "redirect with a bad request" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
         "telephoneNumber" -> "",
         "email" -> "thisiavalidemail@valid.com")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactDetailsController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(ContactDetailsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(ContactDetailsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactDetailsController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(ContactDetailsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

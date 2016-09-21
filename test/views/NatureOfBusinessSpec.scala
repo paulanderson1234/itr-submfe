@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 
 import controllers.{NatureOfBusinessController, routes}
@@ -44,6 +46,8 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
   class SetupPage {
 
     val controller = new NatureOfBusinessController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -56,9 +60,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
 
         when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(natureOfBusinessModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-          "natureofbusiness" -> "selling advertising"
-        ))
+        val result = controller.show.apply(authorisedFakeRequestToPOST("natureofbusiness" -> "selling advertising"))
         Jsoup.parse(contentAsString(result))
       }
 
@@ -82,7 +84,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
 
         when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyNatureOfBusinessModel)))
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
 

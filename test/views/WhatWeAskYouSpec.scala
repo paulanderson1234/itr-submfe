@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import controllers.WhatWeAskYouController
 import controllers.routes
 import controllers.helpers.{FakeRequestHelper}
@@ -33,6 +35,8 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
   class SetupPage {
 
     val controller = new WhatWeAskYouController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
     }
   }
 
@@ -42,7 +46,7 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
     "Verify that the What we'll ask you page contains the correct elements" in new SetupPage {
       val document: Document = {
         //val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply(fakeRequestWithSession)
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 

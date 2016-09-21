@@ -18,8 +18,11 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{IsKnowledgeIntensiveController, WhatWillUseForController, routes}
 import models.{IsKnowledgeIntensiveModel, WhatWillUseForModel}
 import org.jsoup.Jsoup
@@ -33,7 +36,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -43,6 +46,8 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new WhatWillUseForController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -53,7 +58,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -72,7 +77,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -89,7 +94,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

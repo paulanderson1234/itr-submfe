@@ -18,8 +18,10 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesSpendingInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -45,6 +47,8 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
 
   class SetupPage {
     val controller = new SubsidiariesSpendingInvestmentController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
     }
   }
@@ -62,7 +66,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
           .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
         when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -84,7 +88,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       ))
       Jsoup.parse(contentAsString(result))
@@ -106,7 +110,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       ))
       Jsoup.parse(contentAsString(result))
@@ -129,7 +133,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

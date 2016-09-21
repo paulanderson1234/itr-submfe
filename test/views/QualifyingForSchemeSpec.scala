@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{QualifyingForSchemeController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
@@ -33,7 +35,10 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
 
   class SetupPage {
 
-    val controller = new QualifyingForSchemeController{}
+    val controller = new QualifyingForSchemeController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
+    }
   }
 
   "The Qualifying for Scheme page" should {
@@ -41,7 +46,7 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
     "Verify that start page contains the correct elements" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 

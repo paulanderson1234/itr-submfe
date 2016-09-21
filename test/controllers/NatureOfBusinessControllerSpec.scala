@@ -16,10 +16,14 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
+import auth.{MockConfig, MockAuthConnector}
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -36,11 +40,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object NatureOfBusinessControllerTest extends NatureOfBusinessController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -50,18 +56,6 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
   val emptyModel = NatureOfBusinessModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedNatureOfBusiness = NatureOfBusinessModel("text some other")
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = NatureOfBusinessControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = NatureOfBusinessControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -80,7 +74,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
-      showWithSession(
+      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -89,18 +83,54 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the NatureOfBusinessController" should {
-    "redirect to the commercial sale page" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "natureofbusiness" -> "some text so it's valid")
+  "Sending an Unauthenticated request with a session to NatureOfBusinessController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(NatureOfBusinessControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
 
-      submitWithSession(request)(
+  "Sending a request with no session to NatureOfBusinessController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(NatureOfBusinessControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to NatureOfBusinessController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(NatureOfBusinessControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the NatureOfBusinessController when auththenticated" should {
+    "redirect to the commercial sale page" in {
+      val formInput = "natureofbusiness" -> "some text so it's valid"
+
+      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
@@ -109,15 +139,51 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
   }
 
-  "Sending an invalid form submission with validation errors to the NatureOfBusinessController" should {
+  "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated" should {
     "redirect to itself" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "natureofbusiness" -> "")
+      val formInput = "natureofbusiness" -> ""
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+
+  "Sending a submission to the NatureOfBusinessController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(NatureOfBusinessControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(NatureOfBusinessControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NatureOfBusinessController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(NatureOfBusinessControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

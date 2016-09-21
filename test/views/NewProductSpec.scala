@@ -18,9 +18,12 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{NewProductController, routes}
 import models.{NewProductModel, SubsidiariesModel}
 import org.jsoup.Jsoup
@@ -36,7 +39,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -48,6 +51,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
   class SetupPage {
 
     val controller = new NewProductController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -58,7 +63,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isNewProductModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -82,7 +87,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyNewProductModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -104,7 +109,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -120,7 +125,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId).withFormUrlEncodedBody(
+      val result = controller.submit.apply(authorisedFakeRequestToPOST(
         "isNewProduct" -> Constants.StandardRadioButtonYesValue
       ))
       Jsoup.parse(contentAsString(result))

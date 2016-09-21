@@ -18,8 +18,11 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{UsedInvestmentReasonBeforeController, routes}
 import models.UsedInvestmentReasonBeforeModel
 import org.jsoup.Jsoup
@@ -33,7 +36,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -43,6 +46,8 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
   class SetupPage {
 
     val controller = new UsedInvestmentReasonBeforeController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -53,7 +58,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -74,7 +79,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyUsedInvestmentReasonBeforeModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -93,7 +98,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

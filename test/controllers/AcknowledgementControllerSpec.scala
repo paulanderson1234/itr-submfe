@@ -16,35 +16,125 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.SessionBuilder
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
+import auth.{MockConfig, MockAuthConnector}
+import common.KeystoreKeys
+import config.FrontendAppConfig
+import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.helpers.FakeRequestHelper
+import models._
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import org.specs2.mock.Mockito
+import play.api.libs.json.{Json}
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.ws.WSHttp
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import java.net.URLEncoder
 
 import scala.concurrent.Future
 
-class AcknowledgementControllerSpec extends UnitSpec  with WithFakeApplication{
+class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFakeApplication  with FakeRequestHelper{
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = AcknowledgementController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
+  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockHttp : WSHttp = mock[WSHttp]
+  val mockSubmission = mock[SubmissionConnector]
+
+  val contactValid = ContactDetailsModel("Frank","The Tank","01384 555678","email@gmail.com")
+  val contactInvalid = ContactDetailsModel("Frank","The Tank","01384 555678","email@badrequest.com")
+  val yourCompanyNeed = YourCompanyNeedModel("AA")
+  val submissionRequestValid = SubmissionRequest(contactValid,yourCompanyNeed)
+  val submissionRequestInvalid = SubmissionRequest(contactInvalid,yourCompanyNeed)
+  val submissionResponse = SubmissionResponse(true,"FBUND09889765", "Submission Request Successful")
+
+  class SetupPage {
+
+    val controller = new AcknowledgementController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
+      val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmission
+    }
   }
 
   implicit val hc = HeaderCarrier()
 
-
-  "Sending a GET request to AcknowledgementController" should {
-    "return a 200" in {
-      showWithSession(
-        result => status(result) shouldBe OK
-      )
+  "AcknowledgementController" should {
+    "use the correct keystore connector" in {
+      AcknowledgementController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
+
+  "AcknowledgementController" should {
+    "use the correct submission connector" in {
+      AcknowledgementController.submissionConnector shouldBe SubmissionConnector
+    }
+  }
+
+  "Sending an Authenticated GET request with a session to AcknowledgementController" should {
+    "return a 200 when a valid email address submitted" in new SetupPage{
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(contactValid)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(yourCompanyNeed)))
+      when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestValid))(Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+      val result = controller.show.apply(authorisedFakeRequest)
+      status(result) shouldBe OK
+    }
+
+    "return a 5xx when an invalid email is submitted" in new SetupPage{
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(contactInvalid)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(yourCompanyNeed)))
+      when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestInvalid))(Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+      val result = controller.show.apply(authorisedFakeRequest)
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "Sending a request with no session to AcknowledgementController" should {
+    "return a 302" in new SetupPage{
+      val result = controller.show.apply(fakeRequest)
+      status(result) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in new SetupPage{
+      val result = controller.show.apply(fakeRequest)
+      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to AcknowledgementController" should {
+    "return a 302" in new SetupPage{
+      val result = controller.show.apply(fakeRequestWithSession)
+      status(result) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in new SetupPage{
+      val result = controller.show.apply(fakeRequestWithSession)
+      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to AcknowledgementController" should {
+
+    "return a 303 in" in new SetupPage{
+      val result = controller.show.apply(timedOutFakeRequest)
+      status(result) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in new SetupPage {
+      val result = controller.show.apply(timedOutFakeRequest)
+      redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+
+
+
 }

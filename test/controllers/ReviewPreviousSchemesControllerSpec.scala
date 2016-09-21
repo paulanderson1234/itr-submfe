@@ -18,8 +18,10 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{KeystoreKeys, Constants}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
 import models._
@@ -44,6 +46,8 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   val mockControllerHelper = mock[ControllerHelpers]
 
   object ReviewPreviousSchemesControllerTest extends ReviewPreviousSchemesController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 

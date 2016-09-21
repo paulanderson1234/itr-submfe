@@ -18,7 +18,9 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -41,6 +43,8 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object TaxpayerReferenceControllerTest extends TaxpayerReferenceController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 

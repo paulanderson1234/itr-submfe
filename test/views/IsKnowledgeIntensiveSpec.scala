@@ -18,9 +18,12 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{IsKnowledgeIntensiveController, routes}
 import models.IsKnowledgeIntensiveModel
 import org.jsoup.Jsoup
@@ -34,7 +37,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -44,6 +47,8 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
   class SetupPage {
 
     val controller = new IsKnowledgeIntensiveController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -54,7 +59,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isKnowledgeIntensiveModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -80,7 +85,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyIsKnowledgeIntensiveModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -104,7 +109,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

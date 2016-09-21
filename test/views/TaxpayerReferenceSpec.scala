@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 
 import controllers.{TaxpayerReferenceController, routes}
@@ -44,6 +46,8 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
   class SetupPage {
 
     val controller = new TaxpayerReferenceController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -56,7 +60,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
 
         when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "utr" -> "1234567890"
         )))
         Jsoup.parse(contentAsString(result))
@@ -80,7 +84,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
 
         when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyTaxpayerReferenceModel)))
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.companyDetails.utr.title")

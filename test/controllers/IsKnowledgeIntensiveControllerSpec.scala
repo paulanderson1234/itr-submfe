@@ -16,19 +16,19 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockConfig, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,11 +37,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object IsKnowledgeIntensiveControllerTest extends IsKnowledgeIntensiveController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -55,17 +57,6 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
   val falseKIModel = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), None, Some(false))
   val missingDateKIModel = KiProcessingModel(Some(true),None, Some(false), Some(false), None, Some(false))
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = IsKnowledgeIntensiveControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = IsKnowledgeIntensiveControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -79,12 +70,12 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a GET request to IsKnowledgeIntensiveController" should {
+  "Sending a GET request to IsKnowledgeIntensiveController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
-      showWithSession(
+      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -93,20 +84,56 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController" should {
+  "Sending an Unauthenticated request with a session to IsKnowledgeIntensiveController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(IsKnowledgeIntensiveControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to IsKnowledgeIntensiveController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(IsKnowledgeIntensiveControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to IsKnowledgeIntensiveController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(IsKnowledgeIntensiveController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated" should {
     "redirect to the operating costs page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
@@ -115,14 +142,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController" should {
+  "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController when authenticated" should {
     "redirect to the date of incorporation page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingDateKIModel)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -136,9 +162,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -147,14 +172,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController" should {
+  "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController when authenticated" should {
     "redirect to the date of incorporation" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -163,14 +187,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController" should {
+  "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController when authenticated" should {
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -179,13 +202,48 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
   
-  "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController" should {
+  "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController when authenticated" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isKnowledgeIntensive" -> "")
-      submitWithSession(request)(
+      val formInput = "isKnowledgeIntensive" -> ""
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IsKnowledgeIntensiveController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(IsKnowledgeIntensiveControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(IsKnowledgeIntensiveControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IsKnowledgeIntensiveController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(IsKnowledgeIntensiveControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

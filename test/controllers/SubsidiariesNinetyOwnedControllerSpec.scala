@@ -16,6 +16,8 @@
 
 package controllers
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import models.SubsidiariesNinetyOwnedModel
 import java.util.UUID
 
@@ -43,6 +45,8 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
 
   object SubsidiariesNinetyOwnedControllerTest extends SubsidiariesNinetyOwnedController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 

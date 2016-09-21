@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{CommercialSaleController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -46,6 +48,8 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new CommercialSaleController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -58,7 +62,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidYes)))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
           "commercialSaleDay" -> "10",
           "commercialSaleMonth" -> "25",
@@ -87,7 +91,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidNo)))
-        val result = controller.show.apply((fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
           "commercialSaleDay" -> "",
           "commercialSaleMonth" -> "",
@@ -115,7 +119,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyCommercialSaleModel)))
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.companyDetails.CommercialSale.title")
@@ -138,7 +142,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelInvalidYes)))
-        val result = controller.submit.apply((fakeRequestWithSession))
+        val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.companyDetails.CommercialSale.title")

@@ -18,8 +18,10 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -42,6 +44,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object PreviousSchemeControllerTest extends PreviousSchemeController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 

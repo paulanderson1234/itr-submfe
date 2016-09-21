@@ -18,8 +18,10 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models._
@@ -45,6 +47,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object ProposedInvestmentControllerTest extends ProposedInvestmentController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }

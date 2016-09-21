@@ -18,8 +18,10 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{InvestmentGrowController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -45,6 +47,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   class SetupPage {
     val controller = new InvestmentGrowController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
     }
   }
@@ -61,7 +65,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.show.apply(authorisedFakeRequestToPOST(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
       ))
       Jsoup.parse(contentAsString(result))
@@ -90,9 +94,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST
+      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+
       Jsoup.parse(contentAsString(result))
     }
 
@@ -119,9 +123,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST
+      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -149,9 +152,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.SubsidiariesSpendingInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST
+      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -179,9 +181,8 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST
+      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -207,7 +208,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.submit.apply(authorisedFakeRequestToPOST(
         "investmentGrowDesc" -> ""
       ))
       Jsoup.parse(contentAsString(result))

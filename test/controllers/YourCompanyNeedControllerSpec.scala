@@ -18,7 +18,9 @@ package controllers
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import models._
 import org.mockito.Matchers
@@ -42,6 +44,8 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   object YourCompanyNeedControllerTest extends YourCompanyNeedController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
   }
 
   val modelAA = YourCompanyNeedModel("AA")

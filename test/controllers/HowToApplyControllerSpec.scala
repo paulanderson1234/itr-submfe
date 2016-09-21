@@ -16,8 +16,13 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
+import auth.{MockConfig, MockAuthConnector}
 import builders.SessionBuilder
+import config.FrontendAppConfig
+import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -26,36 +31,68 @@ import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
 import org.scalatest.mock.MockitoSugar
 import scala.concurrent.Future
 
-class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper{
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = HowToApplyController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = HowToApplyController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
-  "Sending a GET request to HowToApplyController" should {
+  object HowToApplyControllerTest extends HowToApplyController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+  }
+
+  "Sending a GET request to HowToApplyController when authenticated" should {
     "return a 200" in {
-      showWithSession(
+      showWithSessionAndAuth(HowToApplyControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
+
+  "Sending an Unauthenticated request with a session to HowToApplyController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(HowToApplyControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to HowToApplyController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(HowToApplyControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to HowToApplyController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(HowToApplyControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
 
   "Posting to the HowToApplyController" should {
     "redirect to 'What does your company need' page" in {
 
       val request = FakeRequest().withFormUrlEncodedBody()
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/your-company-need")
@@ -63,5 +100,42 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
       )
     }
   }
+
+  "Sending a submission to the HowToApplyController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(HowToApplyControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(HowToApplyControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl)
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the HowToApplyController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(HowToApplyControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
 
 }
