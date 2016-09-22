@@ -27,8 +27,8 @@ import uk.gov.hmrc.play.http.SessionKeys
 import scala.concurrent.Future
 
 trait FakeRequestHelper{
-  val sessionId = UUID.randomUUID.toString
-  val fakeRequest = FakeRequest()
+  lazy val sessionId = UUID.randomUUID.toString
+  lazy val fakeRequest = FakeRequest()
   lazy val fakeRequestWithSession = fakeRequest.withSession(SessionKeys.sessionId -> s"session-$sessionId")
   lazy val authorisedFakeRequest = authenticatedFakeRequest()
   lazy val timedOutFakeRequest = timeoutFakeRequest()
