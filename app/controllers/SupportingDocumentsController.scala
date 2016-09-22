@@ -16,11 +16,11 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import controllers.Helpers.ControllerHelpers
-import controllers.predicates.ValidActiveSession
-import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocuments
 
@@ -29,13 +29,15 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait SupportingDocumentsController extends FrontendController with ValidActiveSession {
+trait SupportingDocumentsController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
 
     ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
       case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
@@ -43,7 +45,7 @@ trait SupportingDocumentsController extends FrontendController with ValidActiveS
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 }

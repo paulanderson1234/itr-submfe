@@ -16,32 +16,34 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object PreviousBeforeDOFCSControllerTest extends PreviousBeforeDOFCSController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -53,18 +55,6 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = PreviousBeforeDOFCSControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = PreviousBeforeDOFCSControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -75,34 +65,72 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     "use the correct keystore connector" in {
       PreviousBeforeDOFCSController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      PreviousBeforeDOFCSController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to PreviousBeforeDOFCSController" should {
+  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCS)))
-      showWithSession(
+      showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController" should {
-    "redirect to new geographical market" in {
+  "Sending an Unauthenticated formInput with a session to PreviousBeforeDOFCSController when Authenticated" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(PreviousBeforeDOFCSControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+  "Sending a formInput with no session to PreviousBeforeDOFCSController when Authenticated" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(PreviousBeforeDOFCSControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out formInput to PreviousBeforeDOFCSController when Authenticated" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(PreviousBeforeDOFCSControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController when Authenticated" should {
+    "redirect to new geographical market" in {
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -111,14 +139,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model" should {
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated" should {
     "redirect to the how-plan-to-use-investment page" in {
      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -127,14 +154,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated" should {
     "redirect to the subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -143,14 +169,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated" should {
     "redirect to new geographical market" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -159,14 +184,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated" should {
     "redirect to new geographical market" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -175,14 +199,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model" should {
+  "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model when Authenticated" should {
     "redirect to Subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -192,11 +215,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
 
-  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController" should {
+  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController when Authenticated" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "previousBeforeDOFCS" -> "")
-      submitWithSession(request)(
+      val formInput = "previousBeforeDOFCS" -> ""
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -204,4 +226,40 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
+
+  "Sending a submission to the PreviousBeforeDOFCSController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(PreviousBeforeDOFCSControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(PreviousBeforeDOFCSControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the PreviousBeforeDOFCSController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(PreviousBeforeDOFCSControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 }

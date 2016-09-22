@@ -34,7 +34,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{CheckAnswersController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -61,6 +63,8 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
   class SetupPage {
 
     val controller = new CheckAnswersController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -125,7 +129,7 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
           .thenReturn(Future.successful(None))
 
 
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
+        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
@@ -233,7 +237,7 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
           .thenReturn(Future.successful(None))
 
 
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody())
+        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 

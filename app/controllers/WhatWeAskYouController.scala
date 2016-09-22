@@ -16,8 +16,9 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 
@@ -26,15 +27,17 @@ import scala.concurrent.Future
 object WhatWeAskYouController extends WhatWeAskYouController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait WhatWeAskYouController extends FrontendController with ValidActiveSession {
+trait WhatWeAskYouController extends FrontendController with AuthorisedForTAVC{
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.introduction.WhatWeAskYou()))
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.TaxpayerReferenceController.show()))
   }
 }

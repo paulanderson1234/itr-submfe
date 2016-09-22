@@ -16,12 +16,12 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.SubsidiariesNinetyOwnedForm._
-import controllers.predicates.ValidActiveSession
 import models.SubsidiariesNinetyOwnedModel
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.investment.SubsidiariesNinetyOwned
 
@@ -29,20 +29,22 @@ import scala.concurrent.Future
 
 object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedController  {
   val keyStoreConnector: KeystoreConnector =  KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait SubsidiariesNinetyOwnedController extends FrontendController with ValidActiveSession {
+trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
       case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
       case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     subsidiariesNinetyOwnedForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))

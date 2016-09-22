@@ -32,33 +32,32 @@
 
 package controllers
 
-import java.time.ZoneId
-import java.util.{Date, UUID}
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models.{ContactDetailsModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object CheckAnswersControllerTest extends CheckAnswersController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -85,17 +84,6 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   val investmentGrowModel = InvestmentGrowModel("")
   val contactDetailsModel = ContactDetailsModel("", "", "", "")
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = CheckAnswersControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = CheckAnswersControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -109,7 +97,13 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     }
   }
 
-  "Sending a GET request to CheckAnswersController with a populated set of models" should {
+  "CheckAnswersController" should {
+    "use the correct auth connector" in {
+      CheckAnswersController.authConnector shouldBe FrontendAuthConnector
+    }
+  }
+
+  "Sending a GET request to CheckAnswersController with a populated set of models when authenticated" should {
     "return a 200 when the page is loaded" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
@@ -156,13 +150,13 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
 
-      showWithSession(
+      showWithSessionAndAuth(CheckAnswersControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a GET request to CheckAnswersController with an empty set of models" should {
+  "Sending a GET request to CheckAnswersController with an empty set of models when authenticated" should {
     "return a 200 when the page is loaded" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
@@ -209,21 +203,91 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      showWithSession(
+      showWithSessionAndAuth(CheckAnswersControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a submission to the CheckAnswersController" should {
-    "redirect to the same page" in {
-      val request = FakeRequest().withFormUrlEncodedBody()
-      submitWithSession(request)(
+
+  "Sending an Unauthenticated request with a session to CheckAnswersController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(CheckAnswersControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/acknowledgement")
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
     }
   }
+
+  "Sending a request with no session to CheckAnswersController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(CheckAnswersControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to CheckAnswersController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(CheckAnswersControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+
+    "Sending a submission to the CheckAnswersController" should {
+
+      "redirect to the acknowledgement page when authenticated" in {
+        submitWithSessionAndAuth(CheckAnswersControllerTest.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/acknowledgement")
+          }
+        )
+      }
+
+      "redirect to the GG login page when having a session but not authenticated" in {
+        submitWithSessionWithoutAuth(CheckAnswersControllerTest.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+            }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+          }
+        )
+      }
+
+      "redirect to the GG login page with no session" in {
+        submitWithoutSession(CheckAnswersControllerTest.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+            }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+          }
+        )
+      }
+
+      "redirect to the Timeout page when session has timed out" in {
+        submitWithTimeout(CheckAnswersControllerTest.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+          }
+        )
+      }
+    }
 }

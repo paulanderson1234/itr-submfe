@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{PreviousSchemeController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
@@ -54,6 +56,8 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   class SetupPage {
     val controller = new PreviousSchemeController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -71,7 +75,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
         when(mockKeystoreConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-        val result = controller.show(None).apply(fakeRequestWithSession)
+        val result = controller.show(None).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -117,7 +121,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
         when(mockKeystoreConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
-        val result = controller.show(Some(model3.processingId.get)).apply(fakeRequestWithSession)
+        val result = controller.show(Some(model3.processingId.get)).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -160,7 +164,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
         when(mockKeystoreConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.RegisteredAddressController.show().toString())))
-        val result = controller.submit().apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit().apply(authorisedFakeRequestToPOST(
           "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
           "investmentAmount" -> "",
           "investmentSpent" -> "777",
@@ -191,7 +195,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       when(mockKeystoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
-      val result = controller.submit().apply(fakeRequestWithSession.withFormUrlEncodedBody(
+      val result = controller.submit().apply(authorisedFakeRequestToPOST(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "",
         "investmentSpent" -> "777",

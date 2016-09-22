@@ -16,17 +16,17 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import controllers.helpers.FakeRequestHelper
+import uk.gov.hmrc.play.test.WithFakeApplication
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
@@ -35,29 +35,20 @@ import org.scalatestplus.play.OneServerPerSuite
 
 import scala.concurrent.Future
 
-class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with WithFakeApplication{
+class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach
+  with OneServerPerSuite with WithFakeApplication with FakeRequestHelper{
 
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object IneligibleForKIControllerTest extends IneligibleForKIController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
   override def beforeEach() {
     reset(mockKeyStoreConnector)
-  }
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = IneligibleForKIControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = IneligibleForKIControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
   }
 
   implicit val hc = HeaderCarrier()
@@ -66,14 +57,17 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "use the correct keystore connector" in {
       IneligibleForKIController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      IneligibleForKIController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to IneligibleForKIController without a valid backlink from keystore" should {
+  "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated" should {
     "redirect to the beginning of the flow" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
@@ -82,29 +76,102 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     }
   }
 
-  "Sending a GET request to IneligibleForKIController with a valid back link" should {
+  "Sending a GET request to IneligibleForKIController with a valid back link when authenticated" should {
     "return a 200" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-      showWithSession(
+      showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Posting to the IneligibleForKIController" should {
+  "Sending an Unauthenticated request with a session to IneligibleForKIController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(IneligibleForKIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to IneligibleForKIController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(IneligibleForKIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to IneligibleForKIController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(IneligibleForKIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+
+  "Posting to the IneligibleForKIController when authenticated" should {
     "redirect to 'Subsidiaries' page" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody()
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IneligibleForKIController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(IneligibleForKIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(IneligibleForKIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IneligibleForKIController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(IneligibleForKIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

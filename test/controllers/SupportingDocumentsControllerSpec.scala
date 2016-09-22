@@ -16,15 +16,14 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
-import models.ProposedInvestmentModel
+import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
@@ -33,24 +32,19 @@ import org.mockito.Mockito._
 
 import scala.concurrent.Future
 
-class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object SupportingDocumentsControllerTest extends SupportingDocumentsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = SupportingDocumentsControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = SupportingDocumentsControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
+  private def mockBackLinkSetup(backLink: Option[String]) = {
+    when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(backLink))
   }
 
   implicit val hc = HeaderCarrier()
@@ -59,13 +53,15 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     "use the correct keystore connector" in {
       SupportingDocumentsController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      SupportingDocumentsController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to SupportingDocumentsController" should {
     "return a 200 OK" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().toString())))
-      showWithSession(
+      mockBackLinkSetup(Some(routes.ConfirmCorrespondAddressController.show().url))
+      showWithSessionAndAuth(SupportingDocumentsControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -73,9 +69,8 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "sending a Get requests to the SupportingDocumentsController" should {
     "redirect to the confirm correspondence address page if no saved back link was found" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      showWithSession(
+      mockBackLinkSetup(None)
+      showWithSessionAndAuth(SupportingDocumentsControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
@@ -86,11 +81,81 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Posting to the SupportingDocumentsController" should {
     "redirect to Check your answers page" in {
-      val request = FakeRequest().withFormUrlEncodedBody()
-      submitWithSession(request)(result => {
-        status(result) shouldBe SEE_OTHER
+      submitWithSessionAndAuth(SupportingDocumentsControllerTest.submit){
+        result => status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
       }
+    }
+  }
+
+  "Sending a request with no session to SupportingDocumentsController" should {
+    "return a 303" in {
+      status(SupportingDocumentsControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(SupportingDocumentsControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to SupportingDocumentsController" should {
+    "return a 303" in {
+      status(SupportingDocumentsControllerTest.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(SupportingDocumentsControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to SupportingDocumentsController" should {
+
+    "return a 303 in" in {
+      status(SupportingDocumentsControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(SupportingDocumentsControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the SupportingDocumentsController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(SupportingDocumentsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SupportingDocumentsController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(SupportingDocumentsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SupportingDocumentsController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(SupportingDocumentsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
       )
     }
   }

@@ -16,18 +16,18 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -36,11 +36,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object RegisteredAddressControllerTest extends RegisteredAddressController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -48,18 +50,6 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
   val emptyModel = RegisteredAddressModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedRegisteredAddress = RegisteredAddressModel("LE5 5NN")
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = RegisteredAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = RegisteredAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -71,32 +61,71 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     "use the correct keystore connector" in {
       RegisteredAddressController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      RegisteredAddressController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to RegisteredAddressController" should {
+  "Sending a GET request to RegisteredAddressController when authenticated" should {
     "return a 200 OK when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
-      showWithSession(
+      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the RegisteredAddressController" should {
+  "Sending an Unauthenticated request with a session to RegisteredAddressController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(RegisteredAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to RegisteredAddressController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(RegisteredAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to RegisteredAddressController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(RegisteredAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the RegisteredAddressController when authenticated" should {
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "postcode" -> "LE5 5NN")
-      submitWithSession(request)(
+      val formInput = "postcode" -> "LE5 5NN"
+      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -105,11 +134,10 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
-  "Sending an invalid form submission with validation errors to the RegisteredAddressController" should {
+  "Sending an invalid form submission with validation errors to the RegisteredAddressController when authenticated" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "postcode" -> "")
-      submitWithSession(request)(
+      val formInput = "postcode" -> ""
+      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -117,4 +145,39 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
+  "Sending a submission to the RegisteredAddressController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(RegisteredAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(RegisteredAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the RegisteredAddressController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(RegisteredAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 }

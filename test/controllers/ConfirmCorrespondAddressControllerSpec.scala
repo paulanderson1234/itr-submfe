@@ -16,11 +16,13 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.Constants
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models.ConfirmCorrespondAddressModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -28,8 +30,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,30 +37,20 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
 
   object ConfirmCorrespondAddressControllerTest extends ConfirmCorrespondAddressController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
   val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ConfirmCorrespondAddressControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -74,12 +64,18 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending a GET request to ConfirmCorrespondAddressController" should {
+  "ConfirmCorrespondAddressController" should {
+    "use the correct auth connector" in {
+      ConfirmCorrespondAddressController.authConnector shouldBe FrontendAuthConnector
+    }
+  }
+
+  "Sending an Authenticated GET request with a session to ConfirmCorrespondAddressController" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
-      showWithSession(
+      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -88,34 +84,65 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submission with Yes option to the ConfirmCorrespondAddressController" should {
-    "redirect Supporting Documents" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+  "Sending an Unauthenticated request with a session to ConfirmCorrespondAddressController" should {
+    "return a 302 and redirect to the GG login page" in {
+      showWithSessionWithoutAuth(ConfirmCorrespondAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
       )
-      submitWithSession(request)(
+    }
+  }
+
+  "Sending a request with no session to ConfirmCorrespondAddressController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ConfirmCorrespondAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ConfirmCorrespondAddressController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ConfirmCorrespondAddressControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+
+  "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated" should {
+    "redirect Supporting Documents when the Yes option is selected" in {
+      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
         }
       )
     }
-  }
+    "redirect to Contact Address page when the no option is selected" in {
+      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonNoValue
 
-  "Sending a valid form submission with No option to the ConfirmCorrespondAddressController" should {
-    "redirect to Contact Address page" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonNoValue
-      )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
@@ -124,16 +151,55 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
-  "Sending an empty invalid form submission with validation errors to the ConfirmCorrespondAddressController" should {
-    "redirect to itself" in {
+  "Submitting a invalid form submission to ConfirmCorrespondAddressController while authenticated" should {
+    "redirect to itself when there is validation errors" in {
+       val formInput = "contactAddressUse" -> ""
+       submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+          result => {
+            status(result) shouldBe BAD_REQUEST
+          }
+        )
+      }
+    }
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "contactAddressUse" -> ""
-       )
+  "Submitting a form to ConfirmCorrespondAddressController with a session but not authenticated" should {
 
-      submitWithSession(request)(
+    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+    "return a 303 and redirect to the GG login page" in {
+      submitWithSessionWithoutAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
         result => {
-          status(result) shouldBe BAD_REQUEST
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Submitting a form to ConfirmCorrespondAddressController with no session" should {
+
+    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+    "return a 303 and redirect to the GG login page" in {
+      submitWithoutSession(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Submitting a form to ConfirmCorrespondAddressController with a timeout" should {
+
+    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+    "return a 303 and redirect to the timeout page" in {
+      submitWithTimeout(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

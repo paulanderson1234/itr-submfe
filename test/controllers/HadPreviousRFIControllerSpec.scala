@@ -16,19 +16,19 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.Constants
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,11 +37,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object HadPreviousRFIControllerTest extends HadPreviousRFIController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -50,18 +52,6 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
   val emptyModel = HadPreviousRFIModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedHadPreviousRFI = HadPreviousRFIModel("Yes")
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = HadPreviousRFIControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = HadPreviousRFIControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -73,14 +63,17 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct keystore connector" in {
       HadPreviousRFIController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      HadPreviousRFIController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to HadPreviousRFIController" should {
+  "Sending a GET request to HadPreviousRFIController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFI)))
-      showWithSession(
+      showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -89,18 +82,54 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid 'Yes' form submit to the HadPreviousRFIController" should {
+  "Sending an Unauthenticated request with a session to HadPreviousRFIController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(HadPreviousRFIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to HadPreviousRFIController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(HadPreviousRFIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to HadPreviousRFIController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(HadPreviousRFIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated" should {
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
@@ -109,12 +138,11 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid 'No' form submit to the HadPreviousRFIController" should {
+  "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated" should {
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
@@ -123,13 +151,49 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the HadPreviousRFIController" should {
+  "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hadPreviousRFI" -> "")
-      submitWithSession(request)(
+      val formInput = "hadPreviousRFI" -> ""
+      submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+
+  "Sending a submission to the HadPreviousRFIController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(HadPreviousRFIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(HadPreviousRFIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the HadPreviousRFIController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(HadPreviousRFIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

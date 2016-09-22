@@ -18,8 +18,10 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{NewGeographicalMarketController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -45,6 +47,8 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
 
   class SetupPage {
     val controller = new NewGeographicalMarketController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
     }
   }
@@ -62,9 +66,7 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
@@ -91,9 +93,7 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -121,9 +121,7 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
-      ))
+      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
 
@@ -151,7 +149,7 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyNewGeographicalMarketModel)))
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

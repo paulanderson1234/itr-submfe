@@ -16,21 +16,25 @@
 
 package controllers
 
-import controllers.predicates.ValidActiveSession
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 
 import scala.concurrent.Future
 
-object HowToApplyController extends HowToApplyController
+object HowToApplyController extends HowToApplyController{
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
+}
 
-trait HowToApplyController extends FrontendController with ValidActiveSession {
 
-  val show = ValidateSession.async { implicit request =>
+trait HowToApplyController extends FrontendController with AuthorisedForTAVC {
+
+  val show = Authorised.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.introduction.HowToApply()))
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.YourCompanyNeedController.show()))
   }
 }

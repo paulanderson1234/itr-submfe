@@ -16,12 +16,12 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.ConfirmCorrespondAddressForm._
 import models.ConfirmCorrespondAddressModel
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.contactInformation.ConfirmCorrespondAddress
 
@@ -29,20 +29,22 @@ import scala.concurrent.Future
 
 object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait ConfirmCorrespondAddressController extends FrontendController with ValidActiveSession {
+trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress).map {
       case Some(data) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(data)))
       case None => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     confirmCorrespondAddressForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors)))

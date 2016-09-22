@@ -32,6 +32,8 @@
 
 package views
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -62,6 +64,8 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
   class SetupPage {
 
     val controller = new SubsidiariesController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -81,7 +85,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -108,7 +112,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -137,7 +141,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -165,7 +169,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -193,7 +197,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -219,7 +223,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
         //submit the model with no radio selected as a post action
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "subsidiaries" -> ""
         ))
         Jsoup.parse(contentAsString(result))
@@ -240,7 +244,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio selected as a post action
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "subsidiaries" -> ""
         ))
         Jsoup.parse(contentAsString(result))

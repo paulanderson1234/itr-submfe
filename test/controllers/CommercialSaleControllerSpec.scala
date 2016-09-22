@@ -16,19 +16,19 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,11 +37,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object CommercialSaleControllerTest extends CommercialSaleController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -57,19 +59,6 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(21),Some(2),Some(2015))
 
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = CommercialSaleControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = CommercialSaleControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -81,13 +70,18 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       CommercialSaleController.keyStoreConnector shouldBe KeystoreConnector
     }
   }
+  "ConfirmCorrespondAddressController" should {
+    "use the correct auth connector" in {
+      CommercialSaleController.authConnector shouldBe FrontendAuthConnector
+    }
+  }
 
-  "Sending a GET request to CommercialSaleController" should {
+  "Sending a GET request to CommercialSaleController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
-      showWithSession(
+      showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -96,24 +90,61 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid Yes form submission to the CommercialSaleController" should {
+  "Sending an Unauthenticated request with a session to CommercialSaleController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(CommercialSaleControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to CommercialSaleController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(CommercialSaleControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to CommercialSaleController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(CommercialSaleControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid Yes form submission to the CommercialSaleController when authenticated" should {
     "redirect to the KI page if the KI date condition is met" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
+      val formInput = Seq("hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
+
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -122,9 +153,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid Yes form submission to the CommercialSaleController" should {
+  "Sending a valid Yes form submission to the CommercialSaleController when authenticated" should {
     "redirect to the subsidiaries page if the KI date condition is not met" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
@@ -133,7 +164,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -142,9 +173,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission with a empty KI Model to the CommercialSaleController" should {
+  "Sending a valid No form submission with a empty KI Model to the CommercialSaleController when authenticated" should {
     "redirect to the date of incorporation page" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
@@ -153,7 +184,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -162,9 +193,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission to the CommercialSaleController" should {
+  "Sending a valid No form submission to the CommercialSaleController when authenticated" should {
     "redirect to the KI page if the KI date condition is met" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
@@ -173,7 +204,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -182,9 +213,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission with a Ki Model which has missing data to the CommercialSaleController" should {
+  "Sending a valid No form submission with a Ki Model which has missing data to the CommercialSaleController when authenticated" should {
     "redirect to the date of incorporation page" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
@@ -193,7 +224,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -202,9 +233,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission to the CommercialSaleController" should {
+  "Sending a valid No form submission to the CommercialSaleController when authenticated" should {
     "redirect to the subsidiaries page if the KI date condition is not met" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
@@ -213,10 +244,46 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      submitWithSession(request)(
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the CommercialSaleController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(CommercialSaleControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(CommercialSaleControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the CommercialSaleController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(CommercialSaleControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

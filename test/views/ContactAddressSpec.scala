@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{routes, ContactAddressController}
 import controllers.helpers.FakeRequestHelper
@@ -43,6 +45,8 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new ContactAddressController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -55,7 +59,7 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactAddressModel)))
-        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -77,7 +81,7 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -99,7 +103,7 @@ class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoS
 
         when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactAddressModel)))
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "postcode" -> ""
         ))
         Jsoup.parse(contentAsString(result))

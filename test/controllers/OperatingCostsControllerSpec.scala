@@ -16,11 +16,13 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -28,8 +30,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,12 +37,14 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper  {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object OperatingCostsControllerTest extends OperatingCostsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }
@@ -72,18 +74,6 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   val operatingCostsTrueKIVectorList = Vector(keyStoreSaved15PercBoundaryOC)
   val operatingCostsFalseKIVectorList = Vector(operatingCosts1, operatingCosts1, operatingCosts1,rAndDCosts2,rAndDCosts2,rAndDCosts2)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = OperatingCostsControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = OperatingCostsControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -94,30 +84,69 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct keystore connector" in {
       OperatingCostsController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      OperatingCostsController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to OperatingCostsController" should {
+  "Sending a GET request to OperatingCostsController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      showWithSession(
+      showWithSessionAndAuth(OperatingCostsControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(OperatingCostsControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
-
   }
 
-  "Sending a valid form submit to the OperatingCostsController" should {
+  "Sending an Unauthenticated request with a session to OperatingCostsController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(OperatingCostsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to OperatingCostsController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(OperatingCostsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to OperatingCostsController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(OperatingCostsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the OperatingCostsController when authenticated" should {
     "redirect to the Percentage Of Staff With Masters page (for now)" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
@@ -125,15 +154,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "1000",
         "operatingCosts2ndYear" -> "1000",
         "operatingCosts3rdYear" -> "1000",
         "rAndDCosts1stYear" -> "100",
         "rAndDCosts2ndYear" -> "100",
-        "rAndDCosts3rdYear" -> "100")
+        "rAndDCosts3rdYear" -> "100"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
@@ -142,7 +172,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid form submit to the OperatingCostsController but not KI" should {
+  "Sending a valid form submit to the OperatingCostsController but not KI when authenticated" should {
     "redirect to the Ineligible For KI page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -150,15 +180,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "operatingCosts1stYear" -> "100",
-        "operatingCosts2ndYear" -> "100",
-        "operatingCosts3rdYear" -> "100",
-        "rAndDCosts1stYear" -> "1",
-        "rAndDCosts2ndYear" -> "1",
-        "rAndDCosts3rdYear" -> "1")
+      val formInput = Seq(
+        "operatingCosts1stYear" -> "1000",
+        "operatingCosts2ndYear" -> "1000",
+        "operatingCosts3rdYear" -> "1000",
+        "rAndDCosts1stYear" -> "100",
+        "rAndDCosts2ndYear" -> "100",
+        "rAndDCosts3rdYear" -> "100"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
@@ -167,22 +198,23 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a invalid form submit to the OperatingCostsController" should {
+  "Sending a invalid form submit to the OperatingCostsController when authenticated" should {
     "return a bad request" in {
 
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "0",
         "operatingCosts2ndYear" -> "0",
         "operatingCosts3rdYear" -> "0",
         "rAndDCosts1stYear" -> "0",
         "rAndDCosts2ndYear" -> "0",
-        "rAndDCosts3rdYear" -> "0")
+        "rAndDCosts3rdYear" -> "0"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -190,7 +222,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an empty KI Model to the OperatingCostsController" should {
+  "Sending an empty KI Model to the OperatingCostsController when authenticated" should {
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -198,15 +230,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "10",
         "rAndDCosts2ndYear" -> "10",
-        "rAndDCosts3rdYear" -> "10")
+        "rAndDCosts3rdYear" -> "10"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -215,7 +248,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a KI Model set as None to the OperatingCostsController" should {
+  "Sending a KI Model set as None to the OperatingCostsController when authenticated" should {
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -223,15 +256,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "10",
         "rAndDCosts2ndYear" -> "10",
-        "rAndDCosts3rdYear" -> "10")
+        "rAndDCosts3rdYear" -> "10"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -240,7 +274,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an KI Model with missing data to the OperatingCostsController" should {
+  "Sending an KI Model with missing data to the OperatingCostsController when authenticated" should {
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -248,15 +282,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "10",
         "rAndDCosts2ndYear" -> "10",
-        "rAndDCosts3rdYear" -> "10")
+        "rAndDCosts3rdYear" -> "10"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -265,7 +300,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an non KI Model to the OperatingCostsController" should {
+  "Sending an non KI Model to the OperatingCostsController when authenticated" should {
     "redirect to IsKI page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -273,15 +308,16 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "0",
         "rAndDCosts2ndYear" -> "0",
-        "rAndDCosts3rdYear" -> "0")
+        "rAndDCosts3rdYear" -> "0"
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -290,21 +326,22 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an empty invalid form submission with validation errors to the CommercialSaleController" should {
+  "Sending an empty invalid form submission with validation errors to the CommercialSaleController when authenticated" should {
     "return a bad request" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "operatingCosts1stYear" -> "",
-        "operatingCosts2ndYear" -> "",
-        "operatingCosts3rdYear" -> "",
-        "rAndDCosts1stYear" -> "",
-        "rAndDCosts2ndYear" -> "",
-        "rAndDCosts3rdYear" -> "")
+      val formInput = Seq(
+        "operatingCosts1stYear" -> " ",
+        "operatingCosts2ndYear" -> " ",
+        "operatingCosts3rdYear" -> " ",
+        "rAndDCosts1stYear" -> " ",
+        "rAndDCosts2ndYear" -> " ",
+        "rAndDCosts3rdYear" -> " "
+      )
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
@@ -314,10 +351,10 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
 
-  "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController" should {
+  "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController when authenticated" should {
     "return a bad request" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
         "operatingCosts3rdYear" -> "300000",
@@ -325,7 +362,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
         "rAndDCosts2ndYear" -> "",
         "rAndDCosts3rdYear" -> "")
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
@@ -334,10 +371,10 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController" should {
+  "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController when authenticated" should {
     "return a bad request" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
         "operatingCosts3rdYear" -> "300000",
@@ -345,10 +382,46 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
         "rAndDCosts2ndYear" -> "10000",
         "rAndDCosts3rdYear" -> "12000")
 
-      submitWithSession(request)(
+      submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
           //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactDetailsController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(OperatingCostsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(OperatingCostsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactDetailsController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(OperatingCostsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

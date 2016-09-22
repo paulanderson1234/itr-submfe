@@ -16,11 +16,11 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import models._
-import play.api.mvc.Action
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.checkAndSubmit.CheckAnswers
@@ -29,9 +29,11 @@ import scala.concurrent.Future
 
 object CheckAnswersController extends CheckAnswersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait CheckAnswersController extends FrontendController with ValidActiveSession {
+trait CheckAnswersController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
@@ -66,11 +68,11 @@ trait CheckAnswersController extends FrontendController with ValidActiveSession 
     subsidiariesNinetyOwned,contactDetails,investmentGrowModel)
 
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     checkAnswersModel.flatMap(checkAnswer => Future.successful(Ok(CheckAnswers(checkAnswer))))
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit  user => implicit request =>
     Future.successful(Redirect(routes.AcknowledgementController.show()))
   }
 

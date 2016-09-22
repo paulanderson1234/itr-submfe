@@ -16,10 +16,14 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -36,12 +40,14 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object YourCompanyNeedControllerTest extends YourCompanyNeedController {
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
   }
 
   val modelAA = YourCompanyNeedModel("AA")
@@ -49,18 +55,6 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   val emptyModel = YourCompanyNeedModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelAA)))
   val keyStoreSavedYourCompanyNeed = YourCompanyNeedModel("AA")
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = YourCompanyNeedControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = YourCompanyNeedControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -72,6 +66,9 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
     "use the correct keystore connector" in {
       YourCompanyNeedController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      YourCompanyNeedController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to YourCompanyNeedController" should {
@@ -79,7 +76,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedYourCompanyNeed)))
-      showWithSession(
+      showWithSessionAndAuth(YourCompanyNeedControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -88,7 +85,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(YourCompanyNeedControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -97,9 +94,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a valid 'Advanced Assurance' option form submit to the YourCompanyNeedController" should {
     "redirect to the qualifying for a scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "needAAorCS" -> "AA")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit, "needAAorCS" -> "AA")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
@@ -111,9 +106,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a valid 'Compliance Statement' option form submit to the YourCompanyNeedController" should {
     "redirect to the qualifying for a scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "needAAorCS" -> "CS")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit, "needAAorCS" -> "CS")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
@@ -124,11 +117,81 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending an invalid form submission with validation errors to the YourCompanyNeedController" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "needAAorCS" -> "")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit,"needAAorCS" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to YourCompanyNeedController" should {
+    "return a 303" in {
+      status(YourCompanyNeedControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(YourCompanyNeedControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to YourCompanyNeedController" should {
+    "return a 303" in {
+      status(WhatWeAskYouController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(YourCompanyNeedControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to YourCompanyNeedController" should {
+
+    "return a 303 in" in {
+      status(YourCompanyNeedControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(YourCompanyNeedControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the YourCompanyNeedController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(YourCompanyNeedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the YourCompanyNeedController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(YourCompanyNeedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the YourCompanyNeedController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(YourCompanyNeedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

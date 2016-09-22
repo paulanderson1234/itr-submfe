@@ -16,11 +16,13 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models.NewGeographicalMarketModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -28,8 +30,6 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -37,11 +37,13 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
   object NewGeographicalMarketControllerTest extends NewGeographicalMarketController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -50,18 +52,6 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   val emptyModel = NewGeographicalMarketModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedNewGeographicalMarket = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = NewGeographicalMarketControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = NewGeographicalMarketControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -73,35 +63,38 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "use the correct keystore connector" in {
       NewGeographicalMarketController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      NewGeographicalMarketController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to NewGeographicalMarketController" should {
+  "Sending a GET request to NewGeographicalMarketController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      showWithSession(
+      showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated"  in {
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      showWithSession(
+      showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 300 when no back link is fetched using keystore" in {
+    "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -110,12 +103,48 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a valid 'Yes' form submit to the NewGeographicalMarketController" should {
+  "Sending an Unauthenticated request with a session to NewGeographicalMarketController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(NewGeographicalMarketControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to NewGeographicalMarketController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(NewGeographicalMarketControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to NewGeographicalMarketController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(NewGeographicalMarketControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the NewGeographicalMarketController when authenticated" should {
     "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
@@ -124,12 +153,11 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a valid 'No' form submit to the NewGeographicalMarketController" should {
+  "Sending a valid 'No' form submit to the NewGeographicalMarketController when authenticated" should {
     "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
@@ -138,13 +166,12 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink" should {
+  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink and when authenticated" should {
     "redirect to WhatWillUseFor page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "")
-      submitWithSession(request)(
+      val formInput = "isNewGeographicalMarket" -> ""
+      submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -152,16 +179,51 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
   }
-  
-  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController" should {
+
+  "Sending an invalid form submission with validation errors to the NewGeographicalMarketController when authenticated" should {
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "isNewGeographicalMarket" -> "")
-      submitWithSession(request)(
+      val formInput = "isNewGeographicalMarket" -> ""
+      submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(NewGeographicalMarketControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(NewGeographicalMarketControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(NewGeographicalMarketControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{DateOfIncorporationController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
@@ -43,6 +45,8 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
   class SetupPage {
 
     val controller = new DateOfIncorporationController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -55,7 +59,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
-        val result = controller.show.apply(fakeRequestWithSession)
+        val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
@@ -80,7 +84,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
 
         when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
-        val result = controller.submit.apply(fakeRequestWithSession)
+        val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 

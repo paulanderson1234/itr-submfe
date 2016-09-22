@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import controllers.{LifetimeAllowanceExceededController, HowToApplyController, routes}
@@ -35,6 +37,8 @@ class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication wi
   class SetupPage {
 
     val controller = new LifetimeAllowanceExceededController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -45,7 +49,7 @@ class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication wi
     "Verify that the Lifetime Allowance notification page contains the correct elements" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.show.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
 

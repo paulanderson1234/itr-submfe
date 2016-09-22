@@ -16,8 +16,9 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{CommercialSaleModel, KiProcessingModel}
@@ -29,20 +30,22 @@ import scala.concurrent.Future
 
 object CommercialSaleController extends CommercialSaleController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait CommercialSaleController extends FrontendController with ValidActiveSession {
+trait CommercialSaleController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
       case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
       case None => Ok(CommercialSale(commercialSaleForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {
       kiModel match {

@@ -16,14 +16,13 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-
-import controllers.predicates.ValidActiveSession
 import forms.HadPreviousRFIForm._
 import models.HadPreviousRFIModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import scala.concurrent.Future
 import views.html._
 
@@ -44,20 +43,22 @@ import views.html._
  */
 object HadPreviousRFIController extends HadPreviousRFIController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait HadPreviousRFIController extends FrontendController with ValidActiveSession {
+trait HadPreviousRFIController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
       case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data)))
       case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     hadPreviousRFIForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors)))

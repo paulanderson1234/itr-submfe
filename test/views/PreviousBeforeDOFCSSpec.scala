@@ -18,9 +18,12 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import controllers.{PreviousBeforeDOFCSController, routes}
 import models.PreviousBeforeDOFCSModel
 import org.jsoup.Jsoup
@@ -34,7 +37,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -44,6 +47,8 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
   class SetupPage {
 
     val controller = new PreviousBeforeDOFCSController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -54,7 +59,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -76,7 +81,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyPreviousBeforeDOFCSModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -96,7 +101,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

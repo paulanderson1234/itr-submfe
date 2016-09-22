@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.Constants
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.{SubsidiariesNinetyOwnedController, TaxpayerReferenceController, routes}
 import controllers.helpers.FakeRequestHelper
@@ -44,6 +46,8 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
   class SetupPage {
 
     val controller = new SubsidiariesNinetyOwnedController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
     }
   }
@@ -56,7 +60,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
 
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
@@ -77,7 +81,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
 
         when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> ""
         ))
         Jsoup.parse(contentAsString(result))

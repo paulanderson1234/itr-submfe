@@ -16,10 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-
-import controllers.predicates.ValidActiveSession
 import forms.RegisteredAddressForm._
 import models.RegisteredAddressModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,20 +30,22 @@ import scala.concurrent.Future
 object RegisteredAddressController extends RegisteredAddressController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait RegisteredAddressController extends FrontendController with ValidActiveSession {
+trait RegisteredAddressController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress).map {
       case Some(data) => Ok(companyDetails.RegisteredAddress(registeredAddressForm.fill(data)))
       case None => Ok(companyDetails.RegisteredAddress(registeredAddressForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     registeredAddressForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(companyDetails.RegisteredAddress(formWithErrors)))

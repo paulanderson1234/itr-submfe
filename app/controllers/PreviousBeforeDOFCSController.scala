@@ -16,10 +16,11 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.PreviousBeforeDOFCSForm._
-import controllers.predicates.ValidActiveSession
 import models.{PreviousBeforeDOFCSModel, SubsidiariesModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -28,22 +29,24 @@ import views.html.investment.PreviousBeforeDOFCS
 import scala.concurrent.Future
 import views.html._
 
-object PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
+object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait PreviousBeforeDOFCSController extends FrontendController with ValidActiveSession {
+trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
       case Some(data) => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data)))
       case None => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
       date match {

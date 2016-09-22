@@ -18,7 +18,9 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import common.Constants
+import config.FrontendAppConfig
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{CommercialSaleController, TenYearPlanController, routes}
@@ -47,6 +49,8 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
   class SetupPage {
 
     val controller = new TenYearPlanController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
@@ -60,7 +64,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(yesWithTenYearPlanModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
           "tenYearPlanDesc" -> "abcd"
         ))
@@ -88,7 +92,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(noWithNoTenYearPlanModel)))
-        val result = controller.show.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
           "tenYearPlanDesc" -> ""
         ))
@@ -111,7 +115,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyTenYearPlanModel)))
-        val result = controller.submit.apply(fakeRequestWithSession)
+        val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
@@ -132,7 +136,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
 
         when(mockKeystoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(yesInvalidTenYearPlanModel)))
-        val result = controller.submit.apply(fakeRequestWithSession.withFormUrlEncodedBody(
+        val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
           "tenYearPlanDesc" -> ""
         ))

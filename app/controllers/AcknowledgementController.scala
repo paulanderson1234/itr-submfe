@@ -16,25 +16,30 @@
 
 package controllers
 
+
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import common.{KeystoreKeys, Constants}
 import connectors.{KeystoreConnector, SubmissionConnector}
-import controllers.predicates.ValidActiveSession
+
 import models.{YourCompanyNeedModel, ContactDetailsModel, SubmissionRequest, SubmissionResponse}
+
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 
 object AcknowledgementController extends AcknowledgementController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-
-trait AcknowledgementController extends FrontendController with ValidActiveSession {
+trait AcknowledgementController extends FrontendController with AuthorisedForTAVC{
 
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     /** Dummy implementation. Will be replaced by final Submission model**/
 
     def subModel =for {

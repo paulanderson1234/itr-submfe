@@ -18,8 +18,11 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
 import builders.SessionBuilder
+import config.FrontendAppConfig
 import connectors.{KeystoreConnector, SubmissionConnector}
+import controllers.helpers.FakeRequestHelper
 import controllers.{IsKnowledgeIntensiveController, OperatingCostsController, routes}
 import models.{IsKnowledgeIntensiveModel, OperatingCostsModel}
 import org.jsoup.Jsoup
@@ -33,7 +36,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoSugar{
+class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
   val mockKeystoreConnector = mock[KeystoreConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
@@ -44,6 +47,8 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
   class SetupPage {
 
     val controller = new OperatingCostsController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
     }
@@ -55,7 +60,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(operatingCostsModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -81,7 +86,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeystoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyOperatingCostsModel)))
-      val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
@@ -104,7 +109,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(SessionBuilder.buildRequestWithSession(userId))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

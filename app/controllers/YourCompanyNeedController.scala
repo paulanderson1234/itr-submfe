@@ -16,9 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.YourCompanyNeedForm._
 import models.YourCompanyNeedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -27,21 +28,23 @@ import views.html._
 import scala.concurrent.Future
 
 object YourCompanyNeedController extends YourCompanyNeedController{
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with ValidActiveSession {
+trait YourCompanyNeedController extends FrontendController with AuthorisedForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
       case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
       case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
     yourCompanyNeedForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(introduction.YourCompanyNeed(formWithErrors)))

@@ -16,6 +16,8 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -26,21 +28,22 @@ import common.Constants._
 import forms.ProposedInvestmentForm._
 
 import scala.concurrent.Future
-import controllers.predicates.ValidActiveSession
 import views.html.investment.ProposedInvestment
 
 object ProposedInvestmentController extends ProposedInvestmentController
 {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
 }
 
-trait ProposedInvestmentController extends FrontendController with ValidActiveSession {
+trait ProposedInvestmentController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show: Action[AnyContent] = ValidateSession.async { implicit request =>
+  val show: Action[AnyContent] = Authorised.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
@@ -59,7 +62,7 @@ trait ProposedInvestmentController extends FrontendController with ValidActiveSe
     } yield route
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit  user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean]): Future[Result] = {
       kiModel match {

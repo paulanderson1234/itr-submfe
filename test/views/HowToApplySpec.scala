@@ -18,6 +18,8 @@ package views
 
 import java.util.UUID
 
+import auth.MockAuthConnector
+import config.FrontendAppConfig
 import connectors.KeystoreConnector
 import controllers.HowToApplyController
 import controllers.routes
@@ -42,6 +44,8 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
   class SetupPage {
 
     val controller = new HowToApplyController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
     }
   }
 
@@ -51,7 +55,7 @@ class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar
     "Verify that the How to apply page contains the correct elements" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((fakeRequestWithSession))
+        val result = controller.show.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
       }
 

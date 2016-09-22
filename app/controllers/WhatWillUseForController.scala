@@ -16,9 +16,10 @@
 
 package controllers
 
+import auth.AuthorisedForTAVC
 import common.KeystoreKeys
+import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
-import controllers.predicates.ValidActiveSession
 import forms.WhatWillUseForForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,21 +32,23 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 object WhatWillUseForController extends WhatWillUseForController{
+  override lazy val applicationConfig = FrontendAppConfig
+  override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait WhatWillUseForController extends FrontendController with ValidActiveSession {
+trait WhatWillUseForController extends FrontendController with AuthorisedForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = ValidateSession.async { implicit request =>
+  val show = Authorised.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor).map {
       case Some(data) => Ok(WhatWillUseFor(whatWillUseForForm.fill(data)))
       case None => Ok(WhatWillUseFor(whatWillUseForForm))
     }
   }
 
-  val submit = Action.async { implicit request =>
+  val submit = Authorised.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], prevRFI: Option[HadPreviousRFIModel],
                      comSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel]): Future[Result] = {

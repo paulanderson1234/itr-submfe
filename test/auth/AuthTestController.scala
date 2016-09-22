@@ -14,33 +14,26 @@
  * limitations under the License.
  */
 
-package controllers.predicates
+package auth
 
-import controllers.routes
-import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
 
-trait ValidActiveSession extends FrontendController {
+object AuthTestController extends AuthTestController {
 
-  private type PlayRequest = Request[AnyContent] => Result
-  private type AsyncRequest = Request[AnyContent] => Future[Result]
+  override lazy val applicationConfig = mockConfig
+  override lazy val authConnector = mockAuthConnector
+}
 
-  class ValidateSession {
+trait AuthTestController extends FrontendController with AuthorisedForTAVC {
 
-    def async(action: AsyncRequest): Action[AnyContent] = {
-      Action.async { implicit request =>
-        if (request.session.get(SessionKeys.sessionId).isEmpty) {
-          Future.successful(Redirect(routes.TimeoutController.timeout()))
-        } else {
-          action(request)
-        }
-      }
-    }
+  val authorisedAsyncAction = Authorised.async {
+    implicit user =>  implicit request => Future.successful(Ok)
   }
 
-  object ValidateSession extends ValidateSession()
+  val authorisedAction = Authorised {
+    implicit user =>  implicit request => Ok
+  }
 
 }

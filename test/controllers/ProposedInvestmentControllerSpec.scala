@@ -16,35 +16,35 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.SessionBuilder
+import java.net.URLEncoder
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{KeystoreConnector, SubmissionConnector}
-import controllers.Helpers.PreviousSchemesHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
-import common.Constants.{StandardRadioButtonYesValue, StandardRadioButtonNoValue}
+import common.Constants.{StandardRadioButtonNoValue, StandardRadioButtonYesValue}
+import controllers.helpers.FakeRequestHelper
 
 import scala.concurrent.Future
 
-class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object ProposedInvestmentControllerTest extends ProposedInvestmentController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }
@@ -89,17 +89,6 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val keyStoreSavedhadPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonYesValue)
   val keyStoreSavednoPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonNoValue)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ProposedInvestmentControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ProposedInvestmentControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -111,9 +100,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "use the correct keystore connector" in {
       ProposedInvestmentController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      ProposedInvestmentController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to ProposedInvestmentController" should {
+  "Sending a GET request to ProposedInvestmentController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
@@ -124,12 +116,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      showWithSession(
+      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
 
       when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
@@ -138,18 +130,18 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      showWithSession(
+      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore" should {
+  "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore when authenticated" should {
     "redirect to the beginning of the flow" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -158,7 +150,44 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with not exceeding the lifetime allowance (true KI) to the ProposedInvestmentController" should {
+  "Sending an Unauthenticated request with a session to ProposedInvestmentController when authenticated" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(ProposedInvestmentControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to ProposedInvestmentController when authenticated" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ProposedInvestmentControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ProposedInvestmentController when authenticated" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ProposedInvestmentControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit with not exceeding the lifetime allowance (true KI) to the ProposedInvestmentController when authenticated" should {
     "redirect to the what will use for page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -172,9 +201,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -183,7 +211,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with a not exceeding the lifetime allowance (true KI) and no previous RFI to the ProposedInvestmentController" should {
+  "Sending a valid form submit with a not exceeding the lifetime allowance (true KI) and no previous RFI to the ProposedInvestmentController" +
+    "when authenticated" should {
     "redirect to the what will use for page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -197,9 +226,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -208,7 +236,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with exceeded lifetime allowance (true KI) to the ProposedInvestmentController" should {
+  "Sending a valid form submit with exceeded lifetime allowance (true KI) to the ProposedInvestmentController when authenticated" should {
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
@@ -222,9 +250,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -233,7 +260,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController" should {
+  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController when authenticated" should {
     "redirect to the what will do page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -247,9 +274,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -258,7 +284,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController" should {
+  "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated" should {
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
@@ -272,9 +298,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -283,7 +308,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with not exceeded lifetime allowance (false KI) to the ProposedInvestmentController" should {
+  "Sending a valid form submit with not exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated" should {
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
@@ -297,9 +322,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeUnderTotalAmount)))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "5000000")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "5000000"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -308,7 +332,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with No KIModel to the ProposedInvestmentController" should {
+  "Sending a valid form submit with No KIModel to the ProposedInvestmentController when authenticated" should {
     "redirect to the DateOfIncorporation page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -322,9 +346,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "1234567")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -333,14 +356,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
+  "Sending an invalid form submission with validation errors to the ProposedInvestmentController when authenticated" should {
     "redirect with a bad request" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "fff")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "fff"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -348,14 +370,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending an invalid form submission with value 0 to the ProposedInvestmentController" should {
+  "Sending an invalid form submission with value 0 to the ProposedInvestmentController when authenticated" should {
     "redirect with a bad request" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "0")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "0"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -363,16 +384,51 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController" should {
+  "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController when authenticated" should {
     "redirect with a bad request" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "investmentAmount" -> "5000001")
-      submitWithSession(request)(
+      val formInput = "investmentAmount" -> "5000001"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(ProposedInvestmentControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(ProposedInvestmentControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(ProposedInvestmentControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

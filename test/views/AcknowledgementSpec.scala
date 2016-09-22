@@ -16,7 +16,9 @@
 
 package views
 
+import auth.MockAuthConnector
 import common.KeystoreKeys
+import config.FrontendAppConfig
 import connectors.{SubmissionConnector, KeystoreConnector}
 import controllers.{routes, AcknowledgementController}
 import controllers.helpers.{TestHelper, FakeRequestHelper}
@@ -48,6 +50,8 @@ import scala.concurrent.Future
   class SetupPage {
 
       val controller = new AcknowledgementController{
+        override lazy val applicationConfig = FrontendAppConfig
+        override lazy val authConnector = MockAuthConnector
         val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
         val submissionConnector: SubmissionConnector = mockSubmission
       }
@@ -64,7 +68,7 @@ import scala.concurrent.Future
             .thenReturn(Future.successful(Option(yourCompanyNeed)))
           when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequest))(Matchers.any()))
             .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
-          val result = controller.show.apply(fakeRequestWithSession)
+          val result = controller.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
 

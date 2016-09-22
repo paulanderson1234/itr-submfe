@@ -16,20 +16,20 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
-import builders.SessionBuilder
-import common.{KeystoreKeys, Constants}
+import auth.{MockAuthConnector, MockConfig}
+import common.{Constants, KeystoreKeys}
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
-import controllers.Helpers.ControllerHelpers
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -38,12 +38,13 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
-  val mockControllerHelper = mock[ControllerHelpers]
 
   object ReviewPreviousSchemesControllerTest extends ReviewPreviousSchemesController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
@@ -66,36 +67,6 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   val testId = 1
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
-  def addWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesControllerTest.add.apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def changeWithSession(processingId: Option[Int] = None)(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesControllerTest.change(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def removeWithSession(processingId: Option[Int] = None)(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = ReviewPreviousSchemesControllerTest.remove(processingId.get).apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-  
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -106,41 +77,80 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "use the correct keystore connector" in {
       ReviewPreviousSchemesController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      ReviewPreviousSchemesController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to ReviewPreviousSchemesController" should {
+  "Sending a GET request to ReviewPreviousSchemesController when authenticated" should {
     "return a 200 OK when a populated vector is returned from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      showWithSession(
+      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "return a 200 OK when a empty vector is returned from keystore" in {
+    "return a 200 OK when a empty vector is returned from keystore when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyVectorList)))
-      showWithSession(
+      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
+
         result => status(result) shouldBe OK
       )
     }
 
-    "return a 200 OK when nothing is returned from keystore (recover bloack exectued which creates empty vector)" in {
+    "return a 200 OK when nothing is returned from keystore (recover block executed which creates empty vector) when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Posting to the continue button on the ReviewPreviousSchemesController" should {
+  "Sending an Unauthenticated request with a session to ReviewPreviousSchemesController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(ReviewPreviousSchemesControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to ReviewPreviousSchemesController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ReviewPreviousSchemesControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ReviewPreviousSchemesController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ReviewPreviousSchemesControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Posting to the continue button on the ReviewPreviousSchemesController when authenticated" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-      submitWithSession(request)(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
@@ -151,9 +161,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to itself if table is empty" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-      submitWithSession(request)(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -162,13 +170,13 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a Post request to PreviousSchemeController delete method" should {
+  "Sending a Post request to PreviousSchemeController delete method when authenticated" should {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
-      removeWithSession(Some(1))(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -176,12 +184,13 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
 
-    "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" in {
+
+    "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      removeWithSession(Some(10))(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -189,12 +198,12 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
       )
     }
 
-    "redirect to 'Review previous scheme' when the vector is empty" in {
+    "redirect to 'Review previous scheme' when the vector is empty when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
-      removeWithSession(Some(1))(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -203,10 +212,10 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a GET request to ReviewPreviousSchemeController add method" should {
+  "Sending a GET request to ReviewPreviousSchemeController add method when authenticated" should {
     "redirect to the previous investment scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      addWithSession(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.add)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
@@ -215,10 +224,10 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a GET request to ReviewPreviousSchemeController change method" should {
+  "Sending a GET request to ReviewPreviousSchemeController change method when authenticated" should {
     "redirect to the previous investment scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      changeWithSession(Some(testId))(
+      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment?id=" + testId)
@@ -227,5 +236,39 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
+  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
 
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(ReviewPreviousSchemesControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(ReviewPreviousSchemesControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(ReviewPreviousSchemesControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 }
