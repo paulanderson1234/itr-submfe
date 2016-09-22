@@ -177,7 +177,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a submission to the ContactDetailsController when a timeout has occured" should {
+  "Sending a submission to the ContactDetailsController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
       submitWithTimeout(ContactDetailsControllerTest.submit)(
         result => {

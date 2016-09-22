@@ -5,6 +5,7 @@ GET         /assets/*file            controllers.Assets.at(path="/public", file)
 #Start route
 #####################################################################################################################
 
+GET        /                                        controllers.IntroductionController.show
 GET        /start                                   controllers.IntroductionController.show
 POST       /start                                   controllers.IntroductionController.submit
 

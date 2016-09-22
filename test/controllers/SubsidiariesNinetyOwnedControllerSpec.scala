@@ -16,22 +16,20 @@
 
 package controllers
 
-import auth.MockAuthConnector
-import config.FrontendAppConfig
-import models.SubsidiariesNinetyOwnedModel
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import models.SubsidiariesNinetyOwnedModel
 import common.Constants
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -39,7 +37,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -54,18 +52,6 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedSubsidiariesNinetyOwned = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = SubsidiariesNinetyOwnedControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = SubsidiariesNinetyOwnedControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -76,14 +62,17 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     "use the correct keystore connector" in {
       SubsidiariesNinetyOwnedController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      SubsidiariesNinetyOwnedController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to SubsidiariesNinetyOwnedController" should {
+  "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
-      showWithSession(
+      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -92,19 +81,54 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submission to the SubsidiariesNinetyOwnedController" should {
+  "Sending an Unauthenticated request with a session to SubsidiariesNinetyOwnedController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(SubsidiariesNinetyOwnedControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to SubsidiariesNinetyOwnedController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(SubsidiariesNinetyOwnedControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to SubsidiariesNinetyOwnedController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(SubsidiariesNinetyOwnedControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submission to the SubsidiariesNinetyOwnedController when authenticated" should {
     "redirect to the how-plan-to-use-investment page" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
-      )
-      submitWithSession(request)(
+      val formInput = "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -113,16 +137,49 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
   }
 
-  "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController" should {
+  "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController when authenticated" should {
     "redirect to itself" in {
 
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "ownNinetyPercent" -> ""
-       )
-
-      submitWithSession(request)(
+      val formInput = "ownNinetyPercent" -> ""
+      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SubsidiariesNinetyOwnedController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(SubsidiariesNinetyOwnedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(SubsidiariesNinetyOwnedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SubsidiariesNinetyOwnedController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(SubsidiariesNinetyOwnedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

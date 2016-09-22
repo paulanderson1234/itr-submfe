@@ -157,7 +157,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveController" should {
+  "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveControlle when authenticatedr" should {
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))

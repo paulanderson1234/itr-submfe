@@ -16,21 +16,20 @@
 
 package controllers
 
-import java.util.UUID
 
-import auth.MockAuthConnector
-import builders.SessionBuilder
+import java.net.URLEncoder
+
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -39,7 +38,7 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -67,19 +66,6 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapUpdated: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListUpdated)))
 
-
-  def showWithSession(id: Option[Int] = None)(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = PreviousSchemeControllerTest.show(id).apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = PreviousSchemeControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -90,9 +76,12 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct keystore connector" in {
       PreviousSchemeController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      PreviousSchemeController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
-  "Sending a GET request to PreviousSchemeController" should {
+  "Sending a GET request to PreviousSchemeController when authenticated" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
@@ -100,56 +89,96 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      showWithSession(None)(
+      showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when None is fetched using keystore" in {
+    "provide an empty model and return a 200 when None is fetched using keystore when authenticated" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      showWithSession(Some(1))(
+      showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "provide an empty model and return a 200 when an empty Vector List is fetched using keystore" in {
+  "Sending an Unauthenticated request with a session to ReviewPreviousSchemesController " should {
+    "return a 302 and redirect to GG login" in {
+      showWithSessionWithoutAuth(ReviewPreviousSchemesController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to ReviewPreviousSchemesController" should {
+    "return a 302 and redirect to GG login" in {
+      showWithoutSession(ReviewPreviousSchemesController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a timed-out request to ReviewPreviousSchemesController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ReviewPreviousSchemesController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(emptyVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-    showWithSession(Some(1))(
+    showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
+
       result => status(result) shouldBe OK
     )
   }
 
-  "provide an populated model and return a 200 when model with matching Id is fetched using keystore" in {
+  "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-    showWithSession(Some(3))(
+    showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(3)))(
+
       result => status(result) shouldBe OK
     )
   }
 
-  "navigate to start of flow if no backlink provided even if a valid matching moddel returned" in {
+  "navigate to start of flow if no backlink provided even if a valid matching moddel returned when authenticated" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
-    showWithSession(Some(3))(
+    showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(3)))(
+
       result => {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -157,14 +186,14 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     )
   }
 
-  "navigate to start of flow if no backlink provided if a new add scheme" in {
+  "navigate to start of flow if no backlink provided if a new add scheme when authenticated" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
-    showWithSession(None)(
+    showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
       result => {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -172,7 +201,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     )
   }
 
-  "Sending a valid new form submit to the PreviousSchemeController" should {
+  "Sending a valid new form submit to the PreviousSchemeController when authenticated" should {
     "create a new item and redirect to the review previous investments page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
@@ -183,7 +212,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "12345",
         "investmentSpent" -> "",
@@ -192,9 +221,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         "investmentMonth" -> "8",
         "investmentYear" -> "1988",
         "processingId" -> ""
-
       )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(PreviousSchemeControllerTest.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -203,7 +231,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid updated form submit to the PreviousSchemeController" should {
+  "Sending a valid updated form submit to the PreviousSchemeController when authenticated" should {
     "update the item and redirect to the review previous investments page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(),
         Matchers.any())).thenReturn(cacheMapUpdated)
@@ -213,7 +241,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "666",
         "investmentSpent" -> "777",
@@ -224,7 +252,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         "processingId" -> "5"
 
       )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(PreviousSchemeControllerTest.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -233,7 +261,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController" should {
+  "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController when authenticated" should {
     "not create the item and redirect to itself with errors as a bad request" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
@@ -243,7 +271,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "",
         "investmentSpent" -> "",
@@ -253,7 +281,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         "investmentYear" -> "1988",
         "processingId" -> ""
       )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(PreviousSchemeControllerTest.submit, formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -261,7 +289,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a invalid (no amount) updated form submit to the PreviousSchemeController" should {
+  "Sending a invalid (no amount) updated form submit to the PreviousSchemeController when authenticated" should {
     "not update the item and redirect to itself with errors as a bad request" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(cacheMapUpdated)
@@ -271,7 +299,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      val request = FakeRequest().withFormUrlEncodedBody(
+      val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeVctValue,
         "investmentAmount" -> "",
         "investmentSpent" -> "",
@@ -282,7 +310,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         "processingId" -> "5"
 
       )
-      submitWithSession(request)(
+      submitWithSessionAndAuth(PreviousSchemeControllerTest.submit, formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -290,4 +318,39 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(PreviousSchemeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(PreviousSchemeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(PreviousSchemeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 }
