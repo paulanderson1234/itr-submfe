@@ -19,9 +19,9 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockConfig, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -67,6 +67,9 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     "use the correct keystore connector" in {
       NatureOfBusinessController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      NatureOfBusinessController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to NatureOfBusinessController" should {
@@ -95,7 +98,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -108,7 +111,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -160,7 +163,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -171,7 +174,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )

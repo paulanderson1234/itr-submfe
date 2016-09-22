@@ -21,7 +21,7 @@ import java.util.UUID
 
 import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -80,6 +80,9 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
   "TaxpayerReferenceController" should {
     "use the correct keystore connector" in {
       TaxpayerReferenceController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      TaxpayerReferenceController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

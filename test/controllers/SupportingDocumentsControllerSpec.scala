@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
@@ -52,6 +52,9 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
   "SupportingDocumentsController" should {
     "use the correct keystore connector" in {
       SupportingDocumentsController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      SupportingDocumentsController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

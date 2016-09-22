@@ -22,7 +22,7 @@ import java.util.UUID
 import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.Constants
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -68,6 +68,9 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
   "UsedInvestmentReasonBeforeController" should {
     "use the correct keystore connector" in {
       UsedInvestmentReasonBeforeController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      UsedInvestmentReasonBeforeController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

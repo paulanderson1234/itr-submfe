@@ -16,16 +16,16 @@
 
 package controllers
 
-import auth.{MockConfig, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito
-import play.api.libs.json.{Json}
+import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -62,6 +62,12 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
   "AcknowledgementController" should {
     "use the correct keystore connector" in {
       AcknowledgementController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
+  "AcknowledgementController" should {
+    "use the correct auth connector" in {
+      AcknowledgementController.authConnector shouldBe FrontendAuthConnector
     }
   }
 
@@ -104,7 +110,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     s"should redirect to GG login" in new SetupPage{
       val result = controller.show.apply(fakeRequest)
       redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
 
@@ -117,7 +123,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     s"should redirect to GG login" in new SetupPage{
       val result = controller.show.apply(fakeRequestWithSession)
       redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
 

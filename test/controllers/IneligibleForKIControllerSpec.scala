@@ -18,9 +18,9 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockConfig, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import uk.gov.hmrc.play.test.WithFakeApplication
@@ -57,6 +57,9 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "use the correct keystore connector" in {
       IneligibleForKIController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      IneligibleForKIController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated" should {
@@ -90,7 +93,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -103,7 +106,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -145,7 +148,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -156,7 +159,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )

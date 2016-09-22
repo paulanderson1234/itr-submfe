@@ -18,17 +18,19 @@ package controllers
 
 import java.net.URLEncoder
 import java.util.UUID
-import auth.{MockConfig, MockAuthConnector}
+
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.scalatest.mock.MockitoSugar
+
 import scala.concurrent.Future
 
 class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper{
@@ -39,6 +41,12 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
   object HowToApplyControllerTest extends HowToApplyController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
+  }
+
+  "HowToApplyController" should {
+    "use the correct auth connector" in {
+      HowToApplyController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to HowToApplyController when authenticated" should {
@@ -55,7 +63,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -68,7 +76,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -108,7 +116,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -119,7 +127,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )

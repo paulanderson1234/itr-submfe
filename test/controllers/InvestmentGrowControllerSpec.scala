@@ -18,9 +18,9 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockConfig, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -62,6 +62,9 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   "InvestmentGrowController" should {
     "use the correct keystore connector" in {
       InvestmentGrowController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      InvestmentGrowController.authConnector shouldBe FrontendAuthConnector
     }
   }
 
@@ -109,7 +112,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -122,7 +125,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -189,7 +192,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -200,7 +203,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )

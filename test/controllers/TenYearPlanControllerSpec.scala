@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -72,6 +72,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   "TenYearPlanController" should {
     "use the correct keystore connector" in {
       TenYearPlanController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      TenYearPlanController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

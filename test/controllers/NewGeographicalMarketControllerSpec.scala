@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models.NewGeographicalMarketModel
@@ -62,6 +62,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   "NewGeographicalMarketController" should {
     "use the correct keystore connector" in {
       NewGeographicalMarketController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      NewGeographicalMarketController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

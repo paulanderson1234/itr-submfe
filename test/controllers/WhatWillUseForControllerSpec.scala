@@ -39,7 +39,7 @@ import java.util.{Date, UUID}
 import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -252,6 +252,9 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   "WhatWillUseForController" should {
     "use the correct keystore connector" in {
       WhatWillUseForController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      WhatWillUseForController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

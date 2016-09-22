@@ -17,9 +17,10 @@
 package controllers
 
 import java.net.URLEncoder
-import auth.{MockConfig, MockAuthConnector}
+
+import auth.{MockAuthConnector, MockConfig}
 import common.Constants
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -62,6 +63,9 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct keystore connector" in {
       HadPreviousRFIController.keyStoreConnector shouldBe KeystoreConnector
     }
+    "use the correct auth connector" in {
+      HadPreviousRFIController.authConnector shouldBe FrontendAuthConnector
+    }
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated" should {
@@ -90,7 +94,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -103,7 +107,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -166,7 +170,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -177,7 +181,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )

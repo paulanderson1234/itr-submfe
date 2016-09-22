@@ -34,9 +34,9 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockConfig, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models.{ContactDetailsModel, _}
@@ -94,6 +94,12 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   "CheckAnswersController" should {
     "use the correct keystore connector" in {
       CheckAnswersController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+
+  "CheckAnswersController" should {
+    "use the correct auth connector" in {
+      CheckAnswersController.authConnector shouldBe FrontendAuthConnector
     }
   }
 
@@ -210,7 +216,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -223,7 +229,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -258,7 +264,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-              URLEncoder.encode(MockConfig.introductionUrl)
+              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
             }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
           }
         )
@@ -269,7 +275,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-              URLEncoder.encode(MockConfig.introductionUrl)
+              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
             }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
           }
         )

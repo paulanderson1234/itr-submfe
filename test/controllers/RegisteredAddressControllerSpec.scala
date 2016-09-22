@@ -62,7 +62,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
       RegisteredAddressController.keyStoreConnector shouldBe KeystoreConnector
     }
     "use the correct auth connector" in {
-      ConfirmCorrespondAddressController.authConnector shouldBe FrontendAuthConnector
+      RegisteredAddressController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

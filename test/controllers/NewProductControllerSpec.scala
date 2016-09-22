@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -66,6 +66,11 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   "NewProductController" should {
     "use the correct keystore connector" in {
       NewProductController.keyStoreConnector shouldBe KeystoreConnector
+    }
+  }
+  "NewProductController" should {
+    "use the correct auth connector" in {
+      NewProductController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

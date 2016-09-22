@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import controllers.helpers.FakeRequestHelper
 import org.scalatest.mock.MockitoSugar
 import play.api.test.Helpers._
@@ -34,6 +34,12 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
   }
 
   implicit val hc = HeaderCarrier()
+
+  "WhatWeAskYouController" should {
+    "use the correct auth connector" in {
+      WhatWeAskYouController.authConnector shouldBe FrontendAuthConnector
+    }
+  }
 
   "Sending a GET request to WhatWeAskYouController" should {
     "return a 200" in {

@@ -21,7 +21,7 @@ import java.util.UUID
 
 import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -65,6 +65,9 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   "YourCompanyNeedController" should {
     "use the correct keystore connector" in {
       YourCompanyNeedController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      YourCompanyNeedController.authConnector shouldBe FrontendAuthConnector
     }
   }
 

@@ -17,8 +17,9 @@
 package controllers
 
 import java.net.URLEncoder
+
 import auth.{MockAuthConnector, MockConfig}
-import config.FrontendAppConfig
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.KeystoreConnector
 import controllers.helpers.FakeRequestHelper
 import org.scalatest.mock.MockitoSugar
@@ -41,6 +42,15 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
+  "LifetimeAllowanceExceededController" should {
+    "use the correct keystore connector" in {
+      LifetimeAllowanceExceededController.keyStoreConnector shouldBe KeystoreConnector
+    }
+    "use the correct auth connector" in {
+      LifetimeAllowanceExceededController.authConnector shouldBe FrontendAuthConnector
+    }
+  }
+
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated" should {
     "return a 200" in {
       showWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.show)(
@@ -55,7 +65,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -68,7 +78,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -105,7 +115,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -116,7 +126,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl)
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
