@@ -16,12 +16,14 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -38,7 +40,7 @@ import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -48,25 +50,26 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
   }
 
-  val addressAsJson = """{"lines":["Flat 1","Some Street 1","Some Place 1"],"town":"Some Town 1","postcode":"ZE99 1XZ","country":{"code":"GB","name":"UK"}}"""
+  val addressAsJson =
+    """
+      |{
+      |  "lines":[
+      |    "Flat 1",
+      |    "Some Street 1",
+      |    "Some Place 1"
+      |  ],
+      |  "town":"Some Town 1",
+      |  "postcode":"ZE99 1XZ",
+      |  "country":{
+      |    "code":"GB",
+      |    "name":"UK"
+      |  }
+      |}""".stripMargin
 
   val model = TaxpayerReferenceModel("1234567890")
   val emptyModel = TaxpayerReferenceModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedTaxpayerReference = TaxpayerReferenceModel("0987654321")
-
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = TaxpayerReferenceControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = TaxpayerReferenceControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
 
   implicit val hc = HeaderCarrier()
 
@@ -85,7 +88,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedTaxpayerReference)))
-      showWithSession(
+      showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -94,7 +97,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -102,9 +105,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a valid form submit to the TaxpayerReferenceController" should {
     "redirect to the  company's registered address page" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "utr" -> "1234567891")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(TaxpayerReferenceControllerTest.submit, "utr" -> "1234567891")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/registered-address")
@@ -115,11 +116,81 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending an invalid form submission with validation errors to the TaxpayerReferenceController" should {
     "redirect with a bad request" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "utr" -> "fff")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(TaxpayerReferenceControllerTest.submit, "utr" -> "fff")(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to TaxpayerReferenceController" should {
+    "return a 303" in {
+      status(TaxpayerReferenceControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(TaxpayerReferenceControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to TaxpayerReferenceController" should {
+    "return a 303" in {
+      status(TaxpayerReferenceControllerTest.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(TaxpayerReferenceControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to TaxpayerReferenceController" should {
+
+    "return a 303 in" in {
+      status(TaxpayerReferenceControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(TaxpayerReferenceControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the TaxpayerReferenceController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(TaxpayerReferenceControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the TaxpayerReferenceController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(TaxpayerReferenceControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the TaxpayerReferenceController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(TaxpayerReferenceControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

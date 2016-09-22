@@ -16,38 +16,28 @@
 
 package controllers
 
-import java.util.UUID
+import java.net.URLEncoder
 
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
+import config.FrontendAppConfig
+import controllers.helpers.FakeRequestHelper
 import org.scalatest.mock.MockitoSugar
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-import scala.concurrent.Future
+class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
-class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication{
-
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = WhatWeAskYouController.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = WhatWeAskYouController.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
+  object WhatWeAskYouControllerTest extends WhatWeAskYouController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
   }
 
   implicit val hc = HeaderCarrier()
 
-
   "Sending a GET request to WhatWeAskYouController" should {
     "return a 200" in {
-      showWithSession(
+      showWithSessionAndAuth(WhatWeAskYouControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -56,13 +46,82 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Posting to the WhatWeAskYouController" should {
     "redirect to 'What we'll ask you' page" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWeAskYouControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/taxpayer-reference")
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to WhatWeAskYouController" should {
+    "return a 303" in {
+      status(WhatWeAskYouControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(WhatWeAskYouControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to WhatWeAskYouController" should {
+    "return a 303" in {
+      status(WhatWeAskYouController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(WhatWeAskYouControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to WhatWeAskYouController" should {
+
+    "return a 303 in" in {
+      status(WhatWeAskYouControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(WhatWeAskYouControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the WhatWeAskYouController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(WhatWeAskYouControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the WhatWeAskYouController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(WhatWeAskYouControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the WhatWeAskYouController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(WhatWeAskYouControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

@@ -32,14 +32,16 @@
 //
 package controllers
 
+import java.net.URLEncoder
 import java.time.ZoneId
 import java.util.{Date, UUID}
 
-import auth.MockAuthConnector
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -56,7 +58,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -241,18 +243,6 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
   val missingSecondaryConditionsKiModel = KiProcessingModel(Some(true),Some(true),Some(false),Some(true),Some(true),None)
   val missingDateConditionMetKiModel = KiProcessingModel(Some(false),None,Some(true), None, None, None)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = WhatWillUseForControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = WhatWillUseForControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -270,7 +260,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedWhatWillUseForBusiness)))
-      showWithSession(
+      showWithSessionAndAuth(WhatWillUseForControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -279,7 +269,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(WhatWillUseForControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -301,9 +291,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -327,9 +316,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -352,9 +340,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -377,9 +364,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -402,9 +388,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -427,9 +412,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -452,9 +436,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -477,9 +460,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -502,9 +484,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -527,9 +508,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -552,9 +532,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -577,9 +556,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -602,9 +580,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -627,9 +604,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -651,9 +627,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -675,9 +650,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
@@ -700,9 +674,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
@@ -724,9 +697,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -748,9 +720,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
@@ -771,9 +742,8 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "Research and Development")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "Research and Development")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -785,11 +755,83 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the WhatWillUseForController" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "whatWillUseFor" -> "")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
+        "whatWillUseFor" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+
+  "Sending a request with no session to WhatWillUseForController" should {
+    "return a 303" in {
+      status(WhatWillUseForControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(WhatWillUseForControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to WhatWillUseForController" should {
+    "return a 303" in {
+      status(WhatWeAskYouController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(WhatWillUseForControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to WhatWillUseForController" should {
+
+    "return a 303 in" in {
+      status(WhatWillUseForControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(WhatWillUseForControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the WhatWillUseForController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(WhatWillUseForControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the WhatWillUseForController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(WhatWillUseForControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the WhatWillUseForController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(WhatWillUseForControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }
