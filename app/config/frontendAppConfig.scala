@@ -44,6 +44,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactHost/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
 
   override lazy val notAuthorisedRedirectUrl = configuration.getString("not-authorised-callback.url").getOrElse("")
-  override val ggSignInUrl: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
-  override val introductionUrl: String = configuration.getString(s"introduction.url").getOrElse("")
+  override lazy val ggSignInUrl = configuration.getString("government-gateway-sign-in.host").getOrElse("")
+  override lazy val introductionUrl = configuration.getString("introduction.url").getOrElse("")
 }
