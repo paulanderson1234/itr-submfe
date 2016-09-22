@@ -16,13 +16,15 @@
 
 package controllers
 
+import java.net.URLEncoder
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.Constants
 import config.FrontendAppConfig
 import connectors.KeystoreConnector
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -39,7 +41,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -55,23 +57,13 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedUsedInvestmentReasonBefore = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
 
-  def showWithSession(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = UsedInvestmentReasonBeforeControllerTest.show().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
-
-  def submitWithSession(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = UsedInvestmentReasonBeforeControllerTest.submit.apply(SessionBuilder.updateRequestFormWithSession(request, sessionId))
-    test(result)
-  }
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
     reset(mockKeyStoreConnector)
   }
+
+  when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
 
   "UsedInvestmentReasonBeforeController" should {
     "use the correct keystore connector" in {
@@ -81,19 +73,17 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a GET request to UsedInvestmentReasonBeforeController" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedUsedInvestmentReasonBefore)))
-      showWithSession(
+      showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      showWithSession(
+      showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -101,10 +91,8 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'Yes' form submit to the UsedInvestmentReasonBeforeController" should {
     "redirect to the subsidiaries page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)
-      submitWithSession(request)(
+      submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
@@ -115,10 +103,8 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'No' form submit to the UsedInvestmentReasonBeforeController" should {
     "redirect the ten year plan page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)
-      submitWithSession(request)(
+      submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
+        "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
@@ -129,11 +115,82 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
   
   "Sending an invalid form submission with validation errors to the UsedInvestmentReasonBeforeController" should {
     "redirect to itself" in {
-      val request = FakeRequest().withFormUrlEncodedBody(
-        "usedInvestmentReasonBefore" -> "")
-      submitWithSession(request)(
+      submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
+        "usedInvestmentReasonBefore" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a request with no session to UsedInvestmentReasonBeforeController" should {
+    "return a 303" in {
+      status(UsedInvestmentReasonBeforeControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(UsedInvestmentReasonBeforeControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to UsedInvestmentReasonBeforeController" should {
+    "return a 303" in {
+      status(UsedInvestmentReasonBeforeControllerTest.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(UsedInvestmentReasonBeforeControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Sending a timed-out request to UsedInvestmentReasonBeforeController" should {
+
+    "return a 303 in" in {
+      status(UsedInvestmentReasonBeforeControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(UsedInvestmentReasonBeforeControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a submission to the UsedInvestmentReasonBeforeController when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(UsedInvestmentReasonBeforeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the UsedInvestmentReasonBeforeController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(UsedInvestmentReasonBeforeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the UsedInvestmentReasonBeforeController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(UsedInvestmentReasonBeforeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
         }
       )
     }

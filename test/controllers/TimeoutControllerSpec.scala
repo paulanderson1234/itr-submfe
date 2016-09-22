@@ -16,38 +16,18 @@
 
 package controllers
 
-import java.util.UUID
-
-import builders.SessionBuilder
+import controllers.helpers.FakeRequestHelper
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.UnitSpec
-import views.html.warnings.{sessionTimeout, _}
 
-import scala.concurrent.Future
-
-class TimeoutControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
-
-  def timeout(request: FakeRequest[AnyContentAsFormUrlEncoded])(test: Future[Result] => Any) {
-    val sessionId = s"user-${UUID.randomUUID}"
-    val result = TimeoutController.timeout().apply(SessionBuilder.buildRequestWithSession(sessionId))
-    test(result)
-  }
+class TimeoutControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   "Sending a GET request to TimeoutController" should {
     "return a 200" in {
-
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-       timeout(request)(
-        result => {
-          status(result) shouldBe OK
-        }
-      )
+      status(TimeoutController.timeout(fakeRequest)) shouldBe OK
     }
   }
 }
