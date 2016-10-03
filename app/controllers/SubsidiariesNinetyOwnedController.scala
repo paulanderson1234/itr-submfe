@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.SubsidiariesNinetyOwnedForm._
 import models.SubsidiariesNinetyOwnedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,20 +31,21 @@ object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedControll
   val keyStoreConnector: KeystoreConnector =  KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedForTAVC {
+trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
       case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
       case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesNinetyOwnedForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))

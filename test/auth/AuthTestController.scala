@@ -16,23 +16,25 @@
 
 package auth
 
+import connectors.EnrolmentConnector
+import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object AuthTestController extends AuthTestController {
-
+object AuthTestController extends AuthTestController with MockitoSugar {
   override lazy val applicationConfig = mockConfig
   override lazy val authConnector = mockAuthConnector
+  override lazy val enrolmentConnector = mock[EnrolmentConnector]
 }
 
-trait AuthTestController extends FrontendController with AuthorisedForTAVC {
+trait AuthTestController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val authorisedAsyncAction = Authorised.async {
+  val authorisedAsyncAction = AuthorisedAndEnrolled.async {
     implicit user =>  implicit request => Future.successful(Ok)
   }
 
-  val authorisedAction = Authorised {
+  val authorisedAction = AuthorisedAndEnrolled {
     implicit user =>  implicit request => Ok
   }
 

@@ -17,15 +17,17 @@
 package auth
 
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import config.{FrontendAppConfig, AppConfig}
-import uk.gov.hmrc.play.frontend.auth._
+import config.{AppConfig, FrontendAppConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
+import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.http.HeaderCarrier
-
 import scala.concurrent.Future
+import connectors.EnrolmentConnector
+import scala.concurrent.ExecutionContext.Implicits.global
 
-trait AuthorisedForTAVC extends Actions {
+trait AuthorisedAndEnrolledForTAVC extends Actions {
 
+  val enrolmentConnector: EnrolmentConnector
   val applicationConfig: AppConfig
   val postSignInRedirectUrl: String = FrontendAppConfig.introductionUrl
 
@@ -34,20 +36,35 @@ trait AuthorisedForTAVC extends Actions {
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = TAVCUser => AsyncPlayRequest
 
-  implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
-
-  class AuthorisedBy(regime: TaxRegime) {
+  class AuthorisedAndEnrolled(regime: TaxRegime) {
     def async(action: AsyncUserRequest): Action[AnyContent] = {
       AuthorisedFor(regime, GGConfidence).async {
-        authContext: AuthContext => implicit request =>
-          action(TAVCUser(authContext))(request)
+        authContext: AuthContext => implicit request => enrolledCheck {
+          case Enrolled => action(TAVCUser(authContext))(request)
+          case NotEnrolled => Future.successful(Redirect(applicationConfig.subscriptionUrl))
+        }
       }
     }
 
     def apply(action: UserRequest): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)))
   }
 
-  object Authorised extends AuthorisedBy(TAVCRegime)
+  object AuthorisedAndEnrolled extends AuthorisedAndEnrolled(TAVCRegime)
+
+  def enrolledCheck(f: EnrolmentResult => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
+    for {
+      authority <- authConnector.currentAuthority
+      enrolment <- enrolmentConnector.getTAVCEnrolment(authority.fold("")(_.uri))
+      result <- f(mapToEnrolledResult(enrolment))
+    } yield result
+  }
+
+  private def mapToEnrolledResult: Option[Enrolment] => EnrolmentResult = {
+    case Some(tavcEnrolment) if tavcEnrolment.state == "Activated" => Enrolled
+    case _ => NotEnrolled
+  }
+
+  implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
   val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.ggSignInUrl)
 

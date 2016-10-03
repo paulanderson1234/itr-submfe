@@ -18,10 +18,10 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.Constants
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{ConfirmCorrespondAddressController, routes}
 import models.ConfirmCorrespondAddressModel
@@ -49,7 +49,11 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   "The Confirm Correspondence Address page" should {

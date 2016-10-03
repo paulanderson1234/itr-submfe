@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -45,6 +45,7 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val modelYes = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
@@ -70,28 +71,50 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCS)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending an Unauthenticated formInput with a session to PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCS)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
+
+  "Sending an Unauthenticated formInput with a session to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "return a 302 and redirect to GG login" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionWithoutAuth(PreviousBeforeDOFCSControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -103,8 +126,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a formInput with no session to PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending a formInput with no session to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "return a 302 and redirect to GG login" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithoutSession(PreviousBeforeDOFCSControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -116,8 +141,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a timed-out formInput to PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending a timed-out formInput to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "return a 302 and redirect to the timeout page" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithTimeout(PreviousBeforeDOFCSControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -127,8 +154,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -139,11 +168,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated" should {
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -154,11 +185,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated" should {
+  "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the subsidiaries-spending-investment page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -169,11 +202,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -184,11 +219,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated" should {
+  "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -199,11 +236,13 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model when Authenticated" should {
+  "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to Subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -215,8 +254,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
 
-  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController when Authenticated" should {
+  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "redirect to itself" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "previousBeforeDOFCS" -> ""
       submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
         result => {
@@ -258,6 +299,19 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the PreviousBeforeDOFCSController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(PreviousBeforeDOFCSControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

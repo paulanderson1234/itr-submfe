@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{CommercialSaleModel, KiProcessingModel}
@@ -32,20 +32,21 @@ object CommercialSaleController extends CommercialSaleController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait CommercialSaleController extends FrontendController with AuthorisedForTAVC {
+trait CommercialSaleController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
       case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
       case None => Ok(CommercialSale(commercialSaleForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {
       kiModel match {

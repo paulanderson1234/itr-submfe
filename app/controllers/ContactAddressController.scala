@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.ContactAddressForm._
 import models.ContactAddressModel
 import play.api.mvc._
@@ -33,20 +33,21 @@ object ContactAddressController extends ContactAddressController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactAddressController extends FrontendController with AuthorisedForTAVC{
+trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[ContactAddressModel](KeystoreKeys.contactAddress).map {
       case Some(data) => Ok(contactInformation.ContactAddress(contactAddressForm.fill(data)))
       case None => Ok(contactInformation.ContactAddress(contactAddressForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     contactAddressForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(contactInformation.ContactAddress(formWithErrors)))

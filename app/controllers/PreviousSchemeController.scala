@@ -16,13 +16,14 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+
 import scala.concurrent.Future
 import views.html.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
@@ -32,13 +33,14 @@ object PreviousSchemeController extends PreviousSchemeController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousSchemeController extends FrontendController with AuthorisedForTAVC {
+trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  def show(id: Option[Int]): Action[AnyContent] = Authorised.async { implicit user => implicit request =>
+  def show(id: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         id match {
@@ -63,7 +65,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedForTAVC
     } yield route
   }
 
-  val submit = Authorised.async { implicit  user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     previousSchemeForm.bindFromRequest().fold(
       formWithErrors => {
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector).flatMap(url =>

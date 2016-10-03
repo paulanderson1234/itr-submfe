@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.knowledgeIntensive.IneligibleForKI
 import controllers.Helpers.ControllerHelpers
@@ -31,13 +31,14 @@ object IneligibleForKIController extends IneligibleForKIController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait IneligibleForKIController extends FrontendController with AuthorisedForTAVC {
+trait IneligibleForKIController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         Future.successful(Ok(IneligibleForKI(backUrl.get)))
@@ -52,7 +53,7 @@ trait IneligibleForKIController extends FrontendController with AuthorisedForTAV
     } yield route
   }
 
-  val submit = Authorised.async { implicit user => implicit request => {
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request => {
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().toString())
     Future.successful(Redirect(routes.SubsidiariesController.show()))
     }

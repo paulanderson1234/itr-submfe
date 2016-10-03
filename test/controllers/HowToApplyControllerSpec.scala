@@ -19,11 +19,13 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -41,6 +43,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
   object HowToApplyControllerTest extends HowToApplyController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   "HowToApplyController" should {
@@ -49,10 +52,25 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
     }
   }
 
-  "Sending a GET request to HowToApplyController when authenticated" should {
+  "Sending a GET request to HowToApplyController when authenticated and enrolled" should {
     "return a 200" in {
+      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(HowToApplyControllerTest.show())(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to HowToApplyController when authenticated and NOT enrolled" should {
+    "return a 200" in {
+      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(HowToApplyControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -95,9 +113,10 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
   }
 
 
-  "Posting to the HowToApplyController" should {
+  "Posting to the HowToApplyController when authenticated and enrolled" should {
     "redirect to 'What does your company need' page" in {
-
+      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
@@ -140,6 +159,21 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Posting to the HowToApplyController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val request = FakeRequest().withFormUrlEncodedBody()
+
+      submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

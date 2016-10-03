@@ -18,10 +18,10 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{IsKnowledgeIntensiveController, WhatWillUseForController, routes}
 import models.{IsKnowledgeIntensiveModel, WhatWillUseForModel}
@@ -49,7 +49,11 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   "Verify that the WhatWillUseFor page contains the correct elements " +

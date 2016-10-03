@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -32,20 +32,21 @@ object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeCo
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedForTAVC{
+trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
       case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
       case None => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm))
     }
   }
 
-  val submit = Authorised.async { implicit userr => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit userr => implicit request =>
     usedInvestmentReasonBeforeForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))

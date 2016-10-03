@@ -16,13 +16,13 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.NewGeographicalMarketForm._
-import models.{NewGeographicalMarketModel}
+import models.NewGeographicalMarketModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
@@ -32,13 +32,14 @@ object NewGeographicalMarketController extends NewGeographicalMarketController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NewGeographicalMarketController extends FrontendController with AuthorisedForTAVC {
+trait NewGeographicalMarketController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
         keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket) map {
@@ -55,7 +56,7 @@ trait NewGeographicalMarketController extends FrontendController with Authorised
     } yield route
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     newGeographicalMarketForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc).flatMap {

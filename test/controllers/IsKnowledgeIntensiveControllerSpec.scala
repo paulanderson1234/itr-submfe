@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -45,6 +45,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val modelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
@@ -73,11 +74,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a GET request to IsKnowledgeIntensiveController when authenticated" should {
+  "Sending a GET request to IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -87,8 +90,26 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to IsKnowledgeIntensiveController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -130,11 +151,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated" should {
+  "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the operating costs page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -145,11 +168,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController when authenticated" should {
+  "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingDateKIModel)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -160,11 +185,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveControlle when authenticatedr" should {
+  "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveControlle when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -175,11 +202,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController when authenticated" should {
+  "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -190,11 +219,13 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
 
-  "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController when authenticated" should {
+  "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -205,8 +236,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
   }
   
-  "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to itself" in {
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "isKnowledgeIntensive" -> ""
       submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
         result => {
@@ -247,6 +280,19 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IsKnowledgeIntensiveController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

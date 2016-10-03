@@ -16,14 +16,15 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
+
 import scala.concurrent.Future
 import views.html.companyDetails.NatureOfBusiness
 
@@ -32,20 +33,21 @@ object NatureOfBusinessController extends NatureOfBusinessController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedForTAVC{
+trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
       case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
       case None => Ok(NatureOfBusiness(natureOfBusinessForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     natureOfBusinessForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))

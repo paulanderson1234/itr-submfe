@@ -19,10 +19,10 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -48,6 +48,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val addressAsJson =
@@ -77,6 +78,12 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     reset(mockKeyStoreConnector)
   }
 
+  private def mockEnrolledRequest = when(TaxpayerReferenceControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(TaxpayerReferenceControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   "TaxpayerReferenceController" should {
     "use the correct keystore connector" in {
       TaxpayerReferenceController.keyStoreConnector shouldBe KeystoreConnector
@@ -86,11 +93,12 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
-  "Sending a GET request to TaxpayerReferenceController" should {
+  "Sending a GET request to TaxpayerReferenceController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedTaxpayerReference)))
+      mockEnrolledRequest
       showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -100,14 +108,16 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid form submit to the TaxpayerReferenceController" should {
+  "Sending a valid form submit to the TaxpayerReferenceController when authenticated and enrolled" should {
     "redirect to the  company's registered address page" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(TaxpayerReferenceControllerTest.submit, "utr" -> "1234567891")(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -119,6 +129,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending an invalid form submission with validation errors to the TaxpayerReferenceController" should {
     "redirect with a bad request" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(TaxpayerReferenceControllerTest.submit, "utr" -> "fff")(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -160,6 +171,19 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
+  "Sending a request to TaxpayerReferenceController when NOT enrolled" should {
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(TaxpayerReferenceControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(TaxpayerReferenceControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
   "Sending a submission to the TaxpayerReferenceController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -194,6 +218,18 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the TaxpayerReferenceController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(TaxpayerReferenceControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

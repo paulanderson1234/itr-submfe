@@ -18,10 +18,10 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{PreviousSchemeController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
 import models.PreviousSchemeModel
@@ -59,7 +59,11 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   "The Previous Scheme page" should {

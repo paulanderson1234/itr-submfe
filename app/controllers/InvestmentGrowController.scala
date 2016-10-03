@@ -16,15 +16,14 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models._
 import common._
 import controllers.Helpers.ControllerHelpers
 import forms.InvestmentGrowForm._
-
 
 import scala.concurrent.Future
 import views.html.investment.InvestmentGrow
@@ -34,13 +33,14 @@ object InvestmentGrowController extends InvestmentGrowController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait InvestmentGrowController extends FrontendController with AuthorisedForTAVC{
+trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
@@ -58,7 +58,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedForTAVC
     } yield route
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap {

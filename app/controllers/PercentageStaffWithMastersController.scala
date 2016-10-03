@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.{KeystoreConnector, SubmissionConnector}
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -33,21 +33,22 @@ object PercentageStaffWithMastersController extends PercentageStaffWithMastersCo
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PercentageStaffWithMastersController extends FrontendController with AuthorisedForTAVC {
+trait PercentageStaffWithMastersController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
       case Some(data) => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
       case None => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,
                      isSecondaryKiConditionsMet: Option[Boolean]) = {

@@ -16,35 +16,37 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.YourCompanyNeedForm._
 import models.YourCompanyNeedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import views.html._
+
 import scala.concurrent.Future
 
 object YourCompanyNeedController extends YourCompanyNeedController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait YourCompanyNeedController extends FrontendController with AuthorisedForTAVC{
+trait YourCompanyNeedController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
       case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
       case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     yourCompanyNeedForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(introduction.YourCompanyNeed(formWithErrors)))

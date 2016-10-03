@@ -18,11 +18,11 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import models.SubsidiariesNinetyOwnedModel
 import common.Constants
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -46,6 +46,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val model = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
@@ -67,11 +68,13 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
   }
 
-  "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated" should {
+  "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -81,8 +84,26 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -124,9 +145,10 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
   }
 
-  "Sending a valid form submission to the SubsidiariesNinetyOwnedController when authenticated" should {
+  "Sending a valid form submission to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
         result => {
@@ -137,9 +159,10 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
   }
 
-  "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController when authenticated" should {
+  "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to itself" in {
-
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "ownNinetyPercent" -> ""
       submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
         result => {
@@ -180,6 +203,19 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SubsidiariesNinetyOwnedController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

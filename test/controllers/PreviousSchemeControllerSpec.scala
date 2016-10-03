@@ -19,10 +19,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -46,6 +46,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val model = PreviousSchemeModel(
@@ -81,7 +82,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to PreviousSchemeController when authenticated" should {
+  "Sending a GET request to PreviousSchemeController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
@@ -89,20 +90,43 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when None is fetched using keystore when authenticated" in {
+    "provide an empty model and return a 200 when None is fetched using keystore when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to PreviousSchemeController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousSchemeModel]
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -144,39 +168,45 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated" in {
+  "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated and enrolled" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(emptyVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+    when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
 
       result => status(result) shouldBe OK
     )
   }
 
-  "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated" in {
+  "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated and enrolled" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+    when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(3)))(
 
       result => status(result) shouldBe OK
     )
   }
 
-  "navigate to start of flow if no backlink provided even if a valid matching moddel returned when authenticated" in {
+  "navigate to start of flow if no backlink provided even if a valid matching moddel returned when authenticated and enrolled" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
+    when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(3)))(
 
       result => {
@@ -186,13 +216,15 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     )
   }
 
-  "navigate to start of flow if no backlink provided if a new add scheme when authenticated" in {
+  "navigate to start of flow if no backlink provided if a new add scheme when authenticated and enrolled" in {
     when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
       (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockKeyStoreConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
+    when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
       result => {
         status(result) shouldBe SEE_OTHER
@@ -201,7 +233,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     )
   }
 
-  "Sending a valid new form submit to the PreviousSchemeController when authenticated" should {
+  "Sending a valid new form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "create a new item and redirect to the review previous investments page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
@@ -212,6 +244,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "12345",
@@ -231,7 +265,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid updated form submit to the PreviousSchemeController when authenticated" should {
+  "Sending a valid updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "update the item and redirect to the review previous investments page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(),
         Matchers.any())).thenReturn(cacheMapUpdated)
@@ -241,6 +275,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "666",
@@ -261,7 +297,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController when authenticated" should {
+  "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController when authenticated and enrolled" should {
     "not create the item and redirect to itself with errors as a bad request" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
@@ -271,6 +307,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "",
@@ -289,7 +327,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a invalid (no amount) updated form submit to the PreviousSchemeController when authenticated" should {
+  "Sending a invalid (no amount) updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "not update the item and redirect to itself with errors as a bad request" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(cacheMapUpdated)
@@ -299,6 +337,8 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeVctValue,
         "investmentAmount" -> "",
@@ -349,6 +389,19 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(PreviousSchemeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -31,9 +31,10 @@ object CheckAnswersController extends CheckAnswersController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait CheckAnswersController extends FrontendController with AuthorisedForTAVC {
+trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
@@ -68,11 +69,11 @@ trait CheckAnswersController extends FrontendController with AuthorisedForTAVC {
     subsidiariesNinetyOwned,contactDetails,investmentGrowModel)
 
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     checkAnswersModel.flatMap(checkAnswer => Future.successful(Ok(CheckAnswers(checkAnswer))))
   }
 
-  val submit = Authorised.async { implicit  user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.AcknowledgementController.show()))
   }
 

@@ -19,10 +19,10 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -46,6 +46,7 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val model = ContactAddressModel("TF1 3NY")
@@ -71,10 +72,12 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to ContactAddressController when authenticated" should {
+  "Sending a GET request to ContactAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(ContactAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -83,8 +86,25 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(ContactAddressControllerTest.show)(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to ContactAddressController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(ContactAddressControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -126,9 +146,11 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid form submit to the ContactAddressController when authenticated" should {
+  "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
     "redirect to the Supporting Documents page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "postcode" -> "LE5 5NN"
       submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
         result => {
@@ -139,12 +161,29 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "postcode" -> ""
       submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val formInput = "postcode" -> "LE5 5NN"
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

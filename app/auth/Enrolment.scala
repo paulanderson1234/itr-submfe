@@ -16,16 +16,10 @@
 
 package auth
 
-import config.AppConfig
+import play.api.libs.json.Json
 
-object MockConfig extends AppConfig {
-  override val assetsPrefix: String = ""
-  override val analyticsToken: String = ""
-  override val analyticsHost: String = ""
-  override val reportAProblemPartialUrl: String = ""
-  override val reportAProblemNonJSUrl: String = ""
-  override val notAuthorisedRedirectUrl: String = "/investment-tax-relief/not-authorised"
-  override val ggSignInUrl: String = "/gg/sign-in"
-  override val introductionUrl: String = "http://localhost:9635/investment-tax-relief/your-company-need"
-  override val subscriptionUrl: String = "/investment-tax-relief-subscription/"
+case class Enrolment(key: String, identifiers: Seq[Identifier], state: String)
+
+object Enrolment {
+  implicit val formats = Json.format[Enrolment]
 }

@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 
@@ -29,15 +29,16 @@ object WhatWeAskYouController extends WhatWeAskYouController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait WhatWeAskYouController extends FrontendController with AuthorisedForTAVC{
+trait WhatWeAskYouController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.introduction.WhatWeAskYou()))
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.TaxpayerReferenceController.show()))
   }
 }

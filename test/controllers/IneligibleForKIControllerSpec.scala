@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import uk.gov.hmrc.play.test.WithFakeApplication
 import org.mockito.Matchers
@@ -45,6 +45,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   override def beforeEach() {
@@ -62,11 +63,13 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     }
   }
 
-  "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated" should {
+  "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -76,13 +79,31 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     }
   }
 
-  "Sending a GET request to IneligibleForKIController with a valid back link when authenticated" should {
+  "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and enrolled" should {
     "return a 200" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -125,13 +146,14 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   }
 
 
-  "Posting to the IneligibleForKIController when authenticated" should {
+  "Posting to the IneligibleForKIController when authenticated and enrolled" should {
     "redirect to 'Subsidiaries' page" in {
 
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-
+      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -172,6 +194,19 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the IneligibleForKIController when not enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

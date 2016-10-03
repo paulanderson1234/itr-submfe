@@ -18,10 +18,10 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{SupportingDocumentsController, routes}
 import org.jsoup.Jsoup
@@ -44,7 +44,11 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   "The Supporting documents page" should {

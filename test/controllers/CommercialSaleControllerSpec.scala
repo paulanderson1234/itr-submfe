@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -45,6 +45,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val keyStoreSavedCommercialSale = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(15),Some(3),Some(1996))
@@ -76,11 +77,13 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to CommercialSaleController when authenticated" should {
+  "Sending a GET request to CommercialSaleController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -90,6 +93,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -133,7 +138,20 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid Yes form submission to the CommercialSaleController when authenticated" should {
+  "Sending a NOT enrolled request" should {
+    "redirect to the Subscription Service" in {
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(CommercialSaleControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
+
+  "Sending a valid Yes form submission to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the KI page if the KI date condition is met" in {
       val formInput = Seq("hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
         "commercialSaleDay" -> "23",
@@ -144,6 +162,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -153,7 +173,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid Yes form submission to the CommercialSaleController when authenticated" should {
+  "Sending a valid Yes form submission to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the subsidiaries page if the KI date condition is not met" in {
       val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
@@ -164,6 +184,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -173,7 +195,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission with a empty KI Model to the CommercialSaleController when authenticated" should {
+  "Sending a valid No form submission with a empty KI Model to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
@@ -184,6 +206,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -193,7 +217,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission to the CommercialSaleController when authenticated" should {
+  "Sending a valid No form submission to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the KI page if the KI date condition is met" in {
       val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
@@ -204,6 +228,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -213,7 +239,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission with a Ki Model which has missing data to the CommercialSaleController when authenticated" should {
+  "Sending a valid No form submission with a Ki Model which has missing data to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
@@ -224,6 +250,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -233,7 +261,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid No form submission to the CommercialSaleController when authenticated" should {
+  "Sending a valid No form submission to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the subsidiaries page if the KI date condition is not met" in {
       val formInput = Seq(
         "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
@@ -244,6 +272,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -284,6 +314,20 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the CommercialSaleController when not enrolled" should {
+
+    "redirect to the Subscription Service" in {
+      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(CommercialSaleControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

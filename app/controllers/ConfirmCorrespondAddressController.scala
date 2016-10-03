@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.ConfirmCorrespondAddressForm._
 import models.ConfirmCorrespondAddressModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,20 +31,21 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedForTAVC {
+trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress).map {
       case Some(data) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(data)))
       case None => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     confirmCorrespondAddressForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors)))

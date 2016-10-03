@@ -18,11 +18,11 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -50,7 +50,14 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(TenYearPlanControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(TenYearPlanControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   val model = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("Text"))
   val emptyModel = TenYearPlanModel("", None)
@@ -78,13 +85,14 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     }
   }
 
-  "Sending a GET request to TenYearPlanController" should {
+  "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
+      mockEnrolledRequest
       showWithSessionAndAuth(TenYearPlanControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -96,6 +104,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
+      mockEnrolledRequest
       showWithSessionAndAuth(TenYearPlanControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -109,6 +118,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isKiKIModel)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
@@ -126,6 +136,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
@@ -143,6 +154,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(noMastersKIModel)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
@@ -160,6 +172,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
@@ -177,6 +190,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")(
@@ -190,6 +204,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending an empty invalid form submission with validation errors to the TenYearPlanController" should {
     "redirect to itself" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> "",
         "tenYearPlanDesc" -> "")(
@@ -203,6 +218,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending an an invalid form submission with both Yes and a blank description to the TenYearPlanController" should {
     "redirect to itself with validation errors" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "")(
@@ -248,6 +264,19 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     }
   }
 
+  "Sending a request to TenYearPlanController when NOT enrolled" should {
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(TenYearPlanControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(TenYearPlanControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
   "Sending a submission to the TenYearPlanController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -282,6 +311,18 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the TenYearPlanController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(TenYearPlanControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -47,6 +47,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val modelYes = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
@@ -76,26 +77,48 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a GET request to PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a GET request to PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to PercentageStaffWithMastersController when Authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -137,13 +160,15 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'Yes' form submit to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a valid 'Yes' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -154,13 +179,15 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'Yes' form submit with falseKi in the KI Model to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a valid 'Yes' form submit with falseKi in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the isKI page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isKiKIModel)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -171,13 +198,15 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'Yes' form submit without a KI Model to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a valid 'Yes' form submit without a KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -188,13 +217,15 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'Yes' form submit with missing data in the KI Model to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a valid 'Yes' form submit with missing data in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingDataKIModel)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -205,13 +236,15 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'No' form submit to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending a valid 'No' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect the ten year plan page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -222,8 +255,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
   }
   
-  "Sending an invalid form submission with validation errors to the PercentageStaffWithMastersController when Authenticated" should {
+  "Sending an invalid form submission with validation errors to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to itself" in {
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "staffWithMasters" -> ""
       submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
         result => {
@@ -264,6 +299,19 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ContactDetailsController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

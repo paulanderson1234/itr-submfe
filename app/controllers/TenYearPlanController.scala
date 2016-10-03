@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.{KeystoreConnector, SubmissionConnector}
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
@@ -33,21 +33,22 @@ object TenYearPlanController extends TenYearPlanController {
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait TenYearPlanController extends FrontendController with AuthorisedForTAVC {
+trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
   val submissionConnector: SubmissionConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
       case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
       case None => Ok(TenYearPlan(tenYearPlanForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], hasTenYearPlan: Boolean,
                      isSecondaryKiConditionsMet: Option[Boolean]): Future[Result] = {

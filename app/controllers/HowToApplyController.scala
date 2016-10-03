@@ -16,8 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.EnrolmentConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
@@ -25,16 +26,17 @@ import scala.concurrent.Future
 object HowToApplyController extends HowToApplyController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
 
-trait HowToApplyController extends FrontendController with AuthorisedForTAVC {
+trait HowToApplyController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.introduction.HowToApply()))
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.YourCompanyNeedController.show()))
   }
 }

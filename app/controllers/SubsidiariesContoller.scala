@@ -16,12 +16,12 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.Helpers.ControllerHelpers
-import models.{SubsidiariesModel}
+import models.SubsidiariesModel
 import forms.SubsidiariesForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -34,13 +34,14 @@ object SubsidiariesController extends SubsidiariesController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SubsidiariesController extends FrontendController with AuthorisedForTAVC {
+trait SubsidiariesController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
@@ -62,7 +63,7 @@ trait SubsidiariesController extends FrontendController with AuthorisedForTAVC {
     } yield route
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesForm.bindFromRequest.fold(
       invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, keyStoreConnector)(hc)
         .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.

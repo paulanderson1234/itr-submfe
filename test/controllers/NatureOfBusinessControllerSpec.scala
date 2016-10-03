@@ -19,10 +19,10 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -48,6 +48,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val natureOfBusinessAsJson = """{"day": 23,"month": 11, "year": 1993}"""
@@ -72,11 +73,13 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
   }
 
-  "Sending a GET request to NatureOfBusinessController" should {
+  "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -86,8 +89,26 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to NatureOfBusinessController when authenticated and NOT enrolled" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -129,8 +150,10 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
   }
 
-  "Sending a valid form submit to the NatureOfBusinessController when auththenticated" should {
+  "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
     "redirect to the commercial sale page" in {
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "natureofbusiness" -> "some text so it's valid"
 
       submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
@@ -142,9 +165,10 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
   }
 
-  "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
     "redirect to itself" in {
-
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "natureofbusiness" -> ""
 
       submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
@@ -187,6 +211,19 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the NatureOfBusinessController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

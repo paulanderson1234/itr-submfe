@@ -17,13 +17,20 @@
 package auth
 
 import java.net.URLEncoder
+
+import org.scalatest.mock.MockitoSugar
 import play.api.test.FakeRequest
 import play.api.http.Status
 import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-class TAVCAuthSpec extends UnitSpec with WithFakeApplication {
+import scala.concurrent.Future
+
+class TAVCAuthSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
   "Government Gateway Provider" should {
     "have an account type additional parameter set to organisation" in {
@@ -72,9 +79,22 @@ class TAVCAuthSpec extends UnitSpec with WithFakeApplication {
     }
   }
 
-  "Calling authenticated async action with a default GG login session" should {
-    "result in an OK status" in {
+  "Calling authenticated async action with a default GG login session with no TAVC enrolment" should {
+    "result in a redirect to subscription" in {
+      implicit val hc = HeaderCarrier()
+      when(AuthTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      val result = AuthTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/")
+    }
+  }
 
+  "Calling authenticated async action with a GG login session with a HMRC-TAVC-ORG enrolment" should {
+    "result in a status OK" in {
+      implicit val hc = HeaderCarrier()
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated")
+      when(AuthTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
       val result = AuthTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       status(result) shouldBe Status.OK
     }

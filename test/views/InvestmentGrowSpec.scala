@@ -18,11 +18,11 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{InvestmentGrowController, routes}
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -50,7 +50,11 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   override def beforeEach() {

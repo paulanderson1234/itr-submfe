@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,35 +31,36 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with AuthorisedForTAVC{
+trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit  user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
   }
 
-  def add: Action[AnyContent] = Authorised.async { implicit user => implicit request =>
+  def add: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
     Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
   }
 
-  def change(id: Int): Action[AnyContent] = Authorised.async { implicit user => implicit request =>
+  def change(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
     Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
   }
 
-  def remove(id: Int): Action[AnyContent] = Authorised.async { implicit user => implicit request =>
+  def remove(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
     PreviousSchemesHelper.removeKeystorePreviousInvestment(keyStoreConnector, id).map {
       _ => Redirect(routes.ReviewPreviousSchemesController.show())
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
     PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector).flatMap(previousSchemes =>
       if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))

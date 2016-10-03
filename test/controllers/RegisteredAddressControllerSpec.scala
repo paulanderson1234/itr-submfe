@@ -18,9 +18,9 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -44,6 +44,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   val model = RegisteredAddressModel("TF1 3NY")
@@ -66,20 +67,39 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
-  "Sending a GET request to RegisteredAddressController when authenticated" should {
+  "Sending a GET request to RegisteredAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated" in {
+    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to RegisteredAddressController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -121,9 +141,11 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
-  "Sending a valid form submit to the RegisteredAddressController when authenticated" should {
+  "Sending a valid form submit to the RegisteredAddressController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "postcode" -> "LE5 5NN"
       submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
         result => {
@@ -134,8 +156,10 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
-  "Sending an invalid form submission with validation errors to the RegisteredAddressController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the RegisteredAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
       val formInput = "postcode" -> ""
       submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
         result => {
@@ -176,6 +200,19 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the RegisteredAddressController when NOT enrolled" should {
+    "redirect to the Timeout page when session has timed out" in {
+      when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }
