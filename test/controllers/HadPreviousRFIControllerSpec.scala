@@ -48,6 +48,12 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val modelYes = HadPreviousRFIModel("Yes")
   val modelNo = HadPreviousRFIModel("No")
   val emptyModel = HadPreviousRFIModel("")
@@ -74,8 +80,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFI)))
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -96,8 +101,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFI)))
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -147,8 +151,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -162,8 +165,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -176,8 +178,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -226,8 +227,7 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a submission to the HadPreviousRFIController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

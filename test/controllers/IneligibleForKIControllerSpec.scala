@@ -48,6 +48,12 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   override def beforeEach() {
     reset(mockKeyStoreConnector)
   }
@@ -68,8 +74,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -84,8 +89,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -97,8 +101,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -152,8 +155,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
-      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -201,8 +203,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a submission to the IneligibleForKIController when not enrolled" should {
     "redirect to the Subscription Service" in {
-      when(IneligibleForKIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

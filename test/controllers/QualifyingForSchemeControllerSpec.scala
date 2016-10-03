@@ -40,6 +40,12 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   implicit val hc = HeaderCarrier()
 
   "QualifyingForSchemeController" should {
@@ -50,8 +56,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to QualifyingForSchemeController when authenticated and enrolled" should {
     "return a 200 OK" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(QualifyingForSchemeControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -60,8 +65,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending an Unauthenticated request with a session to NewGeographicalMarketController when authenticated and enrolled" should {
     "return a 302 and redirect to GG login" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionWithoutAuth(QualifyingForSchemeControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -75,8 +79,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending an Unauthenticated request with a session to NewGeographicalMarketController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(QualifyingForSchemeControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -88,8 +91,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a request with no session to NewGeographicalMarketController" should {
     "return a 302 and redirect to GG login" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithoutSession(QualifyingForSchemeControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -114,8 +116,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Posting to the QualifyingForSchemeController when authenticated" should {
     "redirect to 'What we'll ask you' page" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(QualifyingForSchemeControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -163,8 +164,7 @@ class QualifyingForSchemeControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a submission to the QualifyingForSchemeController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(QualifyingForSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(QualifyingForSchemeControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

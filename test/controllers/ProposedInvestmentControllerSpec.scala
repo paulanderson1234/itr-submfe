@@ -51,6 +51,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val model1 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
   val model2 = PreviousSchemeModel(
@@ -118,8 +124,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -134,8 +139,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -153,8 +157,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -169,8 +172,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -182,8 +184,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an Unauthenticated request with a session to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 302 and redirect to GG login" in {
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionWithoutAuth(ProposedInvestmentControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -232,8 +233,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -258,8 +258,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -283,8 +282,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -308,8 +306,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -333,8 +330,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -358,8 +354,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeUnderTotalAmount)))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "5000000"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -383,8 +378,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -400,8 +394,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "fff"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -416,8 +409,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "0"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -432,8 +424,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentAmount" -> "5000001"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
@@ -481,8 +472,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
     "redirect to the Subscription Servicec" in {
-      when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

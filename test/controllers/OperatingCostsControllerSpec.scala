@@ -50,6 +50,12 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val operatingCostsAsJson =
     """{"operatingCosts1stYear" : 750000, "operatingCosts2ndYear" : 800000, "operatingCosts3rdYear" : 934000,
       | "rAndDCosts1stYear" : 231000, "rAndDCosts2ndYear" : 340000, "rAndDCosts3rdYear" : 344000}""".stripMargin
@@ -95,8 +101,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -106,8 +111,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -119,8 +123,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -174,8 +177,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "1000",
         "operatingCosts2ndYear" -> "1000",
@@ -201,8 +203,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "1000",
         "operatingCosts2ndYear" -> "1000",
@@ -227,8 +228,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
 
       val formInput = Seq(
         "operatingCosts1stYear" -> "0",
@@ -254,8 +254,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -281,8 +280,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -308,8 +306,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(missingKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -335,8 +332,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -360,8 +356,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
       when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> " ",
         "operatingCosts2ndYear" -> " ",
@@ -383,8 +378,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
@@ -404,8 +398,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
@@ -461,8 +454,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a submission to the ContactDetailsController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(OperatingCostsControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

@@ -48,6 +48,12 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val modelYes = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
   val modelNo = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = NewGeographicalMarketModel("")
@@ -75,8 +81,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -87,8 +92,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -99,8 +103,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -116,8 +119,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -167,8 +169,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a valid 'Yes' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
@@ -182,8 +183,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a valid 'No' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect the ten year plan page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
@@ -198,8 +198,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to WhatWillUseFor page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
@@ -214,8 +213,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
@@ -263,8 +261,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
     "redirect to the Timeout page when session has timed out" in {
-      when(NewGeographicalMarketControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

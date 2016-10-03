@@ -47,6 +47,12 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val model = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
   val emptyModel = ContactDetailsModel("","","","")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
@@ -73,8 +79,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -84,8 +89,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -97,8 +101,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -147,8 +150,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the ContactDetailsController when authenticated and enrolled" should {
     "redirect to the Confirm Correspondence Address Controller page" in {
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -166,8 +168,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the ContactDetailsController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -183,8 +184,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the ContactDetailsController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",

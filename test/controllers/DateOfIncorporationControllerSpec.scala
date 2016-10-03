@@ -77,6 +77,12 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
 
   val model = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
@@ -110,8 +116,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -121,8 +126,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -134,8 +138,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -194,8 +197,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
         .thenReturn(Future.successful(Option(savedKIData)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
 
       val formInput = Seq(
         "incorporationDay" -> "23",
@@ -213,8 +215,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending an invalid form submission with validation errors to the DateOfIncorporationController when authenticated and enrolled" should {
     "return a bad request" in {
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = Seq(
         "incorporationDay" -> "",
         "incorporationMonth" -> "",
@@ -266,8 +267,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a submission to the DateOfIncorporationController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

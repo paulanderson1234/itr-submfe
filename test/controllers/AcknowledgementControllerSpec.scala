@@ -58,6 +58,12 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
       val submissionConnector: SubmissionConnector = mockSubmission
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    def mockEnrolledRequest: Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+    def mockNotEnrolledRequest: Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(None))
   }
 
   implicit val hc = HeaderCarrier()
@@ -94,8 +100,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
         .thenReturn(Future.successful(Option(yourCompanyNeed)))
       when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestValid))(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
-      when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val result = controller.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
     }
@@ -107,8 +112,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
         .thenReturn(Future.successful(Option(yourCompanyNeed)))
       when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestInvalid))(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-      when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val result = controller.show.apply(authorisedFakeRequest)
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
@@ -122,8 +126,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
         .thenReturn(Future.successful(Option(yourCompanyNeed)))
       when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequestValid))(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
-      when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       val result = controller.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

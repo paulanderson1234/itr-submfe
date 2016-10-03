@@ -49,6 +49,12 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
   val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
@@ -76,8 +82,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
-      when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -87,8 +92,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -100,8 +104,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
-      when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -151,8 +154,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect Supporting Documents when the Yes option is selected" in {
-      when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
         result => {
@@ -175,8 +177,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
   "Submitting a invalid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
-      when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
        val formInput = "contactAddressUse" -> ""
        submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
           result => {
@@ -224,6 +225,19 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Submitting a form to ConfirmCorrespondAddressController when NOT enrolled" should {
+    "return a 303 and redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

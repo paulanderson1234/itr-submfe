@@ -48,6 +48,12 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val model = InvestmentGrowModel("some text")
   val emptyModel = InvestmentGrowModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
@@ -76,8 +82,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -89,8 +94,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -101,8 +105,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -119,8 +122,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -170,8 +172,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> "some text so it's valid"
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -186,8 +187,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to WhatWillUseFor page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -204,8 +204,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(keyStoreSavedInvestmentGrow)))
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -253,8 +252,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a submission to the InvestmentGrowController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

@@ -46,6 +46,12 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   "HowToApplyController" should {
     "use the correct auth connector" in {
       HowToApplyController.authConnector shouldBe FrontendAuthConnector
@@ -54,8 +60,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a GET request to HowToApplyController when authenticated and enrolled" should {
     "return a 200" in {
-      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(HowToApplyControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -64,8 +69,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a GET request to HowToApplyController when authenticated and NOT enrolled" should {
     "return a 200" in {
-      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(HowToApplyControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -115,8 +119,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Posting to the HowToApplyController when authenticated and enrolled" should {
     "redirect to 'What does your company need' page" in {
-      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
@@ -166,8 +169,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Posting to the HowToApplyController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       val request = FakeRequest().withFormUrlEncodedBody()
 
       submitWithSessionAndAuth(HowToApplyControllerTest.submit())(

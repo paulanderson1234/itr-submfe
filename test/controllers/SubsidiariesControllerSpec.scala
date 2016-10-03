@@ -48,6 +48,12 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val modelYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val modelNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = SubsidiariesModel("")
@@ -76,8 +82,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -94,8 +99,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -107,8 +111,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -122,8 +125,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -176,8 +178,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
         result => {
@@ -194,8 +195,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
         result => {
@@ -211,8 +211,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "ownSubsidiaries" -> ""
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
         result => {
@@ -260,8 +259,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a submission to the SubsidiariesController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

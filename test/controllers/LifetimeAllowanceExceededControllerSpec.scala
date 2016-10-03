@@ -47,6 +47,12 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   "LifetimeAllowanceExceededController" should {
     "use the correct keystore connector" in {
       LifetimeAllowanceExceededController.keyStoreConnector shouldBe KeystoreConnector
@@ -58,8 +64,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "return a 200" in {
-      when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -68,8 +73,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -118,8 +122,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Posting to the LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "redirect to 'Proposed investment' page" in {
-      when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -167,8 +170,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a submission to the LifetimeAllowanceExceededController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

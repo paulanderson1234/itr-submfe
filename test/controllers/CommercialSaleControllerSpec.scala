@@ -48,6 +48,12 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val keyStoreSavedCommercialSale = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(15),Some(3),Some(1996))
 
   val model = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(23),Some(11),Some(1993))
@@ -82,8 +88,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -93,8 +98,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -140,8 +144,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a NOT enrolled request" should {
     "redirect to the Subscription Service" in {
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(CommercialSaleControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -162,8 +165,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -184,8 +186,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -206,8 +207,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -228,8 +228,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -250,8 +249,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -272,8 +270,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -322,8 +319,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a submission to the CommercialSaleController when not enrolled" should {
 
     "redirect to the Subscription Service" in {
-      when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

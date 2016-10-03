@@ -62,6 +62,12 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val yourCompanyNeedModel = YourCompanyNeedModel("")
   val taxpayerReferenceModel = TaxpayerReferenceModel("")
   val registeredAddressModel = RegisteredAddressModel("")
@@ -150,8 +156,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(Option(contactDetailsModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
-      when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
         result => status(result) shouldBe OK
@@ -205,8 +210,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
         result => status(result) shouldBe OK
@@ -260,8 +264,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
         result => {
@@ -323,8 +326,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       }
 
       "redirect to the subscription service when authenticated and NOT enrolled" in {
-        when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(None))
+        mockNotEnrolledRequest
         submitWithSessionAndAuth(CheckAnswersControllerTest.submit)(
           result => {
             status(result) shouldBe SEE_OTHER

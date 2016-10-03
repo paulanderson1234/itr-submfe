@@ -48,6 +48,12 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val modelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
   val modelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = NewProductModel("")
@@ -80,8 +86,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -91,8 +96,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -104,8 +108,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -157,8 +160,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewProductControllerTest.submit,formInput)(
         result => {
@@ -175,8 +177,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -192,8 +193,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -213,8 +213,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -230,8 +229,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -247,8 +245,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -261,8 +258,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending an invalid form submission with validation errors to the NewProductController when authenticated and enrolled" should {
     "redirect to itself" in {
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "isNewProduct" -> ""
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
@@ -310,8 +306,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a submission to the NewProductController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(NewProductControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

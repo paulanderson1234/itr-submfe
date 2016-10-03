@@ -49,6 +49,12 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val model = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
   val model2 = PreviousSchemeModel(
@@ -87,8 +93,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "return a 200 OK when a populated vector is returned from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
               .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -97,8 +102,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "return a 200 OK when a empty vector is returned from keystore when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyVectorList)))
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
 
         result => status(result) shouldBe OK
@@ -108,8 +112,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "return a 200 OK when nothing is returned from keystore (recover block executed which creates empty vector) when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -120,8 +123,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to the Subscription Service" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -172,8 +174,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     "redirect to 'Proposed Investment' page if table is not empty" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -200,8 +201,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -217,8 +217,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -232,8 +231,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
         (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -246,8 +244,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.add)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -260,8 +257,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -309,8 +305,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
     "redirect to the Susbcription Service" in {
-      when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

@@ -51,6 +51,12 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
+  private def mockEnrolledRequest = when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   val natureOfBusinessAsJson = """{"day": 23,"month": 11, "year": 1993}"""
 
   val model = NatureOfBusinessModel("some text")
@@ -78,8 +84,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -89,8 +94,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -102,8 +106,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -152,8 +155,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "natureofbusiness" -> "some text so it's valid"
 
       submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
@@ -167,8 +169,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
     "redirect to itself" in {
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "natureofbusiness" -> ""
 
       submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
@@ -218,8 +219,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a submission to the NatureOfBusinessController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

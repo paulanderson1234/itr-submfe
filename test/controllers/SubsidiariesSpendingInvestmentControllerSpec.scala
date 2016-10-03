@@ -54,6 +54,12 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedSubsidiariesSpendingInvestment = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
 
+  private def mockEnrolledRequest = when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
+
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -75,8 +81,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -87,8 +92,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -97,8 +101,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -114,8 +117,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -164,8 +166,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to the subsidiaries-ninety-percent-owned page" in {
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -178,8 +179,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -194,8 +194,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     "redirect to the subsidiaries-ninety-percent-owned page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -210,8 +209,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -259,8 +257,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a submission to the SubsidiariesSpendingInvestmentController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(SubsidiariesSpendingInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-        .thenReturn(Future.successful(None))
+      mockNotEnrolledRequest
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
