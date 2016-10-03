@@ -22,13 +22,13 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object AuthTestController extends AuthTestController with MockitoSugar {
+object AuthEnrolledTestController extends AuthEnrolledTestController with MockitoSugar {
   override lazy val applicationConfig = mockConfig
   override lazy val authConnector = mockAuthConnector
   override lazy val enrolmentConnector = mock[EnrolmentConnector]
 }
 
-trait AuthTestController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait AuthEnrolledTestController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val authorisedAsyncAction = AuthorisedAndEnrolled.async {
     implicit user =>  implicit request => Future.successful(Ok)

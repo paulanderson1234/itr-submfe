@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import java.net.URLEncoder
 
-import auth.AuthTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
 
 import scala.concurrent.Future
 
