@@ -18,9 +18,9 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -44,7 +44,14 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   val model = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
   val emptyModel = ContactDetailsModel("","","","")
@@ -67,11 +74,12 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to ContactDetailsController when authenticated" should {
+  "Sending a GET request to ContactDetailsController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
+      mockEnrolledRequest
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -81,8 +89,24 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to ContactDetailsController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
+      mockNotEnrolledRequest
+      showWithSessionAndAuth(ContactDetailsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -124,8 +148,9 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid form submit to the ContactDetailsController when authenticated" should {
+  "Sending a valid form submit to the ContactDetailsController when authenticated and enrolled" should {
     "redirect to the Confirm Correspondence Address Controller page" in {
+      mockEnrolledRequest
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -141,8 +166,9 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ContactDetailsController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the ContactDetailsController when authenticated and enrolled" should {
     "redirect with a bad request" in {
+      mockEnrolledRequest
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -151,6 +177,24 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ContactDetailsController when authenticated and NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      val formInput = Seq(
+        "forename" -> "Hank",
+        "surname" -> "The Tank",
+        "telephoneNumber" -> "01385 236846",
+        "email" -> "thisiavalidemail@valid.com"
+      )
+      submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

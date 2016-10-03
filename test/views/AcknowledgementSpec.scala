@@ -16,23 +16,23 @@
 
 package views
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{SubmissionConnector, KeystoreConnector}
-import controllers.{routes, AcknowledgementController}
-import controllers.helpers.{TestHelper, FakeRequestHelper}
-import models.{SubmissionRequest, SubmissionResponse, YourCompanyNeedModel, ContactDetailsModel}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import controllers.{AcknowledgementController, routes}
+import controllers.helpers.{FakeRequestHelper, TestHelper}
+import models.{ContactDetailsModel, SubmissionRequest, SubmissionResponse, YourCompanyNeedModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.specs2.mock.Mockito
 import play.api.i18n.Messages
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.http.HttpResponse
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.test.{WithFakeApplication, UnitSpec}
+import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
@@ -49,13 +49,17 @@ import scala.concurrent.Future
 
   class SetupPage {
 
-      val controller = new AcknowledgementController{
-        override lazy val applicationConfig = FrontendAppConfig
-        override lazy val authConnector = MockAuthConnector
-        val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-        val submissionConnector: SubmissionConnector = mockSubmission
-      }
+    val controller = new AcknowledgementController {
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
+      val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmission
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  }
 
     "The Acknowledgement page" should {
 

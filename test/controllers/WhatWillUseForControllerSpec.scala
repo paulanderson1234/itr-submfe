@@ -36,11 +36,11 @@ import java.net.URLEncoder
 import java.time.ZoneId
 import java.util.{Date, UUID}
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -66,7 +66,14 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(WhatWillUseForControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(WhatWillUseForControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
 //  //Gary TEST SCENARIOS
 //  /*
@@ -258,11 +265,12 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to WhatWillUseForController" should {
+  "Sending a GET request to WhatWillUseForController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedWhatWillUseForBusiness)))
+      mockEnrolledRequest
       showWithSessionAndAuth(WhatWillUseForControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -272,6 +280,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       showWithSessionAndAuth(WhatWillUseForControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -294,6 +303,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -319,6 +329,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -343,6 +354,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -367,6 +379,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -391,6 +404,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -415,6 +429,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -439,6 +454,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -463,6 +479,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -487,6 +504,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -511,6 +529,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -535,6 +554,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -559,6 +579,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -583,6 +604,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -607,6 +629,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -630,6 +653,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -653,6 +677,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -677,6 +702,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -700,6 +726,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -723,6 +750,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -745,6 +773,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "Research and Development")(
         result => {
@@ -758,6 +787,7 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the WhatWillUseForController" should {
     "redirect to itself" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(WhatWillUseForControllerTest.submit,
         "whatWillUseFor" -> "")(
         result => {
@@ -801,6 +831,19 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a request to WhatWillUseForController when NOT enrolled" should {
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(WhatWillUseForControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(WhatWillUseForControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
   "Sending a submission to the WhatWillUseForController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -835,6 +878,17 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the WhatWillUseForController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      submitWithSessionAndAuth(WhatWillUseForControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

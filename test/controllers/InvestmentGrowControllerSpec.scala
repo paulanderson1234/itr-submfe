@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -45,7 +45,14 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   val model = InvestmentGrowModel("some text")
   val emptyModel = InvestmentGrowModel("")
@@ -68,13 +75,14 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to InvestmentGrowController when authenticated" should {
+  "Sending a GET request to InvestmentGrowController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -86,6 +94,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -96,6 +105,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -105,6 +115,22 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  "Sending a GET request to InvestmentGrowController when authenticated and NOT enrolled" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
+      mockNotEnrolledRequest
+      showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
 
   "Sending an Unauthenticated request with a session to InvestmentGrowController" should {
     "return a 302 and redirect to GG login" in {
@@ -144,8 +170,9 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
   
 
-  "Sending a valid form submit to the InvestmentGrowController when authenticated" should {
+  "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> "some text so it's valid"
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -156,10 +183,11 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the InvestmentGrowController with no backlink when authenticated" should {
+  "Sending an invalid form submission with validation errors to the InvestmentGrowController with no backlink when authenticated and enrolled" should {
     "redirect to WhatWillUseFor page" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -170,12 +198,13 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(keyStoreSavedInvestmentGrow)))
+      mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
@@ -216,6 +245,18 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the InvestmentGrowController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(InvestmentGrowControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

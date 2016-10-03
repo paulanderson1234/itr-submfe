@@ -16,14 +16,15 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import auth.AuthorisedAndEnrolledForTAVC
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.TaxpayerReferenceModel
 import common._
 import forms.TaxPayerReferenceForm._
+
 import scala.concurrent.Future
 import views.html.companyDetails.TaxpayerReference
 
@@ -32,20 +33,21 @@ object TaxpayerReferenceController extends TaxpayerReferenceController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait TaxpayerReferenceController extends FrontendController with AuthorisedForTAVC{
+trait TaxpayerReferenceController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference).map {
       case Some(data) => Ok(TaxpayerReference(taxPayerReferenceForm.fill(data)))
       case None => Ok(TaxpayerReference(taxPayerReferenceForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     taxPayerReferenceForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(TaxpayerReference(formWithErrors)))

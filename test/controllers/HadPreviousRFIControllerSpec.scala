@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -45,7 +45,14 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(HadPreviousRFIControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   val modelYes = HadPreviousRFIModel("Yes")
   val modelNo = HadPreviousRFIModel("No")
@@ -68,11 +75,12 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a GET request to HadPreviousRFIController when authenticated" should {
+  "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFI)))
+      mockEnrolledRequest
       showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -84,6 +92,21 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
         result => status(result) shouldBe OK
+      )
+    }
+  }
+
+  "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
+    "return a 200 when something is fetched from keystore" in {
+      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFI)))
+      mockNotEnrolledRequest
+      showWithSessionAndAuth(HadPreviousRFIControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
       )
     }
   }
@@ -125,9 +148,10 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated" should {
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -138,9 +162,10 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated" should {
+  "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -151,8 +176,9 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
-  "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated" should {
+  "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
+      mockEnrolledRequest
       val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit,formInput)(
         result => {
@@ -194,6 +220,18 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the HadPreviousRFIController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(HadPreviousRFIControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

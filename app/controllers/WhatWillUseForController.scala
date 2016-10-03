@@ -16,14 +16,14 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.WhatWillUseForForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc.{Action, Result}
+import play.api.mvc.Result
 import utils.Validation
 import views.html.investment.WhatWillUseFor
 import common.Constants
@@ -35,20 +35,21 @@ object WhatWillUseForController extends WhatWillUseForController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait WhatWillUseForController extends FrontendController with AuthorisedForTAVC {
+trait WhatWillUseForController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor).map {
       case Some(data) => Ok(WhatWillUseFor(whatWillUseForForm.fill(data)))
       case None => Ok(WhatWillUseFor(whatWillUseForForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(kiModel: Option[KiProcessingModel], prevRFI: Option[HadPreviousRFIModel],
                      comSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel]): Future[Result] = {

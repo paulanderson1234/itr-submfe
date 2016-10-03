@@ -18,10 +18,10 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import play.api.test.Helpers._
@@ -40,12 +40,19 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   private def mockBackLinkSetup(backLink: Option[String]) = {
     when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(backLink))
   }
+
+  private def mockEnrolledRequest = when(SupportingDocumentsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(SupportingDocumentsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   implicit val hc = HeaderCarrier()
 
@@ -60,6 +67,7 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to SupportingDocumentsController" should {
     "return a 200 OK" in {
+      mockEnrolledRequest
       mockBackLinkSetup(Some(routes.ConfirmCorrespondAddressController.show().url))
       showWithSessionAndAuth(SupportingDocumentsControllerTest.show)(
         result => status(result) shouldBe OK
@@ -67,8 +75,9 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "sending a Get requests to the SupportingDocumentsController" should {
+  "sending a Get requests to the SupportingDocumentsController when authenticated and enrolled" should {
     "redirect to the confirm correspondence address page if no saved back link was found" in {
+      mockEnrolledRequest
       mockBackLinkSetup(None)
       showWithSessionAndAuth(SupportingDocumentsControllerTest.show)(
         result => {
@@ -79,8 +88,9 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
-  "Posting to the SupportingDocumentsController" should {
+  "Posting to the SupportingDocumentsController when authenticated and enrolled" should {
     "redirect to Check your answers page" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(SupportingDocumentsControllerTest.submit){
         result => status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
@@ -121,6 +131,21 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     }
   }
 
+  "Sending a SupportingDocumentsController when NOT enrolled" should {
+
+    lazy val result = SupportingDocumentsControllerTest.show(authorisedFakeRequest)
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(result) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
   "Sending a submission to the SupportingDocumentsController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -155,6 +180,18 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the SupportingDocumentsController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(SupportingDocumentsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.PreviousBeforeDOFCSForm._
 import models.{PreviousBeforeDOFCSModel, SubsidiariesModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -33,20 +33,21 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedForTAVC {
+trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
       case Some(data) => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data)))
       case None => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
       date match {

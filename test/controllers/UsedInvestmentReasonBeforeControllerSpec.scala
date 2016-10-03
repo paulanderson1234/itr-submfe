@@ -19,11 +19,11 @@ package controllers
 import java.net.URLEncoder
 import java.util.UUID
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -49,7 +49,14 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
+
+  private def mockEnrolledRequest = when(UsedInvestmentReasonBeforeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+
+  private def mockNotEnrolledRequest = when(UsedInvestmentReasonBeforeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
   val modelYes = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
   val modelNo = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonNoValue)
@@ -74,10 +81,11 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a GET request to UsedInvestmentReasonBeforeController" should {
+  "Sending a GET request to UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedUsedInvestmentReasonBefore)))
+      mockEnrolledRequest
       showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -86,14 +94,16 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
+      mockEnrolledRequest
       showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a valid 'Yes' form submit to the UsedInvestmentReasonBeforeController" should {
+  "Sending a valid 'Yes' form submit to the UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)(
         result => {
@@ -104,8 +114,9 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
-  "Sending a valid 'No' form submit to the UsedInvestmentReasonBeforeController" should {
+  "Sending a valid 'No' form submit to the UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "redirect the ten year plan page" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)(
         result => {
@@ -118,6 +129,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
   
   "Sending an invalid form submission with validation errors to the UsedInvestmentReasonBeforeController" should {
     "redirect to itself" in {
+      mockEnrolledRequest
       submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit,
         "usedInvestmentReasonBefore" -> "")(
         result => {
@@ -160,6 +172,19 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     }
   }
 
+  "Sending a request to UsedInvestmentReasonBeforeController when NOT enrolled" should {
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(UsedInvestmentReasonBeforeControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(UsedInvestmentReasonBeforeControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
   "Sending a submission to the UsedInvestmentReasonBeforeController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -194,6 +219,18 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the UsedInvestmentReasonBeforeController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      submitWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

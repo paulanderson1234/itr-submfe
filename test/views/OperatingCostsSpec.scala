@@ -18,10 +18,10 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import config.FrontendAppConfig
-import connectors.{KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{IsKnowledgeIntensiveController, OperatingCostsController, routes}
 import models.{IsKnowledgeIntensiveModel, OperatingCostsModel}
@@ -51,7 +51,10 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
   "Verify that the OperatingCosts page contains the correct elements " +

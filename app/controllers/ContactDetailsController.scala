@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import models.ContactDetailsModel
 import forms.ContactDetailsForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -32,20 +32,21 @@ object ContactDetailsController extends ContactDetailsController
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactDetailsController extends FrontendController with AuthorisedForTAVC {
+trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails).map {
       case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
       case None => Ok(ContactDetails(contactDetailsForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     contactDetailsForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(ContactDetails(formWithErrors)))

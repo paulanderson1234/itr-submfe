@@ -16,24 +16,10 @@
 
 package auth
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+case class Enrolment(key: String, identifiers: Seq[Identifier], state: String)
 
-object AuthTestController extends AuthTestController {
-
-  override lazy val applicationConfig = mockConfig
-  override lazy val authConnector = mockAuthConnector
-}
-
-trait AuthTestController extends FrontendController with AuthorisedForTAVC {
-
-  val authorisedAsyncAction = Authorised.async {
-    implicit user =>  implicit request => Future.successful(Ok)
-  }
-
-  val authorisedAction = Authorised {
-    implicit user =>  implicit request => Ok
-  }
-
+object Enrolment {
+  implicit val formats = Json.format[Enrolment]
 }

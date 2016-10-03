@@ -16,12 +16,9 @@
 
 package controllers
 
-import java.util.UUID
-import auth.AuthorisedForTAVC
-import config.{FrontendAuthConnector, FrontendAppConfig}
 import connectors.KeystoreConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.play.http.{HeaderCarrier}
 import play.api.mvc._
 
 

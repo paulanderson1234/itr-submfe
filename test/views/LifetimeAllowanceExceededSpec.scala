@@ -18,17 +18,21 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.KeystoreConnector
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
-import controllers.{LifetimeAllowanceExceededController, HowToApplyController, routes}
+import controllers.{HowToApplyController, LifetimeAllowanceExceededController, routes}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+import scala.concurrent.Future
 
 class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
@@ -40,7 +44,11 @@ class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication wi
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
 

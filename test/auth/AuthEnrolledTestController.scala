@@ -14,29 +14,28 @@
  * limitations under the License.
  */
 
-package controllers
+package auth
 
-import auth.AuthorisedAndEnrolledForTAVC
-import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
+import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object HowToApplyController extends HowToApplyController{
-  override lazy val applicationConfig = FrontendAppConfig
-  override lazy val authConnector = FrontendAuthConnector
-  override lazy val enrolmentConnector = EnrolmentConnector
+object AuthEnrolledTestController extends AuthEnrolledTestController with MockitoSugar {
+  override lazy val applicationConfig = mockConfig
+  override lazy val authConnector = mockAuthConnector
+  override lazy val enrolmentConnector = mock[EnrolmentConnector]
 }
 
+trait AuthEnrolledTestController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-trait HowToApplyController extends FrontendController with AuthorisedAndEnrolledForTAVC {
-
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.introduction.HowToApply()))
+  val authorisedAsyncAction = AuthorisedAndEnrolled.async {
+    implicit user =>  implicit request => Future.successful(Ok)
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.YourCompanyNeedController.show()))
+  val authorisedAction = AuthorisedAndEnrolled {
+    implicit user =>  implicit request => Ok
   }
+
 }

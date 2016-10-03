@@ -18,17 +18,22 @@ package views
 
 import java.util.UUID
 
-import auth.MockAuthConnector
+import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
+import connectors.EnrolmentConnector
 import controllers.WhatWeAskYouController
 import controllers.routes
-import controllers.helpers.{FakeRequestHelper}
+import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+
+import scala.concurrent.Future
 
 class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
@@ -37,7 +42,11 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
     val controller = new WhatWeAskYouController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
+
+    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
 
 

@@ -16,10 +16,10 @@
 
 package controllers
 
-import auth.AuthorisedForTAVC
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.{FrontendAuthConnector, FrontendAppConfig}
-import connectors.KeystoreConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.Helpers.KnowledgeIntensiveHelper
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
@@ -33,19 +33,20 @@ object DateOfIncorporationController extends DateOfIncorporationController{
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait DateOfIncorporationController extends FrontendController with AuthorisedForTAVC {
+trait DateOfIncorporationController extends FrontendController with AuthorisedAndEnrolledForTAVC {
   val keyStoreConnector: KeystoreConnector
 
-  val show = Authorised.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
       case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
       case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
     }
   }
 
-  val submit = Authorised.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     dateOfIncorporationForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))
