@@ -17,7 +17,7 @@
 package auth
 
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import config.{AppConfig, FrontendAppConfig}
+import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -29,7 +29,8 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   val enrolmentConnector: EnrolmentConnector
   val applicationConfig: AppConfig
-  val postSignInRedirectUrl: String = FrontendAppConfig.introductionUrl
+  val postSignInRedirectUrl: String = applicationConfig.introductionUrl
+  val notEnrolledRedirectUrl: String = applicationConfig.subscriptionUrl
 
   private type PlayRequest = Request[AnyContent] => Result
   private type UserRequest = TAVCUser => PlayRequest
@@ -41,7 +42,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
       AuthorisedFor(regime, GGConfidence).async {
         authContext: AuthContext => implicit request => enrolledCheck {
           case Enrolled => action(TAVCUser(authContext))(request)
-          case NotEnrolled => Future.successful(Redirect(applicationConfig.subscriptionUrl))
+          case NotEnrolled => Future.successful(Redirect(notEnrolledRedirectUrl))
         }
       }
     }
