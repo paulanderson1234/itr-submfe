@@ -161,7 +161,7 @@ page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.title=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.question.hint=If your UTR is 13 digits long, only enter the last 10
 page.companyDetails.utr.help.text=You can usually find it in letters we''ve sent to you, next to headings like “Tax Reference”, “UTR” or “Official Use”.
-page.companyDetails.utr.help.link=Where can you find this?
+page.companyDetails.utr.help.link=Where can I find this?
 
 #Your company need page
 page.introduction.YourCompanyNeed.title=Your company need
@@ -175,7 +175,7 @@ page.companyDetails.DateOfIncorporation.title= Date of incorporation
 page.companyDetails.DateOfIncorporation.heading= When was your company incorporated?
 page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
 date.hint.dateOfIncorporation= For example, 31 3 1980
-page.companyDetails.DateOfIncorporation.whereToFind=Where can you find this?
+page.companyDetails.DateOfIncorporation.whereToFind=Where can I find this?
 page.companyDetails.DateOfIncorporation.location= It''s on your certificate of registration. You can also find it by searching for your company on the
 page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
 
@@ -273,7 +273,7 @@ page.investment.amount.OutOfRange=Enter an amount between 1 and 5000000
 page.investment.amount.title=How much do you want to raise through this investment?
 page.investment.amount.heading=How much do you want to raise through this investment?
 page.investment.amount.hint=The amount can''t be more than £5 million
-page.investment.help.link=What happens if you raise more or less than you''re expecting to?
+page.investment.help.link=What happens if I raise more or less than I''m expecting to?
 page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
