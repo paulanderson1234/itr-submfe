@@ -90,11 +90,11 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.PreviousScheme.heading")
 
       document.getElementById("scheme-type-legend").text() shouldBe Messages("page.investment.PreviousScheme.schemeType")
-      document.getElementById("schemeTypeDesc-enterprise_investment_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
-      document.getElementById("schemeTypeDesc-seed_enterprise_investment_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
-      document.getElementById("schemeTypeDesc-social_investment_tax_reliefLabel").text() shouldBe Messages("page.previousInvestment.schemeType.sitr")
-      document.getElementById("schemeTypeDesc-venture_capital_trustLabel").text() shouldBe Messages("page.previousInvestment.schemeType.vct")
-      document.getElementById("schemeTypeDesc-another_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.other")
+      document.getElementById("schemeTypeDesc-eisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
+      document.getElementById("schemeTypeDesc-seisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
+      document.getElementById("schemeTypeDesc-sitrLabel").text() shouldBe Messages("page.previousInvestment.schemeType.sitr")
+      document.getElementById("schemeTypeDesc-vctLabel").text() shouldBe Messages("page.previousInvestment.schemeType.vct")
+      document.getElementById("schemeTypeDesc-otherLabel").text() shouldBe Messages("page.previousInvestment.schemeType.other")
       document.getElementById("label-amount").text() shouldBe Messages("page.investment.amount.heading")
 
       document.getElementById("label-amount-spent").text() shouldBe Messages("page.investment.amountSpent.label")
@@ -136,11 +136,11 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.PreviousScheme.heading")
 
       document.getElementById("scheme-type-legend").text() shouldBe Messages("page.investment.PreviousScheme.schemeType")
-      document.getElementById("schemeTypeDesc-enterprise_investment_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
-      document.getElementById("schemeTypeDesc-seed_enterprise_investment_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
-      document.getElementById("schemeTypeDesc-social_investment_tax_reliefLabel").text() shouldBe Messages("page.previousInvestment.schemeType.sitr")
-      document.getElementById("schemeTypeDesc-venture_capital_trustLabel").text() shouldBe Messages("page.previousInvestment.schemeType.vct")
-      document.getElementById("schemeTypeDesc-another_schemeLabel").text() shouldBe Messages("page.previousInvestment.schemeType.other")
+      document.getElementById("schemeTypeDesc-eisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
+      document.getElementById("schemeTypeDesc-seisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
+      document.getElementById("schemeTypeDesc-sitrLabel").text() shouldBe Messages("page.previousInvestment.schemeType.sitr")
+      document.getElementById("schemeTypeDesc-vctLabel").text() shouldBe Messages("page.previousInvestment.schemeType.vct")
+      document.getElementById("schemeTypeDesc-otherLabel").text() shouldBe Messages("page.previousInvestment.schemeType.other")
       document.getElementById("label-amount").text() shouldBe Messages("page.investment.amount.heading")
 
       document.getElementById("label-amount-spent").text() shouldBe Messages("page.investment.amountSpent.label")

@@ -58,7 +58,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   val model = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
   val model2 = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
+    Constants.schemeTypeSeis, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
   val model3 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
   val model3Updated = PreviousSchemeModel(

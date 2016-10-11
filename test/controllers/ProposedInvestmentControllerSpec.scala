@@ -90,8 +90,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
   val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
 
-  val EISSchemeModel = PreviousSchemeModel("Enterprise Investment Scheme", 30000, None, None, None, None, None, None)
-  val SEISSchemeModel = PreviousSchemeModel("Seed Enterprise Investment Scheme", 30000000, None, None, None, None, None, None)
+  val EISSchemeModel = PreviousSchemeModel(Constants.schemeTypeEis, 30000, None, None, None, None, None, None)
+  val SEISSchemeModel = PreviousSchemeModel(Constants.schemeTypeSeis, 30000000, None, None, None, None, None, None)
   val emptySchemeModel = PreviousSchemeModel("", 0, None, None, None, None, None, None)
 
   val keyStoreSavedhadPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonYesValue)

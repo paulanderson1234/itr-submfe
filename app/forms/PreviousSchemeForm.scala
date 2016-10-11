@@ -40,13 +40,13 @@ object PreviousSchemeForm {
         .transform[Int](stringToInteger, _.toString())
         .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), minIntCheck(minAllowableAmount))
         .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), maxIntCheck(maxAllowableAmount)),
-      "investmentSpent" ->  mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeSeisValue, text
+      "investmentSpent" ->  mandatoryIfEqual("schemeTypeDesc", Constants.schemeTypeSeis, text
         .verifying(Messages("validation.common.error.fieldRequired"), mandatoryCheck)
         .verifying(Messages("page.investment.amount.invalidAmount"), integerCheck)
         .transform[Int](stringToInteger, _.toString())
         .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), minIntCheck(minAllowableAmount))
         .verifying(Messages("page.investment.PreviousScheme.investmentAmount.OutOfRange"), maxIntCheck(maxAllowableAmount))),
-      "otherSchemeName" -> mandatoryIfEqual("schemeTypeDesc", Constants.PageInvestmentSchemeAnotherValue,
+      "otherSchemeName" -> mandatoryIfEqual("schemeTypeDesc", Constants.schemeTypeOther,
         nonEmptyText.verifying(Messages("page.investment.PreviousScheme.otherScheme.OutOfRange"), (_.length <= otherSchemeMaxLength))),
       "investmentDay" -> optional(number),
       "investmentMonth" -> optional(number),

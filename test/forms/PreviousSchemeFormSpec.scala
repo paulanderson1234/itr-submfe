@@ -55,10 +55,10 @@ class PreviousSchemeFormSpec extends UnitSpec {
   "Creating a form using a valid model" should {
     "return a form with the data specified in the model for basic model" in {
       val model = PreviousSchemeModel(
-        Constants.PageInvestmentSchemeEisValue, 5000, None, None, Some(21), Some(4), Some(1980), Some(1))
+        Constants.schemeTypeEis, 5000, None, None, Some(21), Some(4), Some(1980), Some(1))
 
       val form = previousSchemeForm.fill(model)
-      form.data("schemeTypeDesc") shouldBe Constants.PageInvestmentSchemeEisValue
+      form.data("schemeTypeDesc") shouldBe Constants.schemeTypeEis
       form.data("investmentAmount") shouldBe "5000"
       //form.data("investmentSpent") shouldBe None
       //form.data("otherSchemeName") shouldBe None
@@ -72,10 +72,10 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "return a form with the valid data specified in the model for Seed Enterprise investment scheme" in {
       val model = PreviousSchemeModel(
-        Constants.PageInvestmentSchemeEisValue, 5000, Some(4500), None, Some(21), Some(4), Some(1980), Some(1))
+        Constants.schemeTypeEis, 5000, Some(4500), None, Some(21), Some(4), Some(1980), Some(1))
 
       val form = previousSchemeForm.fill(model)
-      form.data("schemeTypeDesc") shouldBe Constants.PageInvestmentSchemeEisValue
+      form.data("schemeTypeDesc") shouldBe Constants.schemeTypeEis
       form.data("investmentAmount") shouldBe "5000"
       form.data("investmentSpent") shouldBe "4500"
       form.data("investmentDay") shouldBe "21"
@@ -87,10 +87,10 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "return a form with the valid data specified in the model for Another investment scheme" in {
       val model = PreviousSchemeModel(
-        Constants.PageInvestmentSchemeAnotherValue, 5000, None, Some("test Scheme"), Some(21), Some(4), Some(1980), Some(1))
+        Constants.schemeTypeOther, 5000, None, Some("test Scheme"), Some(21), Some(4), Some(1980), Some(1))
 
       val form = previousSchemeForm.fill(model)
-      form.data("schemeTypeDesc") shouldBe Constants.PageInvestmentSchemeAnotherValue
+      form.data("schemeTypeDesc") shouldBe Constants.schemeTypeOther
       form.data("investmentAmount") shouldBe "5000"
       form.data("otherSchemeName") shouldBe "test Scheme"
       form.data("investmentDay") shouldBe "21"
@@ -104,7 +104,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
   "Creating a form with valid post" when {
     "supplied with minimum required option data" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
         "investmentAmount" -> "3",
         "investmentSpent" -> "",
         "otherSchemeName" -> "",
@@ -122,7 +122,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
   "Creating a form using an invalid post" when {
     "supplied with no data for investment amount" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
         "investmentAmount" -> "",
         "investmentSpent" -> "",
         "otherSchemeName" -> "",
@@ -146,7 +146,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with non numeric data for investment amount" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "fred",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -171,7 +171,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with negative investment amount" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "-1",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -196,7 +196,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with investment amount above maximum allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> maxExceeded,
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -221,7 +221,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with investment amount below minimum allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> belowMinimum,
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -245,7 +245,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "supplied with empty space for amount" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
         "investmentAmount" -> " ",
         "investmentSpent" -> "",
         "otherSchemeName" -> "",
@@ -265,7 +265,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "supplied an amount with decimals" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
         "investmentAmount" -> "10.00",
         "investmentSpent" -> "",
         "otherSchemeName" -> "",
@@ -311,7 +311,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with no data for share date day" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -336,7 +336,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with no data for share date month" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -361,7 +361,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with no data for share date year" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -386,7 +386,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with non numeric data for share date day" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -411,7 +411,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with non numeric data for share date month" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -436,7 +436,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with non numeric data for share date year" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -461,7 +461,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with invalid date 29 the February in non-leap year" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -486,7 +486,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form with valid post" when {
       "supplied with valid investment share date of 29th February in a leap year" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "3",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -504,7 +504,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with invalid date 31 June" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -529,7 +529,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with date in the future for share date year" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeEisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeEis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -554,7 +554,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with no data for investment spent when scheme type is SEIS" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeSeis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -579,7 +579,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using a valid post" when {
       "supplied with both data for investment spent and scheme type is SEIS" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeSeis,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "50",
           "otherSchemeName" -> "",
@@ -598,7 +598,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with investment spent above maximum allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeSeis,
           "investmentAmount" -> "200",
           "investmentSpent" -> maxExceeded,
           "otherSchemeName" -> "",
@@ -623,7 +623,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with investment spent below minimum allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+          "schemeTypeDesc" -> Constants.schemeTypeSeis,
           "investmentAmount" -> "500",
           "investmentSpent" -> belowMinimum,
           "otherSchemeName" -> "",
@@ -648,7 +648,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with other scheme name above maximun allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
+          "schemeTypeDesc" -> Constants.schemeTypeOther,
           "investmentAmount" -> "500",
           "investmentSpent" -> "",
           "otherSchemeName" -> otherSchemeNameOverMax,
@@ -673,7 +673,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an valid post" when {
       "supplied with other scheme name exactly at maximun allowed" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
+          "schemeTypeDesc" -> Constants.schemeTypeOther,
           "investmentAmount" -> "500",
           "investmentSpent" -> "",
           "otherSchemeName" -> otherSchemeNameMax,
@@ -690,7 +690,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "supplied with empty space for amount spent" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeSeis,
         "investmentAmount" -> "25",
         "investmentSpent" -> " ",
         "otherSchemeName" -> "",
@@ -710,7 +710,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
 
     "supplied an amount spent with decimals" should {
       lazy val form = previousSchemeForm.bind(Map(
-        "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
+        "schemeTypeDesc" -> Constants.schemeTypeSeis,
         "investmentAmount" -> "10",
         "investmentSpent" -> "20.00",
         "otherSchemeName" -> "",
@@ -731,7 +731,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using an invalid post" when {
       "supplied with no data for other scheme name spent when scheme type is Another " should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
+          "schemeTypeDesc" -> Constants.schemeTypeOther,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "",
@@ -756,7 +756,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
     "Creating a form using a valid post" when {
       "supplied with both data for other scheme name and and scheme type is Another" should {
         lazy val form = previousSchemeForm.bind(Map(
-          "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
+          "schemeTypeDesc" -> Constants.schemeTypeOther,
           "investmentAmount" -> "5000",
           "investmentSpent" -> "",
           "otherSchemeName" -> "Scheme name present",
