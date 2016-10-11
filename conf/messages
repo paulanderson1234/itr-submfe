@@ -215,15 +215,16 @@ validation.error.DateOfCommercialSale.Future=Date of first commercial sale canno
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
 #Is Knowledge Intensive Page
-page.companyDetails.IsKnowledgeIntensive.title = Are you a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.description = Your company may be knowledge intensive if you''ve spent a certain amount of your operating costs on research and development.
+page.companyDetails.IsKnowledgeIntensive.title = Do you want to apply as a knowledge intensive company?
+page.companyDetails.IsKnowledgeIntensive.description.1 = If you are a knowledge intensive company, you''re allowed to attract more investment. You can get up to £20million over your company''s lifetime.
+page.companyDetails.IsKnowledgeIntensive.description.2 = You also have up to 10 years after your first commercial sale to receive qualifying investment.
 page.companyDetails.IsKnowledgeIntensive.definition = What''s a knowledge intensive company?
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you''ve spent on research and development must have been either:
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-one = 15% or more of your operating costs for at least 1 year
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of your operating costs per year
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need either:
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of staff who are educated to master''s degree level
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = a 10-year plan to focus on new patents, or products like software that aren''t physical
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need:
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of your staff who do research and development to have master''s degrees, or
+page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = to plan to develop, or have already developed, a product that you''ll own the rights to
 
 #Ineligible for Knowledge Intensive Page
 page.knowledgeIntensive.IneligibleForKI.title = Ineligible for knowledge intensive company
