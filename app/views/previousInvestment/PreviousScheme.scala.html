@@ -20,11 +20,11 @@
             @formInputRadioGroup(
             field = previousSchemeForm("schemeTypeDesc"),
             Seq(
-            "Enterprise Investment Scheme"->Messages("page.previousInvestment.schemeType.eis"),
-            "Seed Enterprise Investment Scheme"->Messages("page.previousInvestment.schemeType.seis"),
-            "Social Investment Tax Relief"->Messages("page.previousInvestment.schemeType.sitr"),
-            "Venture Capital Trust"->Messages("page.previousInvestment.schemeType.vct"),
-            "Another scheme"->Messages("page.previousInvestment.schemeType.other")),
+            Constants.schemeTypeEis->Messages("page.previousInvestment.schemeType.eis"),
+            Constants.schemeTypeSeis->Messages("page.previousInvestment.schemeType.seis"),
+            Constants.schemeTypeSitr->Messages("page.previousInvestment.schemeType.sitr"),
+            Constants.schemeTypeVct->Messages("page.previousInvestment.schemeType.vct"),
+            Constants.schemeTypeOther->Messages("page.previousInvestment.schemeType.other")),
             '_legend -> Messages("page.investment.PreviousScheme.schemeType"),
             '_legendClass -> "heading-small",
             '_legendID -> "scheme-type-legend",

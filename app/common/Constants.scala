@@ -42,6 +42,7 @@ trait Constants {
   val schemeTypeSeis = "SEIS"
   val schemeTypeSitr = "SITR"
   val schemeTypeVct = "VCT"
+  val schemeTypeOther = "Other"
 
   val PageInvestmentSchemeEisValue : String = "Enterprise Investment Scheme"
   val PageInvestmentSchemeSeisValue : String = "Seed Enterprise Investment Scheme"

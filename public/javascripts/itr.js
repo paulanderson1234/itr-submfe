@@ -98,13 +98,13 @@ $(document).ready($(function() {
         $checkbox.change(function() {
 
             ClearRevealingContentInputs();
-            if ($checkbox.val() === 'Another scheme') {
+            if ($checkbox.val() === 'Other') {
                  //alert($checkbox.val());
                 $hiddenOtherScheme.show();
                 $hiddenInvestmentSpent.hide();
                 ClearPageErrors();
 ;
-            } else if($checkbox.val() === 'Seed Enterprise Investment Scheme') {
+            } else if($checkbox.val() === 'SEIS') {
                 //alert($checkbox.val());
                $hiddenOtherScheme.hide();
                $hiddenInvestmentSpent.show();
