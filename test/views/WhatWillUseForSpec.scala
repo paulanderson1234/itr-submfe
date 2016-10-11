@@ -69,9 +69,9 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.title() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.whatWillUseFor.title")
-    document.getElementById("whatWillUseFor-businessLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
-    document.getElementById("whatWillUseFor-preparationLabel").text() shouldBe Messages("page.investment.whatWillUseFor.preparing")
-    document.getElementById("whatWillUseFor-r&dLabel").text() shouldBe Messages("page.investment.whatWillUseFor.rAndD")
+    document.getElementById("whatWillUseFor-tradeLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
+    document.getElementById("whatWillUseFor-preparing_to_tradeLabel").text() shouldBe Messages("page.investment.whatWillUseFor.preparing")
+    document.getElementById("whatWillUseFor-research_and_developmentLabel").text() shouldBe Messages("page.investment.whatWillUseFor.rAndD")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -88,9 +88,9 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.title() shouldBe Messages("page.investment.whatWillUseFor.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.whatWillUseFor.title")
-    document.getElementById("whatWillUseFor-businessLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
-    document.getElementById("whatWillUseFor-preparationLabel").text() shouldBe Messages("page.investment.whatWillUseFor.preparing")
-    document.getElementById("whatWillUseFor-r&dLabel").text() shouldBe Messages("page.investment.whatWillUseFor.rAndD")
+    document.getElementById("whatWillUseFor-tradeLabel").text() shouldBe Messages("page.investment.whatWillUseFor.business")
+    document.getElementById("whatWillUseFor-preparing_to_tradeLabel").text() shouldBe Messages("page.investment.whatWillUseFor.preparing")
+    document.getElementById("whatWillUseFor-research_and_developmentLabel").text() shouldBe Messages("page.investment.whatWillUseFor.rAndD")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 

@@ -1,5 +1,6 @@
 @import models.WhatWillUseForModel
 @import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
 @(whatWillUseForForm: Form[WhatWillUseForModel])(implicit request: Request[_])
@@ -20,9 +21,9 @@
                     @formInputRadioGroup(
                     field = whatWillUseForForm("whatWillUseFor"),
                     Seq(
-                    "Business"->Messages("page.investment.whatWillUseFor.business"),
-                    "Preparation"->Messages("page.investment.whatWillUseFor.preparing"),
-                    "R&D"->Messages("page.investment.whatWillUseFor.rAndD")),
+                    Constants.businessActivityTrade->Messages("page.investment.whatWillUseFor.business"),
+                    Constants.businessActivityPreparation->Messages("page.investment.whatWillUseFor.preparing"),
+                    Constants.businessActivityRAndD->Messages("page.investment.whatWillUseFor.rAndD")),
                     '_legend -> Messages("page.investment.whatWillUseFor.title"),
                     '_legendClass -> "visuallyhidden",
                     '_labelAfter -> true,

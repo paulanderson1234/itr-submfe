@@ -44,8 +44,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-ui" % playUiVersion,
     "uk.gov.hmrc" %% "http-caching-client" % cachingClientVersion,
     "uk.gov.hmrc" %% "mongo-caching" % mongoCachingVersion,
-    "uk.gov.hmrc" %% "play-conditional-form-mapping" % playConditionalMappingVersion
-  )
+    "uk.gov.hmrc" %% "play-conditional-form-mapping" % playConditionalMappingVersion)
 
   trait TestDependencies {
     lazy val scope: String = "test"

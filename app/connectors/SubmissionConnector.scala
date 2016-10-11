@@ -15,11 +15,9 @@
  */
 
 package connectors
-
-import common.Constants
 import config.{TavcSessionCache, WSHttp}
-import models.{SubmissionRequest}
-import play.api.libs.json.{Json, JsValue}
+import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -56,16 +54,21 @@ trait SubmissionConnector {
   }
 
   def checkLifetimeAllowanceExceeded(hadPrevRFI: Boolean, isKi: Boolean, previousInvestmentSchemesTotal: Int,
-    proposedAmount: Int)
-                            (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+                                     proposedAmount: Int)
+                                    (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
 
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/lifetime-allowance/lifetime-allowance-checker/had-previous-rfi/" +
       s"$hadPrevRFI/is-knowledge-intensive/$isKi/previous-schemes-total/$previousInvestmentSchemesTotal/proposed-amount/$proposedAmount")
 
   }
 
-  def submitAdvancedAssurance(submissionRequest: SubmissionRequest)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/submit", Json.toJson(submissionRequest))
+  //TODO: put all these methods in a service?
+  def submitAdvancedAssurance(submissionRequest: Submission)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val tavcReferenceId = "XADD00000001234" //TODO: get from enrolment
+    val json = Json.toJson(submissionRequest)
+    val targetSubmissionModel = Json.parse(json.toString()).as[DesSubmitAdvancedAssuranceModel]
+
+    http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceId/submit", Json.toJson(targetSubmissionModel))
   }
 
 }

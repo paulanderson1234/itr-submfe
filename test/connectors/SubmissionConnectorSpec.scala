@@ -33,15 +33,16 @@
 package connectors
 
 import java.util.UUID
+
 import play.api.test.Helpers._
-import common.Constants
-import models.{YourCompanyNeedModel, ContactDetailsModel, SubmissionRequest, SubmissionResponse}
+import fixtures.SubmissionFixture
+
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.libs.json.{Json, JsValue}
+import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -51,7 +52,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {
+class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
   val mockHttp : WSHttp = mock[WSHttp]
   val mockSessionCache = mock[SessionCache]
@@ -62,18 +63,11 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     override val sessionCache = mockSessionCache
     override val serviceUrl = "dummy"
     override val http = mockHttp
-
   }
 
   val validResponse = true
   val trueResponse = true
   val falseResponse = false
-  val dummySubmissionRequestModelValid = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@gmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelBad = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@badrequest.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelInternalServerError = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@internalservererrorrequestgmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelForbidden = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@forbiddengmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionRequestModelServiceUnavailable = SubmissionRequest(ContactDetailsModel("James", "Harris", "0872990915","harris@serviceunavailablerequestgmail.com"),YourCompanyNeedModel("AA"))
-  val dummySubmissionResponseModel = SubmissionResponse(true,"FBUND93821077","Submission Request Successful")
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
@@ -125,7 +119,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a OK" in {
 
-      val validRequest = dummySubmissionRequestModelValid
+      val validRequest = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest)
@@ -137,10 +131,10 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a BAD_REQUEST error" in {
 
-      val badRequest = dummySubmissionRequestModelBad
+      val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(badRequest)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
       await(result).status shouldBe BAD_REQUEST
     }
   }
@@ -150,10 +144,10 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a FORBIDDEN Error" in {
 
-      val forbiddenRequest = dummySubmissionRequestModelForbidden
+      val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(FORBIDDEN)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(forbiddenRequest)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
       await(result).status shouldBe FORBIDDEN
     }
   }
@@ -163,10 +157,10 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a SERVICE UNAVAILABLE ERROR" in {
 
-      val unavailableRequest = dummySubmissionRequestModelServiceUnavailable
+      val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(unavailableRequest)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
       await(result).status shouldBe SERVICE_UNAVAILABLE
     }
   }
@@ -175,13 +169,12 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a INTERNAL SERVER ERROR" in {
 
-      val internalErrorRequest = dummySubmissionRequestModelInternalServerError
+      val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(internalErrorRequest)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
       await(result).status shouldBe INTERNAL_SERVER_ERROR
     }
   }
-
 
 }

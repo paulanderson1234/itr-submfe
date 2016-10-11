@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package models.submission
+package models
 
 import play.api.libs.json.Json
 
-case class SubmissionResponse(processingDate: String, formBundleNumber: String)
+case class AddressModel(addressLine1 : String,
+                        addressLine2 : String,
+                        addressLine3 : Option[String],
+                        addressLine4 : Option[String],
+                        postCode : Option[String],
+                        countryCode : String = "GB")
 
-object SubmissionResponse {
-  implicit val formats = Json.format[SubmissionResponse]
+object AddressModel {
+  implicit val format = Json.format[AddressModel]
+  implicit val writes = Json.writes[AddressModel]
 }

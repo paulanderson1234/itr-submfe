@@ -1,4 +1,4 @@
-@import models.SubmissionResponse
+@import models.submission.SubmissionResponse
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.backButton
 @import config.FrontendAppConfig
@@ -16,7 +16,7 @@
             <div class="transaction-banner--complete">
                 <span id="submission-confirmation" class="heading-large">@Messages("page.checkAndSubmit.acknowledgement.submissionConfirmation")</span>
                 <p id="ref-number-heading">@Messages("page.checkAndSubmit.acknowledgement.refNumberHeading")</p>
-                <span id="ref-number" class="bold-medium">@submissionResponseModel.formBundleId</span>
+                <span id="ref-number" class="bold-medium">@submissionResponseModel.formBundleNumber</span>
             </div>
             <p id="confirm-email">@Messages("page.checkAndSubmit.acknowledgement.confirmEmail")</p>
         </div>

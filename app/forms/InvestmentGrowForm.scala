@@ -16,6 +16,7 @@
 
 package forms
 
+import common.Constants
 import models.InvestmentGrowModel
 import play.api.data.Form
 import play.api.data.Forms._
@@ -23,7 +24,7 @@ import play.api.data.Forms._
 object InvestmentGrowForm {
   val investmentGrowForm = Form(
     mapping(
-      "investmentGrowDesc" -> nonEmptyText
+      "investmentGrowDesc" -> nonEmptyText(maxLength = Constants.SuggestedTextMaxLength)
     )(InvestmentGrowModel.apply)(InvestmentGrowModel.unapply)
   )
 }

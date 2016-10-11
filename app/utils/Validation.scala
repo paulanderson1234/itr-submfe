@@ -36,8 +36,9 @@ object Validation {
   lazy val sf = new SimpleDateFormat("dd/MM/yyyy")
   lazy val datePageFormat = new SimpleDateFormat("dd MMMM yyyy")
   lazy val datePageFormatNoZero = new SimpleDateFormat("d MMMM yyyy")
+  lazy val desReverseDateFormat = new SimpleDateFormat("yyyy-MM-dd")
 
-  def previousSchemeValidation : Constraint[PreviousSchemeModel] = {
+  def previousSchemeValidation: Constraint[PreviousSchemeModel] = {
 
     Constraint("constraints.previous_investment")({
       investmentForm: PreviousSchemeModel => {
@@ -55,9 +56,9 @@ object Validation {
     })
   }
 
-  def dateOfCommercialSaleDateValidation : Constraint[CommercialSaleModel] = {
+  def dateOfCommercialSaleDateValidation: Constraint[CommercialSaleModel] = {
 
-    def validateYes(dateForm :CommercialSaleModel) = {
+    def validateYes(dateForm: CommercialSaleModel) = {
       anyEmpty(dateForm.commercialSaleDay, dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
         case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
         case false => isValidDate(dateForm.commercialSaleDay.get, dateForm.commercialSaleMonth.get, dateForm.commercialSaleYear.get) match {
@@ -71,7 +72,7 @@ object Validation {
     }
 
     Constraint("constraints.date_of_first_sale")({
-      dateForm : CommercialSaleModel =>
+      dateForm: CommercialSaleModel =>
         dateForm.hasCommercialSale match {
           case Constants.StandardRadioButtonNoValue => allDatesEmpty(dateForm.commercialSaleDay,
             dateForm.commercialSaleMonth, dateForm.commercialSaleYear) match {
@@ -83,50 +84,51 @@ object Validation {
     })
   }
 
-  def tenYearPlanDescValidation : Constraint[TenYearPlanModel] = {
+  def tenYearPlanDescValidation: Constraint[TenYearPlanModel] = {
 
-    def anyFieldsEmpty(hasPlan: String, planDesc: Option[String]) : Boolean = {
-      if(hasPlan.isEmpty || planDesc.isEmpty){
+    def validateFields(hasPlan: String, planDesc: Option[String]): Boolean = {
+      if (hasPlan.isEmpty || planDesc.isEmpty || planDesc.get.length > Constants.SuggestedTextMaxLengthLower) {
         true
       } else
         false
     }
 
-    def validateYes(tenYearForm : TenYearPlanModel) = {
-      anyFieldsEmpty(tenYearForm.hasTenYearPlan, tenYearForm.tenYearPlanDesc) match {
+    def validateYes(tenYearForm: TenYearPlanModel) = {
+      validateFields(tenYearForm.hasTenYearPlan, tenYearForm.tenYearPlanDesc) match {
         case true => Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired"))))
         case false => Valid
       }
     }
 
     Constraint("constraints.ten_year_plan")({
-      tenYearForm : TenYearPlanModel =>
+      tenYearForm: TenYearPlanModel =>
         tenYearForm.hasTenYearPlan match {
-          case Constants.StandardRadioButtonNoValue => if(tenYearForm.hasTenYearPlan.isEmpty)
-            Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired")))) else Valid
+          case Constants.StandardRadioButtonNoValue => if (tenYearForm.hasTenYearPlan.isEmpty)
+            Invalid(Seq(ValidationError(Messages("validation.common.error.fieldRequired"))))
+          else Valid
           case Constants.StandardRadioButtonYesValue => validateYes(tenYearForm)
         }
     })
   }
 
-  def anyEmpty(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
-    if(day.isEmpty || month.isEmpty || year.isEmpty){
+  def anyEmpty(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
+    if (day.isEmpty || month.isEmpty || year.isEmpty) {
       true
     } else {
       false
     }
   }
 
-  def allDatesEmpty(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
-    if(day.isEmpty & month.isEmpty & year.isEmpty){
+  def allDatesEmpty(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
+    if (day.isEmpty & month.isEmpty & year.isEmpty) {
       true
     } else {
       false
     }
   }
 
-  def validateNonEmptyDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
-    if(day.isEmpty || month.isEmpty || year.isEmpty){
+  def validateNonEmptyDateOptions(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
+    if (day.isEmpty || month.isEmpty || year.isEmpty) {
       false
     } else {
       true
@@ -147,7 +149,7 @@ object Validation {
     text.verifying(addresssLineCheckConstraint)
   }
 
-  def mandatoryMaxTenNumberValidation(message: String) : Mapping[String] = {
+  def mandatoryMaxTenNumberValidation(message: String): Mapping[String] = {
     val validNum = """[0-9]{1,9}""".r
     val numCharCheckConstraint: Constraint[String] =
       Constraint("contraints.mandatoryNumberCheck")({
@@ -161,7 +163,7 @@ object Validation {
     text.verifying(numCharCheckConstraint)
   }
 
-  def mandatoryMaxTenNumberNonZeroValidation(message: String) : Mapping[String] = {
+  def mandatoryMaxTenNumberNonZeroValidation(message: String): Mapping[String] = {
     val validNum = """^[1-9][0-9]{0,8}$""".r
     val numCharCheckConstraint: Constraint[String] =
       Constraint("contraints.mandatoryNumberCheck")({
@@ -326,19 +328,20 @@ object Validation {
 
   val decimalPlacesCheckNoDecimal: BigDecimal => Boolean = (input) => input.scale < 1
 
-  def maxIntCheck (maxInteger: Int) : Int => Boolean = (input) => input <= maxInteger
-  def minIntCheck (minInteger: Int) : Int => Boolean = (input) => input >= minInteger
+  def maxIntCheck(maxInteger: Int): Int => Boolean = (input) => input <= maxInteger
 
-  val yesNoCheck: String =>  Boolean = {
+  def minIntCheck(minInteger: Int): Int => Boolean = (input) => input >= minInteger
+
+  val yesNoCheck: String => Boolean = {
     case Constants.StandardRadioButtonYesValue => true
     case Constants.StandardRadioButtonNoValue => true
     case "" => true
     case _ => false
   }
 
-  def isValidDateOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+  def isValidDateOptions(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
     validateNonEmptyDateOptions(day, month, year) match {
-      case  false => true
+      case false => true
       case _ => isValidDate(day.get, month.get, year.get)
     }
   }
@@ -358,17 +361,16 @@ object Validation {
     }
   }
 
-  def constructDate (day: Int, month: Int, year: Int): Date = {
+  def constructDate(day: Int, month: Int, year: Int): Date = {
     sf.parse(s"$day/$month/$year")
   }
 
-  def dateInFuture (date: Date): Boolean = {
+  def dateInFuture(date: Date): Boolean = {
     date.after(DateTime.now.toDate)
   }
 
-  /** Determines whether the date of incorporation passed is less than 3 years from today*/
-  def dateAfterIncorporationRule(day:Int, month:Int, year:Int) : Boolean =
-  {
+  /** Determines whether the date of incorporation passed is less than 3 years from today */
+  def dateAfterIncorporationRule(day: Int, month: Int, year: Int): Boolean = {
     Try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
@@ -380,9 +382,8 @@ object Validation {
     }
   }
 
-  /** Determines whether the first commercial sale was within the age range (10 or 7 years)*/
-  def checkAgeRule(day:Int, month:Int, year:Int, ageRange:Int) : Boolean =
-  {
+  /** Determines whether the first commercial sale was within the age range (10 or 7 years) */
+  def checkAgeRule(day: Int, month: Int, year: Int, ageRange: Int): Boolean = {
     Try {
       val fmt = new SimpleDateFormat("dd/MM/yyyy")
       fmt.setLenient(false)
@@ -394,26 +395,26 @@ object Validation {
     }
   }
 
-  def dateNotInFuture (day: Int, month: Int, year: Int): Boolean = {
+  def dateNotInFuture(day: Int, month: Int, year: Int): Boolean = {
     !constructDate(day, month, year).after(DateTime.now.toDate)
   }
 
-  def dateIsFuture (day: Int, month: Int, year: Int): Boolean = {
+  def dateIsFuture(day: Int, month: Int, year: Int): Boolean = {
     constructDate(day, month, year).after(DateTime.now.toDate)
   }
 
-  def dateNotInFutureOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+  def dateNotInFutureOptions(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
     // if empty elements return as valid to prevent chaining of multiple errors (other validators should handle this)
     validateNonEmptyDateOptions(day, month, year) match {
-      case  false => true
+      case false => true
       case _ => dateNotInFuture(day.get, month.get, year.get)
     }
   }
 
-  def dateInFutureOptions(day:Option[Int], month:Option[Int], year:Option[Int]) : Boolean = {
+  def dateInFutureOptions(day: Option[Int], month: Option[Int], year: Option[Int]): Boolean = {
     // if empty elements return as valid to prevent chaining of multiple errors (other validators should handle this)
     validateNonEmptyDateOptions(day, month, year) match {
-      case  false => true
+      case false => true
       case _ => dateIsFuture(day.get, month.get, year.get)
     }
   }
@@ -459,6 +460,17 @@ object Validation {
         cal.add(Calendar.YEAR, years)
         new SimpleDateFormat("dd/MM/yyyy").format(cal.getTime)
       case _ => ""
+    }
+  }
+
+  def dateToDesFormat(day: Int, month: Int, year: Int): String = {
+    Try {
+      desReverseDateFormat.format(sf.parse(s"$day/$month/$year"))
+    } match {
+      case Success(result) => result
+      case Failure(_) => {
+        ""
+      }
     }
   }
 }

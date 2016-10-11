@@ -18,8 +18,14 @@ package models.submission
 
 import play.api.libs.json.Json
 
-case class SubmissionResponse(processingDate: String, formBundleNumber: String)
+case class SchemeTypesModel (
+                              eis: Boolean = false,
+                              seis: Boolean = false,
+                              sitr: Boolean = false,
+                              vct: Boolean = false
+                            )
 
-object SubmissionResponse {
-  implicit val formats = Json.format[SubmissionResponse]
+
+object SchemeTypesModel {
+  implicit val formatSt = Json.format[SchemeTypesModel]
 }

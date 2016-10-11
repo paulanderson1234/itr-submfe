@@ -15,7 +15,7 @@
  */
 
 package models
-import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
+import models.submission.SubmissionResponse
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 
@@ -39,7 +39,7 @@ class SubmissionRequestModelSpec extends UnitSpec {
   "call apply successfully to create model from Json" in {
     implicit val formats = Json.format[SubmissionResponse]
 
-    val request =  Json.parse(testJson.toString()).as[SubmissionRequest]
+    val request =  Json.parse(testJson.toString).as[SubmissionRequest]
 
     request.contactDetails.email  shouldBe "fred@fred.com"
     request.contactDetails.telephoneNumber  shouldBe "01952 256555"

@@ -21,7 +21,7 @@ import models.submission._
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 
-class TestModelSpec extends UnitSpec{
+class TestModelConversionSpec extends UnitSpec{
 
   val fullCorrespondenceAddress : AddressModel = AddressModel(addressLine1 = "line 1",
     addressLine2 = "Line 2", addressLine3 = Some("Line 3"), addressLine4 = Some("Line 4"),
@@ -122,8 +122,6 @@ val subsidiaryPerformingTradeWithAddress = SubsidiaryPerformingTradeModel(ninety
 
       // write as unapply
       val targetJson = Json.toJson(targetSubmissionModel)
-
-
     }
   }
 
