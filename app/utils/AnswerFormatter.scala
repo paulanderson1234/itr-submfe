@@ -33,13 +33,14 @@
 package utils
 
 import play.api.i18n.Messages
+import common.Constants
 
 trait AnswerFormatter {
 
   def purposeTransformation(input: String): String = input match{
-    case("Business") => Messages("page.investment.whatWillUseFor.business")
-    case("Preparation") => Messages("page.investment.whatWillUseFor.preparing")
-    case("R&D") => Messages("page.investment.whatWillUseFor.rAndD")
+    case(Constants.businessActivityTrade) => Messages("page.investment.whatWillUseFor.business")
+    case(Constants.businessActivityPreparation) => Messages("page.investment.whatWillUseFor.preparing")
+    case(Constants.businessActivityRAndD) => Messages("page.investment.whatWillUseFor.rAndD")
     case _ => Messages("common.notAvailable")
   }
 }

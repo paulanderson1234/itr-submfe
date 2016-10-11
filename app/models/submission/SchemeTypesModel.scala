@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package models.submission
 
-import common.Constants
-import models.InvestmentGrowModel
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.Json
 
-object InvestmentGrowForm {
-  val investmentGrowForm = Form(
-    mapping(
-      "investmentGrowDesc" -> nonEmptyText(maxLength = Constants.SuggestedTextMaxLength)
-    )(InvestmentGrowModel.apply)(InvestmentGrowModel.unapply)
-  )
+case class SchemeTypesModel (
+                              eis: Boolean = false,
+                              seis: Boolean = false,
+                              sitr: Boolean = false,
+                              vct: Boolean = false
+                            )
+
+
+object SchemeTypesModel {
+  implicit val formatSt = Json.format[SchemeTypesModel]
 }

@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package models
 
-import common.Constants
-import models.InvestmentGrowModel
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.Json
 
-object InvestmentGrowForm {
-  val investmentGrowForm = Form(
-    mapping(
-      "investmentGrowDesc" -> nonEmptyText(maxLength = Constants.SuggestedTextMaxLength)
-    )(InvestmentGrowModel.apply)(InvestmentGrowModel.unapply)
-  )
+case class AddressModel(addressLine1 : String,
+                        addressLine2 : String,
+                        addressLine3 : Option[String],
+                        addressLine4 : Option[String],
+                        postCode : Option[String],
+                        countryCode : String = "GB")
+
+object AddressModel {
+  implicit val format = Json.format[AddressModel]
+  implicit val writes = Json.writes[AddressModel]
 }

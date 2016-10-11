@@ -361,9 +361,6 @@ class TaxPayerReferenceFormSpec extends UnitSpec {
       val cd = ContactDetailsModel("gary", "hull", "01952 256555", "fred@fred.com")
       val yd = YourCompanyNeedModel("AA")
       val sub = new SubmissionRequest(cd,yd)
-
-      val json = Json.toJson(sub)
-      println(json)
     }
   }
 }

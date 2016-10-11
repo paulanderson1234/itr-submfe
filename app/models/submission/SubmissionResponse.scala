@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package models
+package models.submission
 
 import play.api.libs.json.Json
 
-case class SubmissionResponse(status: Boolean, formBundleId: String, message: String)
+case class SubmissionResponse(processingDate: String, formBundleNumber: String)
 
 object SubmissionResponse {
   implicit val formats = Json.format[SubmissionResponse]

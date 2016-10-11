@@ -13,10 +13,76 @@
             @form.errors.map { error =>
                 @if(error.key.equals("")) {
                     <li role="tooltip" data-journey="@page:error:@errorKey">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         <a href="#@errorKey"
                            id="@{errorKey}-error-summary"
                            data-focuses="@errorKey">
-                            @Messages(error.message)
+                            @Messages(error.message, error.args: _*)
                         </a>
                     </li>
                 } else {

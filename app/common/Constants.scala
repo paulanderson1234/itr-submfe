@@ -16,9 +16,6 @@
 
 package common
 
-import connectors.SubmissionConnector
-import models.{SubmissionResponse, YourCompanyNeedModel, ContactDetailsModel, SubmissionRequest}
-
 object Constants extends Constants
 
 trait Constants {
@@ -27,6 +24,11 @@ trait Constants {
   def taxYearFormattedAnswer(value: String, taxYear: String) : String= s"£$value in $taxYear tax year"
   def amountFormattedAnswer(value: String) : String= s"£$value"
   val SuggestedTextMaxLength: Int = 2048
+  val SuggestedTextMaxLengthLower: Int = 1024
+
+  val businessActivityPreparation = "Preparing To Trade"
+  val businessActivityRAndD = "Research And Development"
+  val businessActivityTrade = "Trade"
 
   val IsKnowledgeIntensiveYears : Int = 10
   val IsNotKnowledgeIntensiveYears : Int = 7
@@ -35,6 +37,11 @@ trait Constants {
 
   val lifetimeLogicLimitKi : Int = 20000000
   val lifetimeLogicLimitNotKi : Int = 12000000
+
+  val schemeTypeEis = "EIS"
+  val schemeTypeSeis = "SEIS"
+  val schemeTypeSitr = "SITR"
+  val schemeTypeVct = "VCT"
 
   val PageInvestmentSchemeEisValue : String = "Enterprise Investment Scheme"
   val PageInvestmentSchemeSeisValue : String = "Seed Enterprise Investment Scheme"
