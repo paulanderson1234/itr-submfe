@@ -285,8 +285,8 @@ page.percentageStaffWithMasters.more = More than 20%
 page.percentageStaffWithMasters.less = Less than 20%
 
 #used investment reason before page
-page.investment.UsedInvestmentReasonBefore.title=Investment reason before?
-page.investment.UsedInvestmentReasonBefore.heading=Have you used a tax relief investment for that reason before?
+page.investment.UsedInvestmentReasonBefore.title=Used investment scheme before
+page.investment.UsedInvestmentReasonBefore.heading=Has your company used a tax relief investment scheme before?
 
 #New product page
 page.investment.NewProduct.title=New product
