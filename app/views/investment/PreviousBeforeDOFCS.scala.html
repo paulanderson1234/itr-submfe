@@ -3,7 +3,7 @@
 @import views.html.helpers._
 @import common.Constants
 
-@(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel])(implicit request: Request[_])
+@(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], question: String, description: String)(implicit request: Request[_])
 
 @main_template(Messages("page.previousInvestment.previousBeforeDOFCS.title")) {
 
@@ -11,7 +11,8 @@
 
     @errorSummary(previousBeforeDOFCSForm, "previous-before-dofcs", "previousBeforeDOFCS")
 
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.previousBeforeDOFCS.heading")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@question</h1>
+
 
     @form(action = controllers.routes.PreviousBeforeDOFCSController.submit()) {
 
@@ -21,12 +22,13 @@
             Seq(
             Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
             Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
-            '_legend -> Messages("page.previousInvestment.previousBeforeDOFCS.heading"),
+            '_legend -> question,
             '_legendClass -> "visuallyhidden",
             '_labelAfter -> true,
             '_labelClass -> "block-label",
             '_legendID -> "previousBeforeDOFCSLegend",
-            '_groupClass -> "inline"
+            '_groupClass -> "inline",
+            '_helpText -> description
             )
         </div>
 

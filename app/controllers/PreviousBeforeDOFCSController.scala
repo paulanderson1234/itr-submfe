@@ -21,13 +21,16 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.PreviousBeforeDOFCSForm._
-import models.{PreviousBeforeDOFCSModel, SubsidiariesModel}
+import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel, SubsidiariesModel}
+import org.joda.time.DateTime
+import play.api.data.Form
+import play.api.i18n.Messages
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+import utils.DateFormatter
 import views.html.investment.PreviousBeforeDOFCS
 
 import scala.concurrent.Future
-import views.html._
 
 object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
@@ -36,15 +39,12 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter {
 
   val keyStoreConnector: KeystoreConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
-      case Some(data) => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data)))
-      case None => Ok(investment.PreviousBeforeDOFCS(previousBeforeDOFCSForm))
-    }
+    createResponse(None)
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -63,7 +63,7 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
 
     previousBeforeDOFCSForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors)))
+        createResponse(Some(formWithErrors))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
@@ -79,5 +79,76 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
         }
       }
     )
+  }
+
+  private def createResponse(formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])(implicit request: Request[Any]): Future[Result] = {
+    for {
+      kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+      commercialSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+      result <- handleResponse(kiModel,commercialSale,formWithErrors)
+    } yield result
+  }
+
+  private def isMissingData(data: Option[KiProcessingModel]): Boolean =
+    data.fold(true)(kiModel => kiModel.dateConditionMet.isEmpty || kiModel.companyAssertsIsKi.isEmpty)
+
+  private def isMissingCommercialSale(commercialSaleModel: Option[CommercialSaleModel]): Boolean =
+    commercialSaleModel.fold(true)(commercialModel => commercialModel.commercialSaleDay.isEmpty
+      || commercialModel.commercialSaleMonth.isEmpty
+      || commercialModel.commercialSaleYear.isEmpty)
+
+  private def handleResponse(kiProcessingModel: Option[KiProcessingModel], commercialSaleModel: Option[CommercialSaleModel],
+                             formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])(implicit request: Request[Any]): Future[Result] = {
+    (isMissingCommercialSale(commercialSaleModel), isMissingData(kiProcessingModel)) match {
+      case (false, false) => {
+        (kiProcessingModel.get.isKi,formWithErrors.isDefined) match {
+          case (true,false) => {
+            generatePage(commercialSaleModel.get.commercialSaleDay.get,
+              commercialSaleModel.get.commercialSaleMonth.get,
+              commercialSaleModel.get.commercialSaleYear.get,
+              10, None)
+          }
+          case (true,true) => {
+            generatePage(commercialSaleModel.get.commercialSaleDay.get,
+              commercialSaleModel.get.commercialSaleMonth.get,
+              commercialSaleModel.get.commercialSaleYear.get,
+              10,
+              formWithErrors)
+          }
+          case (false,false) => {
+            generatePage(commercialSaleModel.get.commercialSaleDay.get,
+              commercialSaleModel.get.commercialSaleMonth.get,
+              commercialSaleModel.get.commercialSaleYear.get,
+              7, None)
+          }
+          case (false,true) => {
+            generatePage(commercialSaleModel.get.commercialSaleDay.get,
+              commercialSaleModel.get.commercialSaleMonth.get,
+              commercialSaleModel.get.commercialSaleYear.get,
+              7,
+              formWithErrors)
+          }
+        }
+      }
+      case (true, _) => Future.successful(Redirect(routes.CommercialSaleController.show()))
+      case (_, true) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+    }
+  }
+
+  private def generatePage(day: Int, month: Int, year: Int, difference: Int, formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])
+                          (implicit request: Request[Any]): Future[Result] = {
+    val newDate = new DateTime(year,month,day,0,0).plusYears(difference)
+    val convertedNewDate = toDateString(newDate.getDayOfMonth,newDate.getMonthOfYear,newDate.getYear)
+    val commercialDate = toDateString(day,month,year)
+    val question = Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,convertedNewDate)
+    val description = Messages("page.previousInvestment.previousBeforeDOFCS.description",difference)
+    if(formWithErrors.isDefined) {
+      Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors.get,question,description)))
+    } else {
+      keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
+        case Some(data) => Ok(PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data), question, description))
+        case None => Ok(PreviousBeforeDOFCS(previousBeforeDOFCSForm, question, description))
+      }
+    }
   }
 }

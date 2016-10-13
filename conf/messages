@@ -328,7 +328,8 @@ page.investment.whatWillUseFor.rAndD = Research and Development
 
 #previous before dofcs
 page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
-page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment before [date of first commercial sale +7 years]?
+page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment between {0} and {1}?
+page.previousInvestment.previousBeforeDOFCS.description = You must have got the investment within {0} years of your first commercial sale
 
 
 #Subsidiaries ninety percent owned:

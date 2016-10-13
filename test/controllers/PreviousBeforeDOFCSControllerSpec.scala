@@ -61,11 +61,26 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   val keyStoreSavedPreviousBeforeDOFCS = PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
+  val kiModel = KiProcessingModel(Some(true),Some(true),Some(true),Some(true),Some(true),Some(true))
+  val nonKiModel = KiProcessingModel(Some(false),Some(false),Some(false),Some(false),Some(false),Some(false))
+  val emptyKiModel = KiProcessingModel(None,None,None,None,None,None)
+  val commercialSaleModel = CommercialSaleModel("true",Some(29),Some(2),Some(2004))
 
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
     reset(mockKeyStoreConnector)
+  }
+
+  def setup(kiProcessingModel: Option[KiProcessingModel],
+            commercialSaleModel: Option[CommercialSaleModel],
+            previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel]) : Unit = {
+    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(kiProcessingModel))
+    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(commercialSaleModel))
+    when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(previousBeforeDOFCSModel))
   }
 
   "PreviousBeforeDOFCSController" should {
@@ -75,27 +90,119 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
     "use the correct auth connector" in {
       PreviousBeforeDOFCSController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      PreviousBeforeDOFCSController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
-  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCS)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
-        result => status(result) shouldBe OK
-      )
+  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and enrolled" when {
+
+    "The user is KI and has filled in all required models and a PreviousBeforeDOFCSModel can be obtained from keystore" should {
+      "return an OK" in {
+        setup(Some(kiModel), Some(commercialSaleModel), Some(keyStoreSavedPreviousBeforeDOFCS))
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe OK
+        )
+      }
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
-        result => status(result) shouldBe OK
-      )
+    "The user is non KI and has filled in all required models and a PreviousBeforeDOFCSModel can be obtained from keystore" should {
+      "return an OK" in {
+        setup(Some(nonKiModel), Some(commercialSaleModel), Some(keyStoreSavedPreviousBeforeDOFCS))
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe OK
+        )
+      }
+    }
+
+    "The user is KI and has filled in all required models and a PreviousBeforeDOFCSModel can't be obtained from keystore" should {
+      "return an OK" in {
+        setup(Some(kiModel), Some(commercialSaleModel), None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe OK
+        )
+      }
+    }
+
+    "The user is non KI and has filled in all required models and a PreviousBeforeDOFCSModel can't be obtained from keystore" should {
+      "return an OK" in {
+        setup(Some(nonKiModel), Some(commercialSaleModel), None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe OK
+        )
+      }
+    }
+
+    "The user is KI and has not filled in commercial sale model" should {
+      "return a SEE_OTHER" in {
+        setup(Some(kiModel), None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe SEE_OTHER
+        )
+      }
+      "redirect to commercial sale page" in {
+        setup(Some(kiModel), None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+        )
+      }
+    }
+
+    "The user has not filled in the KI model" should {
+      "return a SEE_OTHER" in {
+        setup(Some(emptyKiModel), Some(commercialSaleModel), None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe SEE_OTHER
+        )
+      }
+      "redirect to date of incorporation page" in {
+        setup(Some(emptyKiModel), Some(commercialSaleModel), None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+        )
+      }
+    }
+
+    "The user has not filled in the KI model or commercial sale model" should {
+      "return a SEE_OTHER" in {
+        setup(Some(emptyKiModel), None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe SEE_OTHER
+        )
+      }
+      "redirect to commercial sale page" in {
+        setup(Some(emptyKiModel), None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+        )
+      }
+    }
+
+    "There is no KI model or commercial sale model" should {
+      "return a SEE_OTHER" in {
+        setup(None, None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => status(result) shouldBe SEE_OTHER
+        )
+      }
+      "redirect to commercial sale page" in {
+        setup(None, None, None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
+          result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+        )
+      }
     }
   }
 
@@ -248,15 +355,30 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   }
 
 
-  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController when Authenticated and enrolled" should {
-    "redirect to itself" in {
-      mockEnrolledRequest
-      val formInput = "previousBeforeDOFCS" -> ""
-      submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-        }
-      )
+  "Sending an invalid form submission with validation errors to the PreviousBeforeDOFCSController when Authenticated and enrolled" when {
+    "the user submits and is KI" should {
+      "redirect to itself" in {
+        setup(Some(kiModel), Some(commercialSaleModel), Some(keyStoreSavedPreviousBeforeDOFCS))
+        mockEnrolledRequest
+        val formInput = "previousBeforeDOFCS" -> ""
+        submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
+          result => {
+            status(result) shouldBe BAD_REQUEST
+          }
+        )
+      }
+    }
+    "the user submits and is not KI" should {
+      "redirect to itself" in {
+        setup(Some(nonKiModel), Some(commercialSaleModel), Some(keyStoreSavedPreviousBeforeDOFCS))
+        mockEnrolledRequest
+        val formInput = "previousBeforeDOFCS" -> ""
+        submitWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.submit, formInput)(
+          result => {
+            status(result) shouldBe BAD_REQUEST
+          }
+        )
+      }
     }
   }
 
