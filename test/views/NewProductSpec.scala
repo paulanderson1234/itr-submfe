@@ -82,6 +82,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewProduct.bullet.one")
     document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewProduct.bullet.two")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
+    document.body.getElementById("external-hint").text shouldBe
+      s"${Messages("page.investment.NewProduct.hint.2")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -106,6 +108,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewProduct.bullet.one")
     document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewProduct.bullet.two")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
+    document.body.getElementById("external-hint").text shouldBe
+      s"${Messages("page.investment.NewProduct.hint.2")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
