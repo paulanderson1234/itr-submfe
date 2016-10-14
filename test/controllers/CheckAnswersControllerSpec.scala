@@ -99,14 +99,14 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   }
 
   "CheckAnswersController" should {
+    "use the correct auth connector" in {
+      CheckAnswersController.authConnector shouldBe FrontendAuthConnector
+    }
     "use the correct keystore connector" in {
       CheckAnswersController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-
-  "CheckAnswersController" should {
-    "use the correct auth connector" in {
-      CheckAnswersController.authConnector shouldBe FrontendAuthConnector
+    "use the correct enrolment connector" in {
+      CheckAnswersController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 

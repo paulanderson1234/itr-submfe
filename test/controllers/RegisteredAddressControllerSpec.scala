@@ -71,6 +71,9 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     "use the correct auth connector" in {
       RegisteredAddressController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      RegisteredAddressController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to RegisteredAddressController when authenticated and enrolled" should {

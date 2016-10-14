@@ -73,6 +73,9 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct auth connector" in {
       InvestmentGrowController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      InvestmentGrowController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to InvestmentGrowController when authenticated and enrolled" should {

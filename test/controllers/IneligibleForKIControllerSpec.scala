@@ -67,6 +67,9 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "use the correct auth connector" in {
       IneligibleForKIController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      IneligibleForKIController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated and enrolled" should {

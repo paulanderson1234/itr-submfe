@@ -16,15 +16,154 @@
 
 package fixtures
 
-import common.Constants
-import models.submission.{AdvancedAssuranceSubmissionType, KiModel, OrganisationDetailsModel, Submission, _}
-import models.{InvestmentGrowModel, ProposedInvestmentModel, _}
+import common.{Constants, KeystoreKeys}
+import connectors.KeystoreConnector
+import models.{KiProcessingModel, _}
+import org.mockito.Matchers
+import org.mockito.Mockito._
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
+import models.submission._
 
+import scala.concurrent.Future
+
+//noinspection ScalaStyle
 trait SubmissionFixture {
 
-  val fullCorrespondenceAddress: AddressModel = AddressModel(addressLine1 = "line 1",
-    addressLine2 = "Line 2", addressLine3 = Some("Line 3"), addressLine4 = Some("Line 4"),
-    postCode = Some("TF1 4NY"), countryCode = "GB")
+  def setUpMocks(mockKeyStoreConnector: KeystoreConnector) {
+
+    // mandatory
+    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(kiProcModelValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(natureOfBusinessValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(contactDetailsValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(proposedInvestmentValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(investmentGrowValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
+
+    // potentially mandatory
+    when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(whatWillUseForValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(subsidiariesSpendInvestValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(previousSchemesValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(commercialSaleValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(newGeographicalMarketValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(newProductValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(tenYearPlanValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(operatingCostsValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(turnoverCostsValid)))
+  }
+
+  def setUpMocksMinimumRequiredModels(mockKeyStoreConnector: KeystoreConnector) {
+
+    // mandatory minimum
+    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(kiProcModelValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(natureOfBusinessValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(contactDetailsValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(proposedInvestmentValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(investmentGrowValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
+
+    // can be empty to pass
+    when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(turnoverCostsValid)))
+  }
+
+  def setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector: KeystoreConnector,
+                                          kiModel: Option[KiProcessingModel],
+                                          natureBusiness: Option[NatureOfBusinessModel],
+                                          contactDetails: Option[ContactDetailsModel],
+                                          proposedInvestment: Option[ProposedInvestmentModel],
+                                          investGrow: Option[InvestmentGrowModel],
+                                          dateIncorp: Option[DateOfIncorporationModel],
+                                          contactAddress: Option[AddressModel]
+                                         )
+  {
+
+    // mandatory minimum
+    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(kiModel.nonEmpty) Future.successful(Option(kiModel.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(natureBusiness.nonEmpty) Future.successful(Option(natureBusiness.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(contactDetails.nonEmpty) Future.successful(Option(contactDetails.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(proposedInvestment.nonEmpty) Future.successful(Option(proposedInvestment.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(investGrow.nonEmpty) Future.successful(Option(investGrow.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(dateIncorp.nonEmpty) Future.successful(Option(dateIncorp.get)) else Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any()))
+      .thenReturn( if(contactAddress.nonEmpty) Future.successful(Option(contactAddress.get)) else Future.successful(None))
+
+    // can be empty to pass
+    when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(turnoverCostsValid)))
+  }
+
+  val fullCorrespondenceAddress: AddressModel = AddressModel(addressline1 = "line 1",
+    addressline2 = "Line 2", addressline3 = Some("Line 3"), addressline4 = Some("Line 4"),
+    postcode = Some("TF1 4NY"), countryCode = "GB")
 
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
     surname = "Flinsstone", telephoneNumber = "01952 255899", email = "rubble@jurassic.com")

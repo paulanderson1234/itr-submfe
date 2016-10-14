@@ -23,9 +23,9 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class TestModelConversionSpec extends UnitSpec{
 
-  val fullCorrespondenceAddress : AddressModel = AddressModel(addressLine1 = "line 1",
-    addressLine2 = "Line 2", addressLine3 = Some("Line 3"), addressLine4 = Some("Line 4"),
-    postCode = Some("TF1 4NY"), countryCode = "GB")
+  val fullCorrespondenceAddress : AddressModel = AddressModel(addressline1 = "line 1",
+    addressline2 = "Line 2", addressline3 = Some("Line 3"), addressline4 = Some("Line 4"),
+    postcode = Some("TF1 4NY"), countryCode = "GB")
 
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
     surname = "Flinsstone", telephoneNumber = "01952 255899", email = "rubble@jurassic.com")

@@ -73,6 +73,9 @@ class HadPreviousRFIControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct auth connector" in {
       HadPreviousRFIController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      HadPreviousRFIController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {

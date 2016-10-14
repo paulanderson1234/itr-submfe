@@ -66,6 +66,7 @@ trait SubmissionConnector {
   def submitAdvancedAssurance(submissionRequest: Submission)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val tavcReferenceId = "XADD00000001234" //TODO: get from enrolment
     val json = Json.toJson(submissionRequest)
+
     val targetSubmissionModel = Json.parse(json.toString()).as[DesSubmitAdvancedAssuranceModel]
 
     http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceId/submit", Json.toJson(targetSubmissionModel))

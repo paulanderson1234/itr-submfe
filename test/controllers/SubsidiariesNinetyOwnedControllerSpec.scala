@@ -72,6 +72,9 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     "use the correct auth connector" in {
       SubsidiariesNinetyOwnedController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      SubsidiariesNinetyOwnedController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and enrolled" should {

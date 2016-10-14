@@ -78,6 +78,9 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     "use the correct auth connector" in {
       IsKnowledgeIntensiveController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      IsKnowledgeIntensiveController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to IsKnowledgeIntensiveController when authenticated and enrolled" should {

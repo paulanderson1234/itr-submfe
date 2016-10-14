@@ -17,10 +17,7 @@
 package controllers
 
 import java.net.URLEncoder
-import java.util.UUID
-
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
@@ -38,7 +35,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
 
@@ -50,15 +47,20 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   private def mockEnrolledRequest = when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
 
   private def mockNotEnrolledRequest = when(ContactAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
 
-  val model = ContactAddressModel("TF1 3NY")
-  val emptyModel = ContactAddressModel("")
+  val model: AddressModel = AddressModel(addressline1 = "line 1",
+    addressline2 = "Line 2", addressline3 = Some("Line 3"), addressline4 = Some("Line 4"),
+    postcode = Some("TF1 4NY"), countryCode = "GB")
+
+  val emptyModel = AddressModel("", "")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedContactAddress = ContactAddressModel("LE5 5NN")
+  val keyStoreSavedContactAddress = AddressModel(addressline1 = "line 1",
+    addressline2 = "Line 2 saved", addressline3 = Some("Line 3 saved"), addressline4 = Some("Line 4 saved"),
+    postcode = Some("TF1 4NY"), countryCode = "GB")
 
   implicit val hc = HeaderCarrier()
 
@@ -67,20 +69,20 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "ContactAddressController" should {
+    "use the correct auth connector" in {
+      ContactAddressController.authConnector shouldBe FrontendAuthConnector
+    }
     "use the correct keystore connector" in {
       ContactAddressController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-
-  "ContactAddressController" should {
-    "use the correct auth connector" in {
-      ContactAddressController.authConnector shouldBe FrontendAuthConnector
+    "use the correct enrolment connector" in {
+      ContactAddressController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 
   "Sending a GET request to ContactAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
       mockEnrolledRequest
       showWithSessionAndAuth(ContactAddressControllerTest.show)(
@@ -89,7 +91,7 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(ContactAddressControllerTest.show)(
@@ -100,7 +102,7 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to ContactAddressController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedContactAddress)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(ContactAddressControllerTest.show)(
@@ -149,15 +151,22 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+
   "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
-    "redirect to the Supporting Documents page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+    "redirect to the Contact Details Subscription Controller page" in {
       mockEnrolledRequest
-      val formInput = "postcode" -> "LE5 5NN"
-      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
+      val formInput =
+        Seq("addressline1" -> "Line 1",
+          "addressline2" -> "Line 2",
+          "addressline3" -> "Line 3",
+          "addressline4" -> "line 4",
+          "postcode" -> "TF1 3NY",
+          "countryCode" -> "GB")
+
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
+          redirectLocation(result) shouldBe Some(routes.SupportingDocumentsController.show().url)
         }
       )
     }
@@ -166,8 +175,9 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
       mockEnrolledRequest
-      val formInput = "postcode" -> ""
-      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
+      val formInput = Seq("addressLine1" -> "", "addressLine1" -> "", "addressLine3" -> "Line3",
+        "addressLine4" -> "Line4", "postCode" -> "LE5 5NN", "countryCode" -> "GB")
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit, formInput: _*)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -179,8 +189,9 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the Subscription Service" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockNotEnrolledRequest
-      val formInput = "postcode" -> "LE5 5NN"
-      submitWithSessionAndAuth(ContactAddressControllerTest.submit,formInput)(
+      val formInput = Seq("addressline1" -> "Line1", "addressline2" -> "Line2", "addressline3" -> "Line3",
+        "addressline4" -> "Line4", "postCode" -> "LE5 5NN", "countryCode" -> "GB")
+      submitWithSessionAndAuth(ContactAddressControllerTest.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -188,6 +199,8 @@ class ContactAddressControllerSpec extends UnitSpec with MockitoSugar with Befor
       )
     }
   }
+
+
 
   "Sending a submission to the ContactAddressController when not authenticated" should {
 

@@ -73,13 +73,14 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "CommercialSaleController" should {
+    "use the correct auth connector" in {
+      CommercialSaleController.authConnector shouldBe FrontendAuthConnector
+    }
     "use the correct keystore connector" in {
       CommercialSaleController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-  "ConfirmCorrespondAddressController" should {
-    "use the correct auth connector" in {
-      CommercialSaleController.authConnector shouldBe FrontendAuthConnector
+    "use the correct enrolment connector" in {
+      CommercialSaleController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 

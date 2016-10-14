@@ -65,38 +65,24 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     def mockNotEnrolledRequest(): Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(kiProcModelValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(whatWillUseForValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(natureOfBusinessValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(contactDetailsValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(proposedInvestmentValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(investmentGrowValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(subsidiariesSpendInvestValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(previousSchemesValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(commercialSaleValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(newGeographicalMarketValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(newProductValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(tenYearPlanValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(operatingCostsValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(turnoverCostsValid)))
+
+  }
+
+  class SetupPageFull() {
+    val controller = new AcknowledgementController{
+      override lazy val applicationConfig = FrontendAppConfig
+      override lazy val authConnector = MockAuthConnector
+      val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+      val submissionConnector: SubmissionConnector = mockSubmission
+      override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    }
+
+    def mockEnrolledRequest(): Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+    def mockNotEnrolledRequest(): Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(None))
+
+    setUpMocks(mockKeyStoreConnector)
   }
 
   class SetupPageMinimum() {
@@ -114,39 +100,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     def mockNotEnrolledRequest(): Unit = when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(None))
 
-    when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(kiProcModelValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(natureOfBusinessValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(contactDetailsValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(proposedInvestmentValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(investmentGrowValid)))
-    when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
-
-    when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(None))
-    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(Option(turnoverCostsValid)))
+    setUpMocksMinimumRequiredModels(mockKeyStoreConnector)
   }
 
 
@@ -177,7 +131,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 when a valid submission data is submitted" in new SetupPage{
+    "return a 200 when a valid submission data is submitted" in new SetupPageFull{
       when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
 
@@ -197,40 +151,11 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     }
 
     "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-      "return a 303 redirect if one mandatory session item is missing" in new SetupPage {
-        when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(kiProcModelValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None)) //missing
-        when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(contactDetailsValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
+      "return a 303 redirect if mandatory KiProcessingModel is missing from keystore" in new SetupPage {
 
-        when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(turnoverCostsValid)))
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,kiModel = None,
+          Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
+          Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
 
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
@@ -242,41 +167,11 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     }
 
     "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-      "return a 303 redirect if a different second mandatory session item is missing" in new SetupPage {
+      "return a 303 redirect if mandatory NatureOfBusinessModel is missing from keystore" in new SetupPage {
 
-        when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(kiProcModelValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None)) //missing
-        when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(contactDetailsValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
-
-        when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(turnoverCostsValid)))
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
+          Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
 
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
@@ -288,40 +183,76 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
     }
 
     "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-      "return a 303 redirect if a different third mandatory session item is missing" in new SetupPage {
-        when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(kiProcModelValidAssertNo)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(natureOfBusinessValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(proposedInvestmentValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(investmentGrowValid)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
+      "return a 303 redirect if mandatory ContactDetailsModel is missing from keystore" in new SetupPage {
 
-        when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(turnoverCostsValid)))
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
+          Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+
+        when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+        mockEnrolledRequest()
+        val result = controller.show.apply(authorisedFakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      }
+    }
+
+    "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+      "return a 303 redirect if mandatory ProposedInvestmentModel is missing from keystore" in new SetupPage {
+
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
+          Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+
+        when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+        mockEnrolledRequest()
+        val result = controller.show.apply(authorisedFakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      }
+    }
+
+    "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+      "return a 303 redirect if mandatory InvestmentGrowModel is missing from keystore" in new SetupPage {
+
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
+          investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+
+        when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+        mockEnrolledRequest()
+        val result = controller.show.apply(authorisedFakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      }
+    }
+
+    "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+      "return a 303 redirect if mandatory DateOfIncorporationModel is missing from keystore" in new SetupPage {
+
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
+          Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress))
+
+        when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+        mockEnrolledRequest()
+        val result = controller.show.apply(authorisedFakeRequest)
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      }
+    }
+
+    "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+      "return a 303 redirect if mandatory AddressModel (contact address) is missing from keystore" in new SetupPage {
+
+        setUpMocksTestMinimumRequiredModels(mockKeyStoreConnector,Some(kiProcModelValid),
+          Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
+          Some(investmentGrowValid),  Some(dateOfIncorporationValid), contactAddress = None)
+
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
         mockEnrolledRequest()
@@ -345,6 +276,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
           .thenReturn(Future.successful(Option(investmentGrowValid)))
         when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
+        when(mockKeyStoreConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
 
         when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
@@ -376,7 +309,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
       }
     }
 
-    "return a 5xx when an invalid email is submitted" in new SetupPage{
+    "return a 5xx when an invalid email is submitted" in new SetupPageFull{
 
       when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
@@ -387,7 +320,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
   }
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to AcknowledgementController" should {
-    "redirect to the TAVC Subscription Service" in new SetupPage{
+    "redirect to the TAVC Subscription Service" in new SetupPageFull{
       when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
       mockNotEnrolledRequest()
@@ -398,12 +331,12 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
   }
 
   "Sending a request with no session to AcknowledgementController" should {
-    "return a 302" in new SetupPage{
+    "return a 302" in new SetupPageFull{
       val result = controller.show.apply(fakeRequest)
       status(result) shouldBe SEE_OTHER
     }
 
-    s"should redirect to GG login" in new SetupPage{
+    s"should redirect to GG login" in new SetupPageFull{
       val result = controller.show.apply(fakeRequest)
       redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
@@ -411,12 +344,12 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
   }
 
   "Sending an Unauthenticated request with a session to AcknowledgementController" should {
-    "return a 302" in new SetupPage{
+    "return a 302" in new SetupPageFull{
       val result = controller.show.apply(fakeRequestWithSession)
       status(result) shouldBe SEE_OTHER
     }
 
-    s"should redirect to GG login" in new SetupPage{
+    s"should redirect to GG login" in new SetupPageFull{
       val result = controller.show.apply(fakeRequestWithSession)
       redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
@@ -425,7 +358,7 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
 
   "Sending a timed-out request to AcknowledgementController" should {
 
-    "return a 303 in" in new SetupPage{
+    "return a 303 in" in new SetupPageFull{
       val result = controller.show.apply(timedOutFakeRequest)
       status(result) shouldBe SEE_OTHER
     }
