@@ -28,6 +28,7 @@ trait KeystoreKeys {
   val subsidiaries: String = "companyDetails:subsidiaries"
   val natureOfBusiness: String = "companyDetails:natureOfBusiness"
   val operatingCosts: String = "companyDetails:operatingCosts"
+  val turnoverCosts: String = "companyDetails:turnOverCosts"
   val percentageStaffWithMasters: String = "knowledgeIntensive:percentageStaffWithMasters"
   val tenYearPlan: String = "knowledgeIntensive:tenYearPlan"
   val whatWillUseFor: String = "investment:whatWillUseFor"
