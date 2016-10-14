@@ -126,3 +126,4 @@ GET        /acknowledgement                         controllers.AcknowledgementC
 GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.show
 POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit
 
+GET        /annual-turnover-error                   controllers.AnnualTurnoverErrorController.show

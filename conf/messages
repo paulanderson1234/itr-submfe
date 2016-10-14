@@ -509,3 +509,8 @@ page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue=Dates of share is
 page.previousInvestment.reviewPreviousSchemes.investmentAmount=Investment Amount
 page.previousInvestment.reviewPreviousSchemes.add=Add another scheme
 
+#annual turnover error
+page.investment.AnnualTurnoverError.title=Annual turnover error
+page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
+page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
+page.investment.AnnualTurnoverError.guidance=Link back to guidance
