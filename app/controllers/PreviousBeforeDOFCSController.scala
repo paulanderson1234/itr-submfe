@@ -106,26 +106,26 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
-              10, None)
+              Constants.IsKnowledgeIntensiveYears, None)
           }
           case (true,true) => {
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
-              10,
+              Constants.IsKnowledgeIntensiveYears,
               formWithErrors)
           }
           case (false,false) => {
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
-              7, None)
+              Constants.IsNotKnowledgeIntensiveYears, None)
           }
           case (false,true) => {
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
-              7,
+              Constants.IsNotKnowledgeIntensiveYears,
               formWithErrors)
           }
         }

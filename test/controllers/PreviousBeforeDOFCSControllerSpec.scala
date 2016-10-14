@@ -64,7 +64,10 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   val kiModel = KiProcessingModel(Some(true),Some(true),Some(true),Some(true),Some(true),Some(true))
   val nonKiModel = KiProcessingModel(Some(false),Some(false),Some(false),Some(false),Some(false),Some(false))
   val emptyKiModel = KiProcessingModel(None,None,None,None,None,None)
-  val commercialSaleModel = CommercialSaleModel("true",Some(29),Some(2),Some(2004))
+  val commercialSaleYear = 2004
+  val commercialSaleMonth = 2
+  val commercialSaleDay = 29
+  val commercialSaleModel = CommercialSaleModel("true",Some(commercialSaleDay),Some(commercialSaleMonth),Some(commercialSaleYear))
 
   implicit val hc = HeaderCarrier()
 

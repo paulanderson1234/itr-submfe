@@ -26,6 +26,7 @@ import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{PreviousBeforeDOFCSController, routes}
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel}
+import org.joda.time.DateTime
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -34,10 +35,11 @@ import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import utils.DateFormatter
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with DateFormatter {
 
   val mockKeystoreConnector = mock[KeystoreConnector]
 
@@ -45,7 +47,15 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
   val emptyPreviousBeforeDOFCSModel = new PreviousBeforeDOFCSModel("")
   val kiModel = KiProcessingModel(Some(true),Some(true),Some(true),Some(true),Some(true),Some(true))
   val nonKiModel = KiProcessingModel(Some(false),Some(false),Some(false),Some(false),Some(false),Some(false))
-  val commercialSaleModel = CommercialSaleModel("true",Some(29),Some(2),Some(2004))
+  val commercialSaleYear = 2004
+  val commercialSaleMonth = 2
+  val commercialSaleDay = 29
+  val commercialSaleModel = CommercialSaleModel("true",Some(commercialSaleDay),Some(commercialSaleMonth),Some(commercialSaleYear))
+  val commercialDate = toDateString(commercialSaleDay,commercialSaleMonth,commercialSaleYear)
+  val secondDate = (difference: Int) => {
+    val newDate = new DateTime(commercialSaleYear, commercialSaleMonth, commercialSaleDay, 0, 0).plusYears(difference)
+    toDateString(newDate.getDayOfMonth, newDate.getMonthOfYear, newDate.getYear)
+  }
 
   class SetupPage {
 
@@ -84,15 +94,15 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2014")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.getElementById("previousBeforeDOFCS-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("previousBeforeDOFCS-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("previousBeforeDOFCS").getElementsByClass("form-hint").first().text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.description",10)
+      Messages("page.previousInvestment.previousBeforeDOFCS.description",Constants.IsKnowledgeIntensiveYears)
     document.getElementById("previousBeforeDOFCSLegend").select(".visuallyhidden").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2014")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
@@ -110,15 +120,15 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2011")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.getElementById("previousBeforeDOFCS-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("previousBeforeDOFCS-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("previousBeforeDOFCS").getElementsByClass("form-hint").first().text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.description",7)
+      Messages("page.previousInvestment.previousBeforeDOFCS.description",Constants.IsNotKnowledgeIntensiveYears)
     document.getElementById("previousBeforeDOFCSLegend").select(".visuallyhidden").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2011")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
@@ -136,15 +146,15 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2014")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.select("#previousBeforeDOFCS-no").size() shouldBe 1
     document.getElementById("previousBeforeDOFCS-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("previousBeforeDOFCS-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("previousBeforeDOFCS").getElementsByClass("form-hint").first().text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.description",10)
+      Messages("page.previousInvestment.previousBeforeDOFCS.description",Constants.IsKnowledgeIntensiveYears)
     document.getElementById("previousBeforeDOFCSLegend").select(".visuallyhidden").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2014")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
@@ -162,15 +172,15 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2011")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
     document.select("#previousBeforeDOFCS-no").size() shouldBe 1
     document.getElementById("previousBeforeDOFCS-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("previousBeforeDOFCS-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("previousBeforeDOFCS").getElementsByClass("form-hint").first().text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.description",7)
+      Messages("page.previousInvestment.previousBeforeDOFCS.description",Constants.IsNotKnowledgeIntensiveYears)
     document.getElementById("previousBeforeDOFCSLegend").select(".visuallyhidden").text() shouldBe
-      Messages("page.previousInvestment.previousBeforeDOFCS.heading","29 February 2004","28 February 2011")
+      Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
