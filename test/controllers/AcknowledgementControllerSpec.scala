@@ -95,6 +95,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
       .thenReturn(Future.successful(Option(tenYearPlanValid)))
     when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(operatingCostsValid)))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(turnoverCostsValid)))
   }
 
   class SetupPageMinimum() {
@@ -143,6 +145,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
       .thenReturn(Future.successful(None))
     when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(None))
+    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Option(turnoverCostsValid)))
   }
 
 
@@ -225,6 +229,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
           .thenReturn(Future.successful(None))
         when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(turnoverCostsValid)))
 
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
@@ -269,6 +275,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
           .thenReturn(Future.successful(None))
         when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(turnoverCostsValid)))
 
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
@@ -312,6 +320,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
           .thenReturn(Future.successful(None))
         when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(turnoverCostsValid)))
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
         mockEnrolledRequest()
@@ -354,6 +364,8 @@ class AcknowledgementControllerSpec extends UnitSpec  with Mockito with WithFake
           .thenReturn(Future.successful(None))
         when(mockKeyStoreConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(turnoverCostsValid)))
 
         when(mockSubmission.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
