@@ -16,8 +16,8 @@
 
 package utils
 
-import models.OperatingCostsModel
-import models.submission.{AnnualCostModel, CostModel}
+import models.{AnnualTurnoverCostsModel, OperatingCostsModel}
+import models.submission.{AnnualCostModel, CostModel, TurnoverCostModel}
 
 object Converters extends Converters{
 
@@ -40,5 +40,24 @@ trait Converters {
         CostModel(amount = operatingCostsModel.rAndDCosts2ndYear)),
       AnnualCostModel(period3, CostModel(amount = operatingCostsModel.operatingCosts3rdYear),
         CostModel(amount = operatingCostsModel.rAndDCosts3rdYear)))
+  }
+
+  def turnoverCostsToList(turnoverCostModel: AnnualTurnoverCostsModel, mostRecentYear: Int): List[TurnoverCostModel] = {
+
+    require(mostRecentYear >= 1000 && mostRecentYear <= 9999, "most recent year must be a 4 digit integer")
+
+    val period1 = mostRecentYear.toString
+    val period2 = (mostRecentYear - 1) toString
+    val period3 = (mostRecentYear - 2).toString
+    val period4 = (mostRecentYear - 3).toString
+    val period5 = (mostRecentYear - 4).toString
+
+    List(
+      TurnoverCostModel(period1, CostModel(amount = turnoverCostModel.amount1)),
+      TurnoverCostModel(period2, CostModel(amount = turnoverCostModel.amount2)),
+      TurnoverCostModel(period3, CostModel(amount = turnoverCostModel.amount3)),
+      TurnoverCostModel(period4, CostModel(amount = turnoverCostModel.amount4)),
+      TurnoverCostModel(period5, CostModel(amount = turnoverCostModel.amount5))
+     )
   }
 }

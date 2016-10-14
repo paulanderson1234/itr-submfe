@@ -126,4 +126,5 @@ trait SubmissionFixture {
   val newProductValid = NewProductModel(Constants.StandardRadioButtonYesValue)
   val tenYearPlanValid = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("To borrow to invest as in business plan"))
   val operatingCostsValid = OperatingCostsModel("12", "13", "14", "15", "16", "17")
+  val turnoverCostsValid = AnnualTurnoverCostsModel("12", "13", "14", "15", "16")
 }

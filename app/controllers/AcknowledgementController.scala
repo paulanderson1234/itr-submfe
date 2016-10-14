@@ -58,6 +58,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       // potentially optional or required
       whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
       operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
+      turnoverCosts <- keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
       subsidiariesSpendInvest <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
       subsidiariesNinetyOwned <- keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
       previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector)
@@ -68,7 +69,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
         proposedInvestment, investmentGrow, dateOfIncorporation, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts)
+        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
     } yield result
   }
 
@@ -99,7 +100,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        newGeographicalMarket: Option[NewGeographicalMarketModel],
                                        newProduct: Option[NewProductModel],
                                        tenYearPlan: Option[TenYearPlanModel],
-                                       operatingCosts: Option[OperatingCostsModel])
+                                       operatingCosts: Option[OperatingCostsModel],
+                                       turnoverCosts: Option[AnnualTurnoverCostsModel])
                                              (implicit request: Request[AnyContent]): Future[Result] = {
 
     // temp values that are not captured yet but required. These should be replaced by passed in values when captured:
@@ -126,7 +128,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           annualCosts = if (operatingCosts.nonEmpty)
             Some(Converters.operatingCostsToList(operatingCosts.get, tempMostRecentYear)) else None,
-          annualTurnover = None,
+          annualTurnover = if (turnoverCosts.nonEmpty)
+            Some(Converters.turnoverCostsToList(turnoverCosts.get, tempMostRecentYear)) else None,
           knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
             subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempCompanyAddress),

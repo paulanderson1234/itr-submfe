@@ -1,0 +1,136 @@
+@import models.AnnualTurnoverCostsModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+
+@(operatingCostsForm: Form[AnnualTurnoverCostsModel])(implicit request: Request[_])
+
+@main_template(Messages("page.companyDetails.TurnoverCosts.title")) {
+
+@backButtonWithProgress(controllers.routes.NewProductController.show().toString, Messages("common.section.progress.company.details.three"))
+
+@errorSummary(operatingCostsForm, "TurnoverCosts")
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.TurnoverCosts.heading")</h1>
+
+        @form(action = controllers.routes.TurnoverCostsController.submit()) {
+
+        <p class="form-hint" id="turnover-costs-hint-one">@Messages("page.companyDetails.TurnoverCosts.hint.one")</p>
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.companyDetails.TurnoverCosts.help.link")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p id="help-text">@Messages("page.companyDetails.TurnoverCosts.help.text")</p>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <table id="table">
+                <thead>
+                <tr>
+                    <th class="visuallyhidden" id="col-heading-one" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.one")</th>
+                    <th id="col-heading-two" class="visuallyhidden" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.two")</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.TurnoverCosts.row.heading.one")</td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount1"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-one",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount1"
+                        )
+                    </td>
+                <tr>
+
+                <tr>
+                    <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.TurnoverCosts.row.heading.two")</td>
+                    <td>
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount2"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-two",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount2"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.TurnoverCosts.row.heading.three")</td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount3"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-three",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount3"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-four">@Messages("page.companyDetails.TurnoverCosts.row.heading.four")</td>
+                    <td>
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount4"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-rAndDCosts2ndYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount4"
+                        )
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-five">@Messages("page.companyDetails.TurnoverCosts.row.heading.five")</td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount5"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-operatingCosts3rdYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.heading"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount5"
+                        )
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+        </div>
+        }
+    </div>
+
+</div>
+}

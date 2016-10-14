@@ -156,6 +156,7 @@ page.examples.DoSubmission.helptext=You can download your application and email 
 page.examples.Confirmation.title=Confirmation
 page.examples.Confirmation.heading=Confirmation
 
+
 #Utr page
 page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?
 page.companyDetails.utr.title=What''s your Company Unique Taxpayer Reference?
@@ -249,6 +250,26 @@ page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year 
 page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 9 numbers.
 page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 9 numbers.
 page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
+
+#Turnover Costs Page
+page.companyDetails.TurnoverCosts.title = Annual trunover
+page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
+page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
+page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
+page.companyDetails.TurnoverCosts.col.heading.two = Turnover costs
+page.companyDetails.TurnoverCosts.row.heading.one = Most recent
+page.companyDetails.TurnoverCosts.row.heading.two = Year 2
+page.companyDetails.TurnoverCosts.row.heading.three = Year 3
+page.companyDetails.TurnoverCosts.row.heading.four = Year 4
+page.companyDetails.TurnoverCosts.row.heading.five = Year 5
+page.companyDetails.TurnoverCosts.error.field.one = Turnover Costs Most recent must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.error.field.two = Turnover Costs Year 2 must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.error.field.three = Turnover Costs Year 3 must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.error.field.four = Turnover Costs Year 4 must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.error.field.five = Turnover Costs Year 5 must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.help.link= What''s annual turnover?
+page.companyDetails.TurnoverCosts.help.text= It''s the amount of money your company makes in a year before tax.
+
 
 #Subsidiaries Page
 page.companyDetails.Subsidiaries.title = Subsidiaries
