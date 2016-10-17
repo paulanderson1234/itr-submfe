@@ -263,6 +263,9 @@ class WhatWillUseForControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct auth connector" in {
       WhatWillUseForController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      WhatWillUseForController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to WhatWillUseForController when authenticated and enrolled" should {

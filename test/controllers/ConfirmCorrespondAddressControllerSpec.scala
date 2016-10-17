@@ -66,14 +66,14 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
   }
 
   "ConfirmCorrespondAddressController" should {
+    "use the correct auth connector" in {
+      ConfirmCorrespondAddressController.authConnector shouldBe FrontendAuthConnector
+    }
     "use the correct keystore connector" in {
       ConfirmCorrespondAddressController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-
-  "ConfirmCorrespondAddressController" should {
-    "use the correct auth connector" in {
-      ConfirmCorrespondAddressController.authConnector shouldBe FrontendAuthConnector
+    "use the correct enrolment connector" in {
+      ConfirmCorrespondAddressController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 

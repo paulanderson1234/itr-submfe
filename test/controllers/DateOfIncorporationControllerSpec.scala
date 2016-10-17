@@ -109,6 +109,9 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
     "use the correct auth connector" in {
       DateOfIncorporationController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      DateOfIncorporationController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to DateOfIncorporationController when authenticated and enrolled" should {

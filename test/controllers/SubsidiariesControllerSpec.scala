@@ -73,6 +73,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "use the correct auth connector" in {
       SubsidiariesController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      SubsidiariesController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to SubsidiariesController without a valid back link from keystore when authenticated and enrolled" should {

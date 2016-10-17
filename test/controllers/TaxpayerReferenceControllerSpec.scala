@@ -91,6 +91,9 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     "use the correct auth connector" in {
       TaxpayerReferenceController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      TaxpayerReferenceController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to TaxpayerReferenceController when authenticated and enrolled" should {

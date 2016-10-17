@@ -53,6 +53,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
       investmentGrow <- keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
       dateOfIncorporation <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+      contactAddress <- keyStoreConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       // company name also a required field when it is implemented
 
       // potentially optional or required
@@ -68,7 +69,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
-        proposedInvestment, investmentGrow, dateOfIncorporation, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
     } yield result
   }
@@ -90,6 +91,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        proposedInvestment: Option[ProposedInvestmentModel],
                                        investmentGrowModel: Option[InvestmentGrowModel],
                                        dateOfIncorporation: Option[DateOfIncorporationModel],
+                                       contactAddress: Option[AddressModel],
 
                                        // potentially optional or potentially required
                                        whatWillUseFor: Option[WhatWillUseForModel],
@@ -104,26 +106,23 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        turnoverCosts: Option[AnnualTurnoverCostsModel])
                                              (implicit request: Request[AnyContent]): Future[Result] = {
 
-    // temp values that are not captured yet but required. These should be replaced by passed in values when captured:
-    val tempCorrespondenceAddress: AddressModel = AddressModel(addressLine1 = "Contact line 1",
-      addressLine2 = "Contact Line 2", addressLine3 = Some("Contact Line 3"), addressLine4 = Some("Contact Line 4"),
-      postCode = Some("TF4 5CY"), countryCode = "GB")
-    val tempCompanyAddress: AddressModel = AddressModel(addressLine1 = "Company line 1 Ltd",
-      addressLine2 = "Company Line 2", addressLine3 = Some("Company Line 3"), addressLine4 = Some("Company Line 4"),
-      postCode = Some("TF1 4NY"), countryCode = "GB")
+    val tempCompanyAddress: AddressModel = AddressModel(addressline1 = "Company line 1 Ltd",
+      addressline2 = "Company Line 2", addressline3 = Some("Company Line 3"), addressline4 = Some("Company Line 4"),
+      postcode = Some("TF1 4NY"), countryCode = "GB")
     val tempCompanyName = "Company Name Ltd"
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
     val tempMostRecentYear = 2015
 
-    (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation) match {
-      case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp)) => {
+    (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
+      contactAddress) match {
+      case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
+      Some(cntAddress)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None, whatWillUseForModel = whatWillUseFor,
-          natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail,
-          proposedInvestmentModel = propInv, investmentGrowModel = howInvGrow,
-          correspondenceAddress = tempCorrespondenceAddress,
+          natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
+          investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
           schemeTypes = SchemeTypesModel(eis = true),
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           annualCosts = if (operatingCosts.nonEmpty)
@@ -147,7 +146,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _) => Future.successful(Redirect(routes.IntroductionController.show()))
+      case (_, _, _, _, _, _,_) => Future.successful(Redirect(routes.IntroductionController.show()))
     }
   }
 

@@ -86,6 +86,9 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct auth connector" in {
       PreviousSchemeController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      PreviousSchemeController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to PreviousSchemeController when authenticated and enrolled" should {
