@@ -34,6 +34,8 @@ package connectors
 
 import java.util.UUID
 
+import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
+import models.submission.{AnnualCostModel, TurnoverCostModel}
 import play.api.test.Helpers._
 import fixtures.SubmissionFixture
 
@@ -111,6 +113,21 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val proposedAmount = 1000
 
       val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(hadPrevRFI, isKi, previousInvestmentSchemesTotal, proposedAmount)
+      await(result) shouldBe Some(validResponse)
+    }
+  }
+
+
+  "Calling checkAveragedAnnualTurnover" should {
+
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val proposedInvestment = ProposedInvestmentModel(50)
+      val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100")
+
+      val result = TargetSubmissionConnector.checkAveragedAnnualTurnover(proposedInvestment,annualTurnoverCosts)
       await(result) shouldBe Some(validResponse)
     }
   }

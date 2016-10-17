@@ -16,14 +16,15 @@
 
 package controllers
 
+
+
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{SubmissionConnector, EnrolmentConnector, KeystoreConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import forms.TurnoverCostsForm._
 import common._
-import models.AnnualTurnoverCostsModel
+import models.{ProposedInvestmentModel, AnnualTurnoverCostsModel}
 import models.submission.CostModel
 import play.api.libs.json.Json
 import views.html.investment.TurnoverCosts
@@ -32,6 +33,7 @@ import scala.concurrent.Future
 
 object TurnoverCostsController extends TurnoverCostsController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -41,6 +43,7 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
 
   implicit val formatCostModel = Json.format[CostModel]
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
@@ -57,7 +60,20 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
       validFormData => {
         //TODO: add the annual aveage turnover check and navigtion to error or correct page etc..subsidiaries temporary
         keyStoreConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
-        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+
+        val annualTurnOverCheckRes = ( for{
+          proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+          turnoverCheckRes <-  submissionConnector.checkAveragedAnnualTurnover(proposedInvestment.get,validFormData)
+        }yield turnoverCheckRes ) recover{
+          case e: NoSuchElementException => None
+        }
+
+        annualTurnOverCheckRes map {
+          case Some(true) => Redirect(routes.SubsidiariesSpendingInvestmentController.show())
+          case Some(false) => Redirect(routes.AnnualTurnoverErrorController.show())
+          case _ => Redirect(routes.ProposedInvestmentController.show())
+        }
+
       }
     )
   }
