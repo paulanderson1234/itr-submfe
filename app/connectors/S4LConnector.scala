@@ -16,32 +16,38 @@
 
 package connectors
 
-import config.TavcSessionCache
+import config.TAVCShortLivedCache
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
+import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-object S4LConnector extends S4LConnector
+object S4LConnector extends S4LConnector {
+  override val shortLivedCache = TAVCShortLivedCache
+}
 
 trait S4LConnector {
 
-  val sessionCache : SessionCache = TavcSessionCache
+  val shortLivedCache : ShortLivedCache
 
   def saveFormData[T](key: String, data : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    sessionCache.cache[T](key, data)
+    shortLivedCache.cache[T](getCacheId, key, data)
   }
 
   def fetchAndGetFormData[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    sessionCache.fetchAndGetEntry(key)
+    shortLivedCache.fetchAndGetEntry(getCacheId, key)
   }
 
   def clearKeystore()(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-    sessionCache.remove()
+    shortLivedCache.remove(getCacheId)
   }
 
   def fetch()(implicit hc : HeaderCarrier) : Future[Option[CacheMap]] = {
-    sessionCache.fetch()
+    shortLivedCache.fetch(getCacheId)
+  }
+
+  private def getCacheId (implicit hc: HeaderCarrier): String = {
+    hc.sessionId.getOrElse(throw new RuntimeException("")).value
   }
 }

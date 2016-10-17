@@ -46,7 +46,6 @@ trait IntroductionController extends FrontendController {
 
   // this method is called on any restart - e.g. on session timeout
   def restart(): Action[AnyContent] = Action.async { implicit request =>
-    s4lConnector.clearKeystore()
     Future.successful(Redirect(routes.IntroductionController.show()))
   }
 }

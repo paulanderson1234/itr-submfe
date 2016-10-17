@@ -15,24 +15,20 @@
  */
 
 package connectors
-import config.{TavcSessionCache, WSHttp}
+import config.WSHttp
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.cache.client.SessionCache
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
-  override val sessionCache = TavcSessionCache
   val serviceUrl = baseUrl("investment-tax-relief-submission")
   val http = WSHttp
 }
 
 trait SubmissionConnector {
-  val sessionCache: SessionCache
   val serviceUrl: String
   val http: HttpGet with HttpPost with HttpPut
 
