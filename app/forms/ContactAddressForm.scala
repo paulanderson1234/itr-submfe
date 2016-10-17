@@ -16,14 +16,21 @@
 
 package forms
 
-import models.ContactAddressModel
+import models.AddressModel
+import utils.Validation._
 import play.api.data.Form
 import play.api.data.Forms._
+import uk.gov.voa.play.form.ConditionalMappings._
 
 object ContactAddressForm {
   val contactAddressForm = Form(
     mapping(
-      "postcode" -> utils.Validation.postcodeLookupCheck
-    )(ContactAddressModel.apply)(ContactAddressModel.unapply)
+      "addressline1" -> mandatoryAddressLineCheck,
+      "addressline2" -> mandatoryAddressLineCheck,
+      "addressline3" -> optional(optionalAddressLineCheck),
+      "addressline4" -> optional(addressLineFourCheck),
+      "postcode" -> mandatoryIfEqual("countryCode","GB",postcodeCheck),
+      "countryCode" -> countryCodeCheck
+    )(AddressModel.apply)(AddressModel.unapply)
   )
 }

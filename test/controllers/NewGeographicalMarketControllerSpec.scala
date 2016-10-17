@@ -73,6 +73,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     "use the correct auth connector" in {
       NewGeographicalMarketController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      NewGeographicalMarketController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to NewGeographicalMarketController when authenticated and enrolled" should {

@@ -204,11 +204,10 @@ object Validation {
       })
     text().verifying(addressLineFourCheckConstraint)
   }
-
   def postcodeCheck: Mapping[String] = {
-    val validPostcodeLine = "^$|[A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2}".r
+    val validPostcodeLine = "^[A-Z]{1,2}[0-9][0-9A-Z]? [0-9][A-Z]{2}$".r
     val postcodeCheckConstraint: Constraint[String] =
-      Constraint("contraints.postcode")({
+      Constraint("constraints.postcode")({
         text =>
           val error = text.toUpperCase match {
             case validPostcodeLine() => Nil
@@ -217,6 +216,19 @@ object Validation {
           if (error.isEmpty) Valid else Invalid(error)
       })
     text().verifying(postcodeCheckConstraint)
+  }
+  def countryCodeCheck: Mapping[String] = {
+    val validEmailLine = """[A-Z]{2}""".r
+    val countryCodeCheckConstraint: Constraint[String] =
+      Constraint("constraints.countryCode")({
+        text =>
+          val error = text match {
+            case validEmailLine() => Nil
+            case _ => Seq(ValidationError(Messages("validation.error.countryCode")))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text().verifying(countryCodeCheckConstraint)
   }
 
   def postcodeLookupCheck: Mapping[String] = {

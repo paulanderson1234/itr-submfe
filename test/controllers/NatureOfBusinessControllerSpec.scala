@@ -77,6 +77,9 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     "use the correct auth connector" in {
       NatureOfBusinessController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      NatureOfBusinessController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {

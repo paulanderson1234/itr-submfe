@@ -74,10 +74,11 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     "use the correct keystore connector" in {
       NewProductController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-  "NewProductController" should {
     "use the correct auth connector" in {
       NewProductController.authConnector shouldBe FrontendAuthConnector
+    }
+    "use the correct enrolment connector" in {
+      NewProductController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 

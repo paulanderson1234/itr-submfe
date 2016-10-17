@@ -186,11 +186,11 @@ object DesSubmitAdvancedAssuranceModel {
   implicit val formatCaWrites = Json.writes[SubmitDesAddressType]
 
   implicit val formatCaReads: Reads[SubmitDesAddressType] = (
-    (__ \ "addressLine1").read[String] and
-      (__ \ "addressLine2").read[String] and
-      (__ \ "addressLine3").readNullable[String] and
-      (__ \ "addressLine4").readNullable[String] and
-      (__ \ "postCode").readNullable[String] and
+    (__ \ "addressline1").read[String] and
+      (__ \ "addressline2").read[String] and
+      (__ \ "addressline3").readNullable[String] and
+      (__ \ "addressline4").readNullable[String] and
+      (__ \ "postcode").readNullable[String] and
       (__ \ "countryCode").read[String]
     ) (SubmitDesAddressType.apply _)
 

@@ -60,6 +60,9 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
     "use the correct auth connector" in {
       LifetimeAllowanceExceededController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      LifetimeAllowanceExceededController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and enrolled" should {

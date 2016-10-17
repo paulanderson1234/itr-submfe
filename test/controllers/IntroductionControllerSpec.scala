@@ -52,7 +52,6 @@ class IntroductionControllerSpec extends UnitSpec with WithFakeApplication {
       }
   }
 
-
   "IntroductionController.submit" should {
     "when a submit is called" should{
       object IntroductionTestDataItem extends fakePostTo("", IntroductionController.submit())
