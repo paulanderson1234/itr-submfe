@@ -42,11 +42,15 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   val mockS4lConnector = mock[S4LConnector]
 
-  val investmentGrowModel = new InvestmentGrowModel("It will help me to buy tobacco growing facilities")
-  val emptyInvestmentGrowModel = new InvestmentGrowModel("")
+  val investmentGrowModel = InvestmentGrowModel("It will help me to buy tobacco growing facilities")
+  val emptyInvestmentGrowModel = InvestmentGrowModel("")
+  val newGeoModelYes = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val newGeoModelNo = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue)
+  val newProductModelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
+  val newProductModelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
 
   class SetupPage {
-    val controller = new InvestmentGrowController{
+    val controller = new InvestmentGrowController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val s4lConnector : S4LConnector = mockS4lConnector
@@ -61,176 +65,308 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     reset(mockS4lConnector)
   }
 
-  "The InvestmentGrow Page" +
-    "Verify that the correct elements are loaded when coming from WhatWillUse page" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST(
-        "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-      ))
-      Jsoup.parse(contentAsString(result))
-    }
-
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
+  def setup(investmentGrowModel: Option[InvestmentGrowModel], newGeographicalMarketModel: Option[NewGeographicalMarketModel],
+            newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(investmentGrowModel))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
+    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
   }
 
-  "The InvestmentGrow Page" +
-    "Verify that the correct elements are loaded when coming from PreviousBeforeDOFCS page" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST
-      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+  "The InvestmentGrow Page" should {
 
-      Jsoup.parse(contentAsString(result))
+    "Verify that the correct elements are loaded when coming from WhatWillUse page" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
-  }
+    "Verify that the correct elements are loaded when coming from PreviousBeforeDOFCS page" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.PreviousBeforeDOFCSController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST
+        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
 
-  "The InvestmentGrow Page" +
-    "Verify that the correct elements are loaded when coming from NewProduct page" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST
-      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
-      Jsoup.parse(contentAsString(result))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
-  }
+    "Verify that the correct elements are loaded when coming from NewProduct page" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.NewProductController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST
+        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        Jsoup.parse(contentAsString(result))
+      }
 
-
-  "The InvestmentGrow Page" +
-    "Verify that the correct elements are loaded when coming from the SubsidiariesSpendingInvestment page)" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.SubsidiariesSpendingInvestmentController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST
-      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
-      Jsoup.parse(contentAsString(result))
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
-  }
+    "Verify that the correct elements are loaded when coming from the SubsidiariesSpendingInvestment page)" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.SubsidiariesSpendingInvestmentController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST
+        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        Jsoup.parse(contentAsString(result))
+      }
 
-
-  "The InvestmentGrow Page" +
-    "Verify that the correct elements are loaded when coming from the SubsidiariesNinetyOwned page" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST
-      ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
-      Jsoup.parse(contentAsString(result))
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
-  }
 
-  "The InvestmentGrow Page should show an error no data entered" in new SetupPage{
-    val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      val result = controller.submit.apply(authorisedFakeRequestToPOST(
-        "investmentGrowDesc" -> ""
-      ))
-      Jsoup.parse(contentAsString(result))
+    "Verify that the correct elements are loaded when coming from the SubsidiariesNinetyOwned page" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.SubsidiariesNinetyOwnedController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST
+        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
-    document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
-    document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-    document.body.getElementById("investmentGrowDesc").hasClass("form-control")
-    document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-    document.getElementById("labelTextId").hasClass("visuallyhidden")
-    document.getElementById("error-summary-display").hasClass("error-summary--show")
+    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is true" in new SetupPage{
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelYes),Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
+      document.getElementById("optional-bullet-list").children().size() shouldBe 2
+      document.getElementById("bullet-geographical-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")
+      document.getElementById("bullet-product-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.productMarket")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+    }
+
+    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is false" in new SetupPage{
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelNo),Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
+      document.getElementById("optional-bullet-list").children().size() shouldBe 1
+      document.getElementById("bullet-geographical-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+    }
+
+    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is true" in new SetupPage{
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelYes),Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
+      document.getElementById("optional-bullet-list").children().size() shouldBe 1
+      document.getElementById("bullet-product-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.productMarket")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+    }
+
+    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is false" in new SetupPage{
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelNo),Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+    }
+
+    "Verify that the correct elements are loaded when newGeoMarket is not defined and hasNewProduct is not defined" in new SetupPage{
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        val result = controller.show.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+    }
+
+    "show an error no data entered" in new SetupPage {
+      val document: Document = {
+        val userId = s"user-${UUID.randomUUID}"
+        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        val result = controller.submit.apply(authorisedFakeRequestToPOST(
+          "investmentGrowDesc" -> ""
+        ))
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
+      document.getElementById("bullet-one").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.one")
+      document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
+      document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
+      document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
+      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.body.getElementById("investmentGrowDesc").hasClass("form-control")
+      document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+      document.getElementById("labelTextId").hasClass("visuallyhidden")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
+    }
   }
 }

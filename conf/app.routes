@@ -57,8 +57,8 @@ POST       /nature-of-business                      controllers.NatureOfBusiness
 GET        /operating-costs                         controllers.OperatingCostsController.show
 POST       /operating-costs                         controllers.OperatingCostsController.submit
 
-GET        /turnover-costs                          controllers.TurnoverCostsController.show
-POST       /turnover-costs                          controllers.TurnoverCostsController.submit
+GET        /annual-turnover                         controllers.TurnoverCostsController.show
+POST       /annual-turnover                         controllers.TurnoverCostsController.submit
 
 GET        /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.show
 POST       /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.submit

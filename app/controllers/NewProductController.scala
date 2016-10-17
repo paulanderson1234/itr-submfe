@@ -52,7 +52,7 @@ trait NewProductController extends FrontendController with AuthorisedAndEnrolled
       hasSubsidiaries match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
           s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.NewProductController.show().toString())
-          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+          Future.successful(Redirect(routes.TurnoverCostsController.show()))
         case Some(_) =>
           s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.NewProductController.show().toString())
           Future.successful(Redirect(routes.InvestmentGrowController.show()))

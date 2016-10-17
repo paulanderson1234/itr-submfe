@@ -166,7 +166,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSessionAndAuth(NewProductControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
         }
       )
     }
@@ -219,7 +219,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
         }
       )
     }

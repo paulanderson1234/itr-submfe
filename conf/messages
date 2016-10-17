@@ -252,7 +252,7 @@ page.companyDetails.OperatingCosts.error.field.five = Research and Development C
 page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Turnover Costs Page
-page.companyDetails.TurnoverCosts.title = Annual trunover
+page.companyDetails.TurnoverCosts.title = Annual turnover
 page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
 page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
@@ -318,7 +318,7 @@ page.investment.NewProduct.hint.link=new product markets
 #New Geographical market page
 page.investment.NewGeographicalMarket.title=New geographic market
 page.investment.NewGeographicalMarket.heading=Will you use this investment to launch one of your products somewhere new?
-page.investment.NewGeographicalMarket.hint=It's sometimes called launching in a
+page.investment.NewGeographicalMarket.hint=It''s sometimes called launching in a
 page.investment.NewGeographicalMarket.hint.link=new geographic market
 
 #ten year plan page
@@ -364,7 +364,10 @@ page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
 page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
-page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
+page.investment.InvestmentGrow.description.two=Make sure you explain how you’ll use the investment:
+page.investment.InvestmentGrow.bullet.geographicalMarket=to launch your product somewhere new
+page.investment.InvestmentGrow.bullet.productMarket=to enter a new product market
+page.investment.InvestmentGrow.description.three=You must send a copy of your business plan with your supporting documents.
 
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
