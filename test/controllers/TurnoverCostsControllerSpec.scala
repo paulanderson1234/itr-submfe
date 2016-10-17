@@ -46,6 +46,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val submissionConnector: SubmissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -59,6 +60,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
   val keyStorePostedTurnoverCosts = AnnualTurnoverCostsModel("132", "134", "144", "166", "198")
   //val emptyModel = AnnualTurnoverCostsModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(keyStorePostedTurnoverCosts)))
+  val keyStoreSavedProposedInvestment = ProposedInvestmentModel(50)
+
 
   val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
@@ -91,6 +94,9 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
     }
     "use the correct enrolment connector" in {
       TurnoverCostsController.enrolmentConnector shouldBe EnrolmentConnector
+    }
+    "use the correct submission connector" in {
+      TurnoverCostsController.submissionConnector shouldBe SubmissionConnector
     }
   }
 
@@ -172,12 +178,18 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
     }
 
     "Sending a valid form submission to the TurnoverCostsController when Authenticated and enrolled" should {
-      "redirect to subsidiariess spending investment form" in {
+      "redirect to subsidiariess spending investment form when annual turnover check returns true" in {
         mockEnrolledRequest
+
+        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
+        (Matchers.any())).thenReturn(Future.successful(Option(true)))
         val formInput = Seq(
-          "amount1" -> "1000",
-          "amount2" -> "1000",
-          "amount3" -> "1000",
+          "amount1" -> "100",
+          "amount2" -> "100",
+          "amount3" -> "100",
           "amount4" -> "100",
           "amount5" -> "100"
         )
@@ -185,6 +197,50 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          }
+        )
+      }
+
+      "redirect to annual turnover error page when annual turnover check returns false" in {
+        mockEnrolledRequest
+
+        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
+        (Matchers.any())).thenReturn(Future.successful(Option(false)))
+        val formInput = Seq(
+          "amount1" -> "100",
+          "amount2" -> "100",
+          "amount3" -> "100",
+          "amount4" -> "100",
+          "amount5" -> "100"
+        )
+        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover-error")
+          }
+        )
+      }
+
+      "redirect to proposed investment page when no proposed investment is returned from keystore" in {
+        mockEnrolledRequest
+
+        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        val formInput = Seq(
+          "amount1" -> "100",
+          "amount2" -> "100",
+          "amount3" -> "100",
+          "amount4" -> "100",
+          "amount5" -> "100"
+        )
+        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
           }
         )
       }
