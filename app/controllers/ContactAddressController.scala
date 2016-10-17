@@ -53,9 +53,12 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     contactAddressForm.bindFromRequest().fold(
       formWithErrors => {
+        println("===========ERR=====================")
         Future.successful(BadRequest(ContactAddress(formWithErrors, countriesList)))
       },
       validFormData => {
+        println("===========POSTVOCE=====================")
+        println(validFormData.postcode)
         keyStoreConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
         keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
         Future.successful(Redirect(routes.SupportingDocumentsController.show()))

@@ -58,8 +58,8 @@ common.error.help.text=Get help with this page.
 common.error.summary.heading=This page has errors
 
 
-#validation errors
-validation.error.countrypostcode=Only one of country or postcode should be entered
+#validation errors 
+validation.error.countrypostcode=Postcode must be entered if United Kingdom is selectd for county
 validation.error.optionaladdresssline=Address line must be no more than 27 valid characters if entered
 validation.error.mandatoryaddresssline=Address line must be entered and no more than 27 characters
 validation.error.linefouraddresssline=Address line must be no more than 17 valid characters if entered
