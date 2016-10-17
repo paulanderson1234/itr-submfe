@@ -252,7 +252,7 @@ page.companyDetails.OperatingCosts.error.field.five = Research and Development C
 page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Turnover Costs Page
-page.companyDetails.TurnoverCosts.title = Annual trunover
+page.companyDetails.TurnoverCosts.title = Annual turnover
 page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
 page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
