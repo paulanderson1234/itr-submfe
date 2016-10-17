@@ -80,13 +80,9 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     document.select("#isNewGeographicalMarket-no").size() shouldBe 1
     document.getElementById("isNewGeographicalMarket-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isNewGeographicalMarket-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("bullet-heading-hint").text() shouldBe Messages("page.investment.NewGeographicalMarket.hint")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.three")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.body.getElementById("external-hint").text shouldBe
-      s"${Messages("page.investment.NewGeographicalMarket.hint.2")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
+      s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -110,13 +106,8 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     document.select("#isNewGeographicalMarket-no").size() shouldBe 1
     document.getElementById("isNewGeographicalMarket-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isNewGeographicalMarket-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("bullet-heading-hint").text() shouldBe Messages("page.investment.NewGeographicalMarket.hint")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.three")
-    document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.body.getElementById("external-hint").text shouldBe
-      s"${Messages("page.investment.NewGeographicalMarket.hint.2")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
+      s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -140,10 +131,8 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     document.select("#isNewGeographicalMarket-no").size() shouldBe 1
     document.getElementById("isNewGeographicalMarket-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isNewGeographicalMarket-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("bullet-heading-hint").text() shouldBe Messages("page.investment.NewGeographicalMarket.hint")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.two")
-    document.getElementById("bullet-three").text() shouldBe Messages("page.investment.NewGeographicalMarket.bullet.three")
+    document.body.getElementById("external-hint").text shouldBe
+      s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }

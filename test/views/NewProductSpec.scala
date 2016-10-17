@@ -78,12 +78,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     document.select("#isNewProduct-no").size() shouldBe 1
     document.getElementById("isNewProduct-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isNewProduct-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("bullet-heading-hint").text() shouldBe Messages("page.investment.NewProduct.hint")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewProduct.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewProduct.bullet.two")
-    document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.body.getElementById("external-hint").text shouldBe
-      s"${Messages("page.investment.NewProduct.hint.2")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
+      s"${Messages("page.investment.NewProduct.hint")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -104,12 +100,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     document.select("#isNewProduct-no").size() shouldBe 1
     document.getElementById("isNewProduct-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isNewProduct-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("bullet-heading-hint").text() shouldBe Messages("page.investment.NewProduct.hint")
-    document.getElementById("bullet-one").text() shouldBe Messages("page.investment.NewProduct.bullet.one")
-    document.getElementById("bullet-two").text() shouldBe Messages("page.investment.NewProduct.bullet.two")
-    document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.body.getElementById("external-hint").text shouldBe
-      s"${Messages("page.investment.NewProduct.hint.2")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
+      s"${Messages("page.investment.NewProduct.hint")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
@@ -133,14 +125,12 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      val result = controller.submit.apply(authorisedFakeRequestToPOST(
-        "isNewProduct" -> Constants.StandardRadioButtonYesValue
-      ))
+      val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 
     // Make sure we have the expected error summary displayed
-    //document.getElementById("error-summary-display").hasClass("error-summary--show")
-    //document.title() shouldBe Messages("page.investment.NewProduct.title")
+    document.getElementById("error-summary-display").hasClass("error-summary--show")
+    document.title() shouldBe Messages("page.investment.NewProduct.title")
   }
 }
