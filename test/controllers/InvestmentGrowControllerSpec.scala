@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.helpers.FakeRequestHelper
@@ -54,16 +54,29 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   private def mockNotEnrolledRequest = when(InvestmentGrowControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
 
-  val model = InvestmentGrowModel("some text")
+  val validInvestmentGrowModel = InvestmentGrowModel(Constants.StandardRadioButtonYesValue)
   val emptyModel = InvestmentGrowModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedInvestmentGrow = InvestmentGrowModel("text some other")
-
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(validInvestmentGrowModel)))
+  val newGeoModel = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
+  val newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue)
+  val validBackLink = routes.SubsidiariesNinetyOwnedController.show().toString()
 
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
     reset(mockKeyStoreConnector)
+  }
+
+  def setup(investmentGrowModel: Option[InvestmentGrowModel], newGeographicalMarketModel: Option[NewGeographicalMarketModel],
+                newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
+    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(investmentGrowModel))
+    when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(backLink))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
+    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
   }
 
   "InvestmentGrowController" should {
@@ -76,45 +89,110 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct enrolment connector" in {
       InvestmentGrowController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct app config" in {
+      InvestmentGrowController.applicationConfig shouldBe FrontendAppConfig
+    }
   }
 
-  "Sending a GET request to InvestmentGrowController when authenticated and enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      mockEnrolledRequest
-      showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
-        result => status(result) shouldBe OK
-      )
+  "Sending a GET request to InvestmentGrowController when authenticated and enrolled" when {
+
+    "an Investment Grow form can be retrieved from keystore" should {
+      "return an OK" in {
+        setup(Some(validInvestmentGrowModel),Some(newGeoModel),Some(newProductModel),Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => status(result) shouldBe OK
+        )
+      }
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      mockEnrolledRequest
-      showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
-        result => status(result) shouldBe OK
-      )
+    "no Investment Grow form is retrieved from keystore" should {
+      "return an OK" in {
+        setup(None,Some(newGeoModel),Some(newProductModel),Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => status(result) shouldBe OK
+        )
+      }
     }
 
-    "provide an empty model and return a 300 when no back link is fetched using keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
-        }
-      )
+    "no new geographical market model and new product market model are retrieved from keystore" should {
+      "return an OK" in {
+        setup(None,None,None,Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => status(result) shouldBe OK
+        )
+      }
+    }
+
+    "no back link is retrieved from keystore" should {
+
+      "return a SEE_OTHER" in {
+        setup(None,Some(newGeoModel),Some(newProductModel),None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+          }
+        )
+      }
+
+      "redirect to the investment purpose page" in {
+        setup(None,Some(newGeoModel),Some(newProductModel),None)
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            redirectLocation(result) shouldBe Some(routes.WhatWillUseForController.show().url)
+          }
+        )
+      }
+    }
+
+    "no new geographic market model is retrieved from keystore" should {
+
+      "return a SEE_OTHER" in {
+        setup(None,None, Some(newProductModel),Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+          }
+        )
+      }
+
+      "redirect to the new geographical market page" in {
+        setup(None,None, Some(newProductModel),Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
+          }
+        )
+      }
+    }
+
+    "no new product market model is retrieved from keystore" should {
+
+      "return a SEE_OTHER" in {
+        setup(None,Some(newGeoModel),None,Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+          }
+        )
+      }
+
+      "redirect to the new product market page" in {
+        setup(None,Some(newGeoModel),None,Some(validBackLink))
+        mockEnrolledRequest
+        showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
+          result => {
+            redirectLocation(result) shouldBe Some(routes.NewProductController.show().url)
+          }
+        )
+      }
     }
   }
 
@@ -122,7 +200,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     "return a 200 when something is fetched from keystore" in {
       when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
+        .thenReturn(Future.successful(Option(validInvestmentGrowModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       mockNotEnrolledRequest
@@ -175,6 +253,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
+      setup(None,Some(newGeoModel),Some(newProductModel),Some(validBackLink))
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> "some text so it's valid"
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
@@ -187,14 +266,24 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   "Sending an invalid form submission with validation errors to the InvestmentGrowController with no backlink when authenticated and enrolled" should {
-    "redirect to WhatWillUseFor page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+
+    "return a SEE_OTHER" in {
+      setup(None,Some(newGeoModel),Some(newProductModel),None)
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+        }
+      )
+    }
+
+    "redirect to WhatWillUseFor page" in {
+      setup(None,Some(newGeoModel),Some(newProductModel),None)
+      mockEnrolledRequest
+      val formInput = "investmentGrowDesc" -> ""
+      submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
+        result => {
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
         }
       )
@@ -203,10 +292,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Some(keyStoreSavedInvestmentGrow)))
+      setup(None,Some(newGeoModel),Some(newProductModel),Some(validBackLink))
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
