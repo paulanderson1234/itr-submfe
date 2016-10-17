@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object SubsidiariesSpendingInvestmentControllerTest extends SubsidiariesSpendingInvestmentController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -63,12 +63,12 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "SubsidiariesSpendingInvestmentController" should {
     "use the correct keystore connector" in {
-      SubsidiariesSpendingInvestmentController.keyStoreConnector shouldBe KeystoreConnector
+      SubsidiariesSpendingInvestmentController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       SubsidiariesSpendingInvestmentController.authConnector shouldBe FrontendAuthConnector
@@ -80,9 +80,9 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
@@ -91,9 +91,9 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
@@ -102,7 +102,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     }
 
     "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
@@ -116,9 +116,9 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
@@ -195,7 +195,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending a invalid form submit to the SubsidiariesSpendingInvestmentController with no back link when authenticated and enrolled" should {
     "redirect to the subsidiaries-ninety-percent-owned page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> ""
@@ -210,7 +210,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
   "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> ""

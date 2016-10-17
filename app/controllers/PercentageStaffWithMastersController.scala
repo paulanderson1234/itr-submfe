@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -29,7 +29,7 @@ import views.html._
 import views.html.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters}
 
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -38,11 +38,11 @@ object PercentageStaffWithMastersController extends PercentageStaffWithMastersCo
 
 trait PercentageStaffWithMastersController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
+    s4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
       case Some(data) => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
       case None => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm))
     }
@@ -62,11 +62,11 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
           // all good - save the cost condition result returned from API and navigate accordingly
           val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
             hasPercentageWithMasters = Some(percentageWithMasters))
-          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
 
           if (updatedModel.isKi) {
             // it's all good - no need to ask more KI questions
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
               routes.PercentageStaffWithMastersController.show().toString())
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
@@ -84,12 +84,12 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
         Future.successful(BadRequest(PercentageStaffWithMasters(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
         val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
           Constants.StandardRadioButtonYesValue) true
         else false
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
             if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false) //TO DO - PROPER API CALL

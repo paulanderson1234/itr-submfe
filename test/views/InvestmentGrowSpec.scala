@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{InvestmentGrowController, routes}
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val investmentGrowModel = new InvestmentGrowModel("It will help me to buy tobacco growing facilities")
   val emptyInvestmentGrowModel = new InvestmentGrowModel("")
@@ -49,7 +49,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     val controller = new InvestmentGrowController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
+      val s4lConnector : S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -58,16 +58,16 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
   }
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "The InvestmentGrow Page" +
     "Verify that the correct elements are loaded when coming from WhatWillUse page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST(
         "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
@@ -94,9 +94,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when coming from PreviousBeforeDOFCS page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST
       ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
@@ -123,9 +123,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when coming from NewProduct page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST
       ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
@@ -152,9 +152,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when coming from the SubsidiariesSpendingInvestment page)" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesSpendingInvestmentController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST
       ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
@@ -181,9 +181,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when coming from the SubsidiariesNinetyOwned page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST
       ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
@@ -208,9 +208,9 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
   "The InvestmentGrow Page should show an error no data entered" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.submit.apply(authorisedFakeRequestToPOST(
         "investmentGrowDesc" -> ""

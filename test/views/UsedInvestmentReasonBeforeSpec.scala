@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{UsedInvestmentReasonBeforeController, routes}
 import models.UsedInvestmentReasonBeforeModel
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val usedInvestmentReasonBeforeModel = new UsedInvestmentReasonBeforeModel("Yes")
   val emptyUsedInvestmentReasonBeforeModel = new UsedInvestmentReasonBeforeModel("")
@@ -48,7 +48,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     val controller = new UsedInvestmentReasonBeforeController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -60,7 +60,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     "when a valid UsedInvestmentReasonBeforeModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -81,7 +81,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyUsedInvestmentReasonBeforeModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

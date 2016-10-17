@@ -32,7 +32,7 @@
 
   package views
 
-  import connectors.KeystoreConnector
+  import connectors.S4LConnector
   import controllers.helpers.FakeRequestHelper
   import controllers.routes
   import forms.ContactAddressForm._
@@ -46,7 +46,7 @@
 
   class ContactAddressSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
-    val mockKeystoreConnector = mock[KeystoreConnector]
+    val mockS4lConnector = mock[S4LConnector]
 
     val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
     val emptyAddressModel = new AddressModel("", "", countryCode = "")

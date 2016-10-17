@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.WhatWillUseForForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -34,16 +34,16 @@ import scala.concurrent.Future
 object WhatWillUseForController extends WhatWillUseForController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
 trait WhatWillUseForController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor).map {
+    s4lConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor).map {
       case Some(data) => Ok(WhatWillUseFor(whatWillUseForForm.fill(data)))
       case None => Ok(WhatWillUseFor(whatWillUseForForm))
     }
@@ -68,12 +68,12 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(WhatWillUseFor(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.whatWillUseFor, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.whatWillUseFor, validFormData)
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-          prevRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-          comSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-          hasSub <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          prevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+          comSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+          hasSub <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
           route <- routeRequest(kiModel, prevRFI, comSale, hasSub)
         } yield route
       }
@@ -127,16 +127,16 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
   def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
     hasSub match {
       case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
           routes.WhatWillUseForController.show().toString())
         Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
       } else {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
           routes.WhatWillUseForController.show().toString())
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
       case None => {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
           routes.WhatWillUseForController.show().toString())
         Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
@@ -154,7 +154,7 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
       case Some(rfi) if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
         // this is first scheme
         if (dateWithinRangeRule) {
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+          s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
             routes.WhatWillUseForController.show().toString())
           Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
         }

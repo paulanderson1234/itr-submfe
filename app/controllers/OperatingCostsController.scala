@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.OperatingCostsForm._
 import models.{KiProcessingModel, OperatingCostsModel}
 import play.api.mvc.{Action, Result}
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 
 object OperatingCostsController extends OperatingCostsController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -38,11 +38,11 @@ object OperatingCostsController extends OperatingCostsController{
 }
 
 trait OperatingCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
+    s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
       case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
       case None => Ok(OperatingCosts(operatingCostsForm))
     }
@@ -61,7 +61,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
         }
         case Some(dataWithDateConditionMet) => {
           // all good - save the cost condition returned from API and navigate accordingly
-          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
 
           isCostConditionMet match {
             case Some(data) =>
@@ -69,7 +69,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
               if(data){
                 Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
               } else {
-                keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+                s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
                 Future.successful(Redirect(routes.IneligibleForKIController.show()))
               }
               //will only hit case none if the back end isn't running.
@@ -85,10 +85,10 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(OperatingCosts(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
 
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           costConditionMet <- submissionConnector.validateKiCostConditions(
             validFormData.operatingCosts1stYear.toInt,

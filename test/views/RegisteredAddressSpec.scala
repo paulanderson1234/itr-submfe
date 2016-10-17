@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{RegisteredAddressController, routes}
 import models.RegisteredAddressModel
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val registeredAddressModel = new RegisteredAddressModel("ST1 1QQ")
 
@@ -47,7 +47,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
     val controller = new RegisteredAddressController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -61,7 +61,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       "when a valid RegisteredAddressModel is passed as returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(registeredAddressModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -83,7 +83,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       "when no data is returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -105,7 +105,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(registeredAddressModel)))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "postcode" -> ""

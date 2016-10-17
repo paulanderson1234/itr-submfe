@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object SubsidiariesControllerTest extends SubsidiariesController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -63,12 +63,12 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "SubsidiariesController" should {
     "use the correct keystore connector" in {
-      SubsidiariesController.keyStoreConnector shouldBe KeystoreConnector
+      SubsidiariesController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       SubsidiariesController.authConnector shouldBe FrontendAuthConnector
@@ -80,10 +80,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController without a valid back link from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
@@ -97,10 +97,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
@@ -109,10 +109,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
@@ -123,10 +123,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesControllerTest.show)(
@@ -177,10 +177,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'Yes' form submit to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to the previous investment before page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
@@ -194,10 +194,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'No' form submit to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to the previous investment before page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-      when(mockKeyStoreConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
@@ -211,7 +211,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending an invalid form submission with validation errors to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
       mockEnrolledRequest

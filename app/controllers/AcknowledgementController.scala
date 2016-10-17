@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models.submission._
 import models._
@@ -31,7 +31,7 @@ import utils.{Converters, Validation}
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -40,33 +40,33 @@ object AcknowledgementController extends AcknowledgementController{
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     for {
     // minimum required fields to continue
-      kiProcModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-      natureOfBusiness <- keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
-      contactDetails <- keyStoreConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
-      proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
-      investmentGrow <- keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
-      dateOfIncorporation <- keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      contactAddress <- keyStoreConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
+      kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+      natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
+      contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+      proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+      investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
+      dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+      contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       // company name also a required field when it is implemented
 
       // potentially optional or required
-      whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
-      operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
-      turnoverCosts <- keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
-      subsidiariesSpendInvest <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
-      subsidiariesNinetyOwned <- keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
-      previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector)
-      commercialSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-      newGeographicalMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
-      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
+      whatWillUseFor <- s4lConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
+      operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
+      turnoverCosts <- s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
+      subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
+      subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
+      previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
+      commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+      newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+      newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+      tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
         proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,

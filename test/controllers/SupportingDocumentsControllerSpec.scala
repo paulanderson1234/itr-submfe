@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import play.api.test.Helpers._
@@ -34,17 +34,17 @@ import scala.concurrent.Future
 
 class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object SupportingDocumentsControllerTest extends SupportingDocumentsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
   private def mockBackLinkSetup(backLink: Option[String]) = {
-    when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(backLink))
   }
 
@@ -58,7 +58,7 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
 
   "SupportingDocumentsController" should {
     "use the correct keystore connector" in {
-      SupportingDocumentsController.keyStoreConnector shouldBe KeystoreConnector
+      SupportingDocumentsController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       SupportingDocumentsController.authConnector shouldBe FrontendAuthConnector

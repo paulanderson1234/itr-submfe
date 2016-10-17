@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.{ProposedInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.ProposedInvestmentModel
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   val proposedInvestmentModel = new ProposedInvestmentModel(5000000)
@@ -49,7 +49,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
     val controller = new ProposedInvestmentController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
@@ -64,10 +64,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
           (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(proposedInvestmentModel)))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
@@ -92,10 +92,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
     "Verify that the proposed investment page contains the correct elements when an invalid ProposedInvestmentModel is passed" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
           (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyProposedInvestmentModel)))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
 
@@ -118,10 +118,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
     "Verify that the proposed investment page contains the correct elements when an None ProposedInvestmentModel is passed" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
           (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
 

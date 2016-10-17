@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{HadPreviousRFIController, routes}
 import models.HadPreviousRFIModel
@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
 class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val hadPreviousRFIModel = new HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
   val emptyHadPreviousRFIModel = new HadPreviousRFIModel("")
@@ -49,7 +49,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     val controller = new HadPreviousRFIController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -61,7 +61,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     "when a valid HadPreviousRFIModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(hadPreviousRFIModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -87,7 +87,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyHadPreviousRFIModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

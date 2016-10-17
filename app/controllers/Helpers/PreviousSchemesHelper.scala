@@ -30,7 +30,7 @@ object PreviousSchemesHelper extends PreviousSchemesHelper {
 
 trait PreviousSchemesHelper {
 
-  def getExistingInvestmentFromKeystore(keyStoreConnector: connectors.KeystoreConnector,
+  def getExistingInvestmentFromKeystore(s4lConnector: connectors.S4LConnector,
                                         modelProcessingIdToRetrieve: Int)
                                        (implicit hc: HeaderCarrier): Future[Option[PreviousSchemeModel]] = {
 
@@ -38,7 +38,7 @@ trait PreviousSchemesHelper {
 
     require(modelProcessingIdToRetrieve > 0, "The item to retrieve processingId must be an integer > 0")
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val itemToRetrieveIndex = data.indexWhere(_.processingId.getOrElse(0) == modelProcessingIdToRetrieve)
         if (itemToRetrieveIndex != idNotFound) {
@@ -52,10 +52,10 @@ trait PreviousSchemesHelper {
     result
   }
 
-  def getAllInvestmentFromKeystore(keyStoreConnector: connectors.KeystoreConnector)
+  def getAllInvestmentFromKeystore(s4lConnector: connectors.S4LConnector)
                                   (implicit hc: HeaderCarrier): Future[Vector[PreviousSchemeModel]] = {
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data
       case None =>  Vector[PreviousSchemeModel]()
     }.recover { case _ =>  Vector[PreviousSchemeModel]() }
@@ -63,10 +63,10 @@ trait PreviousSchemesHelper {
     result
   }
 
-  def getPreviousInvestmentTotalFromKeystore(keyStoreConnector: connectors.KeystoreConnector)
+  def getPreviousInvestmentTotalFromKeystore(s4lConnector: connectors.S4LConnector)
                                             (implicit hc: HeaderCarrier): Future[Int] = {
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data.foldLeft(0)(_ + _.investmentAmount)
       case None =>  0
     }.recover { case _ =>  0 }
@@ -74,12 +74,12 @@ trait PreviousSchemesHelper {
     result
   }
 
-  def addPreviousInvestmentToKeystore(keyStoreConnector: connectors.KeystoreConnector,
+  def addPreviousInvestmentToKeystore(s4lConnector: connectors.S4LConnector,
                                       previousSchemeModelToAdd: PreviousSchemeModel)
                                      (implicit hc: HeaderCarrier): Future[CacheMap] = {
     val defaultId: Int = 1
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val newId = data.last.processingId.get + 1
         data :+ previousSchemeModelToAdd.copy(processingId = Some(newId))
@@ -87,10 +87,10 @@ trait PreviousSchemesHelper {
       case None => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId))
     }.recover { case _ => Vector.empty :+ previousSchemeModelToAdd.copy(processingId = Some(defaultId)) }
 
-    result.flatMap(newVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, newVectorList))
+    result.flatMap(newVectorList => s4lConnector.saveFormData(KeystoreKeys.previousSchemes, newVectorList))
   }
 
-  def updateKeystorePreviousInvestment(keyStoreConnector: connectors.KeystoreConnector,
+  def updateKeystorePreviousInvestment(s4lConnector: connectors.S4LConnector,
                                        previousSchemeModelToUpdate: PreviousSchemeModel)
                                       (implicit hc: HeaderCarrier): Future[CacheMap] = {
     val idNotFound: Int = -1
@@ -98,7 +98,7 @@ trait PreviousSchemesHelper {
     require(previousSchemeModelToUpdate.processingId.getOrElse(0) > 0,
       "The item to update processingId must be an integer > 0")
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => {
         val itemToUpdateIndex = data.indexWhere(_.processingId.getOrElse(0) ==
           previousSchemeModelToUpdate.processingId.getOrElse(0))
@@ -109,19 +109,19 @@ trait PreviousSchemesHelper {
       }
       case None => Vector[PreviousSchemeModel]()
     }
-    result.flatMap(updatedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, updatedVectorList))
+    result.flatMap(updatedVectorList => s4lConnector.saveFormData(KeystoreKeys.previousSchemes, updatedVectorList))
   }
 
-  def removeKeystorePreviousInvestment(keyStoreConnector: connectors.KeystoreConnector, modelProcessingIdToremove: Int)
+  def removeKeystorePreviousInvestment(s4lConnector: connectors.S4LConnector, modelProcessingIdToremove: Int)
                                       (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
     require(modelProcessingIdToremove > 0, "The modelProcessingIdToremove must be an integer > 0")
 
-    val result = keyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data.filter(_.processingId.getOrElse(0) != modelProcessingIdToremove)
       case None => Vector[PreviousSchemeModel]()
     }.recover { case _ => Vector[PreviousSchemeModel]() }
-    result.flatMap(deletedVectorList => keyStoreConnector.saveFormData(KeystoreKeys.previousSchemes, deletedVectorList))
+    result.flatMap(deletedVectorList => s4lConnector.saveFormData(KeystoreKeys.previousSchemes, deletedVectorList))
   }
 
 }

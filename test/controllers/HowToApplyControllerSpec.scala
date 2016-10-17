@@ -22,7 +22,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._

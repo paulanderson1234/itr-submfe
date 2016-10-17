@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import forms.TurnoverCostsForm._
@@ -31,7 +31,7 @@ import views.html.investment.TurnoverCosts
 import scala.concurrent.Future
 
 object TurnoverCostsController extends TurnoverCostsController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -40,10 +40,10 @@ object TurnoverCostsController extends TurnoverCostsController {
 trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   implicit val formatCostModel = Json.format[CostModel]
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
+    s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
       case Some(data) => Ok(TurnoverCosts(turnoverCostsForm.fill(data)))
       case None => Ok(TurnoverCosts(turnoverCostsForm))
     }
@@ -56,7 +56,7 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
       },
       validFormData => {
         //TODO: add the annual aveage turnover check and navigtion to error or correct page etc..subsidiaries temporary
-        keyStoreConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
         Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
       }
     )

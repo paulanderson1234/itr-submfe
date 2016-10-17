@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{SupportingDocumentsController, routes}
 import org.jsoup.Jsoup
@@ -37,13 +37,13 @@ import scala.concurrent.Future
 
 class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   class SetupPage {
     val controller = new SupportingDocumentsController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -54,7 +54,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
   "The Supporting documents page" should {
 
     "Verify that the Supporting documents page contains the correct elements" in new SetupPage {
-      when(mockKeystoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().toString())))
 
       val document: Document = {
@@ -83,7 +83,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
   "The Supporting documents page" should {
 
     "Verify that the Supporting documents page contains the correct elements cc" in new SetupPage {
-      when(mockKeystoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.TaxpayerReferenceController.show().toString())))
 
       val document: Document = {

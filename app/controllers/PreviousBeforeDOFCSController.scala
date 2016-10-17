@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.PreviousBeforeDOFCSForm._
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel, SubsidiariesModel}
 import org.joda.time.DateTime
@@ -33,7 +33,7 @@ import views.html.investment.PreviousBeforeDOFCS
 import scala.concurrent.Future
 
 object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -41,7 +41,7 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
 
 trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     createResponse(None)
@@ -52,10 +52,10 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
     def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
       date match {
         case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().toString())
+          s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().toString())
           Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
         case Some(_) =>
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().toString())
+          s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().toString())
           Future.successful(Redirect(routes.InvestmentGrowController.show()))
         case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
@@ -66,14 +66,14 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
         createResponse(Some(formWithErrors))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
         validFormData.previousBeforeDOFCS match {
           case Constants.StandardRadioButtonNoValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().toString())
             Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
           }
           case Constants.StandardRadioButtonYesValue => for {
-            subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
             route <- routeRequest(subsidiaries)
           } yield route
         }
@@ -83,8 +83,8 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
 
   private def createResponse(formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])(implicit request: Request[Any]): Future[Result] = {
     for {
-      kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-      commercialSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+      kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+      commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
       result <- handleResponse(kiModel,commercialSale,formWithErrors)
     } yield result
   }
@@ -145,7 +145,7 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
     if(formWithErrors.isDefined) {
       Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors.get,question,description)))
     } else {
-      keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
+      s4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
         case Some(data) => Ok(PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data), question, description))
         case None => Ok(PreviousBeforeDOFCS(previousBeforeDOFCSForm, question, description))
       }

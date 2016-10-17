@@ -20,7 +20,7 @@ package views
 
   import auth.{Enrolment, Identifier, MockAuthConnector}
   import config.FrontendAppConfig
-  import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+  import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
   import controllers.helpers.FakeRequestHelper
   import controllers.{TurnoverCostsController, routes}
   import models.AnnualTurnoverCostsModel
@@ -37,7 +37,7 @@ package views
 
   class TurnoverCostsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-    val mockKeystoreConnector = mock[KeystoreConnector]
+    val mockS4lConnector = mock[S4LConnector]
     val mockSubmissionConnector = mock[SubmissionConnector]
 
     val operatingCostsModel = AnnualTurnoverCostsModel("750000", "800000", "934000", "231000", "340000")
@@ -48,7 +48,7 @@ package views
       val controller = new TurnoverCostsController{
         override lazy val applicationConfig = FrontendAppConfig
         override lazy val authConnector = MockAuthConnector
-        val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+        val s4lConnector: S4LConnector = mockS4lConnector
         val submissionConnector: SubmissionConnector = mockSubmissionConnector
         override lazy val enrolmentConnector = mock[EnrolmentConnector]
       }
@@ -60,7 +60,7 @@ package views
       "when a valid TurnoverCostsModel is passed as returned from keystore" in new SetupPage {
       val document : Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(operatingCostsModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -91,7 +91,7 @@ package views
       "is passed because nothing was returned from keystore" in new SetupPage {
       val document : Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

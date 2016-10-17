@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{PreviousSchemeController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
 import models.PreviousSchemeModel
@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val model = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
@@ -58,7 +58,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
     val controller = new PreviousSchemeController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -72,11 +72,11 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
           (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
         val result = controller.show(None).apply(authorisedFakeRequest)
@@ -118,11 +118,11 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
           (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
         val result = controller.show(Some(model3.processingId.get)).apply(authorisedFakeRequest)
@@ -163,9 +163,9 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify the previous scheeme page contains the error summary, button text and back link for invalid new submisison" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.RegisteredAddressController.show().toString())))
         val result = controller.submit().apply(authorisedFakeRequestToPOST(
@@ -194,9 +194,9 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
 
-      when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(mockKeystoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
       val result = controller.submit().apply(authorisedFakeRequestToPOST(

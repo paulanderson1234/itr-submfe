@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.ConfirmCorrespondAddressForm._
 import models.ConfirmCorrespondAddressModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -28,7 +28,7 @@ import views.html.contactInformation.ConfirmCorrespondAddress
 import scala.concurrent.Future
 
 object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -36,10 +36,10 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
 
 trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress).map {
+    s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress).map {
       case Some(data) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(data)))
       case None => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm))
     }
@@ -51,11 +51,11 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
         Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
 
         validFormData.contactAddressUse match {
           case Constants.StandardRadioButtonYesValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
               routes.ConfirmCorrespondAddressController.show().toString())
             Future.successful(Redirect(routes.SupportingDocumentsController.show()))
           }

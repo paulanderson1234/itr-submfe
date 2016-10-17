@@ -20,7 +20,7 @@ import java.util.UUID
 
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.HowToApplyController
 import controllers.routes
 import controllers.helpers.FakeRequestHelper

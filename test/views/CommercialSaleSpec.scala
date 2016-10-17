@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{CommercialSaleController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.CommercialSaleModel
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val commercialSaleModelValidNo = new CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
   val commercialSaleModelValidYes = new CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(10), Some(25), Some(2015))
@@ -50,7 +50,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
     val controller = new CommercialSaleController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -64,7 +64,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidYes)))
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
@@ -93,7 +93,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidNo)))
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
@@ -121,7 +121,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyCommercialSaleModel)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
@@ -144,7 +144,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelInvalidYes)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))

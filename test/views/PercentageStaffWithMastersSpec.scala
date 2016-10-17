@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{PercentageStaffWithMastersController, routes}
 import models.PercentageStaffWithMastersModel
@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
 class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   val percentageStaffWithMastersModel = new PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
@@ -50,7 +50,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
     val controller = new PercentageStaffWithMastersController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       val submissionConnector: SubmissionConnector = mockSubmissionConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
@@ -63,7 +63,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
     "when a valid PercentageStaffWithMastersModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(percentageStaffWithMastersModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -85,7 +85,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyPercentageStaffWithMastersModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

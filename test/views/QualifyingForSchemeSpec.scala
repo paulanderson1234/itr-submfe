@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{QualifyingForSchemeController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
 import org.jsoup.Jsoup

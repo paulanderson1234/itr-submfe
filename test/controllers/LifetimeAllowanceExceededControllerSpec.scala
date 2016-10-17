@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -38,12 +38,12 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   implicit val hc = HeaderCarrier()
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object LifetimeAllowanceExceededControllerTest extends LifetimeAllowanceExceededController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -55,7 +55,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "LifetimeAllowanceExceededController" should {
     "use the correct keystore connector" in {
-      LifetimeAllowanceExceededController.keyStoreConnector shouldBe KeystoreConnector
+      LifetimeAllowanceExceededController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       LifetimeAllowanceExceededController.authConnector shouldBe FrontendAuthConnector

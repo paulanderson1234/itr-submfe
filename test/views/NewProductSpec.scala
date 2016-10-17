@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{NewProductController, routes}
 import models.{NewProductModel, SubsidiariesModel}
@@ -41,7 +41,7 @@ import scala.concurrent.Future
 
 class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val isNewProductModel = new NewProductModel(Constants.StandardRadioButtonYesValue)
   val emptyNewProductModel = new NewProductModel("")
@@ -53,7 +53,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     val controller = new NewProductController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -65,7 +65,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     "when a valid NewProductModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isNewProductModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -87,7 +87,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyNewProductModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -122,8 +122,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      when(mockKeystoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

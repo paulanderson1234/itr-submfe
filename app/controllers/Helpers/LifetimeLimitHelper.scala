@@ -17,7 +17,7 @@
 package controllers.Helpers
 
 import common.{Constants, KeystoreKeys}
-import connectors.KeystoreConnector
+import connectors.S4LConnector
 import models._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -25,18 +25,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LifetimeLimitHelper extends LifetimeLimitHelper {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
 }
 
 trait LifetimeLimitHelper {
 
   //implicit val hc = HeaderCarrier()
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   //Future of all previous schemes as vector
   def previousSchemesFut(implicit headerCarrier: HeaderCarrier): Future[Vector[PreviousSchemeModel]] = {
-    PreviousSchemesHelper.getAllInvestmentFromKeystore(keyStoreConnector)
+    PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
   }
 
   def previousSchemesAmount()(implicit headerCarrier: HeaderCarrier): Future[Int] = {
@@ -45,7 +45,7 @@ trait LifetimeLimitHelper {
 
   def exceedsLifetimeLogic(isKi: Boolean)(implicit headerCarrier: HeaderCarrier): Future[Boolean] = {
     // Future of proposed investment,
-    val proposedInvestmentAmountFut = keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
+    val proposedInvestmentAmountFut = s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
       case Some(proposedInvestment) => proposedInvestment.investmentAmount
       case None => 0
     }

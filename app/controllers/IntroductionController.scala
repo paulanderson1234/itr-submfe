@@ -16,7 +16,7 @@
 
 package controllers
 
-import connectors.KeystoreConnector
+import connectors.S4LConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.{HeaderCarrier}
 import play.api.mvc._
@@ -27,13 +27,13 @@ import views.html.introduction._
 
 object IntroductionController extends IntroductionController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  override val s4lConnector: S4LConnector = S4LConnector
 }
 
 trait IntroductionController extends FrontendController {
 
   implicit val hc = new HeaderCarrier()
-  val keystoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector
 
   // this is the page that is called on a restart. It will populate the session keys if missing.
   val show = Action.async { implicit request =>
@@ -46,7 +46,7 @@ trait IntroductionController extends FrontendController {
 
   // this method is called on any restart - e.g. on session timeout
   def restart(): Action[AnyContent] = Action.async { implicit request =>
-    keystoreConnector.clearKeystore()
+    s4lConnector.clearKeystore()
     Future.successful(Redirect(routes.IntroductionController.show()))
   }
 }

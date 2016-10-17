@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -39,13 +39,13 @@ import scala.concurrent.Future
 
 class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object TurnoverCostsControllerTest extends TurnoverCostsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -70,11 +70,11 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   def setup(turnoverCostsModel: Option[AnnualTurnoverCostsModel], checkAveragedAnnualTurnover: Boolean): Unit = {
-    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(turnoverCostsModel))
 
     // Change to checkAveragedAnnualTurnover method below when ready and perform additional tests
@@ -84,7 +84,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
   "TurnoverCostsController" should {
     "use the correct keystore connector" in {
-      TurnoverCostsController.keyStoreConnector shouldBe KeystoreConnector
+      TurnoverCostsController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       TurnoverCostsController.authConnector shouldBe FrontendAuthConnector
@@ -118,8 +118,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a GET formInput to TurnoverCostsController when Authenticated and NOT enrolled" should {
       "redirect to the Subscription Service" in {
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedTurnoverCosts)))
         mockNotEnrolledRequest
         showWithSessionAndAuth(TurnoverCostsControllerTest.show())(
@@ -192,8 +192,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending an invalid form submit to the TurnoverCostsController when Authenticated and enrolled" should {
       "return a bad request" in {
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
         mockEnrolledRequest
         val formInput = Seq(

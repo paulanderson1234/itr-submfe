@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.HadPreviousRFIForm._
 import models.HadPreviousRFIModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -43,7 +43,7 @@ import views.html._
  * limitations under the License.
  */
 object HadPreviousRFIController extends HadPreviousRFIController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -51,10 +51,10 @@ object HadPreviousRFIController extends HadPreviousRFIController{
 
 trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
+    s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
       case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data)))
       case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm))
     }
@@ -66,15 +66,15 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
         validFormData.hadPreviousRFI match {
 
           case Constants.StandardRadioButtonYesValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
             Future.successful(Redirect(routes.PreviousSchemeController.show()))
           }
           case Constants.StandardRadioButtonNoValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
             Future.successful(Redirect(routes.ProposedInvestmentController.show()))
           }
 

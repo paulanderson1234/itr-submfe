@@ -27,9 +27,9 @@ object ControllerHelpers extends ControllerHelpers {
 
 trait ControllerHelpers {
 
-  def getSavedBackLink(keystoreKey: String, keystoreConnector: connectors.KeystoreConnector)
+  def getSavedBackLink(keystoreKey: String, s4lConnector: connectors.S4LConnector)
                       (implicit hc: HeaderCarrier): Future[Option[String]] = {
-    keystoreConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
+    s4lConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
       case Some(data) => Future.successful(Some(data))
       case None => Future.successful(None)
     }

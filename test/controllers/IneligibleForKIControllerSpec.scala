@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import uk.gov.hmrc.play.test.WithFakeApplication
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   with OneServerPerSuite with WithFakeApplication with FakeRequestHelper{
 
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object IneligibleForKIControllerTest extends IneligibleForKIController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -55,14 +55,14 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     .thenReturn(Future.successful(None))
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   implicit val hc = HeaderCarrier()
 
   "IneligibleForKIController" should {
     "use the correct keystore connector" in {
-      IneligibleForKIController.keyStoreConnector shouldBe KeystoreConnector
+      IneligibleForKIController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       IneligibleForKIController.authConnector shouldBe FrontendAuthConnector
@@ -74,7 +74,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
@@ -89,7 +89,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and enrolled" should {
     "return a 200" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockEnrolledRequest
@@ -101,7 +101,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockNotEnrolledRequest
@@ -155,7 +155,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Posting to the IneligibleForKIController when authenticated and enrolled" should {
     "redirect to 'Subsidiaries' page" in {
 
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockEnrolledRequest

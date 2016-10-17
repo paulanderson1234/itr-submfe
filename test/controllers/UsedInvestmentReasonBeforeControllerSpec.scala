@@ -23,7 +23,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -43,12 +43,12 @@ import scala.concurrent.Future
 
 class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object UsedInvestmentReasonBeforeControllerTest extends UsedInvestmentReasonBeforeController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -67,14 +67,14 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
-  when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+  when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
 
   "UsedInvestmentReasonBeforeController" should {
     "use the correct keystore connector" in {
-      UsedInvestmentReasonBeforeController.keyStoreConnector shouldBe KeystoreConnector
+      UsedInvestmentReasonBeforeController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       UsedInvestmentReasonBeforeController.authConnector shouldBe FrontendAuthConnector
@@ -86,7 +86,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a GET request to UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedUsedInvestmentReasonBefore)))
       mockEnrolledRequest
       showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(
@@ -95,7 +95,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(UsedInvestmentReasonBeforeControllerTest.show)(

@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models.ConfirmCorrespondAddressModel
 import org.mockito.Matchers
@@ -39,13 +39,13 @@ import scala.concurrent.Future
 
 class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
 
   object ConfirmCorrespondAddressControllerTest extends ConfirmCorrespondAddressController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -62,7 +62,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "ConfirmCorrespondAddressController" should {
@@ -70,7 +70,7 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
       ConfirmCorrespondAddressController.authConnector shouldBe FrontendAuthConnector
     }
     "use the correct keystore connector" in {
-      ConfirmCorrespondAddressController.keyStoreConnector shouldBe KeystoreConnector
+      ConfirmCorrespondAddressController.s4lConnector shouldBe S4LConnector
     }
     "use the correct enrolment connector" in {
       ConfirmCorrespondAddressController.enrolmentConnector shouldBe EnrolmentConnector
@@ -79,8 +79,8 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
   "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
       mockEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
@@ -89,8 +89,8 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
@@ -101,8 +101,8 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(

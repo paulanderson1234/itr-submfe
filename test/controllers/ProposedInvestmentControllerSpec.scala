@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -40,13 +40,13 @@ import scala.concurrent.Future
 
 class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object ProposedInvestmentControllerTest extends ProposedInvestmentController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
@@ -101,12 +101,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "ProposedInvestmentController" should {
     "use the correct keystore connector" in {
-      ProposedInvestmentController.keyStoreConnector shouldBe KeystoreConnector
+      ProposedInvestmentController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       ProposedInvestmentController.authConnector shouldBe FrontendAuthConnector
@@ -118,13 +118,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
         (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
@@ -134,12 +134,12 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
 
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
         (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
@@ -151,13 +151,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a GET request to ProposedInvestmentController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
         (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockNotEnrolledRequest
@@ -172,7 +172,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
@@ -227,14 +227,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the what will use for page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -252,14 +252,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the what will use for page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -276,14 +276,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -300,14 +300,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the what will do page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -324,14 +324,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -348,14 +348,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the exceeded lifetime limit page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeUnderTotalAmount)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "5000000"
@@ -372,14 +372,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect to the DateOfIncorporation page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
@@ -394,7 +394,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with validation errors to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
@@ -409,7 +409,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with value 0 to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
@@ -424,7 +424,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+      when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest

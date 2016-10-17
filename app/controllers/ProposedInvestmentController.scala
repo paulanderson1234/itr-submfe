@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -32,7 +32,7 @@ import views.html.investment.ProposedInvestment
 
 object ProposedInvestmentController extends ProposedInvestmentController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -41,13 +41,13 @@ object ProposedInvestmentController extends ProposedInvestmentController
 
 trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
+        s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
           case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data), backUrl.get))
           case None => Ok(ProposedInvestment(proposedInvestmentForm, backUrl.get))
         }
@@ -58,7 +58,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
@@ -73,7 +73,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
         }
         case Some(dataWithPreviousValid) => {
           // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
-          keyStoreConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
+          s4lConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
 
           isLifeTimeAllowanceExceeded match {
             case Some(data) =>
@@ -97,16 +97,16 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
     proposedInvestmentForm.bindFromRequest().fold(
       formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector).flatMap(url =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).flatMap(url =>
           Future.successful(BadRequest(ProposedInvestment(formWithErrors,
             url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-          hadPrevRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-          previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+          previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(s4lConnector)
           // Call API
 
           isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(

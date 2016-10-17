@@ -30,7 +30,7 @@ object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
 
 trait KnowledgeIntensiveHelper {
 
-  def setKiDateCondition(keyStoreConnector: connectors.KeystoreConnector, dateDay:Int, dateMonth:Int, dateYear:Int)
+  def setKiDateCondition(s4lConnector: connectors.S4LConnector, dateDay:Int, dateMonth:Int, dateYear:Int)
                         (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
     // check params
@@ -39,26 +39,26 @@ trait KnowledgeIntensiveHelper {
     require(dateYear >= 1000, "The item to update processingId must be an integer > 0")
 
     // update kimodel (or create first) and  dateConditionMet to
-    val result = keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+    val result = s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
       case Some(data) => {
         data.copy(dateConditionMet = Some(!Validation.dateAfterIncorporationRule(dateDay, dateMonth, dateYear)))
       }
       case None => KiProcessingModel(dateConditionMet = Some(!Validation.dateAfterIncorporationRule(dateDay, dateMonth, dateYear)))
     }
-    result.flatMap(updatedKiModel => keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
+    result.flatMap(updatedKiModel => s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
   }
 
-  def setCompanyAssertsKi(keyStoreConnector: connectors.KeystoreConnector, companyAssertsIsKi: Boolean)
+  def setCompanyAssertsKi(s4lConnector: connectors.S4LConnector, companyAssertsIsKi: Boolean)
                          (implicit hc: HeaderCarrier): Future[CacheMap] = {
 
     // update kimodel (or create first) and  dateConditionMet to
-    val result = keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+    val result = s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
       case Some(data) => {
 
         data.copy(companyAssertsIsKi = Some(companyAssertsIsKi))
       }
       case None => KiProcessingModel(companyAssertsIsKi = Some(companyAssertsIsKi))
     }
-    result.flatMap(updatedKiModel => keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
+    result.flatMap(updatedKiModel => s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedKiModel))
   }
 }

@@ -20,7 +20,7 @@ import java.net.URLEncoder
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -38,12 +38,12 @@ import scala.concurrent.Future
 
 class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object RegisteredAddressControllerTest extends RegisteredAddressController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -61,12 +61,12 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "RegisteredAddressController" should {
     "use the correct keystore connector" in {
-      RegisteredAddressController.keyStoreConnector shouldBe KeystoreConnector
+      RegisteredAddressController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       RegisteredAddressController.authConnector shouldBe FrontendAuthConnector
@@ -78,7 +78,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a GET request to RegisteredAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
       mockEnrolledRequest
       showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
@@ -87,7 +87,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
@@ -98,7 +98,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a GET request to RegisteredAddressController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
@@ -149,7 +149,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a valid form submit to the RegisteredAddressController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "postcode" -> "LE5 5NN"
       submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(

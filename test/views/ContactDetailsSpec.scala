@@ -20,7 +20,7 @@ import java.util.UUID
 
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{ContactDetailsController, routes}
 import models.ContactDetailsModel
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val contactDetailsModel = new ContactDetailsModel("Jeff","Stelling","01384 555678","Jeff.Stelling@HMRC.gov.uk")
   val emptyContactDetailsModel = new ContactDetailsModel("","","","")
@@ -47,7 +47,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
     val controller = new ContactDetailsController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -61,7 +61,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "forename" -> "Jeff",
@@ -86,7 +86,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyContactDetailsModel)))
         val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

@@ -34,7 +34,7 @@ package views
 
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{SubsidiariesController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.SubsidiariesModel
@@ -56,7 +56,7 @@ import scala.concurrent.Future
 
 class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach with OneServerPerSuite {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val subsidiariesModelYes = new SubsidiariesModel(Constants.StandardRadioButtonYesValue)
   val subsidiariesModelNo = new SubsidiariesModel(Constants.StandardRadioButtonNoValue)
@@ -66,7 +66,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     val controller = new SubsidiariesController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -75,7 +75,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
   }
 
   override def beforeEach() {
-    reset(mockKeystoreConnector)
+    reset(mockS4lConnector)
   }
 
   "The Subsidiaries page" should {
@@ -84,10 +84,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "from keystore and IsKnowledgeIntensiveController backlink also retrieved" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -111,10 +111,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "from keystore and PercentageStaffWithMastersController backlink also retrieved" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -139,10 +139,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "from keystore and TenYearPlanController backlink also retrieved" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -167,10 +167,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "from keystore and CommercialSaleController backlink also retrieved" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -195,10 +195,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "is passed because nothing was returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -223,7 +223,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       " an invalid model (no radio button selection) is submitted" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
         //submit the model with no radio selected as a post action
@@ -244,7 +244,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       "no backlink is retrieved and an invalid model (no radio button selection) is submitted" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio selected as a post action

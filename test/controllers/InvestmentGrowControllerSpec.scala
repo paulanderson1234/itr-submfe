@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object InvestmentGrowControllerTest extends InvestmentGrowController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -63,12 +63,12 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "InvestmentGrowController" should {
     "use the correct keystore connector" in {
-      InvestmentGrowController.keyStoreConnector shouldBe KeystoreConnector
+      InvestmentGrowController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       InvestmentGrowController.authConnector shouldBe FrontendAuthConnector
@@ -80,10 +80,10 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to InvestmentGrowController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
@@ -92,10 +92,10 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
@@ -104,9 +104,9 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "provide an empty model and return a 300 when no back link is fetched using keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
@@ -120,10 +120,10 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to InvestmentGrowController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedInvestmentGrow)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
@@ -188,7 +188,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the InvestmentGrowController with no backlink when authenticated and enrolled" should {
     "redirect to WhatWillUseFor page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
@@ -203,9 +203,9 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(keyStoreSavedInvestmentGrow)))
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""

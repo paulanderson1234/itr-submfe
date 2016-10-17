@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{ConfirmCorrespondAddressController, routes}
 import models.ConfirmCorrespondAddressModel
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val confirmCorrespondAddressModel = new ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
   val emptyConfirmCorrespondAddressModel = new ConfirmCorrespondAddressModel("")
@@ -48,7 +48,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
     val controller = new ConfirmCorrespondAddressController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -62,7 +62,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
@@ -88,7 +88,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
         val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> ""

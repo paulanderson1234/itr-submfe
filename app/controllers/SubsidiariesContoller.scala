@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import models.SubsidiariesModel
 import forms.SubsidiariesForm._
@@ -31,7 +31,7 @@ import views.html._
 import views.html.companyDetails.Subsidiaries
 
 object SubsidiariesController extends SubsidiariesController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -39,14 +39,14 @@ object SubsidiariesController extends SubsidiariesController {
 
 trait SubsidiariesController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
 
-        keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
+        s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
           case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), backUrl.get))
           case None => Ok(Subsidiaries(subsidiariesForm, backUrl.get))
         }
@@ -58,18 +58,18 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesForm.bindFromRequest.fold(
-      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, keyStoreConnector)(hc)
+      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)(hc)
         .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.
           getOrElse(routes.DateOfIncorporationController.show().toString))))),
       validForm => {
-        keyStoreConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
+        s4lConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
         Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
     )

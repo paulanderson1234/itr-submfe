@@ -20,7 +20,7 @@ import java.util.UUID
 
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{HowToApplyController, LifetimeAllowanceExceededController, routes}
 import org.jsoup.Jsoup
@@ -36,14 +36,14 @@ import scala.concurrent.Future
 
 class LifetimeAllowanceExceededSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   class SetupPage {
 
     val controller = new LifetimeAllowanceExceededController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 

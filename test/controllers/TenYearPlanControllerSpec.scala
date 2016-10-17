@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -42,13 +42,13 @@ import scala.concurrent.Future
 
 class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
 
   object TenYearPlanControllerTest extends TenYearPlanController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     val submissionConnector: SubmissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
@@ -73,12 +73,12 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "TenYearPlanController" should {
     "use the correct keystore connector" in {
-      TenYearPlanController.keyStoreConnector shouldBe KeystoreConnector
+      TenYearPlanController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       TenYearPlanController.authConnector shouldBe FrontendAuthConnector
@@ -90,10 +90,10 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       showWithSessionAndAuth(TenYearPlanControllerTest.show)(
@@ -102,10 +102,10 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
       mockEnrolledRequest
       showWithSessionAndAuth(TenYearPlanControllerTest.show)(
@@ -119,7 +119,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to the subsidiaries page if no and and no description" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(isKiKIModel)))
       mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
@@ -137,7 +137,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to the subsidiaries page if no and and no description" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
@@ -155,7 +155,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to the subsidiaries page if no and and no description" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(noMastersKIModel)))
       mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
@@ -173,7 +173,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to the subsidiaries page if no and and no description" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
       mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
@@ -191,7 +191,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "redirect to the subsidiaries page with valid submission" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       submitWithSessionAndAuth(TenYearPlanControllerTest.submit,

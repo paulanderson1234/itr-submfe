@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models.NewGeographicalMarketModel
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object NewGeographicalMarketControllerTest extends NewGeographicalMarketController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -63,12 +63,12 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "NewGeographicalMarketController" should {
     "use the correct keystore connector" in {
-      NewGeographicalMarketController.keyStoreConnector shouldBe KeystoreConnector
+      NewGeographicalMarketController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       NewGeographicalMarketController.authConnector shouldBe FrontendAuthConnector
@@ -80,9 +80,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to NewGeographicalMarketController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
@@ -91,9 +91,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled"  in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
@@ -102,9 +102,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
     }
 
     "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
@@ -118,9 +118,9 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to NewGeographicalMarketController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
@@ -171,7 +171,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a valid 'Yes' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
@@ -185,7 +185,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a valid 'No' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect the ten year plan page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
@@ -199,7 +199,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController with no backlink and when authenticated and enrolled" should {
     "redirect to WhatWillUseFor page" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> ""
@@ -214,7 +214,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> ""

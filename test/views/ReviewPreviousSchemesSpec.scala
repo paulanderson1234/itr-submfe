@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{ReviewPreviousSchemesController, routes}
 import models.PreviousSchemeModel
@@ -41,7 +41,7 @@ import scala.concurrent.Future
 
 class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val model = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
@@ -58,7 +58,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
     val controller = new ReviewPreviousSchemesController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -72,7 +72,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
       "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

@@ -18,13 +18,13 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
 object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -32,7 +32,7 @@ object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededCont
 
 trait LifetimeAllowanceExceededController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.investment.LifetimeAllowanceExceeded()))

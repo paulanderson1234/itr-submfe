@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models._
 import common._
@@ -30,7 +30,7 @@ import views.html.investment.InvestmentGrow
 
 object InvestmentGrowController extends InvestmentGrowController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,13 +38,13 @@ object InvestmentGrowController extends InvestmentGrowController
 
 trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
+        s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
           case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data), backUrl.get))
           case None => Ok(InvestmentGrow(investmentGrowForm, backUrl.get))
         }
@@ -53,7 +53,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
@@ -61,12 +61,12 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)(hc).flatMap {
           case Some(data) => Future.successful(BadRequest(views.html.investment.InvestmentGrow(invalidForm, data)))
           case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
         },
       validForm => {
-        keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
+        s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
         Future.successful(Redirect(routes.ContactDetailsController.show()))
       }
     )

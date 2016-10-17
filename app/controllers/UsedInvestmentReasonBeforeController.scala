@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,16 +31,16 @@ import views.html.investment.UsedInvestmentReasonBefore
 object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
 trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
+    s4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
       case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
       case None => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm))
     }
@@ -52,13 +52,13 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Autho
         Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
         validFormData.usedInvestmentReasonBefore match {
           case Constants.StandardRadioButtonYesValue => {
             Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
           }
           case Constants.StandardRadioButtonNoValue => {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
               routes.UsedInvestmentReasonBeforeController.show().toString())
             Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
           }

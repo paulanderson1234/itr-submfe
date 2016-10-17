@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.YourCompanyNeedForm._
 import models.YourCompanyNeedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,16 +31,16 @@ import scala.concurrent.Future
 object YourCompanyNeedController extends YourCompanyNeedController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
 trait YourCompanyNeedController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
+    s4lConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed).map {
       case Some(data) => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm.fill(data)))
       case None => Ok(introduction.YourCompanyNeed(yourCompanyNeedForm))
     }
@@ -52,7 +52,7 @@ trait YourCompanyNeedController extends FrontendController with AuthorisedAndEnr
         Future.successful(BadRequest(introduction.YourCompanyNeed(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.yourCompanyNeed, validFormData)
         Future.successful(Redirect(routes.QualifyingForSchemeController.show()))
       }
     )

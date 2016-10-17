@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.knowledgeIntensive.IneligibleForKI
 import controllers.Helpers.ControllerHelpers
@@ -28,7 +28,7 @@ import scala.concurrent.Future
 import views.html._
 
 object IneligibleForKIController extends IneligibleForKIController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -36,7 +36,7 @@ object IneligibleForKIController extends IneligibleForKIController{
 
 trait IneligibleForKIController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
@@ -48,13 +48,13 @@ trait IneligibleForKIController extends FrontendController with AuthorisedAndEnr
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, s4lConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request => {
-    keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().toString())
+    s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().toString())
     Future.successful(Redirect(routes.SubsidiariesController.show()))
     }
   }

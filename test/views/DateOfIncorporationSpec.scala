@@ -20,7 +20,7 @@ import java.util.UUID
 
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{DateOfIncorporationController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
 import models.DateOfIncorporationModel
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 
 class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val contactDetailsModel = new DateOfIncorporationModel(Some(23), Some(11), Some(1993))
   val emptyDateOfIncorporationModel = new DateOfIncorporationModel(None, None, None)
@@ -47,7 +47,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
     val controller = new DateOfIncorporationController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -61,7 +61,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -86,7 +86,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
         val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

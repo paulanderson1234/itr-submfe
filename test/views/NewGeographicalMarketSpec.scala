@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{NewGeographicalMarketController, routes}
 import controllers.helpers.FakeRequestHelper
 import models._
@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
 class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val newGeographicalMarketModel = new NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
   val emptyNewGeographicalMarketModel = new NewGeographicalMarketModel("")
@@ -49,7 +49,7 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     val controller = new NewGeographicalMarketController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
+      val s4lConnector : S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -58,16 +58,16 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
   }
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "The NewGeographicalMarket Page" +
     "Verify that the correct elements are loaded when navigating from WhatWillUse page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
@@ -90,9 +90,9 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     "Verify that the correct elements are loaded when navigating from UsedInvestmentReasonBefore page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.UsedInvestmentReasonBeforeController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
@@ -115,9 +115,9 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
@@ -141,9 +141,9 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.UsedInvestmentReasonBeforeController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(emptyNewGeographicalMarketModel)))
       val result = controller.submit.apply(authorisedFakeRequest)

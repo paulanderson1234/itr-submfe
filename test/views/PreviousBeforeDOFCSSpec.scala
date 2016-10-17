@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import builders.SessionBuilder
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import controllers.{PreviousBeforeDOFCSController, routes}
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel}
@@ -41,7 +41,7 @@ import scala.concurrent.Future
 
 class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with DateFormatter {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val previousBeforeDOFCSModel = new PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
   val emptyPreviousBeforeDOFCSModel = new PreviousBeforeDOFCSModel("")
@@ -62,7 +62,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     val controller = new PreviousBeforeDOFCSController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -73,11 +73,11 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
   def setup(kiProcessingModel: Option[KiProcessingModel],
             commercialSaleModel: Option[CommercialSaleModel],
             previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel]) : Unit = {
-    when(mockKeystoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(kiProcessingModel))
-    when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(commercialSaleModel))
-    when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(previousBeforeDOFCSModel))
   }
 

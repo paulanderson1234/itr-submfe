@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{IneligibleForKIController, routes}
 import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
@@ -37,14 +37,14 @@ import scala.concurrent.Future
 
 class IneligibleForKISpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   class SetupPage {
 
     val controller = new IneligibleForKIController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -58,7 +58,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
+        when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
 
@@ -80,7 +80,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
         val document: Document = {
           val userId = s"user-${UUID.randomUUID}"
 
-          when(mockKeystoreConnector.fetchAndGetFormData[String]
+          when(mockS4lConnector.fetchAndGetFormData[String]
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
@@ -105,7 +105,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
         val document: Document = {
           val userId = s"user-${UUID.randomUUID}"
 
-          when(mockKeystoreConnector.fetchAndGetFormData[String]
+          when(mockS4lConnector.fetchAndGetFormData[String]
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
             .thenReturn(Future.successful(Option(routes.HowToApplyController.show().toString())))
 

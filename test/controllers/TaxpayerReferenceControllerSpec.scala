@@ -22,7 +22,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -42,12 +42,12 @@ import scala.concurrent.Future
 
 class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object TaxpayerReferenceControllerTest extends TaxpayerReferenceController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -75,7 +75,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   private def mockEnrolledRequest = when(TaxpayerReferenceControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -86,7 +86,7 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "TaxpayerReferenceController" should {
     "use the correct keystore connector" in {
-      TaxpayerReferenceController.keyStoreConnector shouldBe KeystoreConnector
+      TaxpayerReferenceController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       TaxpayerReferenceController.authConnector shouldBe FrontendAuthConnector
@@ -98,8 +98,8 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a GET request to TaxpayerReferenceController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedTaxpayerReference)))
       mockEnrolledRequest
       showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(
@@ -108,8 +108,8 @@ class TaxpayerReferenceControllerSpec extends UnitSpec with MockitoSugar with Be
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(TaxpayerReferenceControllerTest.show)(

@@ -23,9 +23,9 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-object KeystoreConnector extends KeystoreConnector
+object S4LConnector extends S4LConnector
 
-trait KeystoreConnector {
+trait S4LConnector {
 
   val sessionCache : SessionCache = TavcSessionCache
 

@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.NewGeographicalMarketForm._
 import models.NewGeographicalMarketModel
@@ -29,7 +29,7 @@ import scala.concurrent.Future
 import views.html.investment.NewGeographicalMarket
 
 object NewGeographicalMarketController extends NewGeographicalMarketController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -37,12 +37,12 @@ object NewGeographicalMarketController extends NewGeographicalMarketController{
 
 trait NewGeographicalMarketController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket) map {
+        s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket) map {
           case Some(data) => Ok(NewGeographicalMarket(newGeographicalMarketForm.fill(data), backUrl.get))
           case None => Ok(NewGeographicalMarket(newGeographicalMarketForm, backUrl.get))
         }
@@ -51,7 +51,7 @@ trait NewGeographicalMarketController extends FrontendController with Authorised
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, s4lConnector)(hc)
       route <- routeRequest(link)
     } yield route
   }
@@ -59,13 +59,13 @@ trait NewGeographicalMarketController extends FrontendController with Authorised
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     newGeographicalMarketForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, keyStoreConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, s4lConnector)(hc).flatMap {
           case Some(data) => Future.successful(BadRequest(views.html.investment.NewGeographicalMarket(invalidForm, data)))
           case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
 
       },
       validForm => {
-        keyStoreConnector.saveFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, validForm)
+        s4lConnector.saveFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, validForm)
         Future.successful(Redirect(routes.NewProductController.show()))
       }
     )

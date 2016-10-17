@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.KnowledgeIntensiveHelper
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
@@ -30,17 +30,17 @@ import scala.concurrent.Future
 
 
 object DateOfIncorporationController extends DateOfIncorporationController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
 trait DateOfIncorporationController extends FrontendController with AuthorisedAndEnrolledForTAVC {
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
+    s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
       case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
       case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
     }
@@ -52,8 +52,8 @@ trait DateOfIncorporationController extends FrontendController with AuthorisedAn
         Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        KnowledgeIntensiveHelper.setKiDateCondition(keyStoreConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
+        s4lConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
+        KnowledgeIntensiveHelper.setKiDateCondition(s4lConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
         Future.successful(Redirect(routes.NatureOfBusinessController.show))
       }
     )

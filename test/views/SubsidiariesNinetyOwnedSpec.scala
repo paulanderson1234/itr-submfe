@@ -21,7 +21,7 @@ import java.util.UUID
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.Constants
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{SubsidiariesNinetyOwnedController, TaxpayerReferenceController, routes}
 import controllers.helpers.FakeRequestHelper
 import models.{SubsidiariesNinetyOwnedModel, TaxpayerReferenceModel}
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 
 class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   val subsidiariesNinetyOwnedModel = new SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
   val emptyTaxpayerReferenceModel = new SubsidiariesNinetyOwnedModel("")
@@ -48,7 +48,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
     val controller = new SubsidiariesNinetyOwnedController{
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
 
@@ -62,7 +62,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
@@ -83,7 +83,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> ""

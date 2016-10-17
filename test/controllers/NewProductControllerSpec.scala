@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
@@ -39,12 +39,12 @@ import scala.concurrent.Future
 
 class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   object NewProductControllerTest extends NewProductController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+    val s4lConnector: S4LConnector = mockS4lConnector
     override lazy val enrolmentConnector = mock[EnrolmentConnector]
   }
 
@@ -67,12 +67,12 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    reset(mockS4lConnector)
   }
 
   "NewProductController" should {
     "use the correct keystore connector" in {
-      NewProductController.keyStoreConnector shouldBe KeystoreConnector
+      NewProductController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       NewProductController.authConnector shouldBe FrontendAuthConnector
@@ -84,8 +84,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a GET request to NewProductController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
       mockEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
@@ -94,8 +94,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
@@ -106,8 +106,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a GET request to NewProductController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(NewProductControllerTest.show)(
@@ -158,8 +158,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to the subsidiaries spending investment page when the subsidiaries value is Yes" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
@@ -175,8 +175,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to how use investment (how grow) page when the subsidiaries value is No" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
@@ -191,8 +191,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to the subsidiaries page when the subsidiaries value is not present" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
@@ -211,8 +211,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   // The subsidiaries logic test is not required in the 3 tests below can be replaced by a single test  top the error page
   "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to the subsidiaries page when the subsidiaries value is Yes" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
@@ -227,8 +227,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to the subsidiaries page when the subsidiaries value is No" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
@@ -243,8 +243,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
     "redirect to the subsidiaries page when the subsidiaries value is not present" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue

@@ -19,7 +19,7 @@ package views
 import auth.{Enrolment, Identifier, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.{AcknowledgementController, routes}
 import controllers.helpers.{FakeRequestHelper, TestHelper}
 import models.submission.SubmissionResponse
@@ -40,7 +40,7 @@ import scala.concurrent.Future
 
   class AcknowledgementSpec extends UnitSpec with WithFakeApplication with Mockito with FakeRequestHelper{
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
   val mockSubmission = mock[SubmissionConnector]
 
   val contactValid = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
@@ -53,7 +53,7 @@ import scala.concurrent.Future
     val controller = new AcknowledgementController {
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
       val submissionConnector: SubmissionConnector = mockSubmission
       override lazy val enrolmentConnector = mock[EnrolmentConnector]
     }
@@ -67,9 +67,9 @@ import scala.concurrent.Future
 //      "contain the correct elements when loaded" in new SetupPage {
 //        val document: Document = {
 //          //val userId = s"user-${UUID.randomUUID}"
-//          when(mockKeyStoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+//          when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
 //            .thenReturn(Future.successful(Option(contactValid)))
-//          when(mockKeyStoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+//          when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
 //            .thenReturn(Future.successful(Option(yourCompanyNeed)))
 //          when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequest))(Matchers.any()))
 //            .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))

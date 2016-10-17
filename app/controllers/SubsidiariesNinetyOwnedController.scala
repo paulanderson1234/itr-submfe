@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.SubsidiariesNinetyOwnedForm._
 import models.SubsidiariesNinetyOwnedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -28,7 +28,7 @@ import views.html.investment.SubsidiariesNinetyOwned
 import scala.concurrent.Future
 
 object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedController  {
-  val keyStoreConnector: KeystoreConnector =  KeystoreConnector
+  val s4lConnector: S4LConnector =  S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -36,10 +36,10 @@ object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedControll
 
 trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
+    s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
       case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
       case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
     }
@@ -51,8 +51,8 @@ trait SubsidiariesNinetyOwnedController extends FrontendController with Authoris
         Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().toString())
+        s4lConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().toString())
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
     )

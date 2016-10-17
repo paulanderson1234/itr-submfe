@@ -19,7 +19,7 @@ package views
 import java.util.UUID
 
 import builders.SessionBuilder
-import connectors.KeystoreConnector
+import connectors.S4LConnector
 import controllers.IntroductionController
 import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
@@ -31,12 +31,12 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 class startSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  val mockS4lConnector = mock[S4LConnector]
 
   class SetupPage {
 
     val controller = new IntroductionController{
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
+      val s4lConnector: S4LConnector = mockS4lConnector
     }
   }
 
