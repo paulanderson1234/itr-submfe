@@ -76,6 +76,9 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
     "use the correct auth connector" in {
       YourCompanyNeedController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      YourCompanyNeedController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to YourCompanyNeedController when authenticated and enrolled" should {

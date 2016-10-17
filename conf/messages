@@ -457,10 +457,18 @@ page.summaryQuestion.telephone=Telephone number
 page.summaryQuestion.email=Email address
 page.summaryQuestion.contactAddress=Contact address
 
+
 #supply contact address
-page.contactInformation.ContactAddress.heading=What''s their address?
-page.contactInformation.ContactAddress.title=Contact address
-page.contactInformation.ContactAddress.description.one=Enter address manually
+page.contactInformation.ProvideContactAddress.heading=Where should we send your correspondence?
+page.contactInformation.ProvideContactAddress.title=Provide correspondence address
+page.contactInformation.ProvideContactAddress.addressline1.label=Address line 1
+page.contactInformation.ProvideContactAddress.addressline2.label=Address line 2
+page.contactInformation.ProvideContactAddress.addressline3.label=Address line 3 (optional)
+page.contactInformation.ProvideContactAddress.addressline4.label=Address line 4 (optional)
+page.contactInformation.ProvideContactAddress.postcode.label=Postcode
+page.contactInformation.ProvideContactAddress.country.label=Country
+page.address.country.select = Select one country
+#page.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 
 #contact details page
 page.contactInformation.contactDetails.heading=Who should we contact about your application?

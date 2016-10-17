@@ -83,6 +83,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "use the correct auth connector" in {
       TenYearPlanController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      TenYearPlanController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {

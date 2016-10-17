@@ -81,6 +81,9 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "use the correct auth connector" in {
       OperatingCostsController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      OperatingCostsController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to PercentageStaffWithMastersController when Authenticated and enrolled" should {

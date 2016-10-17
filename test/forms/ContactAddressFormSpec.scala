@@ -16,187 +16,952 @@
 
 package forms
 
-import models.ContactAddressModel
-import play.api.data.FormError
+import forms.ContactAddressForm._
+import models.AddressModel
 import play.api.i18n.Messages
-import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsFormUrlEncoded
-import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 
 class ContactAddressFormSpec extends UnitSpec {
 
-  private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
-    ContactAddressForm.contactAddressForm.bindFromRequest()(request).fold(
-      formWithErrors => None,
-      userData => Some(userData)
+  "Creating a form using an empty model" should {
+    lazy val form = contactAddressForm
+    "return an empty string for addressline1, addressline2, telephone number and email" in {
+      form.data.isEmpty shouldBe true
+    }
+  }
+
+  "Creating a form using a valid model" should {
+    "return a form with the data specified in the model" in {
+      val model = AddressModel("Akina Speed Stars","Mt. Akina",None,None,None,"JP")
+      val form = contactAddressForm.fill(model)
+
+      form.data("addressline1") shouldBe "Akina Speed Stars"
+      form.data("addressline2") shouldBe "Mt. Akina"
+      form.data("countryCode") shouldBe "JP"
+      form.errors.length shouldBe 0
+      form.data.size shouldBe 3
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for addressline1" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "",
+        "addressline2" -> "Mt. Akina",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "JP")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 1 form error" in {
+
+        form.errors.length shouldBe 1
+
+        form.errors.head.key shouldBe "addressline1"
+      }
+      "associate the correct error message to the error" in {
+        form.error("addressline1").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+      }
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for addressline2" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "Akina Speed Stars",
+        "addressline2" -> "",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "JP")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 1 form error" in {
+        form.errors.length shouldBe 1
+        form.errors.head.key shouldBe "addressline2"
+      }
+      "associate the correct error message to the error" in {
+        form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+      }
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for country" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "Akina Speed Stars",
+        "addressline2" -> "Mt. Akina",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 1 form error" in {
+        form.errors.length shouldBe 1
+        form.errors.head.key shouldBe "countryCode"
+      }
+      "associate the correct error message to the error" in {
+        form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+      }
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for addressline1 and addressline2" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "",
+        "addressline2" -> "",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "JP")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 2 form errors" in {
+        form.errors.length shouldBe 2
+        form.errors.head.key shouldBe "addressline1"
+        form.errors(1).key shouldBe "addressline2"
+      }
+      "associate the correct error message to the error" in {
+        form.error("addressline1").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+        form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+      }
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for addressline2 and country" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "Akina Speed Stars",
+        "addressline2" -> "",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 2 form errors" in {
+        form.errors.length shouldBe 2
+        form.errors.head.key shouldBe "addressline2"
+        form.errors(1).key shouldBe "countryCode"
+      }
+      "associate the correct error message to the error" in {
+        form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+        form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+      }
+    }
+  }
+
+  "Creating a form using an invalid post" when {
+    "supplied with no data for addressline1, addressline2 or country" should {
+      lazy val form = contactAddressForm.bind(Map(
+        "addressline1" -> "",
+        "addressline2" -> "",
+        "addressline3" -> "",
+        "addressline4" -> "",
+        "postcode" -> "",
+        "countryCode" -> "")
+      )
+      "raise form error" in {
+        form.hasErrors shouldBe true
+      }
+      "raise 3 form errors" in {
+        form.errors.length shouldBe 3
+        form.errors.head.key shouldBe "addressline1"
+        form.errors(1).key shouldBe "addressline2"
+        form.errors(2).key shouldBe "countryCode"
+      }
+      "associate the correct error message to the error" in {
+        form.error("addressline1").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+        form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+        form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+      }
+    }
+  }
+
+  "supplied with empty space for addressline1" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "   ",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
     )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline1"
+    }
+    "associate the correct error message to the error " in {
+      form.error("addressline1").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+    }
   }
 
-  private def bindWithError(request: FakeRequest[AnyContentAsFormUrlEncoded]): Option[FormError] = {
-    ContactAddressForm.contactAddressForm.bindFromRequest()(request).fold(
-      formWithErrors => Some(formWithErrors.errors(0)),
-      userData => None
+  "supplied with empty space for addressline2" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "   ",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
     )
-  }
-
-  val ContactAddressJson = """{"postcode":"TF13NY"}"""
-  val contactddressModel = ContactAddressModel("TF13NY")
-
-  "The Contact Address Form" should {
-    "Not return an error if lower case" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tf1 3ny"
-      )
-      bindWithError(request) match {
-        case Some(err) => fail("Validation error not expected")
-        case _ => ()
-      }
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline2"
+    }
+    "associate the correct error message to the error " in {
+      form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
     }
   }
 
-  "The Contact Address Form" should {
-    "Not return an error if in mixed case" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tF1 3Ny"
-      )
-      bindWithError(request) match {
-        case Some(err) => fail("Validation error not expected")
-        case _ => ()
-      }
+  "supplied with empty space for addressline3" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "   ",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline3"
+    }
+    "associate the correct error message to the error " in {
+      form.error("addressline3").get.message shouldBe Messages("validation.error.optionaladdresssline")
     }
   }
 
-
-  "The Contact Address Form" should {
-    "Not return an error if postcode regex pattern is at the borderline condition" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "TF11 2FT"
-      )
-      bindWithError(request) match {
-        case Some(err) => fail("Validation error not expected")
-        case _ => ()
-      }
+  "supplied with empty space for addressline4" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "   ",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline4"
+    }
+    "associate the correct error message to the error " in {
+      form.error("addressline4").get.message shouldBe Messages("validation.error.linefouraddresssline")
     }
   }
 
-  "The Contact Address Form" should {
-    "Return an error if postcode regex pattern is above borderline condition" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "TF11 2FTR"
-      )
-      bindWithError(request) match {
-        case Some(err) => {
-          err.key shouldBe "postcode"
-          err.message shouldBe Messages("validation.error.postcodelookup")
-          err.args shouldBe Array()
-        }
-        case _ => fail("Missing error")
-      }
+  "supplied with empty space for country" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "   ")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form errors" in {
+      form.errors.length shouldBe 1
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
     }
   }
 
-  "The Contact Address Form" should {
-    "Return an error if postcode regex pattern contains multiple spaces" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "TF1  2FT"
-      )
-      bindWithError(request) match {
-        case Some(err) => {
-          err.key shouldBe "postcode"
-          err.message shouldBe Messages("validation.error.postcodelookup")
-          err.args shouldBe Array()
-        }
-        case _ => fail("Missing error")
-      }
+  "supplied with empty space for postcode" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "   ",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form errors" in {
+      form.errors.length shouldBe 1
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
     }
   }
 
-  "The Contact Address Form" should {
-    "Return an error if postcode regex pattern contains leading spaces" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> " TF1 2FT"
-      )
-      bindWithError(request) match {
-        case Some(err) => {
-          err.key shouldBe "postcode"
-          err.message shouldBe Messages("validation.error.postcodelookup")
-          err.args shouldBe Array()
-        }
-        case _ => fail("Missing error")
-      }
+  "supplied with numeric input for addressline1" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars 86",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
     }
   }
 
-  "The Contact Address Form" should {
-    "Return an error if postcode regex pattern contains spaces at end" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "TF1 1ET "
-      )
-      bindWithError(request) match {
-        case Some(err) => {
-          err.key shouldBe "postcode"
-          err.message shouldBe Messages("validation.error.postcodelookup")
-          err.args shouldBe Array()
-        }
-        case _ => fail("Missing error")
-      }
+  "supplied with numeric input for addressline2" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina 86",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
     }
   }
 
-  "The Contact Address Form" should {
-    "Return an error if postcode regex pattern contains invalid characters" in {
-      val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "TF£ 1%&"
-      )
-      bindWithError(request) match {
-        case Some(err) => {
-          err.key shouldBe "postcode"
-          err.message shouldBe Messages("validation.error.postcodelookup")
-          err.args shouldBe Array()
-        }
-        case _ => fail("Missing error")
-      }
+  "supplied with numeric input for addressline3" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "86",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
     }
   }
 
-  // model from json
-  "The Contact Address Form model" should {
-    "load the JSON successfully" in {
-
-      implicit val formats = Json.format[ContactAddressModel]
-
-      val address = Json.parse(ContactAddressJson).as[ContactAddressModel]
-      address.postcode shouldBe "TF13NY"
+  "supplied with numeric input for addressline4" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "86",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
     }
   }
 
-  // model to json
-  "The Contact Address Form model" should {
-    "load convert to JSON successfully" in {
-
-      implicit val formats = Json.format[ContactAddressModel]
-
-      val addressJson = Json.toJson(contactddressModel).toString()
-      addressJson shouldBe ContactAddressJson
-
+  "supplied with numeric input for postcode" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "86",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
     }
   }
 
-  // form model to json - apply
-  "The Contact Address Form model" should {
-    "call apply correctly on the model" in {
-      implicit val formats = Json.format[ContactAddressModel]
-      val contactAddressForm =ContactAddressForm.contactAddressForm.fill(contactddressModel)
-      contactAddressForm.get.postcode shouldBe "TF13NY"
+  "supplied with alphanumeric input for country" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "J4pan")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
     }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
 
-    // form json to model - unapply
-    "call unapply successfully to create expected Json" in {
-      implicit val formats = Json.format[ContactAddressModel]
-      val contactAddressForm = ContactAddressForm.contactAddressForm.fill(contactddressModel)
-      val formJson = Json.toJson(contactAddressForm.get).toString
-      formJson shouldBe ContactAddressJson
+  //  BVA
+
+  "addressline1 value supplied with the minimum allowed" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "A",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline2 value supplied with the minimum allowed" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "M",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline3 value supplied with the minimum allowed" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "A",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline4 value supplied with the minimum allowed" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "A",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "country value supplied with the minimum allowed" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline1 value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars          ",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline2 value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina                  ",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline3 value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "A                          ",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "addressline4 value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "A                 ",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "postcode value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS98 1TL",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "country value supplied with the maximum allowed (on the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "TB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "country value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "Trinidad and Tobagooo")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
+
+  "addressline1 value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars           ",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline1"
+    }
+    "associate the correct error message to the error" in {
+      form.error("addressline1").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+    }
+  }
+
+  "addressline2 value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina                   ",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline2"
+    }
+    "associate the correct error message to the error" in {
+      form.error("addressline2").get.message shouldBe Messages("validation.error.mandatoryaddresssline")
+    }
+  }
+
+  "addressline3 value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "A                           ",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline3"
+    }
+    "associate the correct error message to the error" in {
+      form.error("addressline3").get.message shouldBe Messages("validation.error.optionaladdresssline")
+    }
+  }
+
+  "addressline4 value supplied over the maximum allowed (over the boundary)" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "A                  ",
+      "postcode" -> "",
+      "countryCode" -> "JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "addressline4"
+    }
+    "associate the correct error message to the error" in {
+      form.error("addressline4").get.message shouldBe Messages("validation.error.linefouraddresssline")
+    }
+  }
+
+  "postcode value supplied over the maximum allowed (over the boundary) incluses whitespace in the count" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS98 1TL ",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
+    }
+  }
+
+  "country value supplied over the maximum allowed (over the boundary) includes whitespace in the count" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "United Republic of Tanzania")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
+
+  //Postcode Regex
+
+  "postcode value supplied with multiple white space" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS98  1TL",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
+    }
+  }
+
+  "postcode value supplied with brackets" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS98 (1TL)",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
+    }
+  }
+
+  "postcode value supplied with /" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS98/9 1TL",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
+    }
+  }
+
+  "postcode value supplied with lowercase" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "bs98 1tl",
+      "countryCode" -> "GB")
+    )
+    "raise no form error" in {
+      form.hasErrors shouldBe false
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 0
+    }
+  }
+
+  "postcode value supplied with no spaces" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "BS981TL",
+      "countryCode" -> "GB")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "postcode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("postcode").get.message shouldBe Messages("validation.error.postcode")
+    }
+  }
+
+  "country value supplied with '" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "Cote d'Ivoire")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
+
+  "country value supplied with -" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "Timor-Leste")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
+
+  "country value supplied with ." should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "St. Lucia")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
+    }
+  }
+
+  "country value supplied with a trailing space" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP ")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 0 form errors" in {
+      form.errors.length shouldBe 1
+    }
+  }
+
+  "country value supplied with #" should {
+    lazy val form = contactAddressForm.bind(Map(
+      "addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "#JP")
+    )
+    "raise form error" in {
+      form.hasErrors shouldBe true
+    }
+    "raise 1 form error" in {
+      form.errors.length shouldBe 1
+      form.errors.head.key shouldBe "countryCode"
+    }
+    "associate the correct error message to the error" in {
+      form.error("countryCode").get.message shouldBe Messages("validation.error.countryCode")
     }
   }
 }
