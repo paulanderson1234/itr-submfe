@@ -3,7 +3,7 @@
 @import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea}
 
-@(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[_])
+@(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String, hasGeoMarket: Boolean, hasNewProduct: Boolean)(implicit request: Request[_])
 
 @main_template(Messages("page.investment.InvestmentGrow.title")) {
 
@@ -13,18 +13,30 @@
 
     <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.InvestmentGrow.heading")</h1>
 
-    <span id="description-one">@Messages("page.investment.InvestmentGrow.example.text")</span>
-
     <div class="form-group">
+        <span id="description-one">@Messages("page.investment.InvestmentGrow.example.text")</span>
         <ul class="list list-bullet">
             <li id="bullet-one">@Messages("page.investment.InvestmentGrow.bullet.one")</li>
             <li id="bullet-two">@Messages("page.investment.InvestmentGrow.bullet.two")</li>
             <li id="bullet-three">@Messages("page.investment.InvestmentGrow.bullet.three")</li>
         </ul>
     </div>
+    @if(hasGeoMarket || hasNewProduct) {
+    <div class="form-group">
+        <span id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</span>
+        <ul id="optional-bullet-list" class="list list-bullet">
+            @if(hasGeoMarket) {
+            <li id="bullet-geographical-market">@Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")</li>
+            }
+            @if(hasNewProduct) {
+            <li id="bullet-product-market">@Messages("page.investment.InvestmentGrow.bullet.productMarket")</li>
+            }
+        </ul>
+    </div>
+    }
 
     <div class="form-group">
-        <p id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</p>
+        <p id="description-three">@Messages("page.investment.InvestmentGrow.description.three")</p>
     </div>
 
     @form(action = controllers.routes.InvestmentGrowController.submit()) {
