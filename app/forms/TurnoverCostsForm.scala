@@ -28,8 +28,8 @@ object TurnoverCostsForm {
       "amount1" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.one"),
       "amount2" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.two"),
       "amount3" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.three"),
-      "amount4" -> mandatoryMaxTenNumberValidation("page.companyDetails.TurnoverCosts.error.field.four"),
-      "amount5" -> mandatoryMaxTenNumberValidation("page.companyDetails.TurnoverCosts.error.field.five")
+      "amount4" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.four"),
+      "amount5" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.five")
     )(AnnualTurnoverCostsModel.apply)(AnnualTurnoverCostsModel.unapply)
   )
 }
