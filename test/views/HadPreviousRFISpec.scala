@@ -61,7 +61,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     "when a valid HadPreviousRFIModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(hadPreviousRFIModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -87,7 +87,7 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(emptyHadPreviousRFIModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

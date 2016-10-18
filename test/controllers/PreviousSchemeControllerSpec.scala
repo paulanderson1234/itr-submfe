@@ -23,7 +23,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -94,10 +94,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a GET request to PreviousSchemeController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockS4lConnector.fetchAndGetFormData[PreviousSchemeModel]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
@@ -107,10 +107,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
     "provide an empty model and return a 200 when None is fetched using keystore when authenticated and enrolled" in {
       when(mockS4lConnector.fetchAndGetFormData[PreviousSchemeModel]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
@@ -122,10 +122,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a GET request to PreviousSchemeController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       when(mockS4lConnector.fetchAndGetFormData[PreviousSchemeModel]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
@@ -176,10 +176,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated and enrolled" in {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(emptyVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
-      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
@@ -191,10 +191,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated and enrolled" in {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
-      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
@@ -206,10 +206,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "navigate to start of flow if no backlink provided even if a valid matching moddel returned when authenticated and enrolled" in {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
-      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(None))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
@@ -224,10 +224,10 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "navigate to start of flow if no backlink provided if a new add scheme when authenticated and enrolled" in {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
-      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+      (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(None))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
@@ -242,13 +242,13 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a valid new form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "create a new item and redirect to the review previous investments page" in {
       when(mockS4lConnector.saveFormData(Matchers.any(),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       val formInput = Seq(
@@ -272,13 +272,13 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "update the item and redirect to the review previous investments page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(),
-        Matchers.any())).thenReturn(cacheMapUpdated)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapUpdated)
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       val formInput = Seq(
@@ -304,12 +304,12 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController when authenticated and enrolled" should {
     "not create the item and redirect to itself with errors as a bad request" in {
       when(mockS4lConnector.saveFormData(Matchers.any(),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       val formInput = Seq(
@@ -332,13 +332,13 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a invalid (no amount) updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "not update the item and redirect to itself with errors as a bad request" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(cacheMapUpdated)
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
       val formInput = Seq(

@@ -61,7 +61,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "utr" -> "1234567890"
@@ -85,7 +85,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyTaxpayerReferenceModel)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))

@@ -64,7 +64,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidYes)))
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
@@ -93,7 +93,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelValidNo)))
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "hasCommercialSale" -> Constants.StandardRadioButtonNoValue,
@@ -121,7 +121,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyCommercialSaleModel)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
@@ -144,7 +144,7 @@ class CommercialSaleSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(commercialSaleModelInvalidYes)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))

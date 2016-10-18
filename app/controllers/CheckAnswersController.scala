@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -38,7 +38,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   val s4lConnector: S4LConnector
 
-  def checkAnswersModel(implicit headerCarrier: HeaderCarrier) : Future[CheckAnswersModel] = for {
+  def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser) : Future[CheckAnswersModel] = for {
     yourCompanyNeed <- s4lConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed)
     taxPayerReference <- s4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference)
     registeredAddress <- s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress)

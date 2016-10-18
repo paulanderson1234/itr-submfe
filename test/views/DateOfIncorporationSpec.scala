@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector}
 import config.FrontendAppConfig
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{DateOfIncorporationController, routes}
-import controllers.helpers.{FakeRequestHelper, TestHelper}
+import controllers.helpers.FakeRequestHelper
 import models.DateOfIncorporationModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,12 +32,11 @@ import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestHelper
 
 import scala.concurrent.Future
 
-class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
-
-  val mockS4lConnector = mock[S4LConnector]
+class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with ViewTestHelper {
 
   val contactDetailsModel = new DateOfIncorporationModel(Some(23), Some(11), Some(1993))
   val emptyDateOfIncorporationModel = new DateOfIncorporationModel(None, None, None)
@@ -61,7 +60,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -75,7 +74,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
-      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
+      document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
@@ -86,7 +85,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
         val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -100,7 +99,7 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
       (Messages("page.companyDetails.DateOfIncorporation.location"))
-      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
+      document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()

@@ -73,11 +73,11 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
   def setup(kiProcessingModel: Option[KiProcessingModel],
             commercialSaleModel: Option[CommercialSaleModel],
             previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel]) : Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(kiProcessingModel))
-    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(commercialSaleModel))
-    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(previousBeforeDOFCSModel))
   }
 

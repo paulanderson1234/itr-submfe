@@ -66,7 +66,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(yesWithTenYearPlanModel)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
@@ -94,7 +94,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(noWithNoTenYearPlanModel)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
@@ -117,7 +117,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyTenYearPlanModel)))
         val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -138,7 +138,7 @@ class TenYearPlanSpec extends UnitSpec with WithFakeApplication with MockitoSuga
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(yesInvalidTenYearPlanModel)))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,

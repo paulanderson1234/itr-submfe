@@ -60,7 +60,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     "when a valid WhatWillUseForModel is passed as returned from keystore" in new SetupPage {
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -79,7 +79,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

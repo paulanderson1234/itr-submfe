@@ -60,7 +60,7 @@ class YourCompanyNeedSpec extends UnitSpec with WithFakeApplication with Mockito
     "when a valid YourCompanyNeedModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -81,7 +81,7 @@ class YourCompanyNeedSpec extends UnitSpec with WithFakeApplication with Mockito
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(emptyYourCompanyNeedModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

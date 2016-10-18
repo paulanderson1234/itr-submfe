@@ -61,7 +61,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(natureOfBusinessModel)))
         val result = controller.show.apply(authorisedFakeRequestToPOST("natureofbusiness" -> "selling advertising"))
         Jsoup.parse(contentAsString(result))
@@ -85,7 +85,7 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyNatureOfBusinessModel)))
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))

@@ -61,7 +61,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(contactDetailsModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "forename" -> "Jeff",
@@ -86,7 +86,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyContactDetailsModel)))
         val result = controller.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

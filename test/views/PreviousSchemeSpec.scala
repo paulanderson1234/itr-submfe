@@ -23,7 +23,7 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{PreviousSchemeController, routes}
-import controllers.helpers.{FakeRequestHelper, TestHelper}
+import controllers.helpers.FakeRequestHelper
 import models.PreviousSchemeModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -35,12 +35,11 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestHelper
 
 import scala.concurrent.Future
 
-class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
-
-  val mockS4lConnector = mock[S4LConnector]
+class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with ViewTestHelper {
 
   val model = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
@@ -59,7 +58,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       override lazy val applicationConfig = FrontendAppConfig
       override lazy val authConnector = MockAuthConnector
       val s4lConnector: S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
+      override lazy val enrolmentConnector = mockEnrolmentConnector
     }
 
     when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -72,12 +71,12 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
         when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-          (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
         val result = controller.show(None).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -108,7 +107,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("help").text() shouldBe Messages("page.investment.PreviousScheme.howToFind")
       document.getElementById("date-of-share-issue-where-to-find").text() should include(Messages("page.investment.PreviousScheme.location"))
       document.getElementById("company-house-db").attr("href") shouldBe "https://www.gov.uk/get-information-about-a-company"
-      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.investment.PreviousScheme.companiesHouse"))
+      document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.investment.PreviousScheme.companiesHouse"))
 
       // BUTTON SHOULD BE ADD
       document.getElementById("next").text() shouldBe Messages("page.investment.PreviousScheme.button.add")
@@ -118,12 +117,12 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
         when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-          (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
         val result = controller.show(Some(model3.processingId.get)).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -154,7 +153,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("help").text() shouldBe Messages("page.investment.PreviousScheme.howToFind")
       document.getElementById("date-of-share-issue-where-to-find").text() should include(Messages("page.investment.PreviousScheme.location"))
       document.getElementById("company-house-db").attr("href") shouldBe "https://www.gov.uk/get-information-about-a-company"
-      document.body.getElementById("company-house-db").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.investment.PreviousScheme.companiesHouse"))
+      document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.investment.PreviousScheme.companiesHouse"))
 
       // BUTTON SHOULD BE UPDATE
       document.getElementById("next").text() shouldBe Messages("page.investment.PreviousScheme.button.update")
@@ -163,10 +162,10 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify the previous scheeme page contains the error summary, button text and back link for invalid new submisison" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.RegisteredAddressController.show().toString())))
         val result = controller.submit().apply(authorisedFakeRequestToPOST(
           "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
@@ -194,10 +193,10 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
 
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
       val result = controller.submit().apply(authorisedFakeRequestToPOST(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,

@@ -65,7 +65,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     "when a valid NewProductModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(isNewProductModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -87,7 +87,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(emptyNewProductModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -122,8 +122,8 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
       val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

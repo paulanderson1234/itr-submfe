@@ -58,7 +58,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }

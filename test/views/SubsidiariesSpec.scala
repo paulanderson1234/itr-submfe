@@ -85,9 +85,9 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -112,9 +112,9 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -140,10 +140,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -168,10 +168,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -196,10 +196,10 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
@@ -224,7 +224,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
         //submit the model with no radio selected as a post action
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
@@ -245,7 +245,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         //submit the model with no radio selected as a post action
         val result = controller.submit.apply(authorisedFakeRequestToPOST(

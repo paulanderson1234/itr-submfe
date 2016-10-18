@@ -59,7 +59,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
         val userId = s"user-${UUID.randomUUID}"
 
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
 
         val result = controller.show.apply(authorisedFakeRequest)
@@ -81,7 +81,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
           val userId = s"user-${UUID.randomUUID}"
 
           when(mockS4lConnector.fetchAndGetFormData[String]
-            (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+            (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
             .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
           val result = controller.show.apply(authorisedFakeRequest)
@@ -106,7 +106,7 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
           val userId = s"user-${UUID.randomUUID}"
 
           when(mockS4lConnector.fetchAndGetFormData[String]
-            (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+            (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
             .thenReturn(Future.successful(Option(routes.HowToApplyController.show().toString())))
 
           val result = controller.show.apply(authorisedFakeRequest)

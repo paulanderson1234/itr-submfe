@@ -23,7 +23,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import models.SubsidiariesNinetyOwnedModel
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -79,8 +79,8 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
@@ -89,8 +89,8 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
@@ -101,8 +101,8 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(

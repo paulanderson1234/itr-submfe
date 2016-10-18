@@ -21,45 +21,35 @@ import common.KeystoreKeys
 import config.FrontendAppConfig
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.{AcknowledgementController, routes}
-import controllers.helpers.{FakeRequestHelper, TestHelper}
+import controllers.helpers.FakeRequestHelper
 import models.submission.SubmissionResponse
 import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.specs2.mock.Mockito
 import play.api.i18n.Messages
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.http.HttpResponse
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import play.api.test.Helpers._
+import views.helpers.ViewTestHelper
 
-import scala.concurrent.Future
 
-  class AcknowledgementSpec extends UnitSpec with WithFakeApplication with Mockito with FakeRequestHelper{
-
-  val mockS4lConnector = mock[S4LConnector]
-  val mockSubmission = mock[SubmissionConnector]
+  class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with ViewTestHelper {
 
   val contactValid = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
   val yourCompanyNeed = YourCompanyNeedModel("AA")
   val submissionRequest = SubmissionRequest(contactValid,yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17T09:30:47Z","FBUND09889765")
 
-  class SetupPage {
-
-    val controller = new AcknowledgementController {
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector: S4LConnector = mockS4lConnector
-      val submissionConnector: SubmissionConnector = mockSubmission
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends AcknowledgementController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
 //    "The Acknowledgement page" should {
@@ -67,9 +57,9 @@ import scala.concurrent.Future
 //      "contain the correct elements when loaded" in new SetupPage {
 //        val document: Document = {
 //          //val userId = s"user-${UUID.randomUUID}"
-//          when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any()))
+//          when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(), Matchers.any(),Matchers.any()))
 //            .thenReturn(Future.successful(Option(contactValid)))
-//          when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
+//          when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any(),Matchers.any()))
 //            .thenReturn(Future.successful(Option(yourCompanyNeed)))
 //          when(mockSubmission.submitAdvancedAssurance(Matchers.eq(submissionRequest))(Matchers.any()))
 //            .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))

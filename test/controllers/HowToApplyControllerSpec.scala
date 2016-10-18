@@ -23,7 +23,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import builders.SessionBuilder
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}

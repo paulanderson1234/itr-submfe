@@ -62,7 +62,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
@@ -83,7 +83,7 @@ class SubsidiariesNinetyOwnedSpec extends UnitSpec with WithFakeApplication with
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "ownNinetyPercent" -> ""

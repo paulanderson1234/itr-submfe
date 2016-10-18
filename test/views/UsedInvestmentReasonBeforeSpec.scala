@@ -60,7 +60,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     "when a valid UsedInvestmentReasonBeforeModel is passed as returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
@@ -81,7 +81,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(emptyUsedInvestmentReasonBeforeModel)))
       val result = controller.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

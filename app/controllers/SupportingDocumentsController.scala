@@ -40,7 +40,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector)(hc).flatMap {
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
       case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
       case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
     }

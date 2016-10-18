@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -86,8 +86,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to CommercialSaleController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
       mockEnrolledRequest
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
@@ -96,8 +96,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(CommercialSaleControllerTest.show)(
@@ -162,9 +162,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
 
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput: _*)(
@@ -183,9 +183,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
@@ -204,9 +204,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
@@ -225,9 +225,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
@@ -246,9 +246,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
@@ -267,9 +267,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(

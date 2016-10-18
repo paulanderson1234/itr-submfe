@@ -16,6 +16,7 @@
 
 package connectors
 
+import auth.TAVCUser
 import config.TAVCShortLivedCache
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
@@ -31,23 +32,20 @@ trait S4LConnector {
 
   val shortLivedCache : ShortLivedCache
 
-  def saveFormData[T](key: String, data : T)(implicit hc: HeaderCarrier, format: Format[T]): Future[CacheMap] = {
-    shortLivedCache.cache[T](getCacheId, key, data)
+  def saveFormData[T](key: String, data : T)(implicit hc: HeaderCarrier, format: Format[T], user: TAVCUser): Future[CacheMap] = {
+    shortLivedCache.cache[T](user.authContext.user.oid, key, data)
   }
 
-  def fetchAndGetFormData[T](key : String)(implicit hc: HeaderCarrier, format: Format[T]): Future[Option[T]] = {
-    shortLivedCache.fetchAndGetEntry(getCacheId, key)
+  def fetchAndGetFormData[T](key : String)(implicit hc: HeaderCarrier, format: Format[T], user: TAVCUser): Future[Option[T]] = {
+    shortLivedCache.fetchAndGetEntry(user.authContext.user.oid, key)
   }
 
-  def clearKeystore()(implicit hc : HeaderCarrier) : Future[HttpResponse] = {
-    shortLivedCache.remove(getCacheId)
+  def clearCache()(implicit hc : HeaderCarrier, user: TAVCUser) : Future[HttpResponse] = {
+    shortLivedCache.remove(user.authContext.user.oid)
   }
 
-  def fetch()(implicit hc : HeaderCarrier) : Future[Option[CacheMap]] = {
-    shortLivedCache.fetch(getCacheId)
+  def fetch()(implicit hc : HeaderCarrier, user: TAVCUser) : Future[Option[CacheMap]] = {
+    shortLivedCache.fetch(user.authContext.user.oid)
   }
 
-  private def getCacheId (implicit hc: HeaderCarrier): String = {
-    hc.sessionId.getOrElse(throw new RuntimeException("")).value
-  }
 }

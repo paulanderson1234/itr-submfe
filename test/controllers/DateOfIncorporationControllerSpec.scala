@@ -25,7 +25,7 @@ import builders.SessionBuilder
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -116,8 +116,8 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to DateOfIncorporationController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
@@ -126,8 +126,8 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
@@ -138,8 +138,8 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to DateOfIncorporationController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
@@ -191,15 +191,15 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
   "Sending a valid form submit to the DateOfIncorporationController when authenticated and enrolled" should {
     "redirect to nature of business page" in {
 
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
       when(mockS4lConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
+        Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(updatedKiCacheMap)
       when(mockS4lConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(savedKIData)))
       when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
       mockEnrolledRequest
 
       val formInput = Seq(

@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -90,8 +90,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "return a 200 when something is fetched from keystore" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
       mockEnrolledRequest
       showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
@@ -102,8 +102,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
@@ -116,8 +116,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the Subscription Service" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
@@ -170,8 +170,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the subsidiaries page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
@@ -188,8 +188,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the isKI page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(isKiKIModel)))
       mockEnrolledRequest
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
@@ -206,8 +206,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the date of incorporation page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
@@ -224,8 +224,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect to the date of incorporation page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(missingDataKIModel)))
       mockEnrolledRequest
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
@@ -242,8 +242,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "redirect the ten year plan page" in {
       when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonNoValue

@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite

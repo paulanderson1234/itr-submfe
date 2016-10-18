@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -77,7 +77,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
   }
 
   def setup(turnoverCostsModel: Option[AnnualTurnoverCostsModel], checkAveragedAnnualTurnover: Boolean): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(turnoverCostsModel))
 
     // Change to checkAveragedAnnualTurnover method below when ready and perform additional tests
@@ -124,8 +124,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a GET formInput to TurnoverCostsController when Authenticated and NOT enrolled" should {
       "redirect to the Subscription Service" in {
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedTurnoverCosts)))
         mockNotEnrolledRequest
         showWithSessionAndAuth(TurnoverCostsControllerTest.show())(
@@ -181,8 +181,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       "redirect to subsidiariess spending investment form when annual turnover check returns true" in {
         mockEnrolledRequest
 
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
         when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
         (Matchers.any())).thenReturn(Future.successful(Option(true)))
@@ -204,8 +204,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       "redirect to annual turnover error page when annual turnover check returns false" in {
         mockEnrolledRequest
 
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
         when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
         (Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -227,8 +227,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       "redirect to proposed investment page when no proposed investment is returned from keystore" in {
         mockEnrolledRequest
 
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         val formInput = Seq(
           "amount1" -> "100",
@@ -248,8 +248,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending an invalid form submit to the TurnoverCostsController when Authenticated and enrolled" should {
       "return a bad request" in {
-        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
         mockEnrolledRequest
         val formInput = Seq(

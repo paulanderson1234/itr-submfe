@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -78,11 +78,11 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
   def setup(kiProcessingModel: Option[KiProcessingModel],
             commercialSaleModel: Option[CommercialSaleModel],
             previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel]) : Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(kiProcessingModel))
-    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(commercialSaleModel))
-    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(previousBeforeDOFCSModel))
   }
 
@@ -211,8 +211,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedPreviousBeforeDOFCS)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(PreviousBeforeDOFCSControllerTest.show())(
@@ -279,8 +279,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-     when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+     when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       mockEnrolledRequest
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
@@ -295,8 +295,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the subsidiaries-spending-investment page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       mockEnrolledRequest
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
@@ -311,8 +311,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
       mockEnrolledRequest
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
@@ -327,8 +327,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
       mockEnrolledRequest
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
@@ -343,8 +343,8 @@ class PreviousBeforeDOFCSControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to Subsidiaries page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue

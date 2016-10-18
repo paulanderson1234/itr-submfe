@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -55,7 +55,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -63,7 +63,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
           case Some(data) => getResponse(BadRequest,invalidForm, data)
           case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
         },
@@ -74,7 +74,8 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     )
   }
 
-  private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[Any]): Future[Result] = {
+  private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)
+                         (implicit request: Request[Any], user: TAVCUser): Future[Result] = {
 
     def determineResult(newGeographicalMarketModel: Option[NewGeographicalMarketModel],
                         newProductModel: Option[NewProductModel]): Future[Result] = {

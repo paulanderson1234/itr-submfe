@@ -62,7 +62,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
@@ -88,7 +88,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
         val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> ""

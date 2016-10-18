@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -85,8 +85,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a GET request to IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
       mockEnrolledRequest
       showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
@@ -95,8 +95,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
@@ -107,8 +107,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a GET request to IsKnowledgeIntensiveController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
@@ -159,8 +159,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the operating costs page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
       mockEnrolledRequest
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
@@ -175,8 +175,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(missingDateKIModel)))
       mockEnrolledRequest
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
@@ -191,8 +191,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveControlle when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
       mockEnrolledRequest
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
@@ -207,8 +207,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
@@ -223,8 +223,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(updatedKIModel)))
       mockEnrolledRequest
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue

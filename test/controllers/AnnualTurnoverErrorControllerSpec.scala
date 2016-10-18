@@ -20,7 +20,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar

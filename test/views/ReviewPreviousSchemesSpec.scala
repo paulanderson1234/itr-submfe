@@ -72,7 +72,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
       "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

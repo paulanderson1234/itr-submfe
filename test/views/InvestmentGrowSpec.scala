@@ -67,14 +67,14 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   def setup(investmentGrowModel: Option[InvestmentGrowModel], newGeographicalMarketModel: Option[NewGeographicalMarketModel],
             newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(investmentGrowModel))
-    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
     when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
   }
 
   "The InvestmentGrow Page" should {

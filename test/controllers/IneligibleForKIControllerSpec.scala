@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import uk.gov.hmrc.play.test.WithFakeApplication
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -75,7 +75,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
@@ -90,7 +90,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and enrolled" should {
     "return a 200" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
@@ -102,7 +102,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
@@ -156,7 +156,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "redirect to 'Subsidiaries' page" in {
 
       when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any()))
+        (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
       mockEnrolledRequest
       submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(

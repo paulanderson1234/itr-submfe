@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -58,7 +58,7 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(data) =>
           // ki data present and appears OK - get the route
-          getRoute(hc, prevRFI, comSale, hasSub, data.isKi)
+          getRoute(prevRFI, comSale, hasSub, data.isKi)
         case _ => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
     }
@@ -80,9 +80,51 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
     )
   }
 
-  def getRoute(implicit hc: HeaderCarrier, prevRFI: Option[HadPreviousRFIModel],
-               commercialSale: Option[CommercialSaleModel],
-               hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
+  def getAgeLimit(isKI: Boolean): Int = {
+    if (isKI) Constants.IsKnowledgeIntensiveYears
+    else Constants.IsNotKnowledgeIntensiveYears
+  }
+
+  def getRoute(prevRFI: Option[HadPreviousRFIModel], commercialSale: Option[CommercialSaleModel],
+               hasSub: Option[SubsidiariesModel], isKi: Boolean)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
+
+    def getPreviousSaleRoute(implicit hc: HeaderCarrier, prevRFI: Option[HadPreviousRFIModel], commercialSale: CommercialSaleModel,
+                             hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
+      val dateWithinRangeRule: Boolean = Validation.checkAgeRule(commercialSale.commercialSaleDay.get,
+        commercialSale.commercialSaleMonth.get, commercialSale.commercialSaleYear.get, getAgeLimit(isKi))
+      prevRFI match {
+        case Some(rfi) if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
+          // this is first scheme
+          if (dateWithinRangeRule) {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.WhatWillUseForController.show().toString())
+            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+          }
+          else subsidiariesCheck(hc, hasSub)
+        }
+        case Some(rfi) if rfi.hadPreviousRFI == Constants.StandardRadioButtonYesValue => {
+          // subsequent scheme
+          if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
+          else subsidiariesCheck(hc, hasSub)
+        }
+        case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+      }
+    }
+
+    def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
+      hasSub match {
+        case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
+          s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.WhatWillUseForController.show().toString())
+          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+        } else {
+          s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.WhatWillUseForController.show().toString())
+          Future.successful(Redirect(routes.InvestmentGrowController.show()))
+        }
+        case None => {
+          s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.WhatWillUseForController.show().toString())
+          Future.successful(Redirect(routes.SubsidiariesController.show()))
+        }
+      }
+    }
 
     commercialSale match {
       case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonNoValue => {
@@ -117,57 +159,6 @@ trait WhatWillUseForController extends FrontendController with AuthorisedAndEnro
 //    else {
 //      false
 //    }
-  }
-
-  def getAgeLimit(isKI: Boolean): Int = {
-    if (isKI) Constants.IsKnowledgeIntensiveYears
-    else Constants.IsNotKnowledgeIntensiveYears
-  }
-
-  def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
-    hasSub match {
-      case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
-        s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
-          routes.WhatWillUseForController.show().toString())
-        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-      } else {
-        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
-          routes.WhatWillUseForController.show().toString())
-        Future.successful(Redirect(routes.InvestmentGrowController.show()))
-      }
-      case None => {
-        s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
-          routes.WhatWillUseForController.show().toString())
-        Future.successful(Redirect(routes.SubsidiariesController.show()))
-      }
-    }
-  }
-
-  def getPreviousSaleRoute(implicit hc: HeaderCarrier, prevRFI: Option[HadPreviousRFIModel],
-                           commercialSale: CommercialSaleModel,
-                           hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
-
-    val dateWithinRangeRule: Boolean = Validation.checkAgeRule(commercialSale.commercialSaleDay.get,
-      commercialSale.commercialSaleMonth.get, commercialSale.commercialSaleYear.get, getAgeLimit(isKi))
-
-    prevRFI match {
-      case Some(rfi) if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
-        // this is first scheme
-        if (dateWithinRangeRule) {
-          s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
-            routes.WhatWillUseForController.show().toString())
-          Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-        }
-        else subsidiariesCheck(hc, hasSub)
-      }
-      case Some(rfi) if rfi.hadPreviousRFI == Constants.StandardRadioButtonYesValue => {
-        // subsequent scheme
-        if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
-        else subsidiariesCheck(hc, hasSub)
-      }
-
-      case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-    }
   }
 
 }

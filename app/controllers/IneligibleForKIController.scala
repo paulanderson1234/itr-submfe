@@ -48,7 +48,7 @@ trait IneligibleForKIController extends FrontendController with AuthorisedAndEnr
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }

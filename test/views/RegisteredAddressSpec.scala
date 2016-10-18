@@ -61,7 +61,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       "when a valid RegisteredAddressModel is passed as returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(registeredAddressModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -83,7 +83,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       "when no data is returned from keystore" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -105,7 +105,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
 
-        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(registeredAddressModel)))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "postcode" -> ""

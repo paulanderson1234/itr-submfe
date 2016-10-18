@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -101,8 +101,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to OperatingCostsController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
       mockEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
@@ -111,8 +111,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
@@ -123,8 +123,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to OperatingCostsController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(OperatingCostsControllerTest.show)(
@@ -177,8 +177,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the Percentage Of Staff With Masters page (for now)" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       val formInput = Seq(
@@ -203,8 +203,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to the Ineligible For KI page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
       val formInput = Seq(
@@ -228,8 +228,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a invalid form submit to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
 
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       mockEnrolledRequest
 
@@ -254,8 +254,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(emptyKIModel)))
       mockEnrolledRequest
       val formInput = Seq(
@@ -280,8 +280,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
       val formInput = Seq(
@@ -306,8 +306,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to DateOfIncorporation page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(missingKIModel)))
       mockEnrolledRequest
       val formInput = Seq(
@@ -332,8 +332,8 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "redirect to IsKI page" in {
       when(mockSubmissionConnector.validateKiCostConditions(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.operatingCosts), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(falseKIModel)))
       mockEnrolledRequest
       val formInput = Seq(
@@ -357,7 +357,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController when authenticated and enrolled" should {
     "return a bad request" in {
 
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSaved10PercBoundaryOC)))
       mockEnrolledRequest
       val formInput = Seq(

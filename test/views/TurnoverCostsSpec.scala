@@ -60,7 +60,7 @@ package views
       "when a valid TurnoverCostsModel is passed as returned from keystore" in new SetupPage {
       val document : Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(operatingCostsModel)))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
@@ -91,7 +91,7 @@ package views
       "is passed because nothing was returned from keystore" in new SetupPage {
       val document : Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+        when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

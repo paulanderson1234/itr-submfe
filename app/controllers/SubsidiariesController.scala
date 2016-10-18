@@ -58,14 +58,14 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesForm.bindFromRequest.fold(
-      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)(hc)
+      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
         .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.
           getOrElse(routes.DateOfIncorporationController.show().toString))))),
       validForm => {

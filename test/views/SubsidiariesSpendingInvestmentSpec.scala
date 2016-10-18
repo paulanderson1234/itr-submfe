@@ -66,10 +66,10 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     "Verify that the correct elements are loaded navigating from WhatWillUseFor page" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))
+          (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
         ))
@@ -88,10 +88,10 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
   "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new SetupPage{
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       ))
@@ -110,10 +110,10 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
   "Verify that the correct elements are loaded when navigating from NewProduct page" in new SetupPage {
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
         "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       ))
@@ -133,10 +133,10 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     val document : Document = {
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
       val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }

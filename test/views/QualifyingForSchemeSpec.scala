@@ -23,7 +23,7 @@ import builders.SessionBuilder
 import config.FrontendAppConfig
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{QualifyingForSchemeController, routes}
-import controllers.helpers.{FakeRequestHelper, TestHelper}
+import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -32,10 +32,11 @@ import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestHelper
 
 import scala.concurrent.Future
 
-class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with ViewTestHelper {
 
   class SetupPage {
 
@@ -63,10 +64,10 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("description-one").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.one")
       document.body.getElementById("description-two").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.two")
       document.body.getElementById("description-three").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.three") + " " +
-        TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
+        getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
       document.body.getElementById("description-four").text() shouldEqual Messages("page.introduction.qualifyingForScheme.description.four")
       document.body.getElementById("description-five").text() shouldEqual (Messages("page.introduction.qualifyingForScheme.description.five") + " " +
-        TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")))
+        getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness")))
       document.body.getElementById("uk-base").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.UKbase")
       document.body.getElementById("listed").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.listed")
       document.body.getElementById("num-employees").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.numEmployees")
@@ -75,8 +76,8 @@ class QualifyingForSchemeSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("property").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.property")
       document.body.getElementById("hotels").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.hotels")
       document.body.getElementById("electricity").text() shouldEqual Messages("page.introduction.qualifyingForScheme.bullet.electricity")
-      document.body.getElementById("link-text-one").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
-      document.body.getElementById("link-text-two").text() shouldEqual TestHelper.getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness"))
+      document.body.getElementById("link-text-one").text() shouldEqual getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.schemeGuidance"))
+      document.body.getElementById("link-text-two").text() shouldEqual getExternalLinkText(Messages("page.introduction.qualifyingForScheme.link.unqualifiedBusiness"))
       document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction"
       document.body.getElementById("link-text-two").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm3000"
       document.body.getElementById("back-link").attr("href") shouldEqual routes.YourCompanyNeedController.show.toString()

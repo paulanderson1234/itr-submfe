@@ -16,6 +16,7 @@
 
 package controllers.Helpers
 
+import auth.TAVCUser
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -28,7 +29,7 @@ object ControllerHelpers extends ControllerHelpers {
 trait ControllerHelpers {
 
   def getSavedBackLink(keystoreKey: String, s4lConnector: connectors.S4LConnector)
-                      (implicit hc: HeaderCarrier): Future[Option[String]] = {
+                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[String]] = {
     s4lConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
       case Some(data) => Future.successful(Some(data))
       case None => Future.successful(None)

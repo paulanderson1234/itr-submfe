@@ -60,7 +60,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }

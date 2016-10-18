@@ -16,11 +16,13 @@
 
 package controllers.Helpers
 
+import auth.TAVCUser
 import common.KeystoreKeys
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -31,7 +33,7 @@ object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
 trait KnowledgeIntensiveHelper {
 
   def setKiDateCondition(s4lConnector: connectors.S4LConnector, dateDay:Int, dateMonth:Int, dateYear:Int)
-                        (implicit hc: HeaderCarrier): Future[CacheMap] = {
+                        (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
 
     // check params
     require(dateDay > 0 && dateDay < 32, "The item to update processingId must be an integer > 0")
@@ -49,7 +51,7 @@ trait KnowledgeIntensiveHelper {
   }
 
   def setCompanyAssertsKi(s4lConnector: connectors.S4LConnector, companyAssertsIsKi: Boolean)
-                         (implicit hc: HeaderCarrier): Future[CacheMap] = {
+                         (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
 
     // update kimodel (or create first) and  dateConditionMet to
     val result = s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {

@@ -38,7 +38,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
+import helpers.FakeRequestHelper
 import models.{ContactDetailsModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -48,48 +48,24 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
+import views.helpers.CheckAnswersHelper
 
 import scala.concurrent.Future
 
-class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
-
-  val mockS4lConnector = mock[S4LConnector]
+class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper with CheckAnswersHelper {
 
   object CheckAnswersControllerTest extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   private def mockEnrolledRequest = when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+    .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
 
   private def mockNotEnrolledRequest = when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
-
-  val yourCompanyNeedModel = YourCompanyNeedModel("")
-  val taxpayerReferenceModel = TaxpayerReferenceModel("")
-  val registeredAddressModel = RegisteredAddressModel("")
-  val dateOfIncorporationModel = DateOfIncorporationModel(Some(1), Some(1), Some(1990))
-  val natureOfBusinessModel = NatureOfBusinessModel("")
-  val commercialSaleModel = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
-  val isKnowledgeIntensiveModel = IsKnowledgeIntensiveModel("")
-  val operatingCostsModel = OperatingCostsModel("", "", "", "", "", "")
-  val percentageStaffWithMastersModel = PercentageStaffWithMastersModel("")
-  val tenYearPlanModel = TenYearPlanModel("", None)
-  val subsidiariesModel = SubsidiariesModel("")
-  val hadPreviousRFIModel = HadPreviousRFIModel("")
-  val proposedInvestmentModel = ProposedInvestmentModel(0)
-  val whatWillUseForModel = WhatWillUseForModel("")
-  val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
-  val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
-  val newGeographicalMarketModel = NewGeographicalMarketModel("")
-  val newProductModel = NewProductModel("")
-  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel("")
-  val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel("")
-  val investmentGrowModel = InvestmentGrowModel("")
-  val contactDetailsModel = ContactDetailsModel("", "", "", "")
 
 
   implicit val hc = HeaderCarrier()
@@ -112,50 +88,14 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to CheckAnswersController with a populated set of models when authenticated and enrolled" should {
     "return a 200 when the page is loaded" in {
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
-      when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.eq(KeystoreKeys.taxpayerReference))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
-      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(registeredAddressModel)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(dateOfIncorporationModel)))
-      when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(natureOfBusinessModel)))
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(commercialSaleModel)))
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(isKnowledgeIntensiveModel)))
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(operatingCostsModel)))
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(percentageStaffWithMastersModel)))
-      when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(tenYearPlanModel)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(subsidiariesModel)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(proposedInvestmentModel)))
-      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(whatWillUseForModel)))
-      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
-      when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(previousBeforeDOFCSModel)))
-      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(newProductModel)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(subsidiariesNinetyOwnedModel)))
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(Option(contactDetailsModel)))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
+      previousSchemeSetup(Some(hadPreviousRFIModelYes))
+      investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModel),Some(previousBeforeDOFCSModel),
+        Some(newGeographicalMarketModel),Some(newProductModel),Some(subsidiariesSpendingInvestmentModel),Some(subsidiariesNinetyOwnedModel),
+        Some(investmentGrowModel))
+      contactDetailsSetup(Some(contactDetailsModel))
+      companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
+        Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
+        Some(percentageStaffWithMastersModel),Some(tenYearPlanModelYes),Some(subsidiariesModel))
       mockEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
@@ -166,50 +106,10 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to CheckAnswersController with an empty set of models when authenticated and enrolled" should {
     "return a 200 when the page is loaded" in {
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.eq(KeystoreKeys.taxpayerReference))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      previousSchemeSetup()
+      investmentSetup()
+      contactDetailsSetup()
+      companyDetailsSetup()
       mockEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
@@ -220,50 +120,10 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to CheckAnswersControllerTest" should {
     "redirect to the TAVC Subscription Service" in {
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.eq(KeystoreKeys.yourCompanyNeed))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.eq(KeystoreKeys.taxpayerReference))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      previousSchemeSetup()
+      investmentSetup()
+      contactDetailsSetup()
+      companyDetailsSetup()
       mockNotEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
@@ -316,7 +176,7 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
       "redirect to the acknowledgement page when authenticated and enrolled" in {
         when(CheckAnswersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+          .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
         submitWithSessionAndAuth(CheckAnswersControllerTest.submit)(
           result => {
             status(result) shouldBe SEE_OTHER

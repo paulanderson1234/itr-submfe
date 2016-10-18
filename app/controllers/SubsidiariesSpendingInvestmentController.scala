@@ -66,7 +66,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
       else Future.successful(Redirect(routes.WhatWillUseForController.show()))
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -74,7 +74,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector).flatMap {
           case Some(data) => Future.successful(
             BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
           case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))

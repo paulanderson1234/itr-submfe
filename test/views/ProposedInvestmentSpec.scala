@@ -65,10 +65,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
         val userId = s"user-${UUID.randomUUID}"
 
         when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(proposedInvestmentModel)))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
 
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
@@ -93,10 +93,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(emptyProposedInvestmentModel)))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
 
         val result = controller.submit.apply((authorisedFakeRequest))
@@ -119,10 +119,10 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockS4lConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+          (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
 
         val result = controller.submit.apply((authorisedFakeRequest))

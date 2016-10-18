@@ -14,11 +14,27 @@
  * limitations under the License.
  */
 
-package controllers.helpers
+package views.helpers
 
+import auth.{Enrolment, Identifier}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import org.mockito.Matchers
+import org.scalatest.mock.MockitoSugar
+import org.mockito.Mockito._
 import play.api.i18n.Messages
 
-object TestHelper {
+import scala.concurrent.Future
+
+trait ViewTestHelper extends MockitoSugar {
+
+  val mockS4lConnector = mock[S4LConnector]
+  val mockEnrolmentConnector = mock[EnrolmentConnector]
+  val mockSubmissionConnector = mock[SubmissionConnector]
+
+  class Setup {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  }
 
   def getExternalLinkText(linkText: String): String =
   {
