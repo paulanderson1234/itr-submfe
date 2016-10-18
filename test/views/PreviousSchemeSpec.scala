@@ -77,7 +77,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
         val result = controller.show(None).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -123,7 +123,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
         val result = controller.show(Some(model3.processingId.get)).apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -166,7 +166,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
           .thenReturn(Future.successful(Option(previousSchemeVectorList)))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.RegisteredAddressController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.RegisteredAddressController.show().url)))
         val result = controller.submit().apply(authorisedFakeRequestToPOST(
           "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
           "investmentAmount" -> "",
@@ -197,7 +197,7 @@ class PreviousSchemeSpec extends UnitSpec with WithFakeApplication with MockitoS
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       val result = controller.submit().apply(authorisedFakeRequestToPOST(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "",

@@ -64,7 +64,7 @@ class AcknowledgementSpec extends UnitSpec with WithFakeApplication with FakeReq
         document.body.getElementById("waiting-time").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.waitingTime")
         document.body.getElementById("course-of-action").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.courseOfAction")
         //back link
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.CheckAnswersController.show.toString()
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.CheckAnswersController.show().url
         //get help
         document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     }

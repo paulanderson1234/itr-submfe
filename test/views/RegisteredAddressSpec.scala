@@ -69,7 +69,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
 
         document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().url
         document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
         document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
         document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
@@ -91,7 +91,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
 
         document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().url
         document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
         document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
         document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
@@ -114,7 +114,7 @@ class RegisteredAddressSpec extends UnitSpec with WithFakeApplication with Mocki
       }
       document.title shouldBe Messages("page.companyDetails.RegisteredAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.RegisteredAddress.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.body.getElementById("label-postcode").text() should include (Messages("common.address.postcode"))
       document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")

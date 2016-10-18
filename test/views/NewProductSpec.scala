@@ -71,7 +71,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
     document.title() shouldBe Messages("page.investment.NewProduct.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewProduct.heading")
     document.select("#isNewProduct-yes").size() shouldBe 1
@@ -93,7 +93,7 @@ class NewProductSpec extends UnitSpec with WithFakeApplication with MockitoSugar
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
     document.title() shouldBe Messages("page.investment.NewProduct.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewProduct.heading")
     document.select("#isNewProduct-yes").size() shouldBe 1

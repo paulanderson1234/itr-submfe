@@ -55,7 +55,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
 
     "Verify that the Supporting documents page contains the correct elements" in new SetupPage {
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().url)))
 
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
@@ -86,7 +86,7 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
 
     "Verify that the Supporting documents page contains the correct elements cc" in new SetupPage {
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TaxpayerReferenceController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TaxpayerReferenceController.show().url)))
 
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"

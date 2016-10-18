@@ -91,7 +91,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "return a 200" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().url)))
       mockEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => status(result) shouldBe OK
@@ -103,7 +103,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
     "redirect to the Subscription Service" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().url)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(IneligibleForKIControllerTest.show())(
         result => {
@@ -157,7 +157,7 @@ class IneligibleForKIControllerSpec extends UnitSpec with MockitoSugar with Befo
 
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().url)))
       mockEnrolledRequest
       submitWithSessionAndAuth(IneligibleForKIControllerTest.submit)(
         result => {

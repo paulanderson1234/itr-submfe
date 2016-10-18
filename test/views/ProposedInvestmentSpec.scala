@@ -69,7 +69,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           .thenReturn(Future.successful(Option(proposedInvestmentModel)))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
 
         val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
           "investmentAmount" -> "5000000"
@@ -97,7 +97,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           .thenReturn(Future.successful(Option(emptyProposedInvestmentModel)))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
 
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))
@@ -123,7 +123,7 @@ class ProposedInvestmentSpec extends UnitSpec with WithFakeApplication with Mock
           .thenReturn(Future.successful(None))
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
 
         val result = controller.submit.apply((authorisedFakeRequest))
         Jsoup.parse(contentAsString(result))

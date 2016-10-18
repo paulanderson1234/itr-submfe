@@ -372,7 +372,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
+          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }
@@ -393,7 +393,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
+          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }
@@ -413,7 +413,7 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSessionAndAuth(OperatingCostsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().toString())
+          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }

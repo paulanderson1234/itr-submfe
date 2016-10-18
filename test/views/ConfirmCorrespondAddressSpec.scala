@@ -82,7 +82,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")
       document.body.getElementById("contactAddressUse-noLabel").text shouldBe  Messages("common.radioNoLabel")
@@ -117,7 +117,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")
       document.body.getElementById("contactAddressUse-noLabel").text shouldBe  Messages("common.radioNoLabel")
@@ -155,7 +155,7 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ContactDetailsController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")
       document.body.getElementById("contactAddressUse-noLabel").text shouldBe  Messages("common.radioNoLabel")

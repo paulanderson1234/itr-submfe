@@ -67,7 +67,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
     document.title() shouldBe Messages("page.companyDetails.OperatingCosts.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.OperatingCosts.heading")
     document.getElementById("operating-costs-hint-one").text() shouldBe Messages("page.companyDetails.OperatingCosts.hint.one")
@@ -93,7 +93,7 @@ class OperatingCostsSpec extends UnitSpec with WithFakeApplication with MockitoS
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
     document.title() shouldBe Messages("page.companyDetails.OperatingCosts.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.OperatingCosts.heading")
     document.getElementById("operating-costs-hint-one").text() shouldBe Messages("page.companyDetails.OperatingCosts.hint.one")

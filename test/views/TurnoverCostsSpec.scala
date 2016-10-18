@@ -66,7 +66,7 @@ package views
         Jsoup.parse(contentAsString(result))
       }
 
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
       document.title() shouldBe Messages("page.companyDetails.TurnoverCosts.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.TurnoverCosts.heading")
       document.getElementById("turnover-costs-hint-one").text() shouldBe Messages("page.companyDetails.TurnoverCosts.hint.one")
@@ -97,7 +97,7 @@ package views
         Jsoup.parse(contentAsString(result))
       }
 
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
       document.title() shouldBe Messages("page.companyDetails.TurnoverCosts.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.TurnoverCosts.heading")
       document.getElementById("turnover-costs-hint-one").text() shouldBe Messages("page.companyDetails.TurnoverCosts.hint.one")

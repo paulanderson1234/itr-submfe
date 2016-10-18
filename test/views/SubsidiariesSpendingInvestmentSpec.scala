@@ -67,7 +67,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))
-          (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+          (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
@@ -76,7 +76,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         Jsoup.parse(contentAsString(result))
       }
 
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
       document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
       document.select("#subSpendingInvestment-yes").size() shouldBe 1
@@ -89,7 +89,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
@@ -98,7 +98,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
     document.select("#subSpendingInvestment-yes").size() shouldBe 1
@@ -111,7 +111,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.NewProductController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.NewProductController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
       val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
@@ -120,7 +120,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
     document.select("#subSpendingInvestment-yes").size() shouldBe 1
@@ -134,7 +134,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
       val result = controller.submit.apply(authorisedFakeRequest)

@@ -99,7 +99,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "return a 200 when something is fetched from keystore" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       mockEnrolledRequest
@@ -111,7 +111,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(None))
       mockEnrolledRequest
@@ -125,7 +125,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "redirect to the Subscription Service" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
       mockNotEnrolledRequest
@@ -179,7 +179,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "redirect to the previous investment before page" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
       when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonYesValue
@@ -196,7 +196,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "redirect to the previous investment before page" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
       when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonNoValue
@@ -213,7 +213,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     "redirect to itself with errors" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
       mockEnrolledRequest
       val formInput = "ownSubsidiaries" -> ""
       submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(

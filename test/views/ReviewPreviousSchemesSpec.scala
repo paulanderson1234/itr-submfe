@@ -80,7 +80,7 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
 
       document.title shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousSchemeController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousSchemeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("summaryQuestion.previousRFISection")
 
       lazy val reviewSchemesTableHead = document.getElementById("previous-schemes-table").select("thead")

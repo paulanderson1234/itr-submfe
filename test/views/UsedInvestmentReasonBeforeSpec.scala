@@ -66,7 +66,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -87,7 +87,7 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1

@@ -98,7 +98,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
         result => status(result) shouldBe OK
@@ -111,7 +111,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
         result => status(result) shouldBe OK
@@ -126,7 +126,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(PreviousSchemeControllerTest.show(None))(
         result => {
@@ -180,7 +180,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       .thenReturn(Future.successful(Option(emptyVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(1)))(
@@ -195,7 +195,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
       .thenReturn(Future.successful(Option(previousSchemeVectorList)))
     when(mockS4lConnector.fetchAndGetFormData[String]
       (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
     when(PreviousSchemeControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
     showWithSessionAndAuth(PreviousSchemeControllerTest.show(Some(3)))(
@@ -249,7 +249,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
@@ -279,7 +279,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
@@ -310,7 +310,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
@@ -339,7 +339,7 @@ class PreviousSchemeControllerSpec extends UnitSpec with MockitoSugar with Befor
         .thenReturn(Future.successful(Option(previousSchemeVectorList)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkPreviousScheme))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeVctValue,

@@ -60,13 +60,13 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
 
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.OperatingCostsController.show().url)))
 
         val result = controller.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().url
       document.title shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
       document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
@@ -82,13 +82,13 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
 
           when(mockS4lConnector.fetchAndGetFormData[String]
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-            .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+            .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
 
           val result = controller.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
 
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show().toString()
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show().url
         document.title shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
@@ -107,13 +107,13 @@ class IneligibleForKISpec extends UnitSpec with WithFakeApplication with Mockito
 
           when(mockS4lConnector.fetchAndGetFormData[String]
             (Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))(Matchers.any(), Matchers.any(),Matchers.any()))
-            .thenReturn(Future.successful(Option(routes.HowToApplyController.show().toString())))
+            .thenReturn(Future.successful(Option(routes.HowToApplyController.show().url)))
 
           val result = controller.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
 
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show().toString()
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show().url
         document.title shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")

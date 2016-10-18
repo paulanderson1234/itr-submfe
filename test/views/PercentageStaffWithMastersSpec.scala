@@ -69,7 +69,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().url
     document.title() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading")
     document.getElementById("condition-for-KI").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint")
@@ -91,7 +91,7 @@ class PercentageStaffWithMastersSpec extends UnitSpec with WithFakeApplication w
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.OperatingCostsController.show().url
     document.title() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading")
     document.getElementById("condition-for-KI").text() shouldBe Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint")

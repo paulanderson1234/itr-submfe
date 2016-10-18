@@ -86,7 +86,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -96,7 +96,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based saved backlink retrieved from keystore (IsKnowledgeIntensiveController in this test)
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -113,7 +113,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelYes)))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -124,7 +124,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
 
       // Back link should change based saved backlink retrieved from keystore (IsKnowledgeIntensiveController in this test)
       document.body.getElementById("back-link").attr("href") shouldEqual
-        routes.PercentageStaffWithMastersController.show().toString()
+        routes.PercentageStaffWithMastersController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -141,7 +141,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
@@ -169,7 +169,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(Option(subsidiariesModelNo)))
@@ -197,7 +197,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().url)))
         when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel]
           (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
           .thenReturn(Future.successful(None))
@@ -208,7 +208,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       }
 
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -225,7 +225,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
         val userId = s"user-${UUID.randomUUID}"
         when(mockS4lConnector.fetchAndGetFormData[String]
           (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().url)))
         //submit the model with no radio selected as a post action
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "subsidiaries" -> ""
@@ -236,7 +236,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
     }
 
     // this should never happen but defensive code is present so test it..
@@ -257,7 +257,7 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
     }
 
   }

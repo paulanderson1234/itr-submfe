@@ -67,7 +67,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
     document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
@@ -93,7 +93,7 @@ class IsKnowledgeIntensiveSpec extends UnitSpec with WithFakeApplication with Mo
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
     document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")

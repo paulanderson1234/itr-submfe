@@ -126,7 +126,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
@@ -141,7 +141,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
@@ -159,7 +159,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => {
@@ -229,7 +229,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -254,7 +254,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -278,7 +278,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -302,7 +302,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -326,7 +326,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -350,7 +350,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -374,7 +374,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -396,7 +396,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect with a bad request" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "fff"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
@@ -411,7 +411,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect with a bad request" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "0"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
@@ -426,7 +426,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "redirect with a bad request" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "5000001"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(

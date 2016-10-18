@@ -91,7 +91,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
@@ -117,7 +117,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
@@ -143,7 +143,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
@@ -169,7 +169,7 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))

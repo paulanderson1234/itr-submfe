@@ -70,10 +70,10 @@ class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication w
       previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
         notAvailableMessage
       previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-link")
-        .attr("href") shouldEqual routes.HadPreviousRFIController.show().toString()
+        .attr("href") shouldEqual routes.HadPreviousRFIController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
     }
   }
 }
