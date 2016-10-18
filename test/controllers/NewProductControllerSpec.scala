@@ -57,9 +57,6 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   val modelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
   val modelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
   val emptyModel = NewProductModel("")
-  val modelSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val modelSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
-  val emptySubsidiariesModel = SubsidiariesModel("")
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
   val keyStoreSavedNewProduct = NewProductModel(Constants.StandardRadioButtonYesValue)
 
@@ -157,10 +154,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   }
 
   "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to the subsidiaries spending investment page when the subsidiaries value is Yes" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
+
+    "redirect to the annual turnover page" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(NewProductControllerTest.submit,formInput)(
@@ -172,86 +168,20 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     }
   }
 
-
-  "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to how use investment (how grow) page when the subsidiaries value is No" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      mockEnrolledRequest
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
-        }
-      )
-    }
-  }
-
-  "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to the subsidiaries page when the subsidiaries value is not present" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
-        }
-      )
-    }
-  }
-
   //TODO:
   // the No sections below will be much simplified later as they will just go to the required error page
   // (or in page javascript to make it red in which case not part of navigation at all and no controller test required)
   // The subsidiaries logic test is not required in the 3 tests below can be replaced by a single test  top the error page
   "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to the subsidiaries page when the subsidiaries value is Yes" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(modelSubsidiariesYes)))
+
+    "redirect to the annual turnover page" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
-        }
-      )
-    }
-  }
-
-  "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to the subsidiaries page when the subsidiaries value is No" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(modelSubsidiariesNo)))
-      mockEnrolledRequest
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
-        }
-      )
-    }
-  }
-
-  "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
-    "redirect to the subsidiaries page when the subsidiaries value is not present" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
         }
       )
     }

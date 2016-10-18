@@ -22,6 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import forms.ContactAddressForm._
 import models.{AddressModel, ContactAddressModel}
+import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.CountriesHelper
@@ -53,7 +54,8 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     contactAddressForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(ContactAddress(formWithErrors, countriesList)))
+        Future.successful(BadRequest(ContactAddress(if(formWithErrors.hasGlobalErrors)
+          formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode")) else formWithErrors, countriesList)))
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)

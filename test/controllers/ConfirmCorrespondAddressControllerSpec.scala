@@ -19,11 +19,11 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
-import models.ConfirmCorrespondAddressModel
+import controllers.helpers.FakeRequestHelper
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -55,9 +55,12 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
   private def mockNotEnrolledRequest = when(ConfirmCorrespondAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
 
-  val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
+  val model = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val cacheMapAddress: CacheMap = CacheMap("", Map("" -> Json.toJson(address)))
+  val keyStoreSavedConfirmCorrespondAddress = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
+  val keyStoreSavedContactAddress = AddressModel("c Line 1", "c Line 2", Some("c Line 3"), Some("c Line 4"), Some("TF1 5NY"), "GB")
 
   implicit val hc = HeaderCarrier()
 
@@ -79,19 +82,12 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
 
   "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
-        result => status(result) shouldBe OK
-      )
-    }
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
+      when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(address)))
+
       mockEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => status(result) shouldBe OK
@@ -99,11 +95,45 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
     }
   }
 
+  //TODO: mock the address returned form ETMP when implemented (currently is hard coded return in controller)
+  "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
+    "return a 200 when no contact address exists but an address is returned from ETMP" in {
+
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
+
+      when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+
+      mockEnrolledRequest
+      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
+        result => status(result) shouldBe OK
+      )
+    }
+  }
+
+
+  //TODO: Re-introduce when we try to get the address form ETMP when it is then possible to mock a return none for this
+//    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+//      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+//      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
+//        .thenReturn(Future.successful(None))
+//      mockEnrolledRequest
+//      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
+//        result => status(result) shouldBe OK
+//      )
+//    }
+//  }
+
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
+
+    "return a 303 to the subscription url" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedConfirmCorrespondAddress)))
+      when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(address)))
       mockNotEnrolledRequest
       showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
         result => {
@@ -155,18 +185,45 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect Supporting Documents when the Yes option is selected" in {
       mockEnrolledRequest
-      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.confirmContactAddress), Matchers.any())
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.contactAddress), Matchers.any())
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapAddress)
+      val formInput = Seq(
+        "contactAddressUse" -> Constants.StandardRadioButtonYesValue,
+        "address.addressline1" -> "Line 1",
+        "address.addressline2" -> "Line 2",
+        "address.addressline3" -> "Line 3",
+        "address.addressline4" -> "line 4",
+        "address.postcode" -> "TF1 3NY",
+        "address.countryCode" -> "GB")
+
+      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
         }
       )
     }
-    "redirect to Contact Address page when the no option is selected" in {
-      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonNoValue
+  }
+    "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
+    "redirect to Contact Address page when the 'No' option is selected" in {
+      mockEnrolledRequest
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.confirmContactAddress), Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.contactAddress), Matchers.any())
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapAddress)
 
-      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+      val formInput = Seq(
+        "contactAddressUse" -> Constants.StandardRadioButtonNoValue,
+        "address.addressline1" -> "Line 1",
+        "address.addressline2" -> "Line 2",
+        "address.addressline3" -> "Line 3",
+        "address.addressline4" -> "line 4",
+        "address.postcode" -> "TF1 3NY",
+        "address.countryCode" -> "GB")
+
+      submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
@@ -178,8 +235,15 @@ class ConfirmCorrespondAddressControllerSpec extends UnitSpec with MockitoSugar 
   "Submitting a invalid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
       mockEnrolledRequest
-       val formInput = "contactAddressUse" -> ""
-       submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput)(
+      val formInput = Seq(
+        "contactAddressUse" -> "",
+        "address.addressline1" -> "Line 1",
+        "address.addressline2" -> "Line 2",
+        "address.addressline3" -> "Line 3",
+        "address.addressline4" -> "line 4",
+        "address.postcode" -> "TF1 3NY",
+        "address.countryCode" -> "GB")
+       submitWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.submit, formInput:_*)(
           result => {
             status(result) shouldBe BAD_REQUEST
           }
