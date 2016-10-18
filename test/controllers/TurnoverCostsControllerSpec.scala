@@ -56,6 +56,9 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
   private def mockNotEnrolledRequest = when(TurnoverCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
 
+
+  val keyStoreSubsidiariesYes = SubsidiariesModel("Yes")
+  val keyStoreSubsidiariesNo = SubsidiariesModel("No")
   val keyStoreSavedTurnoverCosts = AnnualTurnoverCostsModel("23", "34", "44", "66", "98")
   val keyStorePostedTurnoverCosts = AnnualTurnoverCostsModel("132", "134", "144", "166", "198")
   //val emptyModel = AnnualTurnoverCostsModel("")
@@ -178,12 +181,14 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
     }
 
     "Sending a valid form submission to the TurnoverCostsController when Authenticated and enrolled" should {
-      "redirect to subsidiariess spending investment form when annual turnover check returns true" in {
+      "redirect to subsidiariess spending investment form when annual turnover check returns true and owns subsidiaries is true" in {
         mockEnrolledRequest
 
         when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
         when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
         when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
         (Matchers.any())).thenReturn(Future.successful(Option(true)))
         val formInput = Seq(
@@ -201,12 +206,41 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
         )
       }
 
+        "redirect to investment grow form when annual turnover check returns true and owns subsidiaries is false" in {
+          mockEnrolledRequest
+
+          when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+          when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+          when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+            .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+          when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
+          (Matchers.any())).thenReturn(Future.successful(Option(true)))
+          val formInput = Seq(
+            "amount1" -> "100",
+            "amount2" -> "100",
+            "amount3" -> "100",
+            "amount4" -> "100",
+            "amount5" -> "100"
+          )
+          submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+            result => {
+              status(result) shouldBe SEE_OTHER
+              redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+            }
+          )
+        }
+
       "redirect to annual turnover error page when annual turnover check returns false" in {
         mockEnrolledRequest
 
         when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
         when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
         when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
         (Matchers.any())).thenReturn(Future.successful(Option(false)))
         val formInput = Seq(
@@ -230,6 +264,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
         when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
         when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
+        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
         val formInput = Seq(
           "amount1" -> "100",
           "amount2" -> "100",
@@ -244,6 +280,33 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           }
         )
       }
+
+      "redirect to subsidiaries page when no subsidiaries model is returned from keystore" in {
+        mockEnrolledRequest
+
+        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
+        (Matchers.any())).thenReturn(Future.successful(Option(true)))
+        val formInput = Seq(
+          "amount1" -> "100",
+          "amount2" -> "100",
+          "amount3" -> "100",
+          "amount4" -> "100",
+          "amount5" -> "100"
+        )
+        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          }
+        )
+      }
+
+
     }
 
     "Sending an invalid form submit to the TurnoverCostsController when Authenticated and enrolled" should {
