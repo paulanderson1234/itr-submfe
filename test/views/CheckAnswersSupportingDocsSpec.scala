@@ -140,14 +140,16 @@ class CheckAnswersSupportingDocsSpec extends UnitSpec with WithFakeApplication w
 
       //Section 5 table heading
       document.getElementById("supportingDocsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.supportingDocsSection")
-      supportingDocsTableBody .select("tr").get(0).getElementById("supportingDocs-company-accounts").text() shouldBe
-        Messages("page.introduction.HowToApply.number.sendOne")
-      supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-subsidiary-accounts").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
-      supportingDocsTableBody .select("tr").get(2).getElementById("supportingDocs-articles").text() shouldBe
-        Messages("page.introduction.HowToApply.number.sendTwo")
-      supportingDocsTableBody .select("tr").get(3).getElementById("supportingDocs-prospectus").text() shouldBe
-        Messages("page.introduction.HowToApply.number.sendThree")
+      supportingDocsTableBody .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
+        Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
+      supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-company-accounts").text() shouldBe
+        Messages("page.checkAndSubmit.checkAnswers.bullet.two")
+      supportingDocsTableBody .select("tr").get(2).getElementById("shareholder-agree").text() shouldBe
+        Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
+      supportingDocsTableBody .select("tr").get(3).getElementById("memorandum-docs").text() shouldBe
+        Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
+      supportingDocsTableBody .select("tr").get(4).getElementById("supportingDocs-prospectus").text() shouldBe
+        Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
