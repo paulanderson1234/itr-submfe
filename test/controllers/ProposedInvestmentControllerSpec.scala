@@ -111,6 +111,9 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "use the correct auth connector" in {
       ProposedInvestmentController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      ProposedInvestmentController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {

@@ -79,6 +79,9 @@ class UsedInvestmentReasonBeforeControllerSpec extends UnitSpec with MockitoSuga
     "use the correct auth connector" in {
       UsedInvestmentReasonBeforeController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      UsedInvestmentReasonBeforeController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to UsedInvestmentReasonBeforeController when authenticated and enrolled" should {

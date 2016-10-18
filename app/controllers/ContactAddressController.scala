@@ -21,10 +21,11 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, KeystoreConnector}
 import forms.ContactAddressForm._
-import models.ContactAddressModel
+import models.{AddressModel, ContactAddressModel}
 import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html._
+import utils.CountriesHelper
+import views.html.contactInformation.ContactAddress
 
 import scala.concurrent.Future
 
@@ -40,17 +41,19 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
 
   val keyStoreConnector: KeystoreConnector
 
+  lazy val countriesList = CountriesHelper.getIsoCodeTupleList
+
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[ContactAddressModel](KeystoreKeys.contactAddress).map {
-      case Some(data) => Ok(contactInformation.ContactAddress(contactAddressForm.fill(data)))
-      case None => Ok(contactInformation.ContactAddress(contactAddressForm))
+    keyStoreConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress).map {
+      case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
+      case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("","")), countriesList))
     }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     contactAddressForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(contactInformation.ContactAddress(formWithErrors)))
+        Future.successful(BadRequest(ContactAddress(formWithErrors, countriesList)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)

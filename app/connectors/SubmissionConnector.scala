@@ -16,6 +16,7 @@
 
 package connectors
 import config.{TavcSessionCache, WSHttp}
+import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.http.cache.client.SessionCache
@@ -62,10 +63,18 @@ trait SubmissionConnector {
 
   }
 
+  def checkAveragedAnnualTurnover(proposedInvestmentAmount: ProposedInvestmentModel, annualTurnoverCostsModel: AnnualTurnoverCostsModel)
+                                 (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
+      s"proposed-investment-amount/${proposedInvestmentAmount.investmentAmount}/annual-turn-over/${annualTurnoverCostsModel.amount1}" +
+      s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
+  }
+
   //TODO: put all these methods in a service?
   def submitAdvancedAssurance(submissionRequest: Submission)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val tavcReferenceId = "XADD00000001234" //TODO: get from enrolment
     val json = Json.toJson(submissionRequest)
+
     val targetSubmissionModel = Json.parse(json.toString()).as[DesSubmitAdvancedAssuranceModel]
 
     http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceId/submit", Json.toJson(targetSubmissionModel))

@@ -63,6 +63,9 @@ class SupportingDocumentsControllerSpec extends UnitSpec with MockitoSugar with 
     "use the correct auth connector" in {
       SupportingDocumentsController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      SupportingDocumentsController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to SupportingDocumentsController" should {

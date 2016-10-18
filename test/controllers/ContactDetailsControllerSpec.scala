@@ -72,6 +72,9 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     "use the correct auth connector" in {
       ContactDetailsController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      ContactDetailsController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to ContactDetailsController when authenticated and enrolled" should {

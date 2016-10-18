@@ -14,116 +14,124 @@
  * limitations under the License.
  */
 
-package views
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import java.util.UUID
+  package views
 
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
-import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.{ContactAddressController, routes}
-import controllers.helpers.FakeRequestHelper
-import models.ContactAddressModel
-import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import play.api.i18n.Messages
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+  import connectors.KeystoreConnector
+  import controllers.helpers.FakeRequestHelper
+  import controllers.routes
+  import forms.ContactAddressForm._
+  import models.AddressModel
+  import org.jsoup.Jsoup
+  import org.scalatest.mock.MockitoSugar
+  import play.api.i18n.Messages
+  import play.api.test.Helpers._
+  import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+  import views.html.contactInformation.ContactAddress
 
-import scala.concurrent.Future
+  class ContactAddressSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
 
-class ContactAddressSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
+    val mockKeystoreConnector = mock[KeystoreConnector]
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+    val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
+    val emptyAddressModel = new AddressModel("", "", countryCode = "")
 
-  val contactAddressModel = new ContactAddressModel("ST1 1QQ")
+    lazy val form = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> "JP"))
 
-  class SetupPage {
+    lazy val emptyForm = contactAddressForm.bind(Map("addressline1" -> "",
+      "addressline2" -> "",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> ""))
 
-    val controller = new ContactAddressController {
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    lazy val errorForm = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
+      "addressline2" -> "Mt. Akina",
+      "addressline3" -> "",
+      "addressline4" -> "",
+      "postcode" -> "",
+      "countryCode" -> ""))
+
+    val countriesList: List[(String, String)] = List(("JP", "Japan"), ("GB", "United Kingdom"))
+    lazy val page = ContactAddress(form, countriesList)(authorisedFakeRequest)
+    lazy val emptyPage = ContactAddress(emptyForm, countriesList)(authorisedFakeRequest)
+    lazy val errorPage = ContactAddress(errorForm, countriesList)(authorisedFakeRequest)
+
+    "The Provide Correspondence Address page" should {
+
+      "Verify that the Provide Correspondence Address page contains the correct elements when a valid AddressModel is passed" in {
+
+        lazy val document = {
+          Jsoup.parse(contentAsString(page))
+        }
+
+        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+        document.getElementById("next").text() shouldBe Messages("common.button.continue")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+        document.body.getElementById("addressline1").`val`() shouldBe contactAddressModel.addressline1
+        document.body.getElementById("addressline2").`val`() shouldBe contactAddressModel.addressline2
+        document.body.getElementById("addressline3").`val`() shouldBe ""
+        document.body.getElementById("addressline4").`val`() shouldBe ""
+        document.body.getElementById("postcode").`val`() shouldBe ""
+        document.body.select("select[name=countryCode] option[selected]").`val`() shouldBe contactAddressModel.countryCode
+        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      }
+
+      "Verify that the Provide Correspondence Address page contains the correct elements " +
+        "when an empty AddressModel is passed" in {
+
+        lazy val document = {
+          Jsoup.parse(contentAsString(emptyPage))
+        }
+
+        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+        document.getElementById("next").text() shouldBe Messages("common.button.continue")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+        document.getElementById("error-summary-display").hasClass("error-summary--show")
+        document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
+        document.getElementById("addressline1-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
+        document.getElementById("addressline2-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
+      }
+
+      "Verify that the Provide Correspondence Address page contains the correct elements " +
+        "when an invalid AddressModel is passed" in {
+
+        lazy val document = {
+          Jsoup.parse(contentAsString(errorPage))
+        }
+        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+        document.getElementById("next").text() shouldBe Messages("common.button.continue")
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+        document.getElementById("error-summary-display").hasClass("error-summary--show")
+        document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
+      }
     }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
   }
-
-  "The Contact Address page" should {
-
-    "Verify that Contact Address page contains the correct elements " +
-      "when a valid ContactAddressModel is passed as returned from keystore" in new SetupPage {
-      val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(contactAddressModel)))
-        val result = controller.show.apply(authorisedFakeRequest)
-        Jsoup.parse(contentAsString(result))
-      }
-
-      document.title shouldBe Messages("page.contactInformation.ContactAddress.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ContactAddress.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().toString()
-      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-      document.body.getElementById("label-postcode").text() should include(Messages("common.address.postcode"))
-      document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
-      document.body.getElementById("description-one").text() shouldBe Messages("page.contactInformation.ContactAddress.description.one")
-      document.body.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
-      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-
-    }
-
-    "Verify that Contact Address page contains the correct elements " +
-      "when no data is returned from keystore" in new SetupPage {
-      val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        val result = controller.show.apply(authorisedFakeRequest)
-        Jsoup.parse(contentAsString(result))
-      }
-
-      document.title shouldBe Messages("page.contactInformation.ContactAddress.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ContactAddress.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().toString()
-      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-      document.body.getElementById("label-postcode").text() should include(Messages("common.address.postcode"))
-      document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
-      document.body.getElementById("description-one").text() shouldBe Messages("page.contactInformation.ContactAddress.description.one")
-      document.body.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
-      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-
-    }
-
-    "Verify that the contact address contains the correct elements and error when an invalid model is posted" in new SetupPage {
-      val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(contactAddressModel)))
-        val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
-          "postcode" -> ""
-        ))
-        Jsoup.parse(contentAsString(result))
-      }
-      document.title shouldBe Messages("page.contactInformation.ContactAddress.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ContactAddress.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().toString()
-      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-      document.body.getElementById("label-postcode").text() should include(Messages("common.address.postcode"))
-      document.body.getElementById("uk-address").text() shouldBe Messages("common.address.findUKAddress")
-      document.body.getElementById("description-one").text() shouldBe Messages("page.contactInformation.ContactAddress.description.one")
-      document.body.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
-      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-      document.getElementById("error-summary-display").hasClass("error-summary--show")
-      document.getElementById("error-summary-heading").text() shouldBe Messages("common.error.summary.heading")
-    }
-
-  }
-}

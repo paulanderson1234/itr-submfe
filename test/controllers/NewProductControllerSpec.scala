@@ -74,10 +74,11 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     "use the correct keystore connector" in {
       NewProductController.keyStoreConnector shouldBe KeystoreConnector
     }
-  }
-  "NewProductController" should {
     "use the correct auth connector" in {
       NewProductController.authConnector shouldBe FrontendAuthConnector
+    }
+    "use the correct enrolment connector" in {
+      NewProductController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 
@@ -165,7 +166,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSessionAndAuth(NewProductControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
         }
       )
     }
@@ -218,7 +219,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
       submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
         }
       )
     }

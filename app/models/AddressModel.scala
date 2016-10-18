@@ -18,11 +18,11 @@ package models
 
 import play.api.libs.json.Json
 
-case class AddressModel(addressLine1 : String,
-                        addressLine2 : String,
-                        addressLine3 : Option[String],
-                        addressLine4 : Option[String],
-                        postCode : Option[String],
+case class AddressModel(addressline1 : String,
+                        addressline2 : String,
+                        addressline3 : Option[String] = None,
+                        addressline4 : Option[String] = None,
+                        postcode : Option[String] = None,
                         countryCode : String = "GB")
 
 object AddressModel {

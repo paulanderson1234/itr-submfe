@@ -252,7 +252,7 @@ page.companyDetails.OperatingCosts.error.field.five = Research and Development C
 page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Turnover Costs Page
-page.companyDetails.TurnoverCosts.title = Annual trunover
+page.companyDetails.TurnoverCosts.title = Annual turnover
 page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
 page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
@@ -311,18 +311,15 @@ page.investment.UsedInvestmentReasonBefore.heading=Has your company used a tax r
 
 #New product page
 page.investment.NewProduct.title=New product
-page.investment.NewProduct.heading=Will you use this investment to launch a new product?
-page.investment.NewProduct.hint=Answer yes if the product''s either:
-page.investment.NewProduct.bullet.one=novel, meaning new and original for the market
-page.investment.NewProduct.bullet.two=new for your company
+page.investment.NewProduct.heading=Will you use this investment to enter a new product market?
+page.investment.NewProduct.hint=Read more about
+page.investment.NewProduct.hint.link=new product markets
 
 #New Geographical market page
-page.investment.NewGeographicalMarket.title=New geographical market
+page.investment.NewGeographicalMarket.title=New geographic market
 page.investment.NewGeographicalMarket.heading=Will you use this investment to launch one of your products somewhere new?
-page.investment.NewGeographicalMarket.hint=This includes launching it in another:
-page.investment.NewGeographicalMarket.bullet.one=city
-page.investment.NewGeographicalMarket.bullet.two=region
-page.investment.NewGeographicalMarket.bullet.three=country
+page.investment.NewGeographicalMarket.hint=It''s sometimes called launching in a
+page.investment.NewGeographicalMarket.hint.link=new geographic market
 
 #ten year plan page
 page.knowledgeIntensive.TenYearPlan.title = Ten year plan
@@ -367,7 +364,10 @@ page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
 page.investment.InvestmentGrow.bullet.two=attract new customers
 page.investment.InvestmentGrow.bullet.three=develop a new product
-page.investment.InvestmentGrow.description.two=You can also send a copy of your business plan with your supporting documents.
+page.investment.InvestmentGrow.description.two=Make sure you explain how you’ll use the investment:
+page.investment.InvestmentGrow.bullet.geographicalMarket=to launch your product somewhere new
+page.investment.InvestmentGrow.bullet.productMarket=to enter a new product market
+page.investment.InvestmentGrow.description.three=You must send a copy of your business plan with your supporting documents.
 
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
@@ -459,10 +459,18 @@ page.summaryQuestion.telephone=Telephone number
 page.summaryQuestion.email=Email address
 page.summaryQuestion.contactAddress=Contact address
 
+
 #supply contact address
-page.contactInformation.ContactAddress.heading=What''s their address?
-page.contactInformation.ContactAddress.title=Contact address
-page.contactInformation.ContactAddress.description.one=Enter address manually
+page.contactInformation.ProvideContactAddress.heading=Where should we send your correspondence?
+page.contactInformation.ProvideContactAddress.title=Provide correspondence address
+page.contactInformation.ProvideContactAddress.addressline1.label=Address line 1
+page.contactInformation.ProvideContactAddress.addressline2.label=Address line 2
+page.contactInformation.ProvideContactAddress.addressline3.label=Address line 3 (optional)
+page.contactInformation.ProvideContactAddress.addressline4.label=Address line 4 (optional)
+page.contactInformation.ProvideContactAddress.postcode.label=Postcode
+page.contactInformation.ProvideContactAddress.country.label=Country
+page.address.country.select = Select one country
+#page.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 
 #contact details page
 page.contactInformation.contactDetails.heading=Who should we contact about your application?

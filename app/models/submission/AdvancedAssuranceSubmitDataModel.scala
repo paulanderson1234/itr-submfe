@@ -37,8 +37,8 @@ case class OrganisationDetailsModel(
                                 organisationName: String,
                                 utr: Option[String] = None,
                                 chrn: Option[String] = None,
-                                startDate: DateOfIncorporationModel, // date of incorp as YYYY-MM-DD,
-                                firstDateOfCommercialSale: Option[String] = None, // date of first sale as YYYY-MM-DD
+                                startDate: DateOfIncorporationModel,
+                                firstDateOfCommercialSale: Option[String] = None,
                                 ctUtr: Option[String] = None,
                                 crn: Option[String] = None,
                                 companyAddress: Option[AddressModel] = None,
@@ -58,9 +58,6 @@ case class AdvancedAssuranceSubmissionType(
                                             // required for contactName (name1 only mandatory) and and contactDetails.
                                             // if mobileNumber and/or faxNumber are added to this model later they will
                                             // be automatically read by target model
-
-                                            // TODO: Contact address is mandatory but not fully captured yet
-                                            // so hard coded below: remove test address once read from ETMP detais
                                             correspondenceAddress: AddressModel,
                                             schemeTypes: SchemeTypesModel,
 

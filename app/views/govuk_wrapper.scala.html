@@ -16,10 +16,14 @@ scriptElem: Option[Html] = None)(implicit request: Request[_])
 
 @linksElement = {
     <link rel="stylesheet" type="text/css" href='@routes.Assets.at("stylesheets/itr.css")'>
+    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.min.css")'/>
+    <link rel="stylesheet" href='@controllers.routes.Assets.at("jquery/jquery-ui.structure.min.css")'/>
 }
 
 @scriptElement = {
     <script type="text/javascript" src='@routes.Assets.at("javascripts/itr.js")'></script>
+    <script type="text/javascript" src='@routes.Assets.at("javascripts/countryCodes.js")'></script>
+    <script src='@controllers.routes.Assets.at("jquery/jquery-ui.min.js")'></script>
 }
 
 @head = {

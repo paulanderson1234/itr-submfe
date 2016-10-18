@@ -73,6 +73,9 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
     "use the correct auth connector" in {
       SubsidiariesSpendingInvestmentController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      SubsidiariesSpendingInvestmentController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
