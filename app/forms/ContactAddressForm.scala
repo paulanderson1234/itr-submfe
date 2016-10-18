@@ -29,8 +29,8 @@ object ContactAddressForm {
       "addressline2" -> mandatoryAddressLineCheck,
       "addressline3" -> optional(optionalAddressLineCheck),
       "addressline4" -> optional(addressLineFourCheck),
-      "postcode" -> mandatoryIfEqual("countryCode","GB",postcodeCheck),
+      "postcode" -> optional(postcodeCheck),
       "countryCode" -> countryCodeCheck
-    )(AddressModel.apply)(AddressModel.unapply)
+    )(AddressModel.apply)(AddressModel.unapply).verifying(postcodeCountryCheckConstraint )
   )
 }

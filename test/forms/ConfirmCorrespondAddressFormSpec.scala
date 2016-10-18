@@ -33,7 +33,7 @@
 package forms
 
 import common.Constants
-import models.ConfirmCorrespondAddressModel
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -57,13 +57,20 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
     )
   }
 
-  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes"}"""
-  val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue)
+  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
+  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes","address":{"addressline1":"Line 1","addressline2":"Line 2","addressline3":"Line 3","addressline4":"Line 4","postcode":"TF1 5NY","countryCode":"GB"}}"""
+  val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
 
   "The Confirm Correspondence Address Form" should {
     "Return an error if no radio button is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "contactAddressUse" -> ""
+        "contactAddressUse" -> "",
+        "address.addressline1" -> "Line 1",
+        "address.addressline2" -> "Line 2",
+        "address.addressline3" -> "Line 3",
+        "address.addressline4" -> "line 4",
+        "address.postcode" -> "TF1 3NY",
+        "address.countryCode" -> "GB"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -81,7 +88,13 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
   "The Confirm Correspondence Address Form" should {
     "not return an error if the 'Yes' option is selected" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+      "contactAddressUse" -> Constants.StandardRadioButtonYesValue,
+      "address.addressline1" -> "Line 1",
+      "address.addressline2" -> "Line 2",
+      "address.addressline3" -> "Line 3",
+      "address.addressline4" -> "line 4",
+      "address.postcode" -> "TF1 3NY",
+      "address.countryCode" -> "GB"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -91,7 +104,6 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       }
     }
   }
-
 
   // form model to json - apply
   "The Confirm Correspondence Address Form model" should {
@@ -106,6 +118,7 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       implicit val formats = Json.format[ConfirmCorrespondAddressModel]
       val confirmCorrespondAddressForm = ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.fill(confirmCorrespondAddressModel)
       val formJson = Json.toJson(confirmCorrespondAddressForm.get).toString()
+      println(formJson)
       formJson shouldBe confirmCorrespondAddressJson
     }
   }

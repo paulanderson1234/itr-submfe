@@ -16,14 +16,22 @@
 
 package forms
 
-import models.ConfirmCorrespondAddressModel
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.data.Form
 import play.api.data.Forms._
 
 object ConfirmCorrespondAddressForm {
   val confirmCorrespondAddressForm = Form(
     mapping(
-      "contactAddressUse" -> nonEmptyText
+      "contactAddressUse" -> nonEmptyText,
+      "address" -> mapping(
+        "addressline1" -> nonEmptyText,
+        "addressline2" -> nonEmptyText,
+        "addressline3" -> optional(text),
+        "addressline4" -> optional(text),
+        "postcode" -> optional(text),
+        "countryCode" -> text
+      )(AddressModel.apply)(AddressModel.unapply)
     )(ConfirmCorrespondAddressModel.apply)(ConfirmCorrespondAddressModel.unapply)
   )
 }

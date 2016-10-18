@@ -1,7 +1,8 @@
 @import models.ConfirmCorrespondAddressModel
 @import common.Constants
+@import utils.CountriesHelper
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress, hiddenField}
 
 @(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel])(implicit request: Request[_])
 
@@ -17,11 +18,13 @@
             <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ConfirmCorrespondAddress.heading")</h1>
 
             <div id="storedAddressDiv" class="form-group">
-                <p class="heading-small">Company Name Ltd.</p>
-                <span class="form-hint">2 Telford Plaza,</span>
-                <span class="form-hint">Lawn Central</span>
-                <span class="form-hint">Telford</span>
-                <span class="form-hint">TF3 4NT</span>
+
+                <span id="line1-display" class="h4-heading form-grou">@confirmCorrespondAddressForm("address.addressline1").value</span>
+                <span id="line2-display" class="form-group">@confirmCorrespondAddressForm("address.addressline2").value</span>
+                <span id="line3-display" class="form-group">@confirmCorrespondAddressForm("address.addressline3").value</span>
+                <span id="line4-display" class="form-group">@confirmCorrespondAddressForm("address.addressline4").value</span>
+                <span id="postcode-display" class="form-group">@confirmCorrespondAddressForm("address.postcode").value</span>
+                <span id="country-display" class="form-group">@CountriesHelper.getSelectedCountry(  confirmCorrespondAddressForm("address.countryCode").value.getOrElse(""))</span>
             </div>
 
             @form(action = controllers.routes.ConfirmCorrespondAddressController.submit()) {
@@ -39,6 +42,33 @@
                         '_groupClass -> "inline"
                         )
                     </div>
+                </div>
+
+                <div>
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline1"),
+                    'id -> "address.addressline1"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline2"),
+                    'id -> "address.addressline2"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline3"),
+                    'id -> "address.addressline3"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline4"),
+                    'id -> "address.addressline4"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.postcode"),
+                    'id -> "address.postcode"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.countryCode"),
+                    'id -> "address.countryCode"
+                    )
                 </div>
 
                 <div class="form-group" id="contactAddressButtonDiv">
