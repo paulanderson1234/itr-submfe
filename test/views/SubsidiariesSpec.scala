@@ -27,11 +27,11 @@ import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import common.{Constants, KeystoreKeys}
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class SubsidiariesSpec extends ViewTestSpec {
+class SubsidiariesSpec extends ViewSpec {
 
   object TestController extends SubsidiariesController {
     override lazy val applicationConfig = FrontendAppConfig

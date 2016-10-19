@@ -27,15 +27,11 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressSpec extends ViewTestSpec {
-
-  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
-  val confirmCorrespondAddressModel = new ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, addressModel)
-  val emptyConfirmCorrespondAddressModel = new ConfirmCorrespondAddressModel("", addressModel)
+class ConfirmCorrespondAddressSpec extends ViewSpec {
 
   //TODO: Mock this return when it is obtained from ETMP
   val addressFromEtmp =  AddressModel("Company Name Ltd.", "2 Telford Plaza", Some("Lawn Central"), Some("Telford"), Some("TF3 4NT"))

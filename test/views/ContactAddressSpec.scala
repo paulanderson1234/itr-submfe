@@ -22,10 +22,10 @@ import models.AddressModel
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 import views.html.contactInformation.ContactAddress
 
-class ContactAddressSpec extends ViewTestSpec {
+class ContactAddressSpec extends ViewSpec {
 
   val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
   val emptyAddressModel = new AddressModel("", "", countryCode = "")

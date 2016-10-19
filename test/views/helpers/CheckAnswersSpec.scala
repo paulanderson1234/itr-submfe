@@ -23,7 +23,7 @@ import org.mockito.Mockito._
 
 import scala.concurrent.Future
 
-trait CheckAnswersSpec extends ViewTestSpec {
+trait CheckAnswersSpec extends ViewSpec {
 
   val whatWillUseForModel = WhatWillUseForModel("Research and development")
 

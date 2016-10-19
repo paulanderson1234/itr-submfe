@@ -30,11 +30,11 @@ import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import utils.DateFormatter
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSSpec extends ViewTestSpec with DateFormatter {
+class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
 
   val kiModel = KiProcessingModel(Some(true),Some(true),Some(true),Some(true),Some(true),Some(true))
   val nonKiModel = KiProcessingModel(Some(false),Some(false),Some(false),Some(false),Some(false),Some(false))

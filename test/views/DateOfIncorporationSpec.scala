@@ -26,11 +26,11 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class DateOfIncorporationSpec extends ViewTestSpec {
+class DateOfIncorporationSpec extends ViewSpec {
   
   object TestController extends DateOfIncorporationController {
     override lazy val applicationConfig = FrontendAppConfig

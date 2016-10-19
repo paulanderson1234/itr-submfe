@@ -21,10 +21,10 @@ import models.submission.SubmissionResponse
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 import views.html.checkAndSubmit.Acknowledgement
 
-class AcknowledgementSpec extends ViewTestSpec {
+class AcknowledgementSpec extends ViewSpec {
 
   val submissionResponse = SubmissionResponse("2014-12-17T09:30:47Z","FBUND09889765")
 

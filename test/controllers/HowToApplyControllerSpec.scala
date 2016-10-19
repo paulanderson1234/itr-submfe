@@ -17,51 +17,34 @@
 package controllers
 
 import java.net.URLEncoder
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
+import connectors.EnrolmentConnector
+import helpers.ControllerSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import org.scalatest.mock.MockitoSugar
 
-import scala.concurrent.Future
+class HowToApplyControllerSpec extends ControllerSpec {
 
-class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper{
-
-
-  implicit val hc = HeaderCarrier()
-
-  object HowToApplyControllerTest extends HowToApplyController {
+  object TestController extends HowToApplyController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(HowToApplyControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
 
   "HowToApplyController" should {
     "use the correct auth connector" in {
       HowToApplyController.authConnector shouldBe FrontendAuthConnector
     }
+    "use the correct enrolment connector" in {
+      HowToApplyController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to HowToApplyController when authenticated and enrolled" should {
     "return a 200" in {
-      mockEnrolledRequest
-      showWithSessionAndAuth(HowToApplyControllerTest.show())(
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -69,8 +52,8 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a GET request to HowToApplyController when authenticated and NOT enrolled" should {
     "return a 200" in {
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(HowToApplyControllerTest.show())(
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -81,7 +64,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending an Unauthenticated request with a session to HowToApplyController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(HowToApplyControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -94,7 +77,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a request with no session to HowToApplyController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(HowToApplyControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -107,7 +90,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a timed-out request to HowToApplyController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(HowToApplyControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -119,10 +102,8 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Posting to the HowToApplyController when authenticated and enrolled" should {
     "redirect to 'What does your company need' page" in {
-      mockEnrolledRequest
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-      submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/your-company-need")
@@ -134,7 +115,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
   "Sending a submission to the HowToApplyController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(HowToApplyControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -145,7 +126,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(HowToApplyControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -158,7 +139,7 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Sending a submission to the HowToApplyController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(HowToApplyControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -169,10 +150,8 @@ class HowToApplyControllerSpec extends UnitSpec with MockitoSugar with WithFakeA
 
   "Posting to the HowToApplyController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      val request = FakeRequest().withFormUrlEncodedBody()
-
-      submitWithSessionAndAuth(HowToApplyControllerTest.submit())(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

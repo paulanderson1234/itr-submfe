@@ -23,9 +23,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
-class LifetimeAllowanceExceededSpec extends ViewTestSpec {
+class LifetimeAllowanceExceededSpec extends ViewSpec {
 
   object TestController extends LifetimeAllowanceExceededController {
     override lazy val applicationConfig = FrontendAppConfig

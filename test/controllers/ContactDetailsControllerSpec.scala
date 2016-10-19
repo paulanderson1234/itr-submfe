@@ -21,7 +21,7 @@ import java.net.URLEncoder
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.{ControllerSpec, FakeRequestHelper}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -36,33 +36,13 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
-
-  val mockS4lConnector = mock[S4LConnector]
+class ContactDetailsControllerSpec extends ControllerSpec {
 
   object ContactDetailsControllerTest extends ContactDetailsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(ContactDetailsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val model = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
-  val emptyModel = ContactDetailsModel("","","","")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedContactDetails = ContactDetailsModel("Frank","The Tank","01384 555678","email@nothingness.com")
-
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "ContactDetailsController" should {
@@ -77,22 +57,22 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  def setupMocks(contactDetailsModel: Option[ContactDetailsModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(contactDetailsModel))
+
   "Sending a GET request to ContactDetailsController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
-      mockEnrolledRequest
+      setupMocks(Some(contactDetailsModel))
+      mockEnrolledRequest()
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      setupMocks()
+      mockEnrolledRequest()
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -101,10 +81,8 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a GET request to ContactDetailsController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedContactDetails)))
-      mockNotEnrolledRequest
+      setupMocks(Some(contactDetailsModel))
+      mockNotEnrolledRequest()
       showWithSessionAndAuth(ContactDetailsControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -153,7 +131,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the ContactDetailsController when authenticated and enrolled" should {
     "redirect to the Confirm Correspondence Address Controller page" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -171,7 +149,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an invalid form submission with validation errors to the ContactDetailsController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",
@@ -187,7 +165,7 @@ class ContactDetailsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a valid form submit to the ContactDetailsController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
+      mockNotEnrolledRequest()
       val formInput = Seq(
         "forename" -> "Hank",
         "surname" -> "The Tank",

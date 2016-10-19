@@ -16,58 +16,52 @@
 
 package controllers
 
-import java.util.UUID
-import org.jsoup.Jsoup
-import play.api.mvc.{AnyContent, Action}
-import play.api.test.FakeRequest
+import connectors.S4LConnector
+import controllers.helpers.ControllerSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.SessionKeys
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-class IntroductionControllerSpec extends UnitSpec with WithFakeApplication {
+class IntroductionControllerSpec extends ControllerSpec {
 
-  class fakeRequestTo(url: String, controllerAction: Action[AnyContent]) {
-    val fakeRequest = FakeRequest("GET", "/investment-tax-relief/" + url)
-    val result = controllerAction(fakeRequest)
-    val jsoupDoc = Jsoup.parse(bodyOf(result))
+  object TestController extends IntroductionController {
+    val s4lConnector: S4LConnector = mockS4lConnector
   }
 
-  class fakeRequestToWithSessionId(url: String, controllerAction: Action[AnyContent]) {
-    val sessionId = UUID.randomUUID.toString
-    val fakeRequest = FakeRequest("GET", "/investment-tax-relief/" + url).withSession(SessionKeys.sessionId -> s"session-$sessionId")
-    val result = controllerAction(fakeRequest)
-    val jsoupDoc = Jsoup.parse(bodyOf(result))
-  }
-
-  class fakePostTo(url: String, controllerAction: Action[AnyContent]) {
-    val fakeRequest = FakeRequest("POST", "/investment-tax-relief/" + url)
-    val result = controllerAction(fakeRequest)
-    val jsoupDoc = Jsoup.parse(bodyOf(result))
+  "IntroductionController" should {
+    "Use the correct keystore connector" in {
+      IntroductionController.s4lConnector shouldBe S4LConnector
+    }
   }
 
   "IntroductionController.show" should {
-      object IntroductionTestDataItem extends fakeRequestTo("", IntroductionController.show())
-      "return 200" in {
-        status(IntroductionTestDataItem.result) shouldBe OK
-      }
+    "return 200" in {
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
+        result => {
+          status(result) shouldBe OK
+        }
+      )
+    }
   }
 
   "IntroductionController.submit" should {
-    "when a submit is called" should{
-      object IntroductionTestDataItem extends fakePostTo("", IntroductionController.submit())
-      "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
-      }
+    "return a 303" in {
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+        }
+      )
     }
   }
 
   "IntroductionController.restart" should {
-    "when restart is called" should{
-      object IntroductionTestDataItem extends fakePostTo("", IntroductionController.restart())
-      "return a 303" in {
-        status(IntroductionTestDataItem.result) shouldBe SEE_OTHER
-      }
-
+    "return a 303" in {
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.restart())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+        }
+      )
     }
   }
 }

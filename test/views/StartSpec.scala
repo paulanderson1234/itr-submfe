@@ -25,9 +25,9 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 
-class StartSpec extends ViewTestSpec {
+class StartSpec extends ViewSpec {
 
   object TestController extends IntroductionController {
     val s4lConnector: S4LConnector = mockS4lConnector

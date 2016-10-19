@@ -226,7 +226,6 @@ trait SubmissionFixture {
     ctUtr = Some("5555555555"), crn = Some("crnvalue"), companyAddress = Some(fullCorrespondenceAddress),
     previousRFIs = Some(previousSchemesFull.toList))
 
-
   val model = AdvancedAssuranceSubmissionType(
     agentReferenceNumber = Some(testAgentRef),
     acknowledgementReference = Some("AARN1234567"),

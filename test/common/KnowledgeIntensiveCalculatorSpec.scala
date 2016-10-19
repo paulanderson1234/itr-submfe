@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package controllers
+package common
 
-import common.KnowledgeIntensiveCalculator
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-
 import uk.gov.hmrc.play.test.UnitSpec
 
 class KnowledgeIntensiveCalculatorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite {

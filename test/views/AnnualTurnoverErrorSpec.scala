@@ -19,11 +19,11 @@ package views
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import views.helpers.ViewTestSpec
+import views.helpers.ViewSpec
 import views.html.investment.AnnualTurnoverError
 
 
-class AnnualTurnoverErrorSpec extends ViewTestSpec {
+class AnnualTurnoverErrorSpec extends ViewSpec {
 
   "The Annual turnover error page" should {
 

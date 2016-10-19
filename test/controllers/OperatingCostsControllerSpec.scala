@@ -22,7 +22,7 @@ import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.FakeRequestHelper
+import helpers.{ControllerSpec, FakeRequestHelper}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -37,32 +37,22 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper  {
-
-  val mockS4lConnector = mock[S4LConnector]
-  val mockSubmissionConnector = mock[SubmissionConnector]
+class OperatingCostsControllerSpec extends ControllerSpec {
 
   object OperatingCostsControllerTest extends OperatingCostsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    val submissionConnector: SubmissionConnector = mockSubmissionConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(OperatingCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
 
   val operatingCostsAsJson =
     """{"operatingCosts1stYear" : 750000, "operatingCosts2ndYear" : 800000, "operatingCosts3rdYear" : 934000,
       | "rAndDCosts1stYear" : 231000, "rAndDCosts2ndYear" : 340000, "rAndDCosts3rdYear" : 344000}""".stripMargin
 
-  val model = OperatingCostsModel("200000", "225000", "270000", "177000", "188000", "19000")
   val emptyModel = OperatingCostsModel("", "", "", "", "", "")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(operatingCostsModel)))
   val keyStoreSaved0PercOperatingCCosts = OperatingCostsModel("4100200", "3600050", "4252500", "0", "0", "0")
   val keyStoreSaved10PercBoundaryOC = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
   val operatingCosts10PercBoundaryOC = OperatingCostsModel("1000", "1000", "1000", "100", "100", "100")
@@ -80,12 +70,6 @@ class OperatingCostsControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   val operatingCostsTrueKIVectorList = Vector(keyStoreSaved15PercBoundaryOC)
   val operatingCostsFalseKIVectorList = Vector(operatingCosts1, operatingCosts1, operatingCosts1,rAndDCosts2,rAndDCosts2,rAndDCosts2)
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
 
   "OperatingCostsController" should {
     "use the correct keystore connector" in {

@@ -18,53 +18,25 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import common.{Constants, KeystoreKeys}
+import auth.{MockAuthConnector, MockConfig}
+import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class NewProductControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  object NewProductControllerTest extends NewProductController {
+  object TestController extends NewProductController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(NewProductControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val modelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
-  val modelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
-  val emptyModel = NewProductModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedNewProduct = NewProductModel(Constants.StandardRadioButtonYesValue)
-
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "NewProductController" should {
@@ -79,23 +51,23 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     }
   }
 
+  def setupMocks(newProductModel: Option[NewProductModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(newProductModel))
+
   "Sending a GET request to NewProductController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(NewProductControllerTest.show)(
+      setupMocks(Some(newProductMarketModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(NewProductControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -103,11 +75,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a GET request to NewProductController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNewProduct)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(NewProductControllerTest.show)(
+      setupMocks(Some(newProductMarketModelYes))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -118,7 +88,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending an Unauthenticated request with a session to NewProductController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(NewProductControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -131,7 +101,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a request with no session to NewProductController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(NewProductControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -144,7 +114,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a timed-out request to NewProductController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(NewProductControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -156,10 +126,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
 
     "redirect to the annual turnover page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
@@ -175,10 +144,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
 
     "redirect to the annual turnover page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
@@ -189,9 +157,9 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending an invalid form submission with validation errors to the NewProductController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "isNewProduct" -> ""
-      submitWithSessionAndAuth(NewProductControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -202,7 +170,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
   "Sending a submission to the NewProductController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(NewProductControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -213,7 +181,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(NewProductControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -226,7 +194,7 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a submission to the NewProductController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(NewProductControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -237,8 +205,8 @@ class NewProductControllerSpec extends UnitSpec with MockitoSugar with BeforeAnd
 
   "Sending a submission to the NewProductController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(NewProductControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

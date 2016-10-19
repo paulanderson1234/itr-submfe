@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package views.helpers
+package controllers.helpers
 
-import auth.{Enrolment, Identifier}
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
-import models.{NewProductModel, _}
-import org.mockito.Matchers
-import org.scalatest.mock.MockitoSugar
+import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
-import play.api.i18n.Messages
+import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-import scala.concurrent.Future
-
-trait ViewTestSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with SubmissionFixture with MockitoSugar with BeforeAndAfterEach {
+trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
 
   val mockS4lConnector = mock[S4LConnector]
   val mockEnrolmentConnector = mock[EnrolmentConnector]
@@ -54,6 +48,10 @@ trait ViewTestSpec extends UnitSpec with WithFakeApplication with FakeRequestHel
 
   val operatingCostsModel = OperatingCostsModel("28976", "12348", "77725", "99883", "23321", "65436")
 
+  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
+
+  val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, addressModel)
+
   val newGeographicalMarketModelYes = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
   val newGeographicalMarketModelNo = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue)
 
@@ -62,6 +60,9 @@ trait ViewTestSpec extends UnitSpec with WithFakeApplication with FakeRequestHel
 
   val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
   val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+
+  val kiProcessingModelMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
+  val kiProcessingModelNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
 
   val hadPreviousRFIModelYes = HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
   val hadPreviousRFIModelNo = HadPreviousRFIModel(Constants.StandardRadioButtonNoValue)
@@ -116,13 +117,4 @@ trait ViewTestSpec extends UnitSpec with WithFakeApplication with FakeRequestHel
 
   val yourCompanyNeedModel = YourCompanyNeedModel("AA")
 
-  class Setup {
-    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
-  }
-
-  def getExternalLinkText(linkText: String): String = s"""$linkText ${Messages("common.externalLink")}"""
-
-  def getExternalEmailText(emailText: String): String = s"$emailText enterprise.centre@hmrc.gsi.gov.uk."
 }
-

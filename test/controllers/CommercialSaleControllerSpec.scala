@@ -18,58 +18,25 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class CommercialSaleControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  object CommercialSaleControllerTest extends CommercialSaleController {
+  object TestController extends CommercialSaleController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(CommercialSaleControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val keyStoreSavedCommercialSale = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(15),Some(3),Some(1996))
-
-  val model = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(23),Some(11),Some(1993))
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-
-  val savedKIDateconditionMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
-  val savedKIDateconditionNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
-  val savedKIDateConditionEmpty = KiProcessingModel(Some(true), None, Some(false), Some(false), Some(false))
-  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
-
-  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(21),Some(2),Some(2015))
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "CommercialSaleController" should {
@@ -84,23 +51,30 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
   }
 
+  def setupShowMocks(commercialSaleModel: Option[CommercialSaleModel] = None): Unit =
+  when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    .thenReturn(Future.successful(commercialSaleModel))
+
+  def setupSubmitMocks(kiProcessingModel: Option[KiProcessingModel] = None, dateOfIncorporationModel: Option[DateOfIncorporationModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(kiProcessingModel))
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(dateOfIncorporationModel))
+  }
+
   "Sending a GET request to CommercialSaleController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(CommercialSaleControllerTest.show)(
+      setupShowMocks(Some(commercialSaleModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(CommercialSaleControllerTest.show)(
+      setupShowMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -108,7 +82,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending an Unauthenticated request with a session to CommercialSaleController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(CommercialSaleControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -121,7 +95,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a request with no session to CommercialSaleController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(CommercialSaleControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -134,7 +108,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a timed-out request to CommercialSaleController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(CommercialSaleControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -145,8 +119,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a NOT enrolled request" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(CommercialSaleControllerTest.show())(
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -161,13 +135,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput: _*)(
+      setupSubmitMocks(Some(kiProcessingModelMet), Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -183,12 +153,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
+      setupSubmitMocks(Some(kiProcessingModelNotMet), Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -204,12 +171,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "23",
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
+      setupSubmitMocks(dateOfIncorporationModel = Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -225,12 +189,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIDateconditionMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
+      setupSubmitMocks(Some(kiProcessingModelMet), Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -246,12 +207,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIDateConditionEmpty)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
+      setupSubmitMocks(dateOfIncorporationModel = Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -267,12 +225,9 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
         "commercialSaleDay" -> "",
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIDateconditionNotMet)))
-      when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit,formInput:_*)(
+      setupSubmitMocks(Some(kiProcessingModelNotMet), Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -284,7 +239,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a submission to the CommercialSaleController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(CommercialSaleControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -295,7 +250,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(CommercialSaleControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -308,7 +263,7 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
 
   "Sending a submission to the CommercialSaleController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(CommercialSaleControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -320,8 +275,8 @@ class CommercialSaleControllerSpec extends UnitSpec with MockitoSugar with Befor
   "Sending a submission to the CommercialSaleController when not enrolled" should {
 
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(CommercialSaleControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
