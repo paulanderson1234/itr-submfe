@@ -16,6 +16,7 @@
 
 package models.submission
 
+import common.Constants
 import models._
 import play.api.libs.json.Json
 
@@ -62,7 +63,8 @@ case class AdvancedAssuranceSubmissionType(
                                             schemeTypes: SchemeTypesModel,
 
                                             // optional types:
-                                            whatWillUseForModel: Option[WhatWillUseForModel], //trade:businessActivity
+                                            whatWillUseForModel: Option[WhatWillUseForModel] =
+                                              Some(WhatWillUseForModel(None)), //trade:businessActivity
                                             marketInfo: Option[SubmitMarketInfoModel], // trade: Market info
                                             // converted from from operating costs model with dynamic period generated:
                                             annualCosts: Option[Seq[AnnualCostModel]],

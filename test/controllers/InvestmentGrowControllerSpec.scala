@@ -68,7 +68,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
   }
 
   def setup(investmentGrowModel: Option[InvestmentGrowModel], newGeographicalMarketModel: Option[NewGeographicalMarketModel],
-                newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
+            newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
     when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(investmentGrowModel))
     when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
@@ -138,12 +138,12 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
         )
       }
 
-      "redirect to the investment purpose page" in {
+      "redirect to the proposed investment page" in {
         setup(None,Some(newGeoModel),Some(newProductModel),None)
         mockEnrolledRequest
         showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
           result => {
-            redirectLocation(result) shouldBe Some(routes.WhatWillUseForController.show().url)
+            redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
           }
         )
       }
@@ -249,7 +249,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
       )
     }
   }
-  
+
 
   "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
@@ -278,13 +278,13 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
       )
     }
 
-    "redirect to WhatWillUseFor page" in {
+    "redirect to ProposedInvestment page" in {
       setup(None,Some(newGeoModel),Some(newProductModel),None)
       mockEnrolledRequest
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }

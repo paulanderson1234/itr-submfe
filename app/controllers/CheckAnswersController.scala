@@ -52,7 +52,6 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
     hadPreviousRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
     proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
-    whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
     usedInvestmentReasonBefore <- keyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore)
     previousBeforeDOFCS <- keyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS)
     newGeographicalMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
@@ -64,7 +63,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   }yield new CheckAnswersModel(yourCompanyNeed,taxPayerReference,registeredAddress,dateOfIncorporation
     ,natureOfBusiness,commercialSale,isKnowledgeIntensive,operatingCosts
-    ,percentageStaffWithMasters,tenYearPlan,subsidiaries,hadPreviousRFI,proposedInvestment,whatWillUseFor
+    ,percentageStaffWithMasters,tenYearPlan,subsidiaries,hadPreviousRFI,proposedInvestment
     ,usedInvestmentReasonBefore,previousBeforeDOFCS,newGeographicalMarket,newProduct,subsidiariesSpendingInvestment,
     subsidiariesNinetyOwned,contactDetails,investmentGrowModel)
 

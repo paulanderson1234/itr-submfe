@@ -31,7 +31,6 @@ trait KeystoreKeys {
   val turnoverCosts: String = "companyDetails:turnOverCosts"
   val percentageStaffWithMasters: String = "knowledgeIntensive:percentageStaffWithMasters"
   val tenYearPlan: String = "knowledgeIntensive:tenYearPlan"
-  val whatWillUseFor: String = "investment:whatWillUseFor"
   val proposedInvestment: String = "investment:proposedInvestment"
   val usedInvestmentReasonBefore: String = "investment:usedReasonBefore"
   val subsidiariesSpendingInvestment: String = "investment:subsidiariesSpendingInvestment"

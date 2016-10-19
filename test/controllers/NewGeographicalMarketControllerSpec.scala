@@ -83,7 +83,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
@@ -94,7 +94,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => status(result) shouldBe OK
@@ -110,7 +110,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -121,7 +121,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedNewGeographicalMarket)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(NewGeographicalMarketControllerTest.show)(
         result => {
@@ -206,7 +206,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -215,7 +215,7 @@ class NewGeographicalMarketControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockEnrolledRequest
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(NewGeographicalMarketControllerTest.submit, formInput)(

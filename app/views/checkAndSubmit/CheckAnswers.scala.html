@@ -1,4 +1,3 @@
-@import models.CheckAnswersModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.backButton
 @import views.html.helpers.summary.tableHeaderHelper
@@ -140,12 +139,6 @@
             @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.routes.ProposedInvestmentController.show().toString))
             }else{
             @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), Messages("common.notAvailable"), Some(controllers.routes.ProposedInvestmentController.show().toString))
-            }
-            <!--What will use for page-->
-            @if(checkAnswersModel.whatWillUseForModel.isDefined){
-            @textRowHelperBasic("whatWillUseFor", Messages("page.summaryQuestion.whatWillUseFor"), WhatWillUseForModel.purposeTransformation(checkAnswersModel.whatWillUseForModel.get.whatWillUseFor), Some(controllers.routes.WhatWillUseForController.show().toString))
-            }else{
-            @textRowHelperBasic("whatWillUseFor", Messages("page.summaryQuestion.whatWillUseFor"), Messages("common.notAvailable"), Some(controllers.routes.WhatWillUseForController.show().toString))
             }
             <!--Used investment reason before page-->
             @if(checkAnswersModel.usedInvestmentReasonBeforeModel.isDefined){

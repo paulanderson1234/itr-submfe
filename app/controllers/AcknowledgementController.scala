@@ -57,7 +57,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       // company name also a required field when it is implemented
 
       // potentially optional or required
-      whatWillUseFor <- keyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
       operatingCosts <- keyStoreConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
       turnoverCosts <- keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
       subsidiariesSpendInvest <- keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
@@ -69,7 +68,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
-        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
     } yield result
   }
@@ -94,7 +93,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        contactAddress: Option[AddressModel],
 
                                        // potentially optional or potentially required
-                                       whatWillUseFor: Option[WhatWillUseForModel],
                                        subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
                                        subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
                                        previousSchemes: List[PreviousSchemeModel],
@@ -120,7 +118,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
-          agentReferenceNumber = None, acknowledgementReference = None, whatWillUseForModel = whatWillUseFor,
+          agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
           schemeTypes = SchemeTypesModel(eis = true),

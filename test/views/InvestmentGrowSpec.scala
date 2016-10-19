@@ -79,10 +79,10 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   "The InvestmentGrow Page" should {
 
-    "Verify that the correct elements are loaded when coming from WhatWillUse page" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from ProposedInvestment page" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -98,7 +98,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -206,7 +206,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is true" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelYes),Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelYes),Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -226,7 +226,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -236,7 +236,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is false" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelNo),Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelNo),Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -255,7 +255,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -265,7 +265,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is true" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelYes),Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelYes),Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -284,7 +284,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -294,7 +294,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is false" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelNo),Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelNo),Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -310,7 +310,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -320,7 +320,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "Verify that the correct elements are loaded when newGeoMarket is not defined and hasNewProduct is not defined" in new SetupPage{
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
         val result = controller.show.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
         ))
@@ -336,7 +336,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -346,7 +346,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     "show an error no data entered" in new SetupPage {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.WhatWillUseForController.show().url))
+        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
         val result = controller.submit.apply(authorisedFakeRequestToPOST(
           "investmentGrowDesc" -> ""
         ))
@@ -361,7 +361,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")

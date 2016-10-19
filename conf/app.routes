@@ -53,7 +53,6 @@ POST       /registered-address                      controllers.RegisteredAddres
 GET        /nature-of-business                      controllers.NatureOfBusinessController.show
 POST       /nature-of-business                      controllers.NatureOfBusinessController.submit
 
-
 GET        /operating-costs                         controllers.OperatingCostsController.show
 POST       /operating-costs                         controllers.OperatingCostsController.submit
 
@@ -83,9 +82,6 @@ POST       /used-investment-scheme-before           controllers.HadPreviousRFICo
 
 GET        /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.show
 POST       /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.submit
-
-GET        /investment-purpose                      controllers.WhatWillUseForController.show
-POST       /investment-purpose                      controllers.WhatWillUseForController.submit
 
 GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
 POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit

@@ -66,14 +66,14 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1

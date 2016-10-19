@@ -81,7 +81,6 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   val subsidiariesModel = SubsidiariesModel("")
   val hadPreviousRFIModel = HadPreviousRFIModel("")
   val proposedInvestmentModel = ProposedInvestmentModel(0)
-  val whatWillUseForModel = WhatWillUseForModel("")
   val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel("")
   val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("")
   val newGeographicalMarketModel = NewGeographicalMarketModel("")
@@ -138,8 +137,6 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(Option(hadPreviousRFIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(proposedInvestmentModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(whatWillUseForModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
@@ -192,8 +189,6 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
@@ -245,8 +240,6 @@ class CheckAnswersControllerSpec extends UnitSpec with MockitoSugar with BeforeA
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
         Matchers.any())).thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))

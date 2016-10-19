@@ -25,7 +25,7 @@ import config.FrontendAppConfig
 import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{SubsidiariesSpendingInvestmentController, routes}
 import controllers.helpers.FakeRequestHelper
-import models.{NewProductModel, PreviousBeforeDOFCSModel, SubsidiariesSpendingInvestmentModel, WhatWillUseForModel}
+import models.SubsidiariesSpendingInvestmentModel
 import org.jsoup.Jsoup
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
@@ -67,7 +67,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
         when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+          .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
         when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
         val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
@@ -76,7 +76,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
         Jsoup.parse(contentAsString(result))
       }
 
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
       document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
       document.select("#subSpendingInvestment-yes").size() shouldBe 1
@@ -134,7 +134,7 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
       val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
       val result = controller.submit.apply(authorisedFakeRequest)
