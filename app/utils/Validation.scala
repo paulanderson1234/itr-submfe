@@ -18,7 +18,7 @@ package utils
 
 import java.text.SimpleDateFormat
 
-import models.{CommercialSaleModel, CompanyAddressModel, PreviousSchemeModel, TenYearPlanModel}
+import models._
 import play.api.data.Forms._
 import play.api.data.Mapping
 import play.api.data.validation._
@@ -287,10 +287,10 @@ object Validation {
     text().verifying(telephoneNumberCheckConstraint)
   }
 
-  def postcodeCountryCheckConstraint: Constraint[CompanyAddressModel] = {
+  def postcodeCountryCheckConstraint: Constraint[AddressModel] = {
     Constraint("constraints.postcodeCountryCheck")({
-      companyAddressForm: CompanyAddressModel =>
-        if (companyAddressForm.country.length > 0 && companyAddressForm.postcode.length > 0) {
+      addressForm: AddressModel =>
+        if (addressForm.countryCode == "GB" && addressForm.postcode.fold(true)( _.isEmpty)) {
           Invalid(Seq(ValidationError(Messages("validation.error.countrypostcode"))))
         } else {
           Valid

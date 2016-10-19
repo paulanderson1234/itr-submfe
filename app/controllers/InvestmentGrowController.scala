@@ -24,6 +24,8 @@ import models._
 import common._
 import controllers.Helpers.ControllerHelpers
 import forms.InvestmentGrowForm._
+import play.api.data.Form
+import play.api.mvc._
 
 import scala.concurrent.Future
 import views.html.investment.InvestmentGrow
@@ -44,9 +46,9 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
 
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).map {
-          case Some(data) => Ok(InvestmentGrow(investmentGrowForm.fill(data), backUrl.get))
-          case None => Ok(InvestmentGrow(investmentGrowForm, backUrl.get))
+        keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
+          case Some(data) => getResponse(Ok,investmentGrowForm.fill(data), backUrl.get)
+          case None => getResponse(Ok,investmentGrowForm, backUrl.get)
         }
       }
       else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
@@ -62,7 +64,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap {
-          case Some(data) => Future.successful(BadRequest(views.html.investment.InvestmentGrow(invalidForm, data)))
+          case Some(data) => getResponse(BadRequest,invalidForm, data)
           case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         },
       validForm => {
@@ -71,4 +73,29 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
       }
     )
   }
+
+  private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[Any]): Future[Result] = {
+
+    def determineResult(newGeographicalMarketModel: Option[NewGeographicalMarketModel],
+                        newProductModel: Option[NewProductModel]): Future[Result] = {
+      (newGeographicalMarketModel.isDefined,newProductModel.isDefined) match {
+        case (true,true) => {
+          val hasGeoMarket = newGeographicalMarketModel.get.isNewGeographicalMarket.equals(Constants.StandardRadioButtonYesValue)
+          val hasNewProduct = newProductModel.get.isNewProduct.equals(Constants.StandardRadioButtonYesValue)
+          Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl,hasGeoMarket,hasNewProduct)))
+        }
+        case(false,false) => Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl,hasGeoMarket = false,hasNewProduct = false)))
+        case(true,false) => Future.successful(Redirect(routes.NewProductController.show()))
+        case(false,true) => Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+      }
+    }
+
+    for {
+      geographicMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+      result <- determineResult(geographicMarket,newProduct)
+    } yield result
+  }
+
+
 }

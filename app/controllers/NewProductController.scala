@@ -47,38 +47,13 @@ trait NewProductController extends FrontendController with AuthorisedAndEnrolled
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-    def routeRequest(hasSubsidiaries: Option[SubsidiariesModel]): Future[Result] = {
-      hasSubsidiaries match {
-        case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.NewProductController.show().toString())
-          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-        case Some(_) =>
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.NewProductController.show().toString())
-          Future.successful(Redirect(routes.InvestmentGrowController.show()))
-        case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
-      }
-    }
-
     newProductForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(NewProduct(formWithErrors)))
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
-        validFormData.isNewProduct match {
-          case Constants.StandardRadioButtonYesValue => for {
-            hasSubsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-            route <- routeRequest(hasSubsidiaries)
-          } yield route
-          case _ => for {
-            // TODO: Uncomment below with correct behaviour for 'No' error once decided (goes to ERR2)
-            // i.e. replaces existing case Constants.StandardRadioButtonNoValue with line below
-            //case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.TOBeDecidedController.show))
-            date <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-            route <- routeRequest(date)
-          } yield route
-        }
+        Future.successful(Redirect(routes.TurnoverCostsController.show()))
       }
     )
   }

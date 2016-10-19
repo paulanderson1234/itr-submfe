@@ -16,22 +16,26 @@
 
 package controllers
 
+
+
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{SubmissionConnector, EnrolmentConnector, KeystoreConnector}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import forms.TurnoverCostsForm._
 import common._
-import models.AnnualTurnoverCostsModel
+import models._
 import models.submission.CostModel
 import play.api.libs.json.Json
 import views.html.investment.TurnoverCosts
+
 
 import scala.concurrent.Future
 
 object TurnoverCostsController extends TurnoverCostsController {
   val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -41,6 +45,7 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
 
   implicit val formatCostModel = Json.format[CostModel]
   val keyStoreConnector: KeystoreConnector
+  val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
@@ -50,6 +55,23 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+
+    def routeRequest(subsidiaries: Option[SubsidiariesModel], turnoverCheckRes: Option[Boolean]): Future[Result] = {
+       turnoverCheckRes match {
+         case Some(true) => subsidiaries match {
+           case Some(data)  if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+                keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.TurnoverCostsController.show().toString())
+                Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+           case Some(_) =>
+             keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.TurnoverCostsController.show().toString())
+             Future.successful(Redirect(routes.InvestmentGrowController.show()))
+           case _ =>  Future.successful(Redirect(routes.SubsidiariesController.show()))
+         }
+         case _ => Future.successful(Redirect(routes.AnnualTurnoverErrorController.show()))
+       }
+    }
+
+
     turnoverCostsForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(TurnoverCosts(formWithErrors)))
@@ -57,7 +79,16 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
       validFormData => {
         //TODO: add the annual aveage turnover check and navigtion to error or correct page etc..subsidiaries temporary
         keyStoreConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
-        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+
+        (for {
+          subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+          proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+          turnoverCheckRes <-  submissionConnector.checkAveragedAnnualTurnover(proposedInvestment.get,validFormData)
+          route <- routeRequest(subsidiaries, turnoverCheckRes)
+        } yield route) recover {
+          case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+        }
+
       }
     )
   }

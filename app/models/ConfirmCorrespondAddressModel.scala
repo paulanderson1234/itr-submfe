@@ -18,8 +18,8 @@ package models
 
 import play.api.libs.json.Json
 
-case class ConfirmCorrespondAddressModel (contactAddressUse: String)
-
+case class ConfirmCorrespondAddressModel (contactAddressUse: String,
+                                          address:AddressModel)
 
 object ConfirmCorrespondAddressModel {
   implicit val format = Json.format[ConfirmCorrespondAddressModel]
