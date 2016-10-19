@@ -23,42 +23,11 @@ import org.mockito.Mockito._
 
 import scala.concurrent.Future
 
-trait CheckAnswersHelper extends ViewTestHelper {
+trait CheckAnswersSpec extends ViewTestSpec {
 
-  val hadPreviousRFIModelYes = HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
-  val hadPreviousRFIModelNo = HadPreviousRFIModel(Constants.StandardRadioButtonNoValue)
-  val proposedInvestmentModel = ProposedInvestmentModel(5000000)
   val whatWillUseForModel = WhatWillUseForModel("Research and development")
-  val usedInvestmentReasonBeforeModel = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
-  val previousBeforeDOFCSModel = PreviousBeforeDOFCSModel("Test")
-  val newGeographicalMarketModel = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
-  val newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue)
-  val subsidiariesSpendingInvestmentModel = SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
-  val subsidiariesNinetyOwnedModel = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonNoValue)
-  val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
-    "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
-    "sunt in culpa qui officia deserunt mollitia animi, tid est laborum etttt dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. " +
-    "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihili impedit quo minus id quod maxime placeat facere possimus")
-  val contactDetailsModel = ContactDetailsModel("Fred", "Smith", "01952 555666", "fredsmith@hotmail.com")
-  val yourCompanyNeedModel = YourCompanyNeedModel("AA")
-  val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
-  val registeredAddressModel = RegisteredAddressModel("SY26GA")
-  val dateOfIncorporationModel = DateOfIncorporationModel(Some(20), Some(4), Some(1990))
-  val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
-  val commercialSaleModelYes = CommercialSaleModel(Constants.StandardRadioButtonYesValue, Some(4), Some(8), Some(1995))
-  val commercialSaleModelNo = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
-  val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
-  val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
-  val operatingCostsModel = OperatingCostsModel("28976", "12348", "77725", "99883", "23321", "65436")
-  val percentageStaffWithMastersModel = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
-  val tenYearPlanModelYes = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium " +
-    "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
-    "sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. " +
-    "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus"))
-  val tenYearPlanModelNo = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
-  val subsidiariesModel = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
 
-  def previousSchemeSetup(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
+  def previousRFISetup(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(hadPreviousRFIModel))
   }

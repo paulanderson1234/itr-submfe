@@ -14,124 +14,103 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2016 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package views
 
-  package views
+import controllers.routes
+import forms.ContactAddressForm._
+import models.AddressModel
+import org.jsoup.Jsoup
+import play.api.i18n.Messages
+import play.api.test.Helpers._
+import views.helpers.ViewTestSpec
+import views.html.contactInformation.ContactAddress
 
-  import connectors.S4LConnector
-  import controllers.helpers.FakeRequestHelper
-  import controllers.routes
-  import forms.ContactAddressForm._
-  import models.AddressModel
-  import org.jsoup.Jsoup
-  import org.scalatest.mock.MockitoSugar
-  import play.api.i18n.Messages
-  import play.api.test.Helpers._
-  import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-  import views.html.contactInformation.ContactAddress
+class ContactAddressSpec extends ViewTestSpec {
 
-  class ContactAddressSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
+  val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
+  val emptyAddressModel = new AddressModel("", "", countryCode = "")
 
-    val mockS4lConnector = mock[S4LConnector]
+  lazy val form = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
+    "addressline2" -> "Mt. Akina",
+    "addressline3" -> "",
+    "addressline4" -> "",
+    "postcode" -> "",
+    "countryCode" -> "JP"))
 
-    val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
-    val emptyAddressModel = new AddressModel("", "", countryCode = "")
+  lazy val emptyForm = contactAddressForm.bind(Map("addressline1" -> "",
+    "addressline2" -> "",
+    "addressline3" -> "",
+    "addressline4" -> "",
+    "postcode" -> "",
+    "countryCode" -> ""))
 
-    lazy val form = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
-      "addressline3" -> "",
-      "addressline4" -> "",
-      "postcode" -> "",
-      "countryCode" -> "JP"))
+  lazy val errorForm = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
+    "addressline2" -> "Mt. Akina",
+    "addressline3" -> "",
+    "addressline4" -> "",
+    "postcode" -> "",
+    "countryCode" -> ""))
 
-    lazy val emptyForm = contactAddressForm.bind(Map("addressline1" -> "",
-      "addressline2" -> "",
-      "addressline3" -> "",
-      "addressline4" -> "",
-      "postcode" -> "",
-      "countryCode" -> ""))
+  val countriesList: List[(String, String)] = List(("JP", "Japan"), ("GB", "United Kingdom"))
+  lazy val page = ContactAddress(form, countriesList)(authorisedFakeRequest)
+  lazy val emptyPage = ContactAddress(emptyForm, countriesList)(authorisedFakeRequest)
+  lazy val errorPage = ContactAddress(errorForm, countriesList)(authorisedFakeRequest)
 
-    lazy val errorForm = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
-      "addressline3" -> "",
-      "addressline4" -> "",
-      "postcode" -> "",
-      "countryCode" -> ""))
+  "The Provide Correspondence Address page" should {
 
-    val countriesList: List[(String, String)] = List(("JP", "Japan"), ("GB", "United Kingdom"))
-    lazy val page = ContactAddress(form, countriesList)(authorisedFakeRequest)
-    lazy val emptyPage = ContactAddress(emptyForm, countriesList)(authorisedFakeRequest)
-    lazy val errorPage = ContactAddress(errorForm, countriesList)(authorisedFakeRequest)
+    "Verify that the Provide Correspondence Address page contains the correct elements when a valid AddressModel is passed" in {
 
-    "The Provide Correspondence Address page" should {
-
-      "Verify that the Provide Correspondence Address page contains the correct elements when a valid AddressModel is passed" in {
-
-        lazy val document = {
-          Jsoup.parse(contentAsString(page))
-        }
-
-        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
-        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-        document.getElementById("next").text() shouldBe Messages("common.button.continue")
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
-        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-        document.body.getElementById("addressline1").`val`() shouldBe contactAddressModel.addressline1
-        document.body.getElementById("addressline2").`val`() shouldBe contactAddressModel.addressline2
-        document.body.getElementById("addressline3").`val`() shouldBe ""
-        document.body.getElementById("addressline4").`val`() shouldBe ""
-        document.body.getElementById("postcode").`val`() shouldBe ""
-        document.body.select("select[name=countryCode] option[selected]").`val`() shouldBe contactAddressModel.countryCode
-        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      lazy val document = {
+        Jsoup.parse(contentAsString(page))
       }
 
-      "Verify that the Provide Correspondence Address page contains the correct elements " +
-        "when an empty AddressModel is passed" in {
+      document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+      document.body.getElementById("addressline1").`val`() shouldBe contactAddressModel.addressline1
+      document.body.getElementById("addressline2").`val`() shouldBe contactAddressModel.addressline2
+      document.body.getElementById("addressline3").`val`() shouldBe ""
+      document.body.getElementById("addressline4").`val`() shouldBe ""
+      document.body.getElementById("postcode").`val`() shouldBe ""
+      document.body.select("select[name=countryCode] option[selected]").`val`() shouldBe contactAddressModel.countryCode
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+    }
 
-        lazy val document = {
-          Jsoup.parse(contentAsString(emptyPage))
-        }
+    "Verify that the Provide Correspondence Address page contains the correct elements " +
+      "when an empty AddressModel is passed" in {
 
-        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
-        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-        document.getElementById("next").text() shouldBe Messages("common.button.continue")
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
-        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-        document.getElementById("error-summary-display").hasClass("error-summary--show")
-        document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
-        document.getElementById("addressline1-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
-        document.getElementById("addressline2-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
+      lazy val document = {
+        Jsoup.parse(contentAsString(emptyPage))
       }
 
-      "Verify that the Provide Correspondence Address page contains the correct elements " +
-        "when an invalid AddressModel is passed" in {
+      document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
+      document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
+      document.getElementById("addressline1-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
+      document.getElementById("addressline2-error-summary").text should include(Messages("validation.error.mandatoryaddresssline"))
+    }
 
-        lazy val document = {
-          Jsoup.parse(contentAsString(errorPage))
-        }
-        document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
-        document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-        document.getElementById("next").text() shouldBe Messages("common.button.continue")
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
-        document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
-        document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-        document.getElementById("error-summary-display").hasClass("error-summary--show")
-        document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
+    "Verify that the Provide Correspondence Address page contains the correct elements " +
+      "when an invalid AddressModel is passed" in {
+
+      lazy val document = {
+        Jsoup.parse(contentAsString(errorPage))
       }
+      document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
+      document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
+      document.getElementById("error-summary-display").hasClass("error-summary--show")
+      document.getElementById("countryCode-error-summary").text should include(Messages("validation.error.countryCode"))
     }
   }
+}

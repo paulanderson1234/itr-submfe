@@ -19,19 +19,15 @@ package views
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.{CheckAnswersController, routes}
-import controllers.helpers.FakeRequestHelper
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 
-class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
-  with FakeRequestHelper with BeforeAndAfterEach with CheckAnswersHelper {
+class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -40,21 +36,17 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
-
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 1: Company details" +
       " when it is fully populated with company detail models" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         contactDetailsSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
-          Some(percentageStaffWithMastersModel), Some(tenYearPlanModelYes), Some(subsidiariesModel))
+          Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -163,7 +155,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-question").text() shouldBe
         Messages("summaryQuestion.percentageStaffWithMasters")
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-answer").text() shouldBe
-        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModel.staffWithMasters)
+        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModelYes.staffWithMasters)
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-link")
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       //Has ten year plan
@@ -184,7 +176,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(13).getElementById("subsidiaries-question").text() shouldBe
         Messages("summaryQuestion.subsidiaries")
       companyDetailsTableTBody.select("tr").get(13).getElementById("subsidiaries-answer").text() shouldBe
-        subsidiariesModel.ownSubsidiaries
+        subsidiariesModelYes.ownSubsidiaries
       companyDetailsTableTBody.select("tr").get(13).getElementById("subsidiaries-link")
         .attr("href") shouldEqual routes.SubsidiariesController.show().url
 
@@ -199,7 +191,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
     "Verify that the Check Answers page contains the correct elements for Section 1: Company details" +
       " when an empty set of company detail models are passed" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         contactDetailsSetup()
         investmentSetup()
         companyDetailsSetup()
@@ -285,12 +277,12 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
     "Verify that the Check Answers page contains the correct elements for Section 1: Company details" +
       " when it is fully populated with company detail models but a commercial sale has not been made" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         contactDetailsSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
-          Some(percentageStaffWithMastersModel), Some(tenYearPlanModelYes), Some(subsidiariesModel))
+          Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -390,7 +382,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(9).getElementById("percentageStaffWithMasters-question").text() shouldBe
         Messages("summaryQuestion.percentageStaffWithMasters")
       companyDetailsTableTBody.select("tr").get(9).getElementById("percentageStaffWithMasters-answer").text() shouldBe
-        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModel.staffWithMasters)
+        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModelYes.staffWithMasters)
       companyDetailsTableTBody.select("tr").get(9).getElementById("percentageStaffWithMasters-link")
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       //Has ten year plan
@@ -411,7 +403,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-question").text() shouldBe
         Messages("summaryQuestion.subsidiaries")
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-answer").text() shouldBe
-        subsidiariesModel.ownSubsidiaries
+        subsidiariesModelYes.ownSubsidiaries
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-link")
         .attr("href") shouldEqual routes.SubsidiariesController.show().url
 
@@ -425,12 +417,12 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
     "Verify that the Check Answers page contains the correct elements for Section 1: Company details" +
       " when it is fully populated with company detail models but it is not knowledge intensive and therefore should not show KI pages" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         contactDetailsSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelNo), Some(operatingCostsModel),
-          Some(percentageStaffWithMastersModel), Some(tenYearPlanModelYes), Some(subsidiariesModel))
+          Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -498,7 +490,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-question").text() shouldBe
         Messages("summaryQuestion.subsidiaries")
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-answer").text() shouldBe
-        subsidiariesModel.ownSubsidiaries
+        subsidiariesModelYes.ownSubsidiaries
       companyDetailsTableTBody.select("tr").get(7).getElementById("subsidiaries-link")
         .attr("href") shouldEqual routes.SubsidiariesController.show().url
 
@@ -513,12 +505,12 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       " when it is fully populated with company detail models but it does not have a ten year plan and" +
       " so should not have a ten year description row" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         contactDetailsSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
-          Some(percentageStaffWithMastersModel), Some(tenYearPlanModelNo), Some(subsidiariesModel))
+          Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelNo), Some(subsidiariesModelYes))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -621,7 +613,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-question").text() shouldBe
         Messages("summaryQuestion.percentageStaffWithMasters")
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-answer").text() shouldBe
-        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModel.staffWithMasters)
+        PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModelYes.staffWithMasters)
       companyDetailsTableTBody.select("tr").get(10).getElementById("percentageStaffWithMasters-link")
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       //Has ten year plan
@@ -635,7 +627,7 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-question").text() shouldBe
         Messages("summaryQuestion.subsidiaries")
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-answer").text() shouldBe
-        subsidiariesModel.ownSubsidiaries
+        subsidiariesModelYes.ownSubsidiaries
       companyDetailsTableTBody.select("tr").get(12).getElementById("subsidiaries-link")
         .attr("href") shouldEqual routes.SubsidiariesController.show().url
 

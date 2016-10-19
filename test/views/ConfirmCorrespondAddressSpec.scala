@@ -16,69 +16,54 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{ConfirmCorrespondAddressController, routes}
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import controllers.ConfirmCorrespondAddressController
-import utils.CountriesHelper
+import views.helpers.ViewTestSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class ConfirmCorrespondAddressSpec extends ViewTestSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
-  val confirmCorrespondAddressModel = new ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
-  val emptyConfirmCorrespondAddressModel = new ConfirmCorrespondAddressModel("", address)
+  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
+  val confirmCorrespondAddressModel = new ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, addressModel)
+  val emptyConfirmCorrespondAddressModel = new ConfirmCorrespondAddressModel("", addressModel)
 
   //TODO: Mock this return when it is obtained from ETMP
   val addressFromEtmp =  AddressModel("Company Name Ltd.", "2 Telford Plaza", Some("Lawn Central"), Some("Telford"), Some("TF3 4NT"))
 
-  class SetupPage {
+  object TestController extends ConfirmCorrespondAddressController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
+  }
 
-    val controller = new ConfirmCorrespondAddressController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector: S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  def setupMocks(confirmCorrespondAddressModel: ConfirmCorrespondAddressModel, addressModel: Option[AddressModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(confirmCorrespondAddressModel)))
+    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(addressModel))
   }
 
   "The Confirm Correspondence Address page" should {
 
-    "Verify that the Confirm Correspondence Address page contains the correct elements when a valid ConfirmCorrespondAddressModel is passed" in new SetupPage {
+    "Verify that the Confirm Correspondence Address page contains the correct elements when a valid ConfirmCorrespondAddressModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
-        when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(address)))
-
-        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
+        setupMocks(confirmCorrespondAddressModel,Some(addressModel))
+        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -90,30 +75,23 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       document.body.select("#contactAddressUse-no").size() shouldBe 1
       document.body.getElementById("storedAddressDiv")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-      document.body.getElementById("line1-display").text shouldBe address.addressline1
-      document.body.getElementById("line2-display").text shouldBe address.addressline2
-      document.body.getElementById("line3-display").text shouldBe address.addressline3.getOrElse("")
-      document.body.getElementById("line4-display").text shouldBe address.addressline4.getOrElse("")
-      document.body.getElementById("postcode-display").text shouldBe address.postcode.getOrElse("")
-      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(address.countryCode)
+      document.body.getElementById("line1-display").text shouldBe addressModel.addressline1
+      document.body.getElementById("line2-display").text shouldBe addressModel.addressline2
+      document.body.getElementById("line3-display").text shouldBe addressModel.addressline3.getOrElse("")
+      document.body.getElementById("line4-display").text shouldBe addressModel.addressline4.getOrElse("")
+      document.body.getElementById("postcode-display").text shouldBe addressModel.postcode.getOrElse("")
+      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(addressModel.countryCode)
       }
 
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid" +
-      "ConfirmCorrespondAddressModel is passed but no address model is returned so the ETMP address is used" in new SetupPage {
+      "ConfirmCorrespondAddressModel is passed but no address model is returned so the ETMP address is used" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
-        when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-
-        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
+        setupMocks(confirmCorrespondAddressModel)
+        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -134,13 +112,10 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
     }
 
     "Verify that the Confirm Correspondence Address page contains the correct elements " +
-      "when an invalid ConfirmCorrespondAddressModel is passed" in new SetupPage {
+      "when an invalid ConfirmCorrespondAddressModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(confirmCorrespondAddressModel)))
-        val result = controller.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
+        setupMocks(confirmCorrespondAddressModel)
+        val result = TestController.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> "",
           "address.addressline1" -> "LineX 1 Posted",
           "address.addressline2" -> "LineX 2 Posted",
@@ -151,7 +126,6 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
@@ -166,7 +140,6 @@ class ConfirmCorrespondAddressSpec extends UnitSpec with WithFakeApplication wit
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.body.getElementById("line1-display").text shouldBe "LineX 1 Posted"
       document.body.getElementById("line2-display").text shouldBe "LineX 2 Posted"
-
       document.body.getElementById("line3-display").text shouldBe "LineX 3 Posted"
       document.body.getElementById("line4-display").text shouldBe "LineX 4 Posted"
       document.body.getElementById("postcode-display").text shouldBe "TXX 3XX"

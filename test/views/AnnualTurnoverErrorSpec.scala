@@ -16,16 +16,14 @@
 
 package views
 
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestSpec
 import views.html.investment.AnnualTurnoverError
 
 
-class AnnualTurnoverErrorSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class AnnualTurnoverErrorSpec extends ViewTestSpec {
 
   "The Annual turnover error page" should {
 

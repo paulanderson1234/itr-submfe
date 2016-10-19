@@ -26,28 +26,24 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 
-class CheckAnswersPreviousSchemeSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with BeforeAndAfterEach with CheckAnswersHelper {
+class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
 
-   object TestController extends CheckAnswersController {
+  object TestController extends CheckAnswersController {
      override lazy val applicationConfig = FrontendAppConfig
      override lazy val authConnector = MockAuthConnector
      override lazy val s4lConnector = mockS4lConnector
      override lazy val enrolmentConnector = mockEnrolmentConnector
    }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
-
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
       " when an empty set of company detail models are passed" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()

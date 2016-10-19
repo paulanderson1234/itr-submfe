@@ -16,57 +16,45 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{SupportingDocumentsController, routes}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestSpec
 
 import scala.concurrent.Future
 
-class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class SupportingDocumentsSpec extends ViewTestSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  class SetupPage {
-    val controller = new SupportingDocumentsController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector: S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends SupportingDocumentsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+  
+  def setupMocks(backLink: Option[String] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
 
   "The Supporting documents page" should {
 
-    "Verify that the Supporting documents page contains the correct elements" in new SetupPage {
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ConfirmCorrespondAddressController.show().url)))
-
+    "Verify that the Supporting documents page contains the correct elements with Correspondence Address back link" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((authorisedFakeRequest))
+        setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.checkAnswers")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.getElementById("description-one").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.one")
       document.getElementById("business-plan").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
       document.getElementById("company-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
@@ -77,27 +65,18 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
       document.getElementById("description-three").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.three")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
-
-
     }
-  }
 
-  "The Supporting documents page" should {
-
-    "Verify that the Supporting documents page contains the correct elements cc" in new SetupPage {
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TaxpayerReferenceController.show().url)))
-
+    "Verify that the Supporting documents page contains the correct elements with Taxpayer Reference back link" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((authorisedFakeRequest))
+        setupMocks(Some(routes.TaxpayerReferenceController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.checkAnswers")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TaxpayerReferenceController.show().url
       document.getElementById("description-one").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.one")
       document.getElementById("business-plan").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
       document.getElementById("company-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
@@ -108,7 +87,6 @@ class SupportingDocumentsSpec extends UnitSpec with WithFakeApplication with Moc
       document.getElementById("description-three").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.three")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
-
     }
   }
 }

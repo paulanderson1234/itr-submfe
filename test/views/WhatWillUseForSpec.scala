@@ -59,7 +59,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
   "Verify that the WhatWillUseFor page contains the correct elements " +
     "when a valid WhatWillUseForModel is passed as returned from keystore" in new SetupPage {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
+
       when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
       val result = controller.show.apply(authorisedFakeRequest)
@@ -78,7 +78,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
   "Verify that WhatWillUseFor page contains the correct elements when an empty model " +
     "is passed because nothing was returned from keystore" in new SetupPage {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
+
       when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Option(whatWillUseForModel)))
       val result = controller.show.apply(authorisedFakeRequest)
@@ -96,7 +96,7 @@ class WhatWillUseForSpec extends UnitSpec with WithFakeApplication with MockitoS
 
   "Verify that WhatWillUseForModel page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
+
       // submit the model with no radio selected as a post action
       val result = controller.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

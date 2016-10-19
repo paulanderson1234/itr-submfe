@@ -14,38 +14,18 @@
  * limitations under the License.
  */
 
-/**
-  * Copyright 2016 HM Revenue & Customs
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIED OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-  */
-
 package views
 
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.{CheckAnswersController, routes}
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 
-class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with BeforeAndAfterEach with CheckAnswersHelper {
+class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -54,16 +34,12 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
-
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 4: Contact Details" +
       " when the contact details model is fully populated" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         investmentSetup()
         contactDetailsSetup(Some(contactDetailsModel))
         companyDetailsSetup()
@@ -123,7 +99,7 @@ class CheckAnswersContactDetailsSpec extends UnitSpec with WithFakeApplication w
     "Verify that the Check Answers page contains the correct elements for Section 4: Contact Details" +
       " when the contact details model is not populated" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()

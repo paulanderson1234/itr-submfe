@@ -16,58 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
-import common.Constants
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{HadPreviousRFIController, routes}
 import models.HadPreviousRFIModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestSpec
 
 import scala.concurrent.Future
 
-class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class HadPreviousRFISpec extends ViewTestSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  val hadPreviousRFIModel = new HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
-  val emptyHadPreviousRFIModel = new HadPreviousRFIModel("")
-
-  class SetupPage {
-
-    val controller = new HadPreviousRFIController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector: S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends HadPreviousRFIController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
+  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(hadPreviousRFIModel))
+
   "Verify that the hadPreviousRFI page contains the correct elements " +
-    "when a valid HadPreviousRFIModel is passed as returned from keystore" in new SetupPage {
+    "when a valid HadPreviousRFIModel is passed as returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(hadPreviousRFIModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(hadPreviousRFIModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
@@ -77,23 +60,16 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("hadPreviousRFILegend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
-
-
-
   }
 
   "Verify that hadPreviousRFI page contains the correct elements when an empty model " +
-    "is passed because nothing was returned from keystore" in new SetupPage {
+    "is passed because nothing was returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyHadPreviousRFIModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks()
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
@@ -105,11 +81,10 @@ class HadPreviousRFISpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
-  "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
+  "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(authorisedFakeRequest)
+      // submit the model with no radio selected as a post action
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
 

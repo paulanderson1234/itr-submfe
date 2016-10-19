@@ -21,34 +21,26 @@ import java.util.UUID
 import builders.SessionBuilder
 import connectors.S4LConnector
 import controllers.IntroductionController
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewTestSpec
 
-class startSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class StartSpec extends ViewTestSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  class SetupPage {
-
-    val controller = new IntroductionController{
-      val s4lConnector: S4LConnector = mockS4lConnector
-    }
+  object TestController extends IntroductionController {
+    val s4lConnector: S4LConnector = mockS4lConnector
   }
 
   "The Start page" should {
 
-    "Verify that start page contains the correct elements" in new SetupPage {
+    "Verify that start page contains the correct elements" in {
       val document: Document = {
         val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply(SessionBuilder.buildRequestWithSession(userId))
+        val result = TestController.show.apply(SessionBuilder.buildRequestWithSession(userId))
         Jsoup.parse(contentAsString(result))
       }
-
       document.title shouldEqual Messages("page.start.welcome.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.start.welcome.heading")
       document.body.getElementById("description-one").text() shouldEqual Messages("page.start.welcome.description.one")

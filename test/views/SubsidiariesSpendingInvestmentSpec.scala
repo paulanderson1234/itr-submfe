@@ -16,88 +16,59 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
-import common.{Constants, KeystoreKeys}
+import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{SubsidiariesSpendingInvestmentController, routes}
-import controllers.helpers.FakeRequestHelper
-import models.{NewProductModel, PreviousBeforeDOFCSModel, SubsidiariesSpendingInvestmentModel, WhatWillUseForModel}
+import models.SubsidiariesSpendingInvestmentModel
 import org.jsoup.Jsoup
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import views.helpers.ViewTestSpec
 
 import scala.concurrent.Future
 
-class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
-
-  val mockS4lConnector = mock[S4LConnector]
-
-  val subsidiariesSpendingInvestmentModel = new SubsidiariesSpendingInvestmentModel(Constants.StandardRadioButtonYesValue)
-  val emptySubsidiariesSpendingInvestmentModel = new SubsidiariesSpendingInvestmentModel("")
-
-  class SetupPage {
-    val controller = new SubsidiariesSpendingInvestmentController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector : S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+class SubsidiariesSpendingInvestmentSpec extends ViewTestSpec {
+  
+  object TestController extends SubsidiariesSpendingInvestmentController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
+  def setupMocks(subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subsidiariesSpendingInvestmentModel))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(backLink))
   }
-
-
+  
   "The SubsidiariesSpendingInvestment Page" +
-    "Verify that the correct elements are loaded navigating from WhatWillUseFor page" in new SetupPage{
-      val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))
-          (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().url)))
-        when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
-        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
-          "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
-        ))
-        Jsoup.parse(contentAsString(result))
-      }
-
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
-      document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
-      document.select("#subSpendingInvestment-yes").size() shouldBe 1
-      document.select("#subSpendingInvestment-no").size() shouldBe 1
-      document.getElementById("subSpendingInvestment-yesLabel").text() shouldBe Messages("common.radioYesLabel")
-      document.getElementById("subSpendingInvestment-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    }
-
-  "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new SetupPage{
+    "Verify that the correct elements are loaded navigating from WhatWillUseFor page" in new Setup {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
-      ))
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.WhatWillUseForController.show().url))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+    document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
+    document.select("#subSpendingInvestment-yes").size() shouldBe 1
+    document.select("#subSpendingInvestment-no").size() shouldBe 1
+    document.getElementById("subSpendingInvestment-yesLabel").text() shouldBe Messages("common.radioYesLabel")
+    document.getElementById("subSpendingInvestment-noLabel").text() shouldBe Messages("common.radioNoLabel")
+  }
 
+  "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new Setup {
+    val document: Document = {
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.PreviousBeforeDOFCSController.show().url))
+      val result = TestController.show.apply(authorisedFakeRequest)
+      Jsoup.parse(contentAsString(result))
+    }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
@@ -107,19 +78,12 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     document.getElementById("subSpendingInvestment-noLabel").text() shouldBe Messages("common.radioNoLabel")
   }
 
-  "Verify that the correct elements are loaded when navigating from NewProduct page" in new SetupPage {
+  "Verify that the correct elements are loaded when navigating from NewProduct page" in new Setup {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.NewProductController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(subsidiariesSpendingInvestmentModel)))
-      val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
-        "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
-      ))
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.NewProductController.show().url))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
@@ -129,18 +93,13 @@ class SubsidiariesSpendingInvestmentSpec extends UnitSpec with WithFakeApplicati
     document.getElementById("subSpendingInvestment-noLabel").text() shouldBe Messages("common.radioNoLabel")
   }
 
-  "Verify that SubsidiariesSpendingInvestment page contains error summary when invalid model is submitted" in new SetupPage {
+  "Verify that SubsidiariesSpendingInvestment page contains error summary when invalid model is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
+      setupMocks(backLink = Some(routes.NewProductController.show().url))
       // submit the model with no radio selected as a post action
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(emptySubsidiariesSpendingInvestmentModel)))
-      val result = controller.submit.apply(authorisedFakeRequest)
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")

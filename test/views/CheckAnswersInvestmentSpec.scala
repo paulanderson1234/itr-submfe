@@ -19,18 +19,14 @@ package views
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.{CheckAnswersController, routes}
-import controllers.helpers.FakeRequestHelper
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 
-class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with BeforeAndAfterEach with CheckAnswersHelper {
+class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
   
   object TestController extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -39,19 +35,15 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
-
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 3: Investment" +
       " when it is fully populated with investment models" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
-        investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModel),
-        Some(previousBeforeDOFCSModel),Some(newGeographicalMarketModel),Some(newProductModel),Some(subsidiariesSpendingInvestmentModel),
-        Some(subsidiariesNinetyOwnedModel),Some(investmentGrowModel))
+        previousRFISetup()
+        investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModelYes),
+        Some(previousBeforeDOFCSModelYes),Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(subsidiariesSpendingInvestmentModelYes),
+        Some(subsidiariesNinetyOwnedModelNo),Some(investmentGrowModel))
         contactDetailsSetup()
         companyDetailsSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
@@ -83,7 +75,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-question").text() shouldBe
         Messages("page.summaryQuestion.usedInvestReasonBefore")
       investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-answer").text() shouldBe
-        usedInvestmentReasonBeforeModel.usedInvestmentReasonBefore
+        usedInvestmentReasonBeforeModelYes.usedInvestmentReasonBefore
       investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-link")
         .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
 
@@ -91,7 +83,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-question").text() shouldBe
         Messages("page.summaryQuestion.previousBeforeDOFCS")
       investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-answer").text() shouldBe
-        previousBeforeDOFCSModel.previousBeforeDOFCS
+        previousBeforeDOFCSModelYes.previousBeforeDOFCS
       investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-link")
         .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
 
@@ -99,7 +91,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-question").text() shouldBe
         Messages("page.summaryQuestion.newGeoMarket")
       investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-answer").text() shouldBe
-        newGeographicalMarketModel.isNewGeographicalMarket
+        newGeographicalMarketModelYes.isNewGeographicalMarket
       investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-link")
         .attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
 
@@ -107,7 +99,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(5).getElementById("newProduct-question").text() shouldBe
         Messages("page.summaryQuestion.newProduct")
       investmentTableTbody.select("tr").get(5).getElementById("newProduct-answer").text() shouldBe
-        newGeographicalMarketModel.isNewGeographicalMarket
+        newGeographicalMarketModelYes.isNewGeographicalMarket
       investmentTableTbody.select("tr").get(5).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
@@ -115,7 +107,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-question").text() shouldBe
         Messages("page.summaryQuestion.subsSpendingInvest")
       investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-answer").text() shouldBe
-        subsidiariesSpendingInvestmentModel.subSpendingInvestment
+        subsidiariesSpendingInvestmentModelYes.subSpendingInvestment
       investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-link")
         .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
 
@@ -123,7 +115,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
       investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-question").text() shouldBe
         Messages("page.summaryQuestion.subNinetyOwned")
       investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-answer").text() shouldBe
-        subsidiariesNinetyOwnedModel.ownNinetyPercent
+        subsidiariesNinetyOwnedModelNo.ownNinetyPercent
       investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-link")
         .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
 
@@ -144,7 +136,7 @@ class CheckAnswersInvestmentSpec extends UnitSpec with WithFakeApplication with 
     "Verify that the Check Answers page contains the correct elements for Section 3: Investment" +
       " when the investment models are empty" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()

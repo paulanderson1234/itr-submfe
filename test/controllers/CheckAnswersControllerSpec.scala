@@ -48,11 +48,11 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
 import org.scalatest.mock.MockitoSugar
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 
 import scala.concurrent.Future
 
-class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper with CheckAnswersHelper {
+class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper with CheckAnswersSpec {
 
   object CheckAnswersControllerTest extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -88,14 +88,14 @@ class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with O
 
   "Sending a GET request to CheckAnswersController with a populated set of models when authenticated and enrolled" should {
     "return a 200 when the page is loaded" in {
-      previousSchemeSetup(Some(hadPreviousRFIModelYes))
-      investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModel),Some(previousBeforeDOFCSModel),
-        Some(newGeographicalMarketModel),Some(newProductModel),Some(subsidiariesSpendingInvestmentModel),Some(subsidiariesNinetyOwnedModel),
+      previousRFISetup(Some(hadPreviousRFIModelYes))
+      investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModelYes),Some(previousBeforeDOFCSModelYes),
+        Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(subsidiariesSpendingInvestmentModelYes),Some(subsidiariesNinetyOwnedModelNo),
         Some(investmentGrowModel))
       contactDetailsSetup(Some(contactDetailsModel))
       companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
-        Some(percentageStaffWithMastersModel),Some(tenYearPlanModelYes),Some(subsidiariesModel))
+        Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
       mockEnrolledRequest
 
       showWithSessionAndAuth(CheckAnswersControllerTest.show())(
@@ -106,7 +106,7 @@ class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with O
 
   "Sending a GET request to CheckAnswersController with an empty set of models when authenticated and enrolled" should {
     "return a 200 when the page is loaded" in {
-      previousSchemeSetup()
+      previousRFISetup()
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
@@ -120,7 +120,7 @@ class CheckAnswersControllerSpec extends UnitSpec with BeforeAndAfterEach with O
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to CheckAnswersControllerTest" should {
     "redirect to the TAVC Subscription Service" in {
-      previousSchemeSetup()
+      previousRFISetup()
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()

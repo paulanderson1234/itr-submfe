@@ -32,22 +32,17 @@
 
 package views
 
-import java.util.UUID
-
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.{CheckAnswersController, routes}
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.CheckAnswersHelper
+import views.helpers.CheckAnswersSpec
 
-class CheckAnswersSupportingDocsSpec extends UnitSpec with WithFakeApplication with FakeRequestHelper with BeforeAndAfterEach with CheckAnswersHelper {
+class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -56,16 +51,12 @@ class CheckAnswersSupportingDocsSpec extends UnitSpec with WithFakeApplication w
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
-
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 5: Supporting Documents" +
       " when the page is loaded" in new Setup {
       val document: Document = {
-        previousSchemeSetup()
+        previousRFISetup()
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()

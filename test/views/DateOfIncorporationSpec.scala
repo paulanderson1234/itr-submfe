@@ -16,56 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.{DateOfIncorporationController, routes}
-import controllers.helpers.FakeRequestHelper
 import models.DateOfIncorporationModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
-import views.helpers.ViewTestHelper
+import views.helpers.ViewTestSpec
 
 import scala.concurrent.Future
 
-class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with ViewTestHelper {
-
-  val contactDetailsModel = new DateOfIncorporationModel(Some(23), Some(11), Some(1993))
-  val emptyDateOfIncorporationModel = new DateOfIncorporationModel(None, None, None)
-
-  class SetupPage {
-
-    val controller = new DateOfIncorporationController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val s4lConnector: S4LConnector = mockS4lConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+class DateOfIncorporationSpec extends ViewTestSpec {
+  
+  object TestController extends DateOfIncorporationController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+  
+  def setupMocks(dateOfIncorporationModel: Option[DateOfIncorporationModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(dateOfIncorporationModel))
 
   "The Date Of Incorporation page" should {
 
-    "Verify that date of incorporation page contains the correct elements when a valid DateOfIncorporationModel is passed" in new SetupPage {
+    "Verify that date of incorporation page contains the correct elements when a valid DateOfIncorporationModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(contactDetailsModel)))
-        val result = controller.show.apply(authorisedFakeRequest)
+        setupMocks(Some(dateOfIncorporationModel))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.companyDetails.DateOfIncorporation.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.DateOfIncorporation.heading")
       document.body.getElementsByClass("form-hint").text should include(Messages("date.hint.dateOfIncorporation"))
@@ -73,24 +58,20 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationMonth").parent.text shouldBe Messages("common.date.fields.month")
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
-      (Messages("page.companyDetails.DateOfIncorporation.location"))
+        Messages("page.companyDetails.DateOfIncorporation.location")
       document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
-    "Verify that the date of incorporation page contains the correct elements when an invalid DateOfIncorporationModel is passed" in new SetupPage {
+    "Verify that the date of incorporation page contains the correct elements when an invalid DateOfIncorporationModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-          .thenReturn(Future.successful(Option(emptyDateOfIncorporationModel)))
-        val result = controller.submit.apply(authorisedFakeRequest)
+        setupMocks()
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.companyDetails.DateOfIncorporation.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.DateOfIncorporation.heading")
       document.body.getElementsByClass("form-hint").text should include(Messages("date.hint.dateOfIncorporation"))
@@ -98,11 +79,11 @@ class DateOfIncorporationSpec extends UnitSpec with WithFakeApplication with Moc
       document.body.getElementById("incorporationMonth").parent.text shouldBe Messages("common.date.fields.month")
       document.body.getElementById("incorporationYear").parent.text shouldBe Messages("common.date.fields.year")
       document.body.getElementById("date-of-incorporation-where-to-find").parent.text should include
-      (Messages("page.companyDetails.DateOfIncorporation.location"))
+        Messages("page.companyDetails.DateOfIncorporation.location")
       document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
 
