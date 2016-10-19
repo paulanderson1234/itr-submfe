@@ -83,7 +83,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
@@ -92,7 +92,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       mockEnrolledRequest
@@ -108,7 +108,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -119,7 +119,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
       when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesSpendingInvestment)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockNotEnrolledRequest
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
@@ -202,7 +202,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -211,7 +211,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends UnitSpec with Mockito
   "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       mockEnrolledRequest
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(

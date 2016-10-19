@@ -66,7 +66,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.show.apply(authorisedFakeRequestToPOST(
@@ -83,7 +83,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
     document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
     document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -209,7 +209,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     val document: Document = {
       val userId = s"user-${UUID.randomUUID}"
       when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.WhatWillUseForController.show().toString())))
+        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(investmentGrowModel)))
       val result = controller.submit.apply(authorisedFakeRequestToPOST(
@@ -226,7 +226,7 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
     document.getElementById("description-two").text() shouldBe Messages("page.investment.InvestmentGrow.description.two")
     document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
     document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
     document.body.getElementById("investmentGrowDesc").hasClass("form-control")
     document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")

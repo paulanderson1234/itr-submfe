@@ -22,10 +22,12 @@ import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.{HadPreviousRFIModel, KiProcessingModel, ProposedInvestmentModel}
+import models._
 import common._
 import common.Constants._
 import forms.ProposedInvestmentForm._
+import uk.gov.hmrc.play.http.HeaderCarrier
+import utils.Validation
 
 import scala.concurrent.Future
 import views.html.investment.ProposedInvestment
@@ -65,12 +67,14 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean]): Future[Result] = {
+    def routeReq(kiModel: KiProcessingModel, prevRFI: HadPreviousRFIModel,
+                 comSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel]): Future[Result] = {
+      getRoute(hc, prevRFI, comSale, hasSub, kiModel.isKi)
+    }
+
+    def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean], prevRFI: HadPreviousRFIModel): Future[Result] = {
       kiModel match {
         // check previous answers present
-        case Some(data) if isMissingKiData(data) => {
-          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-        }
         case Some(dataWithPreviousValid) => {
           // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
           keyStoreConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
@@ -83,7 +87,11 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
               }
               else {
                 // not exceeded - continue
-                Future.successful(Redirect(routes.WhatWillUseForController.show()))
+                for {
+                  comSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+                  hasSub <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+                  route <- routeReq(kiModel.get, prevRFI, comSale, hasSub)
+                } yield route
               }
 
             // if none, redirect back to HadPreviousRFI page.
@@ -103,7 +111,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       },
       validFormData => {
         keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
-        for {
+        (for {
           kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           hadPrevRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
           previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
@@ -114,34 +122,77 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
 
-          route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded)
-        } yield route
+          route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get)
+        } yield route) recover {
+          case e : NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+        }
       }
     )
   }
+  def getRoute(implicit hc: HeaderCarrier, prevRFI: HadPreviousRFIModel,
+               commercialSale: Option[CommercialSaleModel],
+               hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
 
-  def isMissingKiData(data: KiProcessingModel): Boolean = {
+    commercialSale match {
+      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonNoValue => {
+        subsidiariesCheck(hc, hasSub)
+      }
+      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonYesValue => {
+        getPreviousSaleRoute(hc, prevRFI, sale, hasSub, isKi)
+      }
+      case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
+    }
+  }
 
-    false
 
-//    if(data.companyAssertsIsKi.isEmpty){
-//      true
-//    }
-//    else if (data.companyAssertsIsKi.get){
-//      if(data.costsConditionMet.isEmpty){
-//        true
-//      } else {
-//        if (!data.costsConditionMet.get){
-//          data.secondaryCondtionsMet.isEmpty
-//        } else false
-//      }
-//    }
-//    else if (data.dateConditionMet.isEmpty) {
-//      true
-//    }
-//    else {
-//      false
-//    }
+  def getAgeLimit(isKI: Boolean): Int = {
+    if (isKI) Constants.IsKnowledgeIntensiveYears
+    else Constants.IsNotKnowledgeIntensiveYears
+  }
+
+  def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
+    hasSub match {
+      case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
+          routes.ProposedInvestmentController.show().toString())
+        Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+      } else {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+          routes.ProposedInvestmentController.show().toString())
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
+      }
+      case None => {
+        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+          routes.ProposedInvestmentController.show().toString())
+        Future.successful(Redirect(routes.SubsidiariesController.show()))
+      }
+    }
+  }
+
+  def getPreviousSaleRoute(implicit hc: HeaderCarrier, prevRFI: HadPreviousRFIModel,
+                           commercialSale: CommercialSaleModel,
+                           hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
+
+    val dateWithinRangeRule: Boolean = Validation.checkAgeRule(commercialSale.commercialSaleDay.get,
+      commercialSale.commercialSaleMonth.get, commercialSale.commercialSaleYear.get, getAgeLimit(isKi))
+
+    prevRFI match {
+      case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
+        // this is first scheme
+        if (dateWithinRangeRule) {
+          keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+            routes.ProposedInvestmentController.show().toString())
+          Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+        }
+        else subsidiariesCheck(hc, hasSub)
+      }
+      case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonYesValue => {
+        // subsequent scheme
+        if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
+        else subsidiariesCheck(hc, hasSub)
+      }
+
+    }
   }
 }
 

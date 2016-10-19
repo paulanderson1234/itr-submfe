@@ -14,31 +14,48 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright 2016 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package controllers
 
 import java.net.URLEncoder
+import java.time.ZoneId
+import java.util.Date
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{SubmissionConnector, EnrolmentConnector, KeystoreConnector}
+import controllers.helpers.FakeRequestHelper
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
+import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
-import common.Constants.{StandardRadioButtonNoValue, StandardRadioButtonYesValue}
-import controllers.helpers.FakeRequestHelper
 
 import scala.concurrent.Future
 
-class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
 
   val mockKeyStoreConnector = mock[KeystoreConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
@@ -56,6 +73,120 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   private def mockNotEnrolledRequest = when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))
+
+  val date = new Date()
+  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+
+  val todayDay: String = localDate.getDayOfMonth.toString
+  val todayMonth: String = localDate.getMonthValue.toString
+  val todayYear: String = localDate.getYear.toString
+
+  // 3 year boundary dates (at, below, above) from today
+  val date3YearsAgo = localDate.minusYears(3)
+  val date3YearsAgoDay: Int = date3YearsAgo.getDayOfMonth
+  val date3YearsAgoMonth: Int = date3YearsAgo.getMonthValue
+  val date3YearsAgoYear: Int = date3YearsAgo.getYear
+
+  val date3YearsOneDay = localDate.minusYears(3).minusDays(1)
+  val date3YearsOneDayDay: Int = date3YearsOneDay.getDayOfMonth
+  val date3YearsOneDayMonth: Int = date3YearsOneDay.getMonthValue
+  val date3YearsOneDayYear: Int = date3YearsOneDay.getYear
+
+  val date3YearsLessOneDay = localDate.minusYears(3).plusDays(1)
+  val date3yearsLessOneDayDay: Int = date3YearsLessOneDay.getDayOfMonth
+  val date3YearsLessOneDayMonth: Int = date3YearsLessOneDay.getMonthValue
+  val date3YearsLessOneDayYear: Int = date3YearsLessOneDay.getYear
+
+  // 1 year
+  val date1YearAgo = localDate.minusYears(1)
+  val date1YearAgoDay: Int = date1YearAgo.getDayOfMonth
+  val date1YearAgoMonth: Int = date1YearAgo.getMonthValue
+  val date1YearAgoYear: Int = date1YearAgo.getYear
+
+  // 7 year boundary dates (at, below, above) from today
+  val date7YearsAgo = localDate.minusYears(7)
+  val date7YearsAgoDay: Int = date7YearsAgo.getDayOfMonth
+  val date7YearsAgoMonth: Int = date7YearsAgo.getMonthValue
+  val date7YearsAgoYear: Int = date7YearsAgo.getYear
+
+  val date7YearsOneDay = localDate.minusYears(7).minusDays(1)
+  val date7YearsOneDayDay: Int = date7YearsOneDay.getDayOfMonth
+  val date7YearsOneDayMonth: Int = date7YearsOneDay.getMonthValue
+  val date7YearsOneDayYear: Int = date7YearsOneDay.getYear
+
+  val date7YearsLessOneDay = localDate.minusYears(7).plusDays(1)
+  val date7YearsLessOneDayDay: Int = date7YearsLessOneDay.getDayOfMonth
+  val date7YearsLessOneDayMonth: Int = date7YearsLessOneDay.getMonthValue
+  val date7YearsLessOneDayYear: Int = date7YearsLessOneDay.getYear
+
+  // 10 year boundary dates (at, below, above) from today
+  val date10YearsAgo = localDate.minusYears(10)
+  val date10YearsAgoDay: Int = date10YearsAgo.getDayOfMonth
+  val date10YearsAgoMonth: Int = date10YearsAgo.getMonthValue
+  val date10YearsAgoYear: Int = date10YearsAgo.getYear
+
+  val date10YearsOneDay = localDate.minusYears(10).minusDays(1)
+  val date10YearsOneDayDay: Int = date10YearsOneDay.getDayOfMonth
+  val date10YearsOneDayMonth: Int = date10YearsOneDay.getMonthValue
+  val date10YearsOneDayYear: Int = date10YearsOneDay.getYear
+
+  val date10YearsLessOneDay = localDate.minusYears(10).plusDays(1)
+  val date10YearsLessOneDayDay: Int = date10YearsLessOneDay.getDayOfMonth
+  val date10YearsLessOneDayMonth: Int = date10YearsLessOneDay.getMonthValue
+  val date10YearsLessOneDayYear: Int = date10YearsLessOneDay.getYear
+
+  val keyStoreSavedHadPreviousRFIYes = HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedHadPreviousRFINo = HadPreviousRFIModel(Constants.StandardRadioButtonNoValue)
+  val keyStoreSavedHadPreviousRFIEmpty = HadPreviousRFIModel("")
+  val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
+  val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
+  val keyStoreSavedSubsidiariesEmpty = SubsidiariesModel("")
+
+  val keyStoreSavedCommercialSaleNo = CommercialSaleModel(Constants.StandardRadioButtonNoValue, None, None, None)
+  val keyStoreSavedCommercialSaleEmpty = CommercialSaleModel("", None, None, None)
+
+  val keyStoreSavedDOIEmpty = DateOfIncorporationModel(None, None, None)
+
+  // 10 year from today boundary models Commercial Sale
+  val keyStoreSavedCommercialSale10Years = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date10YearsAgoDay), Some(date10YearsAgoMonth), Some(date10YearsAgoYear))
+  val keyStoreSavedCommercialSale10YearsOneDay = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date10YearsOneDayDay), Some(date10YearsOneDayMonth), Some(date10YearsOneDayYear))
+  val keyStoreSavedCommercialSale10YearsLessOneDay = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date10YearsLessOneDayDay), Some(date10YearsLessOneDayMonth), Some(date10YearsLessOneDayYear))
+
+  // 7 year from today boundary models Commercial Sale
+  val keyStoreSavedCommercialSale7Years = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date7YearsAgoDay), Some(date7YearsAgoMonth), Some(date7YearsAgoYear))
+  val keyStoreSavedCommercialSale7YearsOneDay = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date7YearsOneDayDay), Some(date7YearsOneDayMonth), Some(date7YearsOneDayYear))
+  val keyStoreSavedCommercialSale7YearsLessOneDay = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date7YearsLessOneDayDay), Some(date7YearsLessOneDayMonth), Some(date7YearsLessOneDayYear))
+
+  val keyStoreSavedCommercialSale1Year = CommercialSaleModel(Constants.StandardRadioButtonYesValue,
+    Some(date1YearAgoDay), Some(date1YearAgoMonth), Some(date1YearAgoYear))
+
+  //3 year from today bounder models Date of Incorporation
+  val keyStoreSavedDOI3Years = DateOfIncorporationModel(Some(date3YearsAgoDay), Some(date3YearsAgoMonth), Some(date3YearsAgoYear))
+  val keyStoreSavedDOI3YearsOneDay = DateOfIncorporationModel(Some(date3YearsOneDayDay), Some(date3YearsOneDayMonth), Some(date3YearsOneDayYear))
+  val keyStoreSavedDOI3YearsLessOneDay = DateOfIncorporationModel(Some(date10YearsLessOneDayDay),
+    Some(date10YearsLessOneDayMonth), Some(date10YearsLessOneDayYear))
+
+  val keyStoreSavedDOI10Years = DateOfIncorporationModel(Some(date10YearsAgoDay), Some(date10YearsAgoMonth), Some(date10YearsAgoYear))
+
+  val modelProposedInvestment = ProposedInvestmentModel(12345)
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelProposedInvestment)))
+  val keyStoreSavedProposedInvestment = ProposedInvestmentModel(12345)
+
+
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
+  val optionKIModel = KiProcessingModel(Some(false), Some(true), Some(false), None, None, None)
+  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
+  val missingCompanyAssertsIsKiKiModel = KiProcessingModel(None, Some(true), Some(true), Some(true), None, Some(true))
+  val missingCostsConditionKiModel = KiProcessingModel(Some(true),Some(true),None, None, None, None)
+  val missingSecondaryConditionsKiModel = KiProcessingModel(Some(true),Some(true),Some(false),Some(true),Some(true),None)
+  val missingDateConditionMetKiModel = KiProcessingModel(Some(false),None,Some(true), None, None, None)
 
   val model1 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
@@ -81,23 +212,6 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val previousSchemeUnderTotalAmount = Vector(model3, model5, model7)
 
 
-  val model = ProposedInvestmentModel(5000000)
-  val emptyModel = ProposedInvestmentModel(0)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedProposedInvestment = ProposedInvestmentModel(1234568)
-
-  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
-  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
-  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
-
-  val EISSchemeModel = PreviousSchemeModel(Constants.schemeTypeEis, 30000, None, None, None, None, None, None)
-  val SEISSchemeModel = PreviousSchemeModel(Constants.schemeTypeSeis, 30000000, None, None, None, None, None, None)
-  val emptySchemeModel = PreviousSchemeModel("", 0, None, None, None, None, None, None)
-
-  val keyStoreSavedhadPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonYesValue)
-  val keyStoreSavednoPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonNoValue)
-
-
   implicit val hc = HeaderCarrier()
 
   override def beforeEach() {
@@ -114,16 +228,15 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "use the correct enrolment connector" in {
       ProposedInvestmentController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct submission connector" in {
+      ProposedInvestmentController.submissionConnector shouldBe SubmissionConnector
+    }
   }
 
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
@@ -133,11 +246,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
+    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
@@ -145,27 +255,6 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       mockEnrolledRequest
       showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
-      )
-    }
-  }
-
-  "Sending a GET request to ProposedInvestmentController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
       )
     }
   }
@@ -185,88 +274,564 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending an Unauthenticated request with a session to ProposedInvestmentController when authenticated and enrolled" should {
-    "return a 302 and redirect to GG login" in {
-      mockEnrolledRequest
-      showWithSessionWithoutAuth(ProposedInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ProposedInvestmentController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(ProposedInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ProposedInvestmentController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(ProposedInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with not exceeding the lifetime allowance (true KI) to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect to the what will use for page" in {
+  "Sending a valid form submit to the ProposedInvestmentController for first investment when more than 7 years from " +
+    "Commercial sale date when not deemed knowledge intensive and lifetime limit has not been exceeded" should {
+    "redirect to new geographical market page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
       mockEnrolledRequest
-      val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
         }
       )
     }
   }
 
-  "Sending a valid form submit with a not exceeding the lifetime allowance (true KI) and no previous RFI to the ProposedInvestmentController" +
-    "when authenticated and enrolled" should {
-    "redirect to the what will use for page" in {
+  "Sending a valid form submit to the ProposedInvestment Controlller for first investment when more than 10 years from " +
+    "Commercial sale date and not exceeded lifetime limit" should {
+    "redirect to new geographical market page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
       mockEnrolledRequest
-      val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment when NOT more than 7 years from " +
+    "Commercial sale date when not deemed knowledge intensive with subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment when EXACTLY 7 years from " +
+    "Commercial sale date when not deemed knowledge intensive with subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment when NOT more than 10 years from " +
+    "Commercial sale date when it is deemed knowledge intensive with subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment when EXACTLY 10 years from " +
+    "Commercial sale date when it is deemed knowledge intensive with subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment is NOT more than 7 years from " +
+    "Commercial sale date when it is NOT deemed knowledge intensive and without any subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new how-plan-to-use-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for first investment is EXACTLY 7 years from " +
+    "Commercial sale date when it is NOT deemed knowledge intensive and without any subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new how-plan-to-use-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when NOT more than 10 years from " +
+    "Commercial sale date and when it IS deemed knowledge intensive and without any subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new how-plan-to-use-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when EXACTLY 10 years from " +
+    "Commercial sale date and when it IS deemed knowledge intensive and without any subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new how-plan-to-use-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
+    "and when it IS deemed knowledge intensive and has subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+  // 5e
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
+    "and when it IS deemed knowledge intensive and does not have subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  // 5f
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
+    "and when it IS NOT deemed knowledge intensive and does not have subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
+    "and when it IS NOT deemed knowledge intensive and has subsidiaries and not exceeded lifetime limit" should {
+    "redirect to new subsidiaries-spending-investment page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFINo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSaleNo)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController when investment has been used previously and a commercial sale exists" +
+    "and has a date that isn't within the range and not exceeded lifetime limit" should {
+    "redirect to subsidiaries page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale1Year)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController when investment has been used previously and a commercial sale exists " +
+    "and not exceeded lifetime limit" should {
+    "redirect to reason used before page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController when investment has been used previously and a commercial sale exists" +
+    "but using different models and not exceeded lifetime limit" should {
+    "redirect to reason used before page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale10YearsOneDay)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment with an empty PrevRFI and not exceeded lifetime limit" should {
+    "redirect to used-investment-scheme-before page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment with an empty Commercial sale " +
+    "and not exceeded lifetime limit" should {
+    "redirect to commercial-sale page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(trueKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+        }
+      )
+    }
+  }
+
+  "Sending a valid form submit to the ProposedInvestmentController for the first investment with an empty KIProcessingModel " +
+    "and not exceeded lifetime limit" should {
+    "redirect to date-of-incorporation page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedCommercialSale7Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
+      mockEnrolledRequest
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "123456")(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
         }
       )
     }
@@ -274,85 +839,13 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with exceeded lifetime allowance (true KI) to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
-      mockEnrolledRequest
-      val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect to the what will do page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
-      mockEnrolledRequest
-      val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
-      mockEnrolledRequest
-      val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit with not exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
@@ -368,38 +861,67 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with No KIModel to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
+
+    "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
+    "redirect to the exceeded lifetime limit page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(Option(true)))
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
       when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
       mockEnrolledRequest
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
         }
       )
     }
   }
 
-  "Sending an invalid form submission with validation errors to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect with a bad request" in {
+  "Sending a valid form submit with No Response from checkLifetimeAllowance API" +
+    "to the ProposedInvestmentController when authenticated and enrolled" should {
+    "redirect to the HadPreviousRFI page" in {
+      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(None))
+      when(mockKeyStoreConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
+      when(mockKeyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(keyStoreSavedHadPreviousRFIYes)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(falseKIModel)))
+      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
+      mockEnrolledRequest
+      val formInput = "investmentAmount" -> "1234567"
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+        }
+      )
+    }
+  }
+
+
+
+
+  "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
+    "redirect to itself" in {
       when(mockKeyStoreConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
       mockEnrolledRequest
-      val formInput = "investmentAmount" -> "fff"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit,
+        "investmentAmount" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -407,62 +929,82 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending an invalid form submission with value 0 to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect with a bad request" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockEnrolledRequest
-      val formInput = "investmentAmount" -> "0"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-        }
-      )
+
+  "Sending a request with no session to ProposedInvestmentController" should {
+    "return a 303" in {
+      status(ProposedInvestmentControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(ProposedInvestmentControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
 
-  "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController when authenticated and enrolled" should {
-    "redirect with a bad request" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockEnrolledRequest
-      val formInput = "investmentAmount" -> "5000001"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
-        result => {
-          status(result) shouldBe BAD_REQUEST
-        }
-      )
+  "Sending an Unauthenticated request with a session to ProposedInvestmentController" should {
+    "return a 303" in {
+      status(ProposedInvestmentController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to GG login" in {
+      redirectLocation(ProposedInvestmentControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
 
-  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
+  "Sending a timed-out request to ProposedInvestmentController" should {
+
+    "return a 303 in" in {
+      status(ProposedInvestmentControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to timeout page" in {
+      redirectLocation(ProposedInvestmentControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+    }
+  }
+
+  "Sending a request to ProposedInvestmentController when NOT enrolled" should {
+
+    "return a 303 in" in {
+      mockNotEnrolledRequest
+      status(ProposedInvestmentControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+    }
+
+    s"should redirect to the Subscription Service" in {
+      mockNotEnrolledRequest
+      redirectLocation(ProposedInvestmentControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+    }
+  }
+
+  "Sending a submission to the ProposedInvestmentController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
       submitWithSessionWithoutAuth(ProposedInvestmentControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(ProposedInvestmentControllerTest.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
     }
   }
 
-  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
+  "Sending a submission to the ProposedInvestmentController with no session" should {
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(ProposedInvestmentControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the ProposedInvestmentController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
       submitWithTimeout(ProposedInvestmentControllerTest.submit)(
         result => {
@@ -473,9 +1015,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
-    "redirect to the Subscription Servicec" in {
-      mockNotEnrolledRequest
+  "Sending a submission to the ProposedInvestmentController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
       submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -484,5 +1025,4 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
       )
     }
   }
-
 }

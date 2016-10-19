@@ -112,7 +112,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
       showWithSessionAndAuth(InvestmentGrowControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -195,7 +195,7 @@ class InvestmentGrowControllerSpec extends UnitSpec with MockitoSugar with Befor
       submitWithSessionAndAuth(InvestmentGrowControllerTest.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
