@@ -30,7 +30,6 @@ case class CheckAnswersModel(
                               subsidiariesModel: Option[SubsidiariesModel],
                               hadPreviousRFIModel: Option[HadPreviousRFIModel],
                               proposedInvestmentModel: Option[ProposedInvestmentModel],
-                              whatWillUseForModel: Option[WhatWillUseForModel],
                               usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
                               previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
                               newGeographicalMarketModel: Option[NewGeographicalMarketModel],

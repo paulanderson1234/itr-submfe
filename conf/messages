@@ -338,12 +338,6 @@ page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax rel
 page.investment.SubsidiariesSpendingInvestment.title = Subsidiaries spending investment
 page.investment.SubsidiariesSpendingInvestment.heading = Will another company that''s owned or controlled by [your company name] spend this investment?
 
-#what will use for page
-page.investment.whatWillUseFor.title = What will you use this investment for?
-page.investment.whatWillUseFor.business = Doing business
-page.investment.whatWillUseFor.preparing = Getting ready to do business, eg by renting and office
-page.investment.whatWillUseFor.rAndD = Research and Development
-
 #previous before dofcs
 page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
 page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment between {0} and {1}?

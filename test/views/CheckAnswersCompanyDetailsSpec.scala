@@ -125,8 +125,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
@@ -316,8 +314,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
@@ -444,8 +440,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -626,8 +620,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(),
@@ -754,8 +746,6 @@ class CheckAnswersCompanyDetailsSpec extends UnitSpec with WithFakeApplication w
         when(mockKeystoreConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(),
           Matchers.any())).thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeystoreConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(None))
         when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
