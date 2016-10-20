@@ -123,3 +123,8 @@ GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanc
 POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit
 
 GET        /annual-turnover-error                   controllers.AnnualTurnoverErrorController.show
+
+#Feedback routes
+GET         /feedback               controllers.feedback.FeedbackController.show
+POST        /feedback               controllers.feedback.FeedbackController.submit
+GET         /thankyou               controllers.feedback.FeedbackController.thankyou
