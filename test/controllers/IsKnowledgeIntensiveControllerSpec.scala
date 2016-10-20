@@ -40,7 +40,6 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
   }
 
   val updatedKIModel = KiProcessingModel(Some(true),Some(false), Some(false), Some(false), None, Some(false))
-  val falseKIModel = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), None, Some(false))
   val missingDateKIModel = KiProcessingModel(Some(true),None, Some(false), Some(false), None, Some(false))
 
   def setupShowMocks(isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel] = None): Unit =

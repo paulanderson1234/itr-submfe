@@ -18,44 +18,27 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
-import common.Constants.{StandardRadioButtonNoValue, StandardRadioButtonYesValue}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 
 import scala.concurrent.Future
 
-class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class ProposedInvestmentControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-  val mockSubmissionConnector = mock[SubmissionConnector]
-
-  object ProposedInvestmentControllerTest extends ProposedInvestmentController {
+  object TestController extends ProposedInvestmentController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    val submissionConnector: SubmissionConnector = mockSubmissionConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(ProposedInvestmentControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
 
   val model1 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
@@ -72,37 +55,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   val model7 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeAnotherValue, 15000000, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
 
-
-  val emptyVectorList = Vector[PreviousSchemeModel]()
   val previousSchemeTrueKIVectorList = Vector(model1, model2, model3)
   val previousSchemeOverTrueKIVectorList = Vector(model4, model5, model5)
   val previousSchemeFalseKIVectorList = Vector(model1, model2, model3)
   val previousSchemeOverFalseKIVectorList = Vector(model4, model5, model6)
   val previousSchemeUnderTotalAmount = Vector(model3, model5, model7)
-
-
-  val model = ProposedInvestmentModel(5000000)
-  val emptyModel = ProposedInvestmentModel(0)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedProposedInvestment = ProposedInvestmentModel(1234568)
-
-  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
-  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
-  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
-
-  val EISSchemeModel = PreviousSchemeModel(Constants.schemeTypeEis, 30000, None, None, None, None, None, None)
-  val SEISSchemeModel = PreviousSchemeModel(Constants.schemeTypeSeis, 30000000, None, None, None, None, None, None)
-  val emptySchemeModel = PreviousSchemeModel("", 0, None, None, None, None, None, None)
-
-  val keyStoreSavedhadPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonYesValue)
-  val keyStoreSavednoPreviousRFIModel = HadPreviousRFIModel(StandardRadioButtonNoValue)
-
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
 
   "ProposedInvestmentController" should {
     "use the correct keystore connector" in {
@@ -114,36 +71,51 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     "use the correct enrolment connector" in {
       ProposedInvestmentController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct submission connector" in {
+      ProposedInvestmentController.submissionConnector shouldBe SubmissionConnector
+    }
+  }
+
+  def setupShowMocks(proposedInvestmentModel: Option[ProposedInvestmentModel] = None, previousRFIModel: Option[HadPreviousRFIModel] = None,
+                     backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
+      (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(proposedInvestmentModel))
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(previousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
+  }
+
+  def setupSubmitMocks(ltaExceeded: Option[Boolean] = None, backLink: Option[String] = None,
+                       previousRFIModel: Option[HadPreviousRFIModel] = None, kiProcessingModel: Option[KiProcessingModel] = None,
+                       previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
+    when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(ltaExceeded))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkProposedInvestment))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(previousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(kiProcessingModel))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(previousSchemes))
   }
 
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
+      setupShowMocks(Some(proposedInvestmentModel), Some(hadPreviousRFIModelNo), Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
+      setupShowMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -151,17 +123,9 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a GET request to ProposedInvestmentController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel]
-        (Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
+      setupShowMocks(Some(proposedInvestmentModel), Some(hadPreviousRFIModelNo), Some(routes.ReviewPreviousSchemesController.show().url))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -172,11 +136,9 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ProposedInvestmentControllerTest.show)(
+      setupShowMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -187,8 +149,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an Unauthenticated request with a session to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 302 and redirect to GG login" in {
-      mockEnrolledRequest
-      showWithSessionWithoutAuth(ProposedInvestmentControllerTest.show())(
+      mockEnrolledRequest()
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -201,7 +163,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a request with no session to ProposedInvestmentController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(ProposedInvestmentControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -214,7 +176,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a timed-out request to ProposedInvestmentController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(ProposedInvestmentControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -225,20 +187,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with not exceeding the lifetime allowance (true KI) to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the what will use for page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes),
+        Some(trueKIModel), Some(previousSchemeTrueKIVectorList))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -250,20 +203,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   "Sending a valid form submit with a not exceeding the lifetime allowance (true KI) and no previous RFI to the ProposedInvestmentController" +
     "when authenticated and enrolled" should {
     "redirect to the what will use for page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavednoPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelNo),
+        Some(trueKIModel), Some(previousSchemeTrueKIVectorList))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -274,20 +218,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with exceeded lifetime allowance (true KI) to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeOverTrueKIVectorList)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(true), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes),
+        Some(trueKIModel), Some(previousSchemeOverTrueKIVectorList))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -296,22 +231,14 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
   }
 
-  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
+  "Sending a valid form submit with not exceeding the lifetime allowance (false KI) to the ProposedInvestmentController" +
+    " when authenticated and enrolled" should {
     "redirect to the what will do page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeFalseKIVectorList)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes),
+        Some(falseKIModel), Some(previousSchemeFalseKIVectorList))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
@@ -322,20 +249,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(true), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes),
+        Some(falseKIModel), Some(previousSchemeFalseKIVectorList))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -346,20 +264,11 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with not exceeded lifetime allowance (false KI) to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the exceeded lifetime limit page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeUnderTotalAmount)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(true), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes),
+        Some(trueKIModel), Some(previousSchemeUnderTotalAmount))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "5000000"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
@@ -370,20 +279,10 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a valid form submit with No KIModel to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect to the DateOfIncorporation page" in {
-      when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedhadPreviousRFIModel)))
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(routes.ReviewPreviousSchemesController.show().url), Some(hadPreviousRFIModelYes))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "1234567"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -394,12 +293,10 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with validation errors to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockEnrolledRequest
+      setupSubmitMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "fff"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -409,12 +306,10 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with value 0 to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockEnrolledRequest
+      setupSubmitMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "0"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -424,12 +319,10 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending an invalid form submission with value 5000001 to the ProposedInvestmentController when authenticated and enrolled" should {
     "redirect with a bad request" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-      mockEnrolledRequest
+      setupSubmitMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest()
       val formInput = "investmentAmount" -> "5000001"
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -440,7 +333,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
   "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(ProposedInvestmentControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -451,7 +344,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(ProposedInvestmentControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -464,7 +357,7 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(ProposedInvestmentControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -475,8 +368,8 @@ class ProposedInvestmentControllerSpec extends UnitSpec with MockitoSugar with B
 
   "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
     "redirect to the Subscription Servicec" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(ProposedInvestmentControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

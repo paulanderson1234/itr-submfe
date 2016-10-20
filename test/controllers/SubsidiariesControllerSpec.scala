@@ -18,52 +18,33 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class SubsidiariesControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  object SubsidiariesControllerTest extends SubsidiariesController {
+  object TestController extends SubsidiariesController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(SubsidiariesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val modelYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val modelNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
-  val emptyModel = SubsidiariesModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedSubsidiaries = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
+  def setupMocks(backLink: Option[String] = None, subsidiariesModel: Option[SubsidiariesModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(subsidiariesModel))
   }
 
   "SubsidiariesController" should {
@@ -80,13 +61,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController without a valid back link from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesControllerTest.show)(
+      setupMocks(subsidiariesModel = Some(subsidiariesModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -97,25 +74,17 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesControllerTest.show)(
+      setupMocks(Some(routes.TenYearPlanController.show().url), Some(subsidiariesModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesControllerTest.show)(
+      setupMocks(Some(routes.PercentageStaffWithMastersController.show().url))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -123,13 +92,9 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a GET request to SubsidiariesController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiaries)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesControllerTest.show)(
+      setupMocks(Some(routes.TenYearPlanController.show().url), Some(subsidiariesModelYes))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -140,7 +105,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending an Unauthenticated request with a session to SubsidiariesController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(SubsidiariesControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -153,7 +118,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a request with no session to SubsidiariesController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(SubsidiariesControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -166,7 +131,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a timed-out request to SubsidiariesController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(SubsidiariesControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -177,13 +142,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'Yes' form submit to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to the previous investment before page" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
+      setupMocks(Some(routes.TenYearPlanController.show().url))
+      mockEnrolledRequest()
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -194,13 +156,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a valid 'No' form submit to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to the previous investment before page" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
-      when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.subsidiaries), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
+      setupMocks(Some(routes.TenYearPlanController.show().url))
+      mockEnrolledRequest()
       val formInput = "subsidiaries" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
@@ -211,12 +170,10 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending an invalid form submission with validation errors to the SubsidiariesController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().url)))
-      mockEnrolledRequest
+      setupMocks(Some(routes.TenYearPlanController.show().url))
+      mockEnrolledRequest()
       val formInput = "ownSubsidiaries" -> ""
-      submitWithSessionAndAuth(SubsidiariesControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -227,7 +184,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
   "Sending a submission to the SubsidiariesController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(SubsidiariesControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -238,7 +195,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(SubsidiariesControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -251,7 +208,7 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a submission to the SubsidiariesController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(SubsidiariesControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -262,8 +219,8 @@ class SubsidiariesControllerSpec extends UnitSpec with MockitoSugar with BeforeA
 
   "Sending a submission to the SubsidiariesController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(SubsidiariesControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

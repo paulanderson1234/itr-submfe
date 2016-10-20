@@ -18,52 +18,30 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import models.SubsidiariesNinetyOwnedModel
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-
-  object SubsidiariesNinetyOwnedControllerTest extends SubsidiariesNinetyOwnedController {
+  object TestController extends SubsidiariesNinetyOwnedController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(SubsidiariesNinetyOwnedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val model = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedSubsidiariesNinetyOwned = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue)
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
+  def setupMocks(subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(subsidiariesNinetyOwnedModel))
 
   "SubsidiariesNinetyOwnedController" should {
     "use the correct keystore connector" in {
@@ -79,21 +57,17 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
+      setupMocks(Some(subsidiariesNinetyOwnedModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -101,11 +75,9 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNinetyOwned)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.show)(
+      setupMocks(Some(subsidiariesNinetyOwnedModelYes))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -116,7 +88,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending an Unauthenticated request with a session to SubsidiariesNinetyOwnedController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(SubsidiariesNinetyOwnedControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -129,7 +101,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a request with no session to SubsidiariesNinetyOwnedController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(SubsidiariesNinetyOwnedControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -142,7 +114,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a timed-out request to SubsidiariesNinetyOwnedController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(SubsidiariesNinetyOwnedControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -153,9 +125,9 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a valid form submission to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -166,9 +138,9 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "ownNinetyPercent" -> ""
-      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -179,7 +151,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
   "Sending a submission to the SubsidiariesNinetyOwnedController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(SubsidiariesNinetyOwnedControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -190,7 +162,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(SubsidiariesNinetyOwnedControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -203,7 +175,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a submission to the SubsidiariesNinetyOwnedController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(SubsidiariesNinetyOwnedControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -214,8 +186,8 @@ class SubsidiariesNinetyOwnedControllerSpec extends UnitSpec with MockitoSugar w
 
   "Sending a submission to the SubsidiariesNinetyOwnedController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(SubsidiariesNinetyOwnedControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

@@ -37,7 +37,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     reset(mockSubmissionConnector)
   }
 
-  val contactDetailsModel = ContactDetailsModel("Fred", "Smith", "01952 555666", "fredsmith@hotmail.com")
+  val contactDetailsModel = ContactDetailsModel("Test", "Name", "01111 111111", "test@test.com")
 
   val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
     "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
@@ -46,9 +46,9 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
 
   val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
 
-  val operatingCostsModel = OperatingCostsModel("28976", "12348", "77725", "99883", "23321", "65436")
+  val operatingCostsModel = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
 
-  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
+  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
 
   val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, addressModel)
 
@@ -63,6 +63,11 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
 
   val kiProcessingModelMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
   val kiProcessingModelNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+
+  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
+  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
+  val isKiKIModel = KiProcessingModel(Some(false), Some(true), Some(true), Some(true), Some(true), Some(true))
+  val missingDataKIModel = KiProcessingModel(Some(true),None, Some(true), Some(true), Some(true), Some(true))
 
   val hadPreviousRFIModelYes = HadPreviousRFIModel(Constants.StandardRadioButtonYesValue)
   val hadPreviousRFIModelNo = HadPreviousRFIModel(Constants.StandardRadioButtonNoValue)
@@ -100,7 +105,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
   val previousSchemeVectorList = Vector(previousSchemeModel1, previousSchemeModel2, previousSchemeModel3)
 
-  val registeredAddressModel = RegisteredAddressModel("SY26GA")
+  val registeredAddressModel = RegisteredAddressModel("AB1 1AB")
 
   val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
 

@@ -18,60 +18,26 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{ MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-  val mockSubmissionConnector = mock[SubmissionConnector]
-
-  object PercentageStaffWithMastersControllerTest extends PercentageStaffWithMastersController {
+  object TestController extends PercentageStaffWithMastersController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector: S4LConnector = mockS4lConnector
-    val submissionConnector: SubmissionConnector = mockSubmissionConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(PercentageStaffWithMastersControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val modelYes = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
-  val modelNo = PercentageStaffWithMastersModel(Constants.StandardRadioButtonNoValue)
-  val emptyModel = PercentageStaffWithMastersModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedPercentageStaffWithMasters = PercentageStaffWithMastersModel(Constants.StandardRadioButtonYesValue)
-
-  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
-  val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
-  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
-  val isKiKIModel = KiProcessingModel(Some(false), Some(true), Some(true), Some(true), Some(true), Some(true))
-  val missingDataKIModel = KiProcessingModel(Some(true),None, Some(true), Some(true), Some(true), Some(true))
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "PercentageStaffWithMastersController" should {
@@ -84,29 +50,38 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     "use the correct enrolment connector" in {
       OperatingCostsController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct submission connector" in {
+      OperatingCostsController.submissionConnector shouldBe SubmissionConnector
+    }
+  }
+
+  def setupShowMocks(validKI: Option[Boolean] = None, percentageStaffWithMastersModel: Option[PercentageStaffWithMastersModel] = None): Unit = {
+    when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(validKI))
+    when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(percentageStaffWithMastersModel))
+  }
+
+  def setupSubmitMocks(validKI: Option[Boolean] = None, kiProcessingModel: Option[KiProcessingModel] = None): Unit = {
+    when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+      (Matchers.any())).thenReturn(Future.successful(validKI))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(kiProcessingModel))
   }
 
   "Sending a GET request to PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
+      setupShowMocks(Some(false),Some(percentageStaffWithMastersModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
+      setupShowMocks(Some(false))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -114,13 +89,9 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a GET request to PercentageStaffWithMastersController when Authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedPercentageStaffWithMasters)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(PercentageStaffWithMastersControllerTest.show())(
+      setupShowMocks(Some(false),Some(percentageStaffWithMastersModelYes))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -131,7 +102,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending an Unauthenticated request with a session to PercentageStaffWithMastersController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(PercentageStaffWithMastersControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -144,7 +115,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a request with no session to PercentageStaffWithMastersController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(PercentageStaffWithMastersControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -157,7 +128,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a timed-out request to PercentageStaffWithMastersController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(PercentageStaffWithMastersControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -168,14 +139,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'Yes' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(true), Some(trueKIModel))
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -186,14 +153,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'Yes' form submit with falseKi in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the isKI page" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(isKiKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(isKiKIModel))
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
@@ -204,14 +167,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'Yes' form submit without a KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false))
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -222,14 +181,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'Yes' form submit with missing data in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(missingDataKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(missingDataKIModel))
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -240,14 +195,10 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a valid 'No' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect the ten year plan page" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(false), Some(trueKIModel))
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/ten-year-plan")
@@ -255,12 +206,12 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
       )
     }
   }
-  
+
   "Sending an invalid form submission with validation errors to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "staffWithMasters" -> ""
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -271,7 +222,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
   "Sending a submission to the PercentageStaffWithMastersController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(PercentageStaffWithMastersControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -282,7 +233,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(PercentageStaffWithMastersControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -295,7 +246,7 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a submission to the ContactDetailsController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(PercentageStaffWithMastersControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -306,8 +257,8 @@ class PercentageStaffWithMastersControllerSpec extends UnitSpec with MockitoSuga
 
   "Sending a submission to the ContactDetailsController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(PercentageStaffWithMastersControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

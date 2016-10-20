@@ -17,57 +17,30 @@
 package controllers
 
 import java.net.URLEncoder
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.FakeRequestHelper
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class YourCompanyNeedControllerSpec extends ControllerSpec {
 
-  val mockS4lConnector = mock[S4LConnector]
-
-  object YourCompanyNeedControllerTest extends YourCompanyNeedController {
-    val s4lConnector: S4LConnector = mockS4lConnector
+  object TestController extends YourCompanyNeedController {
+    override lazy val s4lConnector = mockS4lConnector
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(YourCompanyNeedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(YourCompanyNeedControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val modelAA = YourCompanyNeedModel("AA")
-  val modelCS = YourCompanyNeedModel("CS")
-  val emptyModel = YourCompanyNeedModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelAA)))
-  val keyStoreSavedYourCompanyNeed = YourCompanyNeedModel("AA")
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockS4lConnector)
-  }
+  def setupMocks(yourCompanyNeedModel: Option[YourCompanyNeedModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(yourCompanyNeedModel))
 
   "YourCompanyNeedController" should {
     "use the correct keystore connector" in {
@@ -83,21 +56,17 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a GET request to YourCompanyNeedController when authenticated and enrolled" should {
     "return a 200 OK Swhen something is fetched from keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYourCompanyNeed)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(YourCompanyNeedControllerTest.show)(
+      setupMocks(Some(yourCompanyNeedModel))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 OK when nothing is fetched using keystore" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(YourCompanyNeedControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -105,9 +74,8 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a valid 'Advanced Assurance' option form submit to the YourCompanyNeedController when authenticated and enrolled" should {
     "redirect to the qualifying for a scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit, "needAAorCS" -> "AA")(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit, "needAAorCS" -> "AA")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
@@ -118,9 +86,8 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a valid 'Compliance Statement' option form submit to the YourCompanyNeedController when authenticated and enrolled" should {
     "redirect to the qualifying for a scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit, "needAAorCS" -> "CS")(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit, "needAAorCS" -> "CS")(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/qualifying-for-scheme")
@@ -131,8 +98,8 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending an invalid form submission with validation errors to the YourCompanyNeedController" should {
     "redirect to itself" in {
-      mockEnrolledRequest
-      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit,"needAAorCS" -> "")(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,"needAAorCS" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -142,11 +109,11 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a request with no session to YourCompanyNeedController" should {
     "return a 303" in {
-      status(YourCompanyNeedControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(YourCompanyNeedControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -157,7 +124,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(YourCompanyNeedControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -165,30 +132,30 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a timed-out request to YourCompanyNeedController" should {
 
     "return a 303 in" in {
-      status(YourCompanyNeedControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to timeout page" in {
-      redirectLocation(YourCompanyNeedControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
     }
   }
 
   "Sending a request to YourCompanyNeedController when NOT enrolled" should {
     "return a 303 in" in {
-      mockNotEnrolledRequest
-      status(YourCompanyNeedControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+      mockNotEnrolledRequest()
+      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      redirectLocation(YourCompanyNeedControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+      mockNotEnrolledRequest()
+      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
     }
   }
 
   "Sending a submission to the YourCompanyNeedController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(YourCompanyNeedControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -202,7 +169,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
   "Sending a submission to the YourCompanyNeedController with no session" should {
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(YourCompanyNeedControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -215,7 +182,7 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a submission to the YourCompanyNeedController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(YourCompanyNeedControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -226,8 +193,8 @@ class YourCompanyNeedControllerSpec extends UnitSpec with MockitoSugar with Befo
 
   "Sending a submission to the YourCompanyNeedController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(YourCompanyNeedControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
