@@ -56,7 +56,7 @@ class InvestmentGrowSpec extends ViewSpec {
 
     "Verify that the correct elements are loaded when coming from WhatWillUse page" in new Setup {
       val document: Document = {
-        setupMocks(investmentGrowModel = Some(investmentGrowModel),backLink = Some(routes.WhatWillUseForController.show().url))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel),backLink = Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -69,7 +69,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -164,7 +164,7 @@ class InvestmentGrowSpec extends ViewSpec {
     "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is true" in new Setup{
       val document: Document = {
         setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),
-          Some(newProductMarketModelYes),Some(routes.WhatWillUseForController.show().url))
+          Some(newProductMarketModelYes),Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -181,7 +181,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -191,7 +191,7 @@ class InvestmentGrowSpec extends ViewSpec {
     "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is false" in new Setup{
       val document: Document = {
         setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),
-          Some(newProductMarketModelNo),Some(routes.WhatWillUseForController.show().url))
+          Some(newProductMarketModelNo),Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -207,7 +207,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -217,7 +217,7 @@ class InvestmentGrowSpec extends ViewSpec {
     "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is true" in new Setup{
       val document: Document = {
         setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelNo),
-          Some(newProductMarketModelYes),Some(routes.WhatWillUseForController.show().url))
+          Some(newProductMarketModelYes),Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -233,7 +233,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -243,7 +243,7 @@ class InvestmentGrowSpec extends ViewSpec {
     "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is false" in new Setup{
       val document: Document = {
         setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelNo),
-          Some(newProductMarketModelNo),Some(routes.WhatWillUseForController.show().url))
+          Some(newProductMarketModelNo),Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -256,7 +256,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -265,7 +265,7 @@ class InvestmentGrowSpec extends ViewSpec {
 
     "Verify that the correct elements are loaded when newGeoMarket is not defined and hasNewProduct is not defined" in new Setup{
       val document: Document = {
-        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.WhatWillUseForController.show().url))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -278,7 +278,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
@@ -287,7 +287,7 @@ class InvestmentGrowSpec extends ViewSpec {
 
     "show an error no data entered" in new Setup {
       val document: Document = {
-        setupMocks(backLink = Some(routes.WhatWillUseForController.show().url))
+        setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -299,7 +299,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")

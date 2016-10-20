@@ -63,7 +63,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
           case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
         }
       }
-      else Future.successful(Redirect(routes.WhatWillUseForController.show()))
+      else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
     }
     for {
       link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)
@@ -77,7 +77,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector).flatMap {
           case Some(data) => Future.successful(
             BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
-          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       },
       validForm => {
         s4lConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)

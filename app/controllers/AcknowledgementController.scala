@@ -23,7 +23,6 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models.submission._
 import models._
-import play.api.libs.json.Json
 import play.api.mvc.{AnyContent, Request, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
@@ -31,8 +30,8 @@ import utils.{Converters, Validation}
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
-  val s4lConnector: S4LConnector = S4LConnector
-  val submissionConnector: SubmissionConnector = SubmissionConnector
+  override lazy val s4lConnector = S4LConnector
+  override lazy val submissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -57,7 +56,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       // company name also a required field when it is implemented
 
       // potentially optional or required
-      whatWillUseFor <- s4lConnector.fetchAndGetFormData[WhatWillUseForModel](KeystoreKeys.whatWillUseFor)
       operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
       turnoverCosts <- s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
       subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
@@ -69,7 +67,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
-        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, whatWillUseFor, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
     } yield result
   }
@@ -94,7 +92,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        contactAddress: Option[AddressModel],
 
                                        // potentially optional or potentially required
-                                       whatWillUseFor: Option[WhatWillUseForModel],
                                        subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
                                        subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
                                        previousSchemes: List[PreviousSchemeModel],
@@ -120,7 +117,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
-          agentReferenceNumber = None, acknowledgementReference = None, whatWillUseForModel = whatWillUseFor,
+          agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
           schemeTypes = SchemeTypesModel(eis = true),

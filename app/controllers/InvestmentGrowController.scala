@@ -51,7 +51,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
           case None => getResponse(Ok,investmentGrowForm, backUrl.get)
         }
       }
-      else Future.successful(Redirect(routes.WhatWillUseForController.show()))
+      else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
     }
 
     for {
@@ -65,7 +65,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
           case Some(data) => getResponse(BadRequest,invalidForm, data)
-          case None => Future.successful(Redirect(routes.WhatWillUseForController.show()))
+          case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         },
       validForm => {
         s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)

@@ -117,7 +117,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
         mockEnrolledRequest()
         showWithSessionAndAuth(TestController.show)(
           result => {
-            redirectLocation(result) shouldBe Some(routes.WhatWillUseForController.show().url)
+            redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
           }
         )
       }
@@ -257,7 +257,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }

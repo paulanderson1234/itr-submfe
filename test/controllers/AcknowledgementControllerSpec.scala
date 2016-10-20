@@ -200,7 +200,6 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
-
     }
   }
 

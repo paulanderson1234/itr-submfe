@@ -60,7 +60,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.WhatWillUseForController.show().url))
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
@@ -68,7 +68,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      setupMocks(backLink = Some(routes.WhatWillUseForController.show().url))
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
@@ -81,7 +81,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -89,7 +89,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.WhatWillUseForController.show().url))
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
@@ -171,7 +171,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -179,7 +179,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      setupMocks(backLink = Some(routes.WhatWillUseForController.show().url))
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(

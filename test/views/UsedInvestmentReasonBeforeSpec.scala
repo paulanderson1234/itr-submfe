@@ -50,7 +50,7 @@ class UsedInvestmentReasonBeforeSpec extends ViewSpec {
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -68,7 +68,7 @@ class UsedInvestmentReasonBeforeSpec extends ViewSpec {
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1

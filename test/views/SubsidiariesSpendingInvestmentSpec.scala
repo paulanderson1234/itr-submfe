@@ -50,11 +50,11 @@ class SubsidiariesSpendingInvestmentSpec extends ViewSpec {
   "The SubsidiariesSpendingInvestment Page" +
     "Verify that the correct elements are loaded navigating from WhatWillUseFor page" in new Setup {
     val document: Document = {
-      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.WhatWillUseForController.show().url))
+      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesSpendingInvestment.heading")
     document.select("#subSpendingInvestment-yes").size() shouldBe 1
@@ -95,7 +95,7 @@ class SubsidiariesSpendingInvestmentSpec extends ViewSpec {
 
   "Verify that SubsidiariesSpendingInvestment page contains error summary when invalid model is submitted" in new Setup {
     val document : Document = {
-      setupMocks(backLink = Some(routes.NewProductController.show().url))
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       // submit the model with no radio selected as a post action
       val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))

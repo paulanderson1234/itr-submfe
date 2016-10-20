@@ -48,8 +48,6 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
 
     // potentially mandatory
-    when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(Option(whatWillUseForValid)))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(subsidiariesSpendInvestValid)))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -89,8 +87,6 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
 
     // can be empty to pass
-    when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -139,8 +135,6 @@ trait SubmissionFixture {
       .thenReturn( if(contactAddress.nonEmpty) Future.successful(Option(contactAddress.get)) else Future.successful(None))
 
     // can be empty to pass
-    when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -229,7 +223,7 @@ trait SubmissionFixture {
   val model = AdvancedAssuranceSubmissionType(
     agentReferenceNumber = Some(testAgentRef),
     acknowledgementReference = Some("AARN1234567"),
-    whatWillUseForModel = Some(WhatWillUseForModel(Constants.businessActivityRAndD)),
+    whatWillUseForModel = Some(WhatWillUseForModel(None)),
     natureOfBusinessModel = NatureOfBusinessModel("Some nature of business description"),
     contactDetailsModel = fullContactDetailsModel,
     correspondenceAddress = fullCorrespondenceAddress,
@@ -248,7 +242,7 @@ trait SubmissionFixture {
 
   val kiProcModelValid = KiProcessingModel(companyAssertsIsKi = Some(true), dateConditionMet = Some(true), hasPercentageWithMasters = Some(true), costsConditionMet = Some(true))
   val kiProcModelValidAssertNo = KiProcessingModel(companyAssertsIsKi = Some(false), dateConditionMet = Some(true), hasPercentageWithMasters = Some(true), costsConditionMet = Some(true))
-  val whatWillUseForValid = WhatWillUseForModel(Constants.businessActivityRAndD)
+  val whatWillUseForValid = None
   val natureOfBusinessValid = NatureOfBusinessModel("Technology supplier")
   val contactDetailsValid = ContactDetailsModel("fred", "Smith", "01952 245666", "fred@hotmail.com")
   val proposedInvestmentValid = ProposedInvestmentModel(2000)

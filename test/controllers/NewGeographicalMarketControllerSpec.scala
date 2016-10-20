@@ -60,7 +60,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
   "Sending a GET request to NewGeographicalMarketController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(newGeographicalMarketModelYes), Some(routes.WhatWillUseForController.show().url))
+      setupMocks(Some(newGeographicalMarketModelYes), Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -68,7 +68,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled"  in {
-      setupMocks(backLink = Some(routes.WhatWillUseForController.show().url))
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -81,7 +81,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -89,7 +89,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
   "Sending a GET request to NewGeographicalMarketController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      setupMocks(Some(newGeographicalMarketModelYes), Some(routes.WhatWillUseForController.show().url))
+      setupMocks(Some(newGeographicalMarketModelYes), Some(routes.ProposedInvestmentController.show().url))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => {
@@ -172,7 +172,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/investment-purpose")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
         }
       )
     }
@@ -180,7 +180,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
-      setupMocks(backLink = Some(routes.WhatWillUseForController.show().url))
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(TestController.submit, formInput)(

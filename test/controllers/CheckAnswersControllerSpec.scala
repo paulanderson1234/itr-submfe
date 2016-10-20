@@ -53,7 +53,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
   "Sending a GET request to CheckAnswersController with a populated set of models when authenticated and enrolled" should {
     "return a 200 when the page is loaded" in {
       previousRFISetup(Some(hadPreviousRFIModelYes))
-      investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModelYes),Some(previousBeforeDOFCSModelYes),
+      investmentSetup(Some(proposedInvestmentModel),Some(usedInvestmentReasonBeforeModelYes),Some(previousBeforeDOFCSModelYes),
         Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(subsidiariesSpendingInvestmentModelYes),Some(subsidiariesNinetyOwnedModelNo),
         Some(investmentGrowModel))
       contactDetailsSetup(Some(contactDetailsModel))
@@ -61,7 +61,6 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
         Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
       mockEnrolledRequest()
-
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
@@ -75,7 +74,6 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       companyDetailsSetup()
       mockEnrolledRequest()
-
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
@@ -89,7 +87,6 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       companyDetailsSetup()
       mockNotEnrolledRequest()
-
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER

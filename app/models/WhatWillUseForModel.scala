@@ -19,7 +19,7 @@ package models
 import play.api.libs.json.Json
 import utils.AnswerFormatter
 
-case class WhatWillUseForModel (whatWillUseFor: String)
+case class WhatWillUseForModel (whatWillUseFor: Option[String])
 
 object WhatWillUseForModel extends AnswerFormatter{
   implicit val format = Json.format[WhatWillUseForModel]

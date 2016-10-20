@@ -41,7 +41,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       " when it is fully populated with investment models" in new Setup {
       val document: Document = {
         previousRFISetup()
-        investmentSetup(Some(proposedInvestmentModel),Some(whatWillUseForModel),Some(usedInvestmentReasonBeforeModelYes),
+        investmentSetup(Some(proposedInvestmentModel),Some(usedInvestmentReasonBeforeModelYes),
         Some(previousBeforeDOFCSModelYes),Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(subsidiariesSpendingInvestmentModelYes),
         Some(subsidiariesNinetyOwnedModelNo),Some(investmentGrowModel))
         contactDetailsSetup()
@@ -63,70 +63,62 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-link")
         .attr("href") shouldEqual routes.ProposedInvestmentController.show().url
 
-      //what use investment for
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-question").text() shouldBe
-        Messages("page.summaryQuestion.whatWillUseFor")
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-answer").text() shouldBe
-        WhatWillUseForModel.purposeTransformation(whatWillUseForModel.whatWillUseFor)
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-link")
-        .attr("href") shouldBe routes.WhatWillUseForController.show().url
 
       // same reason as before
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-question").text() shouldBe
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-question").text() shouldBe
         Messages("page.summaryQuestion.usedInvestReasonBefore")
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-answer").text() shouldBe
         usedInvestmentReasonBeforeModelYes.usedInvestmentReasonBefore
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-link")
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-link")
         .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
 
       // previous docfs
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-question").text() shouldBe
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-question").text() shouldBe
         Messages("page.summaryQuestion.previousBeforeDOFCS")
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-answer").text() shouldBe
         previousBeforeDOFCSModelYes.previousBeforeDOFCS
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-link")
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-link")
         .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
 
       // new geographical market
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-question").text() shouldBe
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-question").text() shouldBe
         Messages("page.summaryQuestion.newGeoMarket")
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-answer").text() shouldBe
         newGeographicalMarketModelYes.isNewGeographicalMarket
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-link")
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-link")
         .attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
 
       // new prodcut
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-question").text() shouldBe
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-question").text() shouldBe
         Messages("page.summaryQuestion.newProduct")
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-answer").text() shouldBe
         newGeographicalMarketModelYes.isNewGeographicalMarket
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-link")
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
       // subsidiaries spending investment
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-question").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-question").text() shouldBe
         Messages("page.summaryQuestion.subsSpendingInvest")
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-answer").text() shouldBe
         subsidiariesSpendingInvestmentModelYes.subSpendingInvestment
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-link")
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-link")
         .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
 
       // 90% owned
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-question").text() shouldBe
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-question").text() shouldBe
         Messages("page.summaryQuestion.subNinetyOwned")
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-answer").text() shouldBe
         subsidiariesNinetyOwnedModelNo.ownNinetyPercent
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-link")
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-link")
         .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
 
       // investment Grow
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-question").text() shouldBe
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-question").text() shouldBe
         Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-answer").text() shouldBe
         investmentGrowModel.investmentGrowDesc
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-link")
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-link")
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
-
     }
   }
 
@@ -157,62 +149,54 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-link")
         .attr("href") shouldEqual routes.ProposedInvestmentController.show().url
 
-      //what use investment for
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-question").text() shouldBe
-        Messages("page.summaryQuestion.whatWillUseFor")
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(1).getElementById("whatWillUseFor-link")
-        .attr("href") shouldBe routes.WhatWillUseForController.show().url
-
       // same reason as before
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-question").text() shouldBe
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-question").text() shouldBe
         Messages("page.summaryQuestion.usedInvestReasonBefore")
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(2).getElementById("usedInvestReasonBefore-link")
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-link")
         .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
 
       // previous docfs
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-question").text() shouldBe
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-question").text() shouldBe
         Messages("page.summaryQuestion.previousBeforeDOFCS")
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(3).getElementById("previousBeforeDOFCS-link")
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-link")
         .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
 
       // new geographical market
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-question").text() shouldBe
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-question").text() shouldBe
         Messages("page.summaryQuestion.newGeoMarket")
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(4).getElementById("newGeoMarket-link")
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-link")
         .attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
 
       // new prodcut
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-question").text() shouldBe
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-question").text() shouldBe
         Messages("page.summaryQuestion.newProduct")
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(5).getElementById("newProduct-link")
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(4).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
       // subsidiaries spending investment
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-question").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-question").text() shouldBe
         Messages("page.summaryQuestion.subsSpendingInvest")
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(6).getElementById("subsSpendingInvest-link")
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-link")
         .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
 
       // 90% owned
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-question").text() shouldBe
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-question").text() shouldBe
         Messages("page.summaryQuestion.subNinetyOwned")
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(7).getElementById("subNinetyOwned-link")
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-link")
         .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
 
       // investment Grow
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-question").text() shouldBe
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-question").text() shouldBe
         Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(8).getElementById("investmentGrow-link")
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-link")
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
-
     }
   }
 }

@@ -25,14 +25,12 @@ import scala.concurrent.Future
 
 trait CheckAnswersSpec extends ViewSpec {
 
-  val whatWillUseForModel = WhatWillUseForModel("Research and development")
-
   def previousRFISetup(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(hadPreviousRFIModel))
   }
 
-  def investmentSetup(proposedInvestmentModel: Option[ProposedInvestmentModel] = None, whatWillUseForModel: Option[WhatWillUseForModel] = None,
+  def investmentSetup(proposedInvestmentModel: Option[ProposedInvestmentModel] = None,
                       usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel] = None,
                       previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel] = None,
                       newGeographicalMarketModel: Option[NewGeographicalMarketModel] = None, newProductModel: Option[NewProductModel] = None,
@@ -41,8 +39,6 @@ trait CheckAnswersSpec extends ViewSpec {
                       investmentGrowModel: Option[InvestmentGrowModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(proposedInvestmentModel))
-    when(mockS4lConnector.fetchAndGetFormData[WhatWillUseForModel](Matchers.eq(KeystoreKeys.whatWillUseFor))
-      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(whatWillUseForModel))
     when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(usedInvestmentReasonBeforeModel))
     when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))

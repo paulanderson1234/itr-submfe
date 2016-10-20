@@ -50,11 +50,11 @@ class NewGeographicalMarketSpec extends ViewSpec {
   "The NewGeographicalMarket Page" +
     "Verify that the correct elements are loaded when navigating from WhatWillUse page" in new Setup {
     val document: Document = {
-      setupMocks(Some(routes.WhatWillUseForController.show().url),Some(newGeographicalMarketModelYes))
+      setupMocks(Some(routes.ProposedInvestmentController.show().url),Some(newGeographicalMarketModelYes))
       val result = TestController.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWillUseForController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1
