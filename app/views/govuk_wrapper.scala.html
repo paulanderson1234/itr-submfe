@@ -64,7 +64,7 @@ scriptElem: Option[Html] = None)(implicit request: Request[_])
 
 @serviceInfo = {
     @uiLayouts.serviceInfo(
-        betaBanner = alphaBanner(),
+        betaBanner = phaseBanner("ALPHA"),
         includeGridWrapper = false,
         serviceInfoContent = Some(serviceInfoContent))
 }
