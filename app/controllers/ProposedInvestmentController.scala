@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
@@ -34,7 +34,7 @@ import views.html.investment.ProposedInvestment
 
 object ProposedInvestmentController extends ProposedInvestmentController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -43,13 +43,13 @@ object ProposedInvestmentController extends ProposedInvestmentController
 
 trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
+        s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
           case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data), backUrl.get))
           case None => Ok(ProposedInvestment(proposedInvestmentForm, backUrl.get))
         }
@@ -60,7 +60,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -69,7 +69,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
     def routeReq(kiModel: KiProcessingModel, prevRFI: HadPreviousRFIModel,
                  comSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel]): Future[Result] = {
-      getRoute(hc, prevRFI, comSale, hasSub, kiModel.isKi)
+      getRoute(prevRFI, comSale, hasSub, kiModel.isKi)
     }
 
     def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean], prevRFI: HadPreviousRFIModel): Future[Result] = {
@@ -77,7 +77,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
         // check previous answers present
         case Some(dataWithPreviousValid) => {
           // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
-          keyStoreConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
+          s4lConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
 
           isLifeTimeAllowanceExceeded match {
             case Some(data) =>
@@ -88,8 +88,8 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
               else {
                 // not exceeded - continue
                 for {
-                  comSale <- keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-                  hasSub <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+                  comSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+                  hasSub <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
                   route <- routeReq(kiModel.get, prevRFI, comSale, hasSub)
                 } yield route
               }
@@ -105,18 +105,18 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
     proposedInvestmentForm.bindFromRequest().fold(
       formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, keyStoreConnector).flatMap(url =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).flatMap(url =>
           Future.successful(BadRequest(ProposedInvestment(formWithErrors,
             url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         (for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-          hadPrevRFI <- keyStoreConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-          previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(keyStoreConnector)
-          // Call API
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+          previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(s4lConnector)
 
+          // Call API
           isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
             if(hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
@@ -129,17 +129,12 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       }
     )
   }
-  def getRoute(implicit hc: HeaderCarrier, prevRFI: HadPreviousRFIModel,
-               commercialSale: Option[CommercialSaleModel],
-               hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
+  def getRoute(prevRFI: HadPreviousRFIModel, commercialSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel], isKi: Boolean)
+              (implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
 
     commercialSale match {
-      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonNoValue => {
-        subsidiariesCheck(hc, hasSub)
-      }
-      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonYesValue => {
-        getPreviousSaleRoute(hc, prevRFI, sale, hasSub, isKi)
-      }
+      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonNoValue => subsidiariesCheck(hasSub)
+      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonYesValue => getPreviousSaleRoute(prevRFI, sale, hasSub, isKi)
       case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
     }
   }
@@ -150,28 +145,27 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     else Constants.IsNotKnowledgeIntensiveYears
   }
 
-  def subsidiariesCheck(implicit hc: HeaderCarrier, hasSub: Option[SubsidiariesModel]): Future[Result] = {
+  def subsidiariesCheck(hasSub: Option[SubsidiariesModel])(implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
     hasSub match {
       case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
           routes.ProposedInvestmentController.show().toString())
         Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
       } else {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
           routes.ProposedInvestmentController.show().toString())
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
       case None => {
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
           routes.ProposedInvestmentController.show().toString())
         Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }
   }
 
-  def getPreviousSaleRoute(implicit hc: HeaderCarrier, prevRFI: HadPreviousRFIModel,
-                           commercialSale: CommercialSaleModel,
-                           hasSub: Option[SubsidiariesModel], isKi: Boolean): Future[Result] = {
+  def getPreviousSaleRoute(prevRFI: HadPreviousRFIModel, commercialSale: CommercialSaleModel, hasSub: Option[SubsidiariesModel], isKi: Boolean)
+                          (implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
 
     val dateWithinRangeRule: Boolean = Validation.checkAgeRule(commercialSale.commercialSaleDay.get,
       commercialSale.commercialSaleMonth.get, commercialSale.commercialSaleYear.get, getAgeLimit(isKi))
@@ -180,16 +174,16 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
       case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
         // this is first scheme
         if (dateWithinRangeRule) {
-          keyStoreConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+          s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
             routes.ProposedInvestmentController.show().toString())
           Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
         }
-        else subsidiariesCheck(hc, hasSub)
+        else subsidiariesCheck(hasSub)
       }
       case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonYesValue => {
         // subsequent scheme
         if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
-        else subsidiariesCheck(hc, hasSub)
+        else subsidiariesCheck(hasSub)
       }
 
     }

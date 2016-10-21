@@ -16,57 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{NatureOfBusinessController, routes}
-import controllers.helpers.FakeRequestHelper
 import models.NatureOfBusinessModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class NatureOfBusinessSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val natureOfBusinessModel = new NatureOfBusinessModel("1234567890")
-  val emptyNatureOfBusinessModel = new NatureOfBusinessModel("")
-
-  class SetupPage {
-
-    val controller = new NatureOfBusinessController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends NatureOfBusinessController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+
+  def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(natureOfBusinessModel))
 
   "The Nature of business page" should {
 
-    "Verify that the page contains the correct elements when a valid NatureOfBusinessModel is passed" in new SetupPage {
+    "Verify that the page contains the correct elements when a valid NatureOfBusinessModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(natureOfBusinessModel)))
-        val result = controller.show.apply(authorisedFakeRequestToPOST("natureofbusiness" -> "selling advertising"))
+        setupMocks(Some(natureOfBusinessModel))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.companyDetails.natureofbusiness.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.natureofbusiness.heading")
       document.getElementById("label-natureofbusiness").select("span").hasClass("visuallyhidden") shouldBe true
@@ -77,24 +61,19 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
-    "Verify that the nature of business page contains the correct elements when an invalid NatureOfBusinessModel model is passed" in new SetupPage {
+    "Verify that the nature of business page contains the correct elements when an invalid NatureOfBusinessModel model is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(emptyNatureOfBusinessModel)))
-        val result = controller.submit.apply((authorisedFakeRequest))
+        setupMocks()
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       // Check the error summary is displayed - the whole purpose of this test
       document.getElementById("error-summary-display").hasClass("error-summary--show")
-
-      // additional page checks to make sure everthing else still as expected if errors on page
+      // additional page checks to make sure everything else still as expected if errors on page
       document.title() shouldBe Messages("page.companyDetails.natureofbusiness.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.natureofbusiness.heading")
       document.getElementById("label-natureofbusiness").select("span").hasClass("visuallyhidden") shouldBe true
@@ -105,9 +84,8 @@ class NatureOfBusinessSpec extends UnitSpec with WithFakeApplication with Mockit
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
-
     }
 
   }

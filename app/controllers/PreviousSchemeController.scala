@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
@@ -30,7 +30,7 @@ import forms.PreviousSchemeForm._
 
 object PreviousSchemeController extends PreviousSchemeController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,14 +38,14 @@ object PreviousSchemeController extends PreviousSchemeController
 
 trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   def show(id: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
         id match {
           case Some(idVal) => {
-            PreviousSchemesHelper.getExistingInvestmentFromKeystore(keyStoreConnector, idVal).map {
+            PreviousSchemesHelper.getExistingInvestmentFromKeystore(s4lConnector, idVal).map {
               case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data), backUrl.get))
               case None => Ok(PreviousScheme(previousSchemeForm, backUrl.get))
             }
@@ -60,7 +60,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
       }
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -68,15 +68,15 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     previousSchemeForm.bindFromRequest().fold(
       formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, keyStoreConnector).flatMap(url =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector).flatMap(url =>
           Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
       },
       validFormData => {
         validFormData.processingId match {
-          case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(keyStoreConnector, validFormData).map {
+          case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
-          case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(keyStoreConnector, validFormData).map {
+          case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
           }
         }

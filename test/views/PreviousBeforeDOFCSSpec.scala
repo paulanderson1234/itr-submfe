@@ -16,14 +16,10 @@
 
 package views
 
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
+import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{PreviousBeforeDOFCSController, routes}
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel}
 import org.joda.time.DateTime
@@ -31,67 +27,49 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import utils.DateFormatter
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with DateFormatter {
+class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val previousBeforeDOFCSModel = new PreviousBeforeDOFCSModel(Constants.StandardRadioButtonYesValue)
-  val emptyPreviousBeforeDOFCSModel = new PreviousBeforeDOFCSModel("")
   val kiModel = KiProcessingModel(Some(true),Some(true),Some(true),Some(true),Some(true),Some(true))
   val nonKiModel = KiProcessingModel(Some(false),Some(false),Some(false),Some(false),Some(false),Some(false))
-  val commercialSaleYear = 2004
-  val commercialSaleMonth = 2
-  val commercialSaleDay = 29
-  val commercialSaleModel = CommercialSaleModel("true",Some(commercialSaleDay),Some(commercialSaleMonth),Some(commercialSaleYear))
   val commercialDate = toDateString(commercialSaleDay,commercialSaleMonth,commercialSaleYear)
   val secondDate = (difference: Int) => {
     val newDate = new DateTime(commercialSaleYear, commercialSaleMonth, commercialSaleDay, 0, 0).plusYears(difference)
     toDateString(newDate.getDayOfMonth, newDate.getMonthOfYear, newDate.getYear)
   }
 
-  class SetupPage {
-
-    val controller = new PreviousBeforeDOFCSController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends PreviousBeforeDOFCSController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setup(kiProcessingModel: Option[KiProcessingModel],
-            commercialSaleModel: Option[CommercialSaleModel],
-            previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel]) : Unit = {
-    when(mockKeystoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(kiProcessingModel))
-    when(mockKeystoreConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(commercialSaleModel))
-    when(mockKeystoreConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousBeforeDOFCSModel))
+  def setupMocks(kiProcessingModel: Option[KiProcessingModel] = None, commercialSaleModel: Option[CommercialSaleModel] = None,
+                 previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel] = None) : Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(kiProcessingModel))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(commercialSaleModel))
+    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(previousBeforeDOFCSModel))
   }
 
   "Verify that the previousBeforeDOFCS page contains the correct elements " +
     "when a valid PreviousBeforeDOFCSModel is passed as returned from keystore" +
-    "and the user is KI" in new SetupPage {
+    "and the user is KI" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      setup(Some(kiModel),Some(commercialSaleModel),Some(previousBeforeDOFCSModel))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(kiModel),Some(commercialSaleModelYes),Some(previousBeforeDOFCSModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
@@ -109,15 +87,13 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
 
   "Verify that the previousBeforeDOFCS page contains the correct elements " +
     "when a valid PreviousBeforeDOFCSModel is passed as returned from keystore" +
-    "and the user is not KI" in new SetupPage {
+    "and the user is not KI" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      setup(Some(nonKiModel),Some(commercialSaleModel),Some(previousBeforeDOFCSModel))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(nonKiModel),Some(commercialSaleModelYes),Some(previousBeforeDOFCSModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
@@ -135,15 +111,13 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
 
   "Verify that previousBeforeDOFCS page contains the correct elements when an empty model " +
     "is passed because nothing was returned from keystore" +
-    "and the user is KI" in new SetupPage {
+    "and the user is KI" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      setup(Some(kiModel),Some(commercialSaleModel),None)
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(kiModel),Some(commercialSaleModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
@@ -161,15 +135,13 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
 
   "Verify that previousBeforeDOFCS page contains the correct elements when an empty model " +
     "is passed because nothing was returned from keystore" +
-    "and the user is not KI" in new SetupPage {
+    "and the user is not KI" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      setup(Some(nonKiModel),Some(commercialSaleModel),None)
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(nonKiModel),Some(commercialSaleModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
@@ -185,15 +157,13 @@ class PreviousBeforeDOFCSSpec extends UnitSpec with WithFakeApplication with Moc
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
-  "Verify that PreviousBeforeDOFCS page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
+  "Verify that PreviousBeforeDOFCS page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      setup(Some(kiModel),Some(commercialSaleModel),None)
+      setupMocks(Some(kiModel),Some(commercialSaleModelYes))
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(authorisedFakeRequest)
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")

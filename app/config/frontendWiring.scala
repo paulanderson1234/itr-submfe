@@ -16,8 +16,8 @@
 
 package config
 
-import uk.gov.hmrc.http.cache.client.{SessionCache, ShortLivedCache, ShortLivedHttpCaching}
-import uk.gov.hmrc.http.cache.client.SessionCache
+import uk.gov.hmrc.crypto.ApplicationCrypto
+import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
@@ -38,10 +38,15 @@ object FrontendAuthConnector extends AuthConnector with ServicesConfig {
 }
 
 
-object TavcSessionCache extends SessionCache with AppName with ServicesConfig {
+object ShortLivedHttpCaching extends ShortLivedHttpCaching with AppName with ServicesConfig {
   override lazy val http = WSHttp
   override lazy val defaultSource = appName
-  override lazy val baseUri = baseUrl("cachable.session-cache")
-  override lazy val domain = getConfString("cachable.session-cache.domain",
-    throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
+  override lazy val baseUri = baseUrl("cachable.short-lived-cache")
+  override lazy val domain = getConfString("cachable.short-lived-cache.domain",
+    throw new Exception(s"Could not find config 'cachable.short-lived-cache.domain'"))
+}
+
+object TAVCShortLivedCache extends ShortLivedCache {
+  override implicit lazy val crypto = ApplicationCrypto.JsonCrypto
+  override lazy val shortLiveCache = ShortLivedHttpCaching
 }

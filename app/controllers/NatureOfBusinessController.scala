@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.NatureOfBusinessModel
@@ -30,7 +30,7 @@ import views.html.companyDetails.NatureOfBusiness
 
 object NatureOfBusinessController extends NatureOfBusinessController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,10 +38,10 @@ object NatureOfBusinessController extends NatureOfBusinessController
 
 trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
+    s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
       case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
       case None => Ok(NatureOfBusiness(natureOfBusinessForm))
     }
@@ -53,7 +53,7 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
         Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
         Future.successful(Redirect(routes.CommercialSaleController.show()))
       }
     )

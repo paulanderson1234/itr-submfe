@@ -16,71 +16,46 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
-import common.Constants
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{ReviewPreviousSchemesController, routes}
 import models.PreviousSchemeModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper {
+class ReviewPreviousSchemesSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val model = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
-  val model2 = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
-  val model3 = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
-
-  val emptyVectorList = Vector[PreviousSchemeModel]()
-  val previousSchemeVectorList = Vector(model, model2, model3)
-
-  class SetupPage {
-
-    val controller = new ReviewPreviousSchemesController {
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends ReviewPreviousSchemesController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+
+  def setupMocks(previousSchemeVectorList: Option[Vector[PreviousSchemeModel]] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(previousSchemeVectorList))
 
   "The Review Previous Schemes Spec page" should {
 
     "Verify that Review Previous Schemes page contains the correct table rows and data " +
-      "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new SetupPage {
+      "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-        val result = controller.show.apply(authorisedFakeRequest)
+        setupMocks(Some(previousSchemeVectorList))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
 
       document.title shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.heading")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousSchemeController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousSchemeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("summaryQuestion.previousRFISection")
 
       lazy val reviewSchemesTableHead = document.getElementById("previous-schemes-table").select("thead")
@@ -110,7 +85,6 @@ class ReviewPreviousSchemesSpec extends UnitSpec with WithFakeApplication with M
 
       document.body.getElementById("next").text() shouldEqual Messages("common.button.continueThirdSection")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-
     }
   }
 }

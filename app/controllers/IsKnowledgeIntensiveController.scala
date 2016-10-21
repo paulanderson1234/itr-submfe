@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.IsKnowledgeIntensiveForm._
 import models._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,7 +30,7 @@ import views.html._
 import views.html.companyDetails.IsKnowledgeIntensive
 
 object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,10 +38,10 @@ object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
 
 trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {
+    s4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {
       case Some(data) => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm.fill(data)))
       case None => Ok(companyDetails.IsKnowledgeIntensive(isKnowledgeIntensiveForm))
     }
@@ -57,25 +57,25 @@ trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedA
         case Some(dataWithDateCondition) => {
           if (!isKnowledgeIntensive & dataWithDateCondition.companyAssertsIsKi.getOrElse(false)) {
             // user changed from yes to no. Clear the processing data (keeping the date and isKi info)
-            keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel,
+            s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel,
               KiProcessingModel(companyAssertsIsKi = Some(isKnowledgeIntensive),
                 dateConditionMet = dataWithDateCondition.dateConditionMet))
 
             // clear real data: TODO: it will work for now but we should probably clear the real data to ..how do this??
-            //keyStoreConnector.saveFormData(KeystoreKeys.operatingCosts, Option[OperatingCostsModel] = None)
-            //keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, Option[TenYearPlanModel] = None)
-            //keyStoreConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersModel] = None)
+            //s4lConnector.saveFormData(KeystoreKeys.operatingCosts, Option[OperatingCostsModel] = None)
+            //s4lConnector.saveFormData(KeystoreKeys.tenYearPlan, Option[TenYearPlanModel] = None)
+            //s4lConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersModel] = None)
 
             // go to subsidiaries
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
             Future.successful(Redirect(routes.SubsidiariesController.show()))
 
           }
           else {
-            keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateCondition.copy(companyAssertsIsKi = Some(isKnowledgeIntensive)))
+            s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateCondition.copy(companyAssertsIsKi = Some(isKnowledgeIntensive)))
             if (isKnowledgeIntensive) Future.successful(Redirect(routes.OperatingCostsController.show()))
             else {
-              keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
               Future.successful(Redirect(routes.SubsidiariesController.show()))
             }
           }
@@ -90,9 +90,9 @@ trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedA
         Future.successful(BadRequest(IsKnowledgeIntensive(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           route <- routeRequest(kiModel, if (validFormData.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue) true else false)
         } yield route
       }

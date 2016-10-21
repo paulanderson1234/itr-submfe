@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models._
 import common._
@@ -32,7 +32,7 @@ import views.html.investment.InvestmentGrow
 
 object InvestmentGrowController extends InvestmentGrowController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -40,13 +40,13 @@ object InvestmentGrowController extends InvestmentGrowController
 
 trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
+        s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
           case Some(data) => getResponse(Ok,investmentGrowForm.fill(data), backUrl.get)
           case None => getResponse(Ok,investmentGrowForm, backUrl.get)
         }
@@ -55,7 +55,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     }
 
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -63,18 +63,19 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, keyStoreConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
           case Some(data) => getResponse(BadRequest,invalidForm, data)
           case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         },
       validForm => {
-        keyStoreConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
+        s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
         Future.successful(Redirect(routes.ContactDetailsController.show()))
       }
     )
   }
 
-  private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)(implicit request: Request[Any]): Future[Result] = {
+  private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)
+                         (implicit request: Request[Any], user: TAVCUser): Future[Result] = {
 
     def determineResult(newGeographicalMarketModel: Option[NewGeographicalMarketModel],
                         newProductModel: Option[NewProductModel]): Future[Result] = {
@@ -91,8 +92,8 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     }
 
     for {
-      geographicMarket <- keyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
-      newProduct <- keyStoreConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+      geographicMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+      newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       result <- determineResult(geographicMarket,newProduct)
     } yield result
   }

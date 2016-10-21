@@ -44,8 +44,7 @@ import org.scalatestplus.play.OneServerPerSuite
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
-import play.api.libs.json.{JsValue, Json}
-import uk.gov.hmrc.http.cache.client.SessionCache
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.http._
@@ -57,12 +56,9 @@ import scala.concurrent.Future
 class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
   val mockHttp : WSHttp = mock[WSHttp]
-  val mockSessionCache = mock[SessionCache]
   val sessionId = UUID.randomUUID.toString
 
-
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
-    override val sessionCache = mockSessionCache
     override val serviceUrl = "dummy"
     override val http = mockHttp
   }
@@ -82,7 +78,8 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val operatingCostData: Int = 1000
       val rAndDCostData: Int = 100
 
-      val result = TargetSubmissionConnector.validateKiCostConditions(operatingCostData,operatingCostData,operatingCostData,rAndDCostData,rAndDCostData,rAndDCostData)
+      val result = TargetSubmissionConnector.validateKiCostConditions(operatingCostData,operatingCostData,
+        operatingCostData,rAndDCostData,rAndDCostData,rAndDCostData)
       await(result) shouldBe Some(trueResponse)
     }
   }

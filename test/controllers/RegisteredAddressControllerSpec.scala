@@ -18,55 +18,29 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class RegisteredAddressControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  object RegisteredAddressControllerTest extends RegisteredAddressController {
+  object TestController extends RegisteredAddressController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(RegisteredAddressControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val model = RegisteredAddressModel("TF1 3NY")
-  val emptyModel = RegisteredAddressModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedRegisteredAddress = RegisteredAddressModel("LE5 5NN")
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "RegisteredAddressController" should {
     "use the correct keystore connector" in {
-      RegisteredAddressController.keyStoreConnector shouldBe KeystoreConnector
+      RegisteredAddressController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       RegisteredAddressController.authConnector shouldBe FrontendAuthConnector
@@ -76,21 +50,23 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
   }
 
+  def setupMocks(registeredAddressModel: Option[RegisteredAddressModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(registeredAddressModel))
+
   "Sending a GET request to RegisteredAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -98,10 +74,9 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a GET request to RegisteredAddressController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedRegisteredAddress)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(RegisteredAddressControllerTest.show)(
+      setupMocks(Some(registeredAddressModel))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -112,7 +87,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending an Unauthenticated request with a session to RegisteredAddressController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(RegisteredAddressControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -125,7 +100,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a request with no session to RegisteredAddressController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(RegisteredAddressControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -138,7 +113,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a timed-out request to RegisteredAddressController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(RegisteredAddressControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -149,10 +124,9 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a valid form submit to the RegisteredAddressController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "postcode" -> "LE5 5NN"
-      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -163,9 +137,9 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending an invalid form submission with validation errors to the RegisteredAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "postcode" -> ""
-      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -176,7 +150,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
   "Sending a submission to the RegisteredAddressController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(RegisteredAddressControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -187,7 +161,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(RegisteredAddressControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -200,7 +174,7 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a submission to the RegisteredAddressController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(RegisteredAddressControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -211,8 +185,8 @@ class RegisteredAddressControllerSpec extends UnitSpec with MockitoSugar with Be
 
   "Sending a submission to the RegisteredAddressController when NOT enrolled" should {
     "redirect to the Timeout page when session has timed out" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(RegisteredAddressControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
@@ -29,7 +29,7 @@ import views.html.knowledgeIntensive.TenYearPlan
 import scala.concurrent.Future
 
 object TenYearPlanController extends TenYearPlanController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -38,11 +38,11 @@ object TenYearPlanController extends TenYearPlanController {
 
 trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
+    s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
       case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
       case None => Ok(TenYearPlan(tenYearPlanForm))
     }
@@ -63,16 +63,16 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
           // all good - save the cost condition result returned from API and navigate accordingly
           val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
             hasTenYearPlan = Some(hasTenYearPlan))
-          keyStoreConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
 
           // check the current model to see if valid as this is last page but user could navigate via url out of sequence
           if (updatedModel.isKi) {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
           else {
             // KI condition not met. end of the road..
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
             Future.successful(Redirect(routes.IneligibleForKIController.show()))
           }
         }
@@ -85,12 +85,12 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
         Future.successful(BadRequest(TenYearPlan(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
         val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
           Constants.StandardRadioButtonYesValue) true
         else false
         for {
-          kiModel <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
             if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan) //TO DO - PROPER API CALL

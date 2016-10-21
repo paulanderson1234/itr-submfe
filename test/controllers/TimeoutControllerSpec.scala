@@ -16,14 +16,10 @@
 
 package controllers
 
-import controllers.helpers.FakeRequestHelper
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
+import helpers.ControllerSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.UnitSpec
 
-class TimeoutControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class TimeoutControllerSpec extends ControllerSpec {
 
   "Sending a GET request to TimeoutController" should {
     "return a 200" in {

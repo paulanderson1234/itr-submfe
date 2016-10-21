@@ -16,57 +16,42 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{YourCompanyNeedController, routes}
 import models.YourCompanyNeedModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class YourCompanyNeedSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class YourCompanyNeedSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
+  object TestController extends YourCompanyNeedController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
+  }
 
-  val yourCompanyNeedModel = new YourCompanyNeedModel("AA")
-  val emptyYourCompanyNeedModel = new YourCompanyNeedModel("")
-
-  class SetupPage {
-
-    val controller = new YourCompanyNeedController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  def setupMocks(yourCompanyNeedModel: Option[YourCompanyNeedModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(yourCompanyNeedModel))
   }
 
   "Verify that the yourCompanyNeed page contains the correct elements " +
-    "when a valid YourCompanyNeedModel is passed as returned from keystore" in new SetupPage {
+    "when a valid YourCompanyNeedModel is passed as returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(yourCompanyNeedModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(yourCompanyNeedModel))
+      val result = TestController.show().apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show().url
     document.title() shouldBe Messages("page.introduction.YourCompanyNeed.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.introduction.YourCompanyNeed.heading")
     document.select("#needAAorCS-aa").size() shouldBe 1
@@ -74,20 +59,16 @@ class YourCompanyNeedSpec extends UnitSpec with WithFakeApplication with Mockito
     document.getElementById("needAAorCS-aaLabel").text() shouldBe Messages("page.introduction.YourCompanyNeed.advancedAssurance")
     document.getElementById("needAAorCS-csLabel").text() shouldBe Messages("page.introduction.YourCompanyNeed.complianceStatement")
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
-
   }
 
   "Verify that yourCompanyNeed page contains the correct elements when an empty model " +
-    "is passed because nothing was returned from keystore" in new SetupPage {
+    "is passed because nothing was returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[YourCompanyNeedModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyYourCompanyNeedModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks()
+      val result = TestController.show().apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show.toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show().url
     document.title() shouldBe Messages("page.introduction.YourCompanyNeed.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.introduction.YourCompanyNeed.heading")
     document.select("#needAAorCS-aa").size() shouldBe 1
@@ -97,17 +78,14 @@ class YourCompanyNeedSpec extends UnitSpec with WithFakeApplication with Mockito
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
-  "Verify that YourCompanyNeed page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SetupPage {
+  "Verify that YourCompanyNeed page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio slected as a post action
-      val result = controller.submit.apply(authorisedFakeRequest)
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.introduction.YourCompanyNeed.title")
-
   }
 }

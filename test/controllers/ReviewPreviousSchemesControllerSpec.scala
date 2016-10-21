@@ -17,56 +17,33 @@
 package controllers
 
 import java.net.URLEncoder
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import common.{Constants, KeystoreKeys}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  object ReviewPreviousSchemesControllerTest extends ReviewPreviousSchemesController {
+  object TestController extends ReviewPreviousSchemesController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(ReviewPreviousSchemesControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val model = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeEisValue, 2356, None, None, Some(4), Some(12), Some(2009), Some(1))
-  val model2 = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeSeisValue, 2356, Some(666), None, Some(4), Some(12), Some(2010), Some(3))
-  val model3 = PreviousSchemeModel(
-    Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
-
-  val emptyVectorList = Vector[PreviousSchemeModel]()
-  val previousSchemeVectorList = Vector(model, model2, model3)
-  val previousSchemeVectorListDeleted = Vector(model2, model3)
+  val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
   val backLink = "/investment-tax-relief/previous-investment"
 
+  val emptyVectorList = Vector[PreviousSchemeModel]()
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
   val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))
@@ -74,15 +51,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   val testId = 1
 
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
-  }
-
   "ReviewPreviousSchemesController" should {
     "use the correct keystore connector" in {
-      ReviewPreviousSchemesController.keyStoreConnector shouldBe KeystoreConnector
+      ReviewPreviousSchemesController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       ReviewPreviousSchemesController.authConnector shouldBe FrontendAuthConnector
@@ -92,31 +63,23 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
+  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(previousSchemes))
+
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
     "return a 200 OK when a populated vector is returned from keystore" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-              .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
-        result => status(result) shouldBe OK
-      )
-    }
-
-    "return a 200 OK when a empty vector is returned from keystore when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyVectorList)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
-
+      setupMocks(Some(previousSchemeVectorList))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "return a 200 OK when nothing is returned from keystore (recover block executed which creates empty vector) when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -124,10 +87,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(ReviewPreviousSchemesControllerTest.show)(
+      setupMocks(Some(previousSchemeVectorList))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -138,7 +100,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending an Unauthenticated request with a session to ReviewPreviousSchemesController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(ReviewPreviousSchemesControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -151,7 +113,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a request with no session to ReviewPreviousSchemesController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(ReviewPreviousSchemesControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -164,7 +126,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a timed-out request to ReviewPreviousSchemesController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(ReviewPreviousSchemesControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -175,10 +137,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
+      setupMocks(Some(previousSchemeVectorList))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
@@ -187,9 +148,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
 
     "redirect to itself if table is empty" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
+      setupMocks()
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -198,14 +159,12 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
   }
 
-  "Sending a Post request to PreviousSchemeController delete method when authenticated and enrolled" should {
+  "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
+      setupMocks(Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapDeleted)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -216,12 +175,10 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
     "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" +
       "when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(previousSchemeVectorList)))
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(10))(
+      setupMocks(Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -230,12 +187,10 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
 
     "redirect to 'Review previous scheme' when the vector is empty when authenticated and enrolled" in {
-      when(mockKeyStoreConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]]
-        (Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.remove(1))(
+      setupMocks()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapEmpty)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
@@ -246,9 +201,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.add)(
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.add)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
@@ -259,9 +214,9 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.change(testId))(
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment?id=" + testId)
@@ -273,7 +228,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
   "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(ReviewPreviousSchemesControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -284,7 +239,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(ReviewPreviousSchemesControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -297,7 +252,7 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(ReviewPreviousSchemesControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -308,8 +263,8 @@ class ReviewPreviousSchemesControllerSpec extends UnitSpec with MockitoSugar wit
 
   "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
     "redirect to the Susbcription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(ReviewPreviousSchemesControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.ContactAddressForm._
 import models.{AddressModel, ContactAddressModel}
 import play.api.i18n.Messages
@@ -32,7 +32,7 @@ import scala.concurrent.Future
 
 object ContactAddressController extends ContactAddressController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -40,12 +40,12 @@ object ContactAddressController extends ContactAddressController
 
 trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress).map {
+    s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress).map {
       case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
       case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("","")), countriesList))
     }
@@ -58,8 +58,8 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
           formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode")) else formWithErrors, countriesList)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
-        keyStoreConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
+        s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
         Future.successful(Redirect(routes.SupportingDocumentsController.show()))
       }
     )

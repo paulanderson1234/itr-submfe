@@ -16,59 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{TaxpayerReferenceController, routes}
-import controllers.helpers.FakeRequestHelper
 import models.TaxpayerReferenceModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class TaxpayerReferenceSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val taxpayerReferenceModel = new TaxpayerReferenceModel("1234567890")
-  val emptyTaxpayerReferenceModel = new TaxpayerReferenceModel("")
-
-  class SetupPage {
-
-    val controller = new TaxpayerReferenceController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends TaxpayerReferenceController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  "The Contact Details page" should {
+  def setupMocks(taxpayerReferenceModel: Option[TaxpayerReferenceModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(taxpayerReferenceModel))
 
-    "Verify that the taxpayer reference page contains the correct elements when a valid TaxpayerReferenceModel is passed" in new SetupPage {
+  "The Taxpayer Reference page" should {
+
+    "Verify that the taxpayer reference page contains the correct elements when a valid TaxpayerReferenceModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(taxpayerReferenceModel)))
-        val result = controller.show.apply((authorisedFakeRequest.withFormUrlEncodedBody(
-          "utr" -> "1234567890"
-        )))
+        setupMocks(Some(taxpayerReferenceModel))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.companyDetails.utr.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.utr.heading")
       document.getElementById("help").text() shouldBe Messages("page.companyDetails.utr.help.link")
@@ -77,17 +59,14 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
       document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
-    "Verify that the taxpayer reference page contains the correct elements when an invalid TaxpayerReferenceModel is passed" in new SetupPage {
+    "Verify that the taxpayer reference page contains the correct elements when an invalid TaxpayerReferenceModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(emptyTaxpayerReferenceModel)))
-        val result = controller.submit.apply((authorisedFakeRequest))
+        setupMocks()
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.companyDetails.utr.title")
@@ -98,7 +77,7 @@ class TaxpayerReferenceSpec extends UnitSpec with WithFakeApplication with Mocki
       document.getElementById("label-utr").select(".visuallyhidden").text() shouldBe Messages("page.companyDetails.utr.heading")
       document.getElementById("label-utr-hint").text() shouldBe Messages("page.companyDetails.utr.question.hint")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.WhatWeAskYouController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

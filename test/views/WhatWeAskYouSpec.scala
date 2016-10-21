@@ -16,49 +16,31 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.EnrolmentConnector
 import controllers.WhatWeAskYouController
 import controllers.routes
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
-import scala.concurrent.Future
+class WhatWeAskYouSpec extends ViewSpec {
 
-class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
-
-  class SetupPage {
-
-    val controller = new WhatWeAskYouController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends WhatWeAskYouController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
 
   "The What we'll ask you page" should {
 
-    "Verify that the What we'll ask you page contains the correct elements" in new SetupPage {
+    "Verify that the What we'll ask you page contains the correct elements" in new Setup {
       val document: Document = {
-        //val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply(authorisedFakeRequest)
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.introduction.WhatWeAskYou.title")
       document.body.getElementById("heading-one").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.one")
       document.body.getElementById("heading-two").text() shouldBe Messages("page.introduction.WhatWeAskYou.heading.two")
@@ -84,11 +66,10 @@ class WhatWeAskYouSpec extends UnitSpec with WithFakeApplication with MockitoSug
       document.body.getElementById("other-comp-accounts").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.otherCompAccounts")
       document.body.getElementById("memorandum").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.memorandum")
       document.body.getElementById("prospectuses").text() shouldBe Messages("page.introduction.WhatWeAskYou.bullet.prospectuses")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.QualifyingForSchemeController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.QualifyingForSchemeController.show().url
       document.body.getElementById("print-this-page").text() shouldBe Messages("page.introduction.WhatWeAskYou.print.text")
       document.body.getElementById("what-we-ask-you-legend-id").hasClass("visuallyhidden")
       document.body.getElementById("next").text() shouldBe Messages("common.button.continueFirstSection")
-
     }
   }
 }

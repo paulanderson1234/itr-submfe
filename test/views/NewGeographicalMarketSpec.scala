@@ -16,64 +16,45 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
+import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{NewGeographicalMarketController, routes}
-import controllers.helpers.FakeRequestHelper
 import models._
 import org.jsoup.Jsoup
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
+class NewGeographicalMarketSpec extends ViewSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  val newGeographicalMarketModel = new NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
-  val emptyNewGeographicalMarketModel = new NewGeographicalMarketModel("")
-
-  class SetupPage {
-    val controller = new NewGeographicalMarketController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends NewGeographicalMarketController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
+  def setupMocks(backLink: Option[String] = None, newGeographicalMarketModel: Option[NewGeographicalMarketModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
   }
 
   "The NewGeographicalMarket Page" +
-    "Verify that the correct elements are loaded when navigating from WhatWillUse page" in new SetupPage{
+    "Verify that the correct elements are loaded when navigating from WhatWillUse page" in new Setup {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
+      setupMocks(Some(routes.ProposedInvestmentController.show().url),Some(newGeographicalMarketModelYes))
+      val result = TestController.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1
@@ -87,19 +68,13 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
   }
 
   "The NewGeographicalMarket Page" +
-    "Verify that the correct elements are loaded when navigating from UsedInvestmentReasonBefore page" in new SetupPage{
+    "Verify that the correct elements are loaded when navigating from UsedInvestmentReasonBefore page" in new Setup {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.UsedInvestmentReasonBeforeController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
+      setupMocks(Some(routes.UsedInvestmentReasonBeforeController.show().url),Some(newGeographicalMarketModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1
@@ -112,19 +87,13 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
   }
 
   "The NewGeographicalMarket Page" +
-    "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new SetupPage{
+    "Verify that the correct elements are loaded when navigating from PreviousBeforeDOFCS page" in new Setup {
     val document: Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.PreviousBeforeDOFCSController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(newGeographicalMarketModel)))
-      val result = controller.show.apply(authorisedFakeRequestToPOST("isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue))
+      setupMocks(Some(routes.PreviousBeforeDOFCSController.show().url),Some(newGeographicalMarketModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.NewGeographicalMarket.heading")
     document.select("#isNewGeographicalMarket-yes").size() shouldBe 1
@@ -137,19 +106,12 @@ class NewGeographicalMarketSpec extends UnitSpec with WithFakeApplication with M
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
-  "Verify that NewGeographicalMarket page contains error summary when invalid model is submitted" in new SetupPage {
+  "Verify that NewGeographicalMarket page contains error summary when no model is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      // submit the model with no radio selected as a post action
-      when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.UsedInvestmentReasonBeforeController.show().toString())))
-      when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-        (Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyNewGeographicalMarketModel)))
-      val result = controller.submit.apply(authorisedFakeRequest)
+      setupMocks(Some(routes.UsedInvestmentReasonBeforeController.show().url))
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.investment.NewGeographicalMarket.title")

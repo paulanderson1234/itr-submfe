@@ -16,57 +16,35 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.HowToApplyController
 import controllers.routes
-import controllers.helpers.FakeRequestHelper
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
-import scala.concurrent.Future
+class HowToApplySpec extends ViewSpec {
 
-class HowToApplySpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
-
-
-
-
-
-  class SetupPage {
-
-    val controller = new HowToApplyController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends HowToApplyController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
 
   "The How to apply page" should {
 
-    "Verify that the How to apply page contains the correct elements" in new SetupPage {
+    "Verify that the How to apply page contains the correct elements" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        val result = controller.show.apply((authorisedFakeRequest))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.introduction.HowToApply.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.introduction.HowToApply.heading")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show.toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IntroductionController.show().url
       document.getElementById("number-fill-out").text() should include (Messages("page.introduction.HowToApply.number.fillOut"))
       document.getElementById("number-send").text() should include (Messages("page.introduction.HowToApply.number.send"))
       document.getElementById("number-receive").text() should include (Messages("page.introduction.HowToApply.number.receive"))

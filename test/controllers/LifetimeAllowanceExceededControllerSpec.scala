@@ -18,44 +18,24 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
-import play.api.test.FakeRequest
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-import scala.concurrent.Future
+class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
 
-
-class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper{
-  
-
-  implicit val hc = HeaderCarrier()
-
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  object LifetimeAllowanceExceededControllerTest extends LifetimeAllowanceExceededController {
+  object TestController extends LifetimeAllowanceExceededController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(LifetimeAllowanceExceededControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
 
   "LifetimeAllowanceExceededController" should {
     "use the correct keystore connector" in {
-      LifetimeAllowanceExceededController.keyStoreConnector shouldBe KeystoreConnector
+      LifetimeAllowanceExceededController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       LifetimeAllowanceExceededController.authConnector shouldBe FrontendAuthConnector
@@ -67,8 +47,8 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "return a 200" in {
-      mockEnrolledRequest
-      showWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.show)(
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -76,8 +56,8 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.show)(
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -88,7 +68,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending an Unauthenticated request with a session to LifetimeAllowanceExceededController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(LifetimeAllowanceExceededControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -101,7 +81,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a request with no session to LifetimeAllowanceExceededController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(LifetimeAllowanceExceededControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -114,7 +94,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a timed-out request to LifetimeAllowanceExceededController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(LifetimeAllowanceExceededControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -125,8 +105,8 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Posting to the LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "redirect to 'Proposed investment' page" in {
-      mockEnrolledRequest
-      submitWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.submit)(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
@@ -138,7 +118,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
   "Sending a submission to the LifetimeAllowanceExceededController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(LifetimeAllowanceExceededControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -149,7 +129,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(LifetimeAllowanceExceededControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -162,7 +142,7 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a submission to the LifetimeAllowanceExceededController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(LifetimeAllowanceExceededControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -173,8 +153,8 @@ class LifetimeAllowanceExceededControllerSpec extends UnitSpec with MockitoSugar
 
   "Sending a submission to the LifetimeAllowanceExceededController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(LifetimeAllowanceExceededControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

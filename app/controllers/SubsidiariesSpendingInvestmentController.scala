@@ -35,7 +35,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
@@ -45,7 +45,7 @@ import views.html._
 import scala.concurrent.Future
 
 object SubsidiariesSpendingInvestmentController extends SubsidiariesSpendingInvestmentController{
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -53,12 +53,12 @@ object SubsidiariesSpendingInvestmentController extends SubsidiariesSpendingInve
 
 trait SubsidiariesSpendingInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
-        keyStoreConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
+        s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
           case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
           case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
         }
@@ -66,7 +66,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
       else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
     }
     for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc)
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)
       route <- routeRequest(link)
     } yield route
   }
@@ -74,18 +74,18 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
       invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, keyStoreConnector)(hc).flatMap {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector).flatMap {
           case Some(data) => Future.successful(
             BadRequest(views.html.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
           case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       },
       validForm => {
-        keyStoreConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
+        s4lConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
         validForm.subSpendingInvestment match {
           case  Constants.StandardRadioButtonYesValue  =>
             Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
           case  Constants.StandardRadioButtonNoValue =>
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+            s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
               routes.SubsidiariesSpendingInvestmentController.show().toString())
             Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }

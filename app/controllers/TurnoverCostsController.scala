@@ -16,11 +16,9 @@
 
 package controllers
 
-
-
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{SubmissionConnector, EnrolmentConnector, KeystoreConnector}
+import connectors.{SubmissionConnector, EnrolmentConnector, S4LConnector}
 import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import forms.TurnoverCostsForm._
@@ -30,11 +28,10 @@ import models.submission.CostModel
 import play.api.libs.json.Json
 import views.html.investment.TurnoverCosts
 
-
 import scala.concurrent.Future
 
 object TurnoverCostsController extends TurnoverCostsController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -44,11 +41,11 @@ object TurnoverCostsController extends TurnoverCostsController {
 trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   implicit val formatCostModel = Json.format[CostModel]
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
+    s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
       case Some(data) => Ok(TurnoverCosts(turnoverCostsForm.fill(data)))
       case None => Ok(TurnoverCosts(turnoverCostsForm))
     }
@@ -60,10 +57,10 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
        turnoverCheckRes match {
          case Some(true) => subsidiaries match {
            case Some(data)  if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-                keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.TurnoverCostsController.show().toString())
+             s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.TurnoverCostsController.show().toString())
                 Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
            case Some(_) =>
-             keyStoreConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.TurnoverCostsController.show().toString())
+             s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.TurnoverCostsController.show().toString())
              Future.successful(Redirect(routes.InvestmentGrowController.show()))
            case _ =>  Future.successful(Redirect(routes.SubsidiariesController.show()))
          }
@@ -78,17 +75,15 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
       },
       validFormData => {
         //TODO: add the annual aveage turnover check and navigtion to error or correct page etc..subsidiaries temporary
-        keyStoreConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
-
+        s4lConnector.saveFormData(KeystoreKeys.turnoverCosts, validFormData)
         (for {
-          subsidiaries <- keyStoreConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-          proposedInvestment <- keyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+          subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+          proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
           turnoverCheckRes <-  submissionConnector.checkAveragedAnnualTurnover(proposedInvestment.get,validFormData)
           route <- routeRequest(subsidiaries, turnoverCheckRes)
         } yield route) recover {
           case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
         }
-
       }
     )
   }

@@ -17,94 +17,35 @@
 package controllers
 
 import java.net.URLEncoder
-import java.time.ZoneId
-import java.util.{Date, UUID}
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
-
-  // set up border line conditions of today and future date (tomorrow)
-  val date = new Date()
-  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
-
-  val todayDay: String = localDate.getDayOfMonth.toString
-  val todayMonth: String = localDate.getMonthValue.toString
-  val todayYear: String = localDate.getYear.toString
-
-  // 3 year boundary dates (at, below, above) from today
-  val date3YearsAgo = localDate.minusYears(3)
-  val date3YearsAgoDay: Int = date3YearsAgo.getDayOfMonth
-  val date3YearsAgoMonth: Int = date3YearsAgo.getMonthValue
-  val date3YearsAgoYear: Int = date3YearsAgo.getYear
-
-  val date3YearsOneDay = localDate.minusYears(3).minusDays(1)
-  val date3YearsOneDayDay: Int = date3YearsOneDay.getDayOfMonth
-  val date3YearsOneDayMonth: Int = date3YearsOneDay.getMonthValue
-  val date3YearsOneDayYear: Int = date3YearsOneDay.getYear
-
-  val date3YearsLessOneDay = localDate.minusYears(3).plusDays(1)
-  val date3yearsLessOneDayDay: Int = date3YearsLessOneDay.getDayOfMonth
-  val date3YearsLessOneDayMonth: Int = date3YearsLessOneDay.getMonthValue
-  val date3YearsLessOneDayYear: Int = date3YearsLessOneDay.getYear
-
-  val mockKeyStoreConnector = mock[KeystoreConnector]
+class DateOfIncorporationControllerSpec extends ControllerSpec {
 
   object DateOfIncorporationControllerTest extends DateOfIncorporationController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(DateOfIncorporationControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val dateOfIncorporationAsJson = """{"day": 23,"month": 11, "year": 1993}"""
-
-  val model = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
-  val emptyModel = DateOfIncorporationModel(None, None, None)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-
-  val keyStoreSavedDateOfIncorporation = DateOfIncorporationModel(Some(23), Some(11), Some(1993))
-  val savedKIData = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
-  val updatedKIData = KiProcessingModel(Some(true),Some(false), Some(false), Some(false), Some(false))
-  val updatedKiCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(updatedKIData)))
-
-
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
-  }
+  def setupMocks(dateOfIncorporationModel: Option[DateOfIncorporationModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(dateOfIncorporationModel))
 
   "DateOfIncorporationController" should {
     "use the correct keystore connector" in {
-      DateOfIncorporationController.keyStoreConnector shouldBe KeystoreConnector
+      DateOfIncorporationController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       DateOfIncorporationController.authConnector shouldBe FrontendAuthConnector
@@ -116,20 +57,16 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to DateOfIncorporationController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockEnrolledRequest
+      setupMocks(Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      setupMocks()
+      mockEnrolledRequest()
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -138,10 +75,8 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a GET request to DateOfIncorporationController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedDateOfIncorporation)))
-      mockNotEnrolledRequest
+      setupMocks(Some(dateOfIncorporationModel))
+      mockNotEnrolledRequest()
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -190,17 +125,10 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a valid form submit to the DateOfIncorporationController when authenticated and enrolled" should {
     "redirect to nature of business page" in {
-
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.saveFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(updatedKiCacheMap)
-      when(mockKeyStoreConnector.saveFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation),
-        Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(savedKIData)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
-        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(model)))
-      mockEnrolledRequest
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
+        (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(kiProcessingModelMet)))
+      setupMocks(Some(dateOfIncorporationModel))
+      mockEnrolledRequest()
 
       val formInput = Seq(
         "incorporationDay" -> "23",
@@ -218,7 +146,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending an invalid form submission with validation errors to the DateOfIncorporationController when authenticated and enrolled" should {
     "return a bad request" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = Seq(
         "incorporationDay" -> "",
         "incorporationMonth" -> "",
@@ -270,7 +198,7 @@ class DateOfIncorporationControllerSpec extends UnitSpec with MockitoSugar with 
 
   "Sending a submission to the DateOfIncorporationController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
+      mockNotEnrolledRequest()
       submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit)(
         result => {
           status(result) shouldBe SEE_OTHER

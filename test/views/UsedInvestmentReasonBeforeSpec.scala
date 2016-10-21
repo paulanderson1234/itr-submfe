@@ -16,57 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{UsedInvestmentReasonBeforeController, routes}
 import models.UsedInvestmentReasonBeforeModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
+class UsedInvestmentReasonBeforeSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val usedInvestmentReasonBeforeModel = new UsedInvestmentReasonBeforeModel("Yes")
-  val emptyUsedInvestmentReasonBeforeModel = new UsedInvestmentReasonBeforeModel("")
-
-  class SetupPage {
-
-    val controller = new UsedInvestmentReasonBeforeController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends UsedInvestmentReasonBeforeController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+  
+  def setupMocks(usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(usedInvestmentReasonBeforeModel))
 
   "Verify that the UsedInvestmentReasonBefore page contains the correct elements " +
-    "when a valid UsedInvestmentReasonBeforeModel is passed as returned from keystore" in new SetupPage {
+    "when a valid UsedInvestmentReasonBeforeModel is passed as returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(usedInvestmentReasonBeforeModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks(Some(usedInvestmentReasonBeforeModelYes))
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -78,16 +62,13 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
   }
 
   "Verify that UsedInvestmentReasonBefore page contains the correct elements when an empty model " +
-    "is passed because nothing was returned from keystore" in new SetupPage {
+    "is passed because nothing was returned from keystore" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
-      when(mockKeystoreConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyUsedInvestmentReasonBeforeModel)))
-      val result = controller.show.apply(authorisedFakeRequest)
+      setupMocks()
+      val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().toString()
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.heading")
     document.select("#usedInvestmentReasonBefore-yes").size() shouldBe 1
@@ -98,14 +79,12 @@ class UsedInvestmentReasonBeforeSpec extends UnitSpec with WithFakeApplication w
     document.getElementById("next").text() shouldBe Messages("common.button.continue")
   }
 
-  "Verify that UsedInvestmentReasonBefore page contains error summary when invalid model is submitted" in new SetupPage {
+  "Verify that UsedInvestmentReasonBefore page contains error summary when invalid model is submitted" in new Setup {
     val document : Document = {
-      val userId = s"user-${UUID.randomUUID}"
       // submit the model with no radio selected as a post action
-      val result = controller.submit.apply(authorisedFakeRequest)
+      val result = TestController.submit.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
     document.title() shouldBe Messages("page.investment.UsedInvestmentReasonBefore.title")

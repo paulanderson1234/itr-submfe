@@ -16,61 +16,41 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
 import controllers.{ContactDetailsController, routes}
 import models.ContactDetailsModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper{
-
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val contactDetailsModel = new ContactDetailsModel("Jeff","Stelling","01384 555678","Jeff.Stelling@HMRC.gov.uk")
-  val emptyContactDetailsModel = new ContactDetailsModel("","","","")
-
-  class SetupPage {
-
-    val controller = new ContactDetailsController{
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+class ContactDetailsSpec extends ViewSpec {
+  
+  object TestController extends ContactDetailsController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+
+  def setupMocks(contactDetailsModel: Option[ContactDetailsModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(contactDetailsModel))
 
   "The Contact Details page" should {
 
-    "Verify that the contact details page contains the correct elements when a valid ContactDetailsModel is passed" in new SetupPage {
+    "Verify that the contact details page contains the correct elements when a valid ContactDetailsModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(contactDetailsModel)))
-        val result = controller.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
-          "forename" -> "Jeff",
-          "surname" -> "Stelling",
-          "telephoneNumber" -> "01384 555678",
-          "email" -> "Jeff.Stelling@HMRC.gov.uk"))
+        setupMocks(Some(contactDetailsModel))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.contactInformation.contactDetails.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.contactDetails.heading")
       document.getElementById("label-forename").text() shouldBe Messages("page.contactInformation.contactDetails.forename.label")
@@ -78,17 +58,14 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("label-telephoneNumber").text() shouldBe Messages("page.contactInformation.contactDetails.phoneNumber.label")
       document.getElementById("label-email").text() shouldBe Messages("page.contactInformation.contactDetails.email.label")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
     }
 
-    "Verify that the proposed investment page contains the correct elements when an invalid ContactDetailsModel is passed" in new SetupPage {
+    "Verify that the proposed investment page contains the correct elements when an invalid ContactDetailsModel is passed" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-
-        when(mockKeystoreConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(emptyContactDetailsModel)))
-        val result = controller.submit.apply(authorisedFakeRequest)
+        setupMocks()
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.contactInformation.contactDetails.title")
@@ -98,7 +75,7 @@ class ContactDetailsSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("label-telephoneNumber").text() contains Messages("page.contactInformation.contactDetails.phoneNumber.label")
       document.getElementById("label-email").text() contains Messages("page.contactInformation.contactDetails.email.label")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }

@@ -18,79 +18,50 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import common.{Constants, KeystoreKeys}
+import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class TurnoverCostsControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-  val mockSubmissionConnector = mock[SubmissionConnector]
-
-  object TurnoverCostsControllerTest extends TurnoverCostsController {
+  object TestController extends TurnoverCostsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    val submissionConnector: SubmissionConnector = mockSubmissionConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(TurnoverCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
-
-  private def mockNotEnrolledRequest = when(TurnoverCostsControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-
-  val keyStoreSubsidiariesYes = SubsidiariesModel("Yes")
-  val keyStoreSubsidiariesNo = SubsidiariesModel("No")
-  val keyStoreSavedTurnoverCosts = AnnualTurnoverCostsModel("23", "34", "44", "66", "98")
-  val keyStorePostedTurnoverCosts = AnnualTurnoverCostsModel("132", "134", "144", "166", "198")
-  //val emptyModel = AnnualTurnoverCostsModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(keyStorePostedTurnoverCosts)))
-  val keyStoreSavedProposedInvestment = ProposedInvestmentModel(50)
-
-
-  val keyStoreSavedSubsidiariesYes = SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val keyStoreSavedSubsidiariesNo = SubsidiariesModel(Constants.StandardRadioButtonNoValue)
-  val kiModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
-  val nonKiModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), Some(false), Some(false))
-  val emptyKiModel = KiProcessingModel(None, None, None, None, None, None)
-  val commercialSaleModel = CommercialSaleModel("true", Some(29), Some(2), Some(2004))
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
-  }
-
-  def setup(turnoverCostsModel: Option[AnnualTurnoverCostsModel], checkAveragedAnnualTurnover: Boolean): Unit = {
-    when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(turnoverCostsModel))
+  def setupShowMocks(turnoverCostsModel: Option[AnnualTurnoverCostsModel] = None, checkAveragedAnnualTurnover: Option[Boolean] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(turnoverCostsModel))
 
     // Change to checkAveragedAnnualTurnover method below when ready and perform additional tests
-    when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())
-    (Matchers.any())).thenReturn(Future.successful(Option(checkAveragedAnnualTurnover)))
+    when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(checkAveragedAnnualTurnover))
+  }
+
+  def setupSubmitMocks(proposedInvestmentModel: Option[ProposedInvestmentModel] = None,
+                       subsidiariesModel: Option[SubsidiariesModel] = None, checkedTurnover: Option[Boolean] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(proposedInvestmentModel))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subsidiariesModel))
+    when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(checkedTurnover))
   }
 
   "TurnoverCostsController" should {
     "use the correct keystore connector" in {
-      TurnoverCostsController.keyStoreConnector shouldBe KeystoreConnector
+      TurnoverCostsController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       TurnoverCostsController.authConnector shouldBe FrontendAuthConnector
@@ -107,9 +78,9 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "The AnnualTurnoverCostsModel can be obtained from keystore" should {
       "return an OK" in {
-        setup(Some(keyStoreSavedTurnoverCosts), true)
-        mockEnrolledRequest
-        showWithSessionAndAuth(TurnoverCostsControllerTest.show())(
+        setupShowMocks(Some(annualTurnoverCostsModel), Some(true))
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
       }
@@ -117,9 +88,9 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "The AnnualTurnoverCostsModel can't be obtained from keystore" should {
       "return an OK" in {
-        setup(Some(keyStoreSavedTurnoverCosts), true)
-        mockEnrolledRequest
-        showWithSessionAndAuth(TurnoverCostsControllerTest.show())(
+        setupShowMocks(Some(annualTurnoverCostsModel), Some(true))
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
       }
@@ -127,11 +98,9 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a GET formInput to TurnoverCostsController when Authenticated and NOT enrolled" should {
       "redirect to the Subscription Service" in {
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedTurnoverCosts)))
-        mockNotEnrolledRequest
-        showWithSessionAndAuth(TurnoverCostsControllerTest.show())(
+        setupShowMocks(Some(annualTurnoverCostsModel))
+        mockNotEnrolledRequest()
+        showWithSessionAndAuth(TestController.show())(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -142,8 +111,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending an Unauthenticated formInput with a session to TurnoverCostsController when Authenticated and enrolled" should {
       "return a 302 and redirect to GG login" in {
-        mockEnrolledRequest
-        showWithSessionWithoutAuth(TurnoverCostsControllerTest.show())(
+        mockEnrolledRequest()
+        showWithSessionWithoutAuth(TestController.show())(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -156,8 +125,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a formInput with no session to TurnoverCostsController when Authenticated and enrolled" should {
       "return a 302 and redirect to GG login" in {
-        mockEnrolledRequest
-        showWithoutSession(TurnoverCostsControllerTest.show())(
+        mockEnrolledRequest()
+        showWithoutSession(TestController.show())(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -170,8 +139,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a timed-out formInput to TurnoverCostsController when Authenticated and enrolled" should {
       "return a 302 and redirect to the timeout page" in {
-        mockEnrolledRequest
-        showWithTimeout(TurnoverCostsControllerTest.show())(
+        mockEnrolledRequest()
+        showWithTimeout(TestController.show())(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -182,15 +151,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending a valid form submission to the TurnoverCostsController when Authenticated and enrolled" should {
       "redirect to subsidiariess spending investment form when annual turnover check returns true and owns subsidiaries is true" in {
-        mockEnrolledRequest
-
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesYes)))
-        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
-        (Matchers.any())).thenReturn(Future.successful(Option(true)))
+        mockEnrolledRequest()
+        setupSubmitMocks(Some(proposedInvestmentModel), Some(subsidiariesModelYes), Some(true))
         val formInput = Seq(
           "amount1" -> "100",
           "amount2" -> "100",
@@ -198,7 +160,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           "amount4" -> "100",
           "amount5" -> "100"
         )
-        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+        submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
@@ -207,17 +169,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       }
 
         "redirect to investment grow form when annual turnover check returns true and owns subsidiaries is false" in {
-          mockEnrolledRequest
-
-          when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-          when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-          when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-          when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-            .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-          when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
-          (Matchers.any())).thenReturn(Future.successful(Option(true)))
+          mockEnrolledRequest()
+          setupSubmitMocks(Some(proposedInvestmentModel), Some(subsidiariesModelNo), Some(true))
           val formInput = Seq(
             "amount1" -> "100",
             "amount2" -> "100",
@@ -225,7 +178,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
             "amount4" -> "100",
             "amount5" -> "100"
           )
-          submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+          submitWithSessionAndAuth(TestController.submit, formInput: _*)(
             result => {
               status(result) shouldBe SEE_OTHER
               redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
@@ -234,15 +187,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
         }
 
       "redirect to annual turnover error page when annual turnover check returns false" in {
-        mockEnrolledRequest
-
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
-        (Matchers.any())).thenReturn(Future.successful(Option(false)))
+        mockEnrolledRequest()
+        setupSubmitMocks(Some(proposedInvestmentModel), Some(subsidiariesModelNo), Some(false))
         val formInput = Seq(
           "amount1" -> "100",
           "amount2" -> "100",
@@ -250,7 +196,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           "amount4" -> "100",
           "amount5" -> "100"
         )
-        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+        submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover-error")
@@ -259,13 +205,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       }
 
       "redirect to proposed investment page when no proposed investment is returned from keystore" in {
-        mockEnrolledRequest
-
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
+        mockEnrolledRequest()
+        setupSubmitMocks(subsidiariesModel = Some(subsidiariesModelYes))
         val formInput = Seq(
           "amount1" -> "100",
           "amount2" -> "100",
@@ -273,7 +214,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           "amount4" -> "100",
           "amount5" -> "100"
         )
-        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+        submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
@@ -282,15 +223,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       }
 
       "redirect to subsidiaries page when no subsidiaries model is returned from keystore" in {
-        mockEnrolledRequest
-
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        when(mockSubmissionConnector.checkAveragedAnnualTurnover(Matchers.any(), Matchers.any())
-        (Matchers.any())).thenReturn(Future.successful(Option(true)))
+        mockEnrolledRequest()
+        setupSubmitMocks(Some(proposedInvestmentModel),checkedTurnover = Some(true))
         val formInput = Seq(
           "amount1" -> "100",
           "amount2" -> "100",
@@ -298,7 +232,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           "amount4" -> "100",
           "amount5" -> "100"
         )
-        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+        submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -311,10 +245,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
     "Sending an invalid form submit to the TurnoverCostsController when Authenticated and enrolled" should {
       "return a bad request" in {
-        when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-        when(mockKeyStoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(keyStoreSavedSubsidiariesNo)))
-        mockEnrolledRequest
+        setupSubmitMocks(subsidiariesModel = Some(subsidiariesModelNo))
+        mockEnrolledRequest()
         val formInput = Seq(
           "amount1" -> "",
           "amount2" -> "",
@@ -322,7 +254,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
           "amount4" -> "",
           "amount5" -> ""
         )
-        submitWithSessionAndAuth(TurnoverCostsControllerTest.submit, formInput: _*)(
+        submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe BAD_REQUEST
           }
@@ -333,7 +265,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
     "Sending a submission to the TurnoverCostsController when not authenticated" should {
 
       "redirect to the GG login page when having a session but not authenticated" in {
-        submitWithSessionWithoutAuth(TurnoverCostsControllerTest.submit)(
+        submitWithSessionWithoutAuth(TestController.submit)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -344,7 +276,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
       }
 
       "redirect to the GG login page with no session" in {
-        submitWithoutSession(TurnoverCostsControllerTest.submit)(
+        submitWithoutSession(TestController.submit)(
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -358,7 +290,7 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
   "Sending a submission to the TurnoverCostsController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TurnoverCostsControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -369,8 +301,8 @@ class TurnoverCostsControllerSpec extends UnitSpec with MockitoSugar with Before
 
   "Sending a submission to the TurnoverCostsController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(TurnoverCostsControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

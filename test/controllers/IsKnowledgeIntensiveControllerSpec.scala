@@ -18,62 +18,41 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  object IsKnowledgeIntensiveControllerTest extends IsKnowledgeIntensiveController {
+  object TestController extends IsKnowledgeIntensiveController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(IsKnowledgeIntensiveControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val modelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
-  val modelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
-  val emptyModel = IsKnowledgeIntensiveModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(modelYes)))
-  val keyStoreSavedIsKnowledgeIntensive = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
 
   val updatedKIModel = KiProcessingModel(Some(true),Some(false), Some(false), Some(false), None, Some(false))
-  val falseKIModel = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), None, Some(false))
   val missingDateKIModel = KiProcessingModel(Some(true),None, Some(false), Some(false), None, Some(false))
 
+  def setupShowMocks(isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(isKnowledgeIntensiveModel))
 
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
-  }
+  def setupSubmitMocks(kiProcessingModel: Option[KiProcessingModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(kiProcessingModel))
 
   "IsKnowledgeIntensiveController" should {
     "use the correct keystore connector" in {
-      IsKnowledgeIntensiveController.keyStoreConnector shouldBe KeystoreConnector
+      IsKnowledgeIntensiveController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       IsKnowledgeIntensiveController.authConnector shouldBe FrontendAuthConnector
@@ -85,21 +64,17 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a GET request to IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
+      setupShowMocks(Some(isKnowledgeIntensiveModelYes))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
+      setupShowMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -107,11 +82,9 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a GET request to IsKnowledgeIntensiveController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedIsKnowledgeIntensive)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.show)(
+      setupShowMocks(Some(isKnowledgeIntensiveModelYes))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -122,7 +95,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending an Unauthenticated request with a session to IsKnowledgeIntensiveController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(IsKnowledgeIntensiveControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -135,7 +108,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a request with no session to IsKnowledgeIntensiveController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(IsKnowledgeIntensiveControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -159,12 +132,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the operating costs page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(updatedKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(updatedKIModel))
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
@@ -175,12 +146,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'Yes' form submit with missing data in the KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(missingDateKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(missingDateKIModel))
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -191,12 +160,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit with a false KI Model to the IsKnowledgeIntensiveControlle when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(falseKIModel))
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -207,12 +174,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit without a KI Model to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the date of incorporation" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      setupSubmitMocks()
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
@@ -223,12 +188,10 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a valid 'No' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the subsidiaries" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(updatedKIModel)))
-      mockEnrolledRequest
+      setupSubmitMocks(Some(updatedKIModel))
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
@@ -236,12 +199,12 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
       )
     }
   }
-  
+
   "Sending an invalid form submission with validation errors to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "isKnowledgeIntensive" -> ""
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -252,7 +215,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
   "Sending a submission to the IsKnowledgeIntensiveController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(IsKnowledgeIntensiveControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -263,7 +226,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(IsKnowledgeIntensiveControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -276,7 +239,7 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a submission to the IsKnowledgeIntensiveController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(IsKnowledgeIntensiveControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -287,8 +250,8 @@ class IsKnowledgeIntensiveControllerSpec extends UnitSpec with MockitoSugar with
 
   "Sending a submission to the IsKnowledgeIntensiveController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(IsKnowledgeIntensiveControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

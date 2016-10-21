@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocuments
@@ -28,7 +28,7 @@ import scala.concurrent.Future
 
 object SupportingDocumentsController extends SupportingDocumentsController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -36,11 +36,11 @@ object SupportingDocumentsController extends SupportingDocumentsController
 
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, keyStoreConnector)(hc).flatMap {
+    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
       case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
       case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
     }

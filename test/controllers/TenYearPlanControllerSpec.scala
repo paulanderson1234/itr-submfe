@@ -15,70 +15,51 @@
  */
 
 package controllers
-import java.net.URLEncoder
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
+import java.net.URLEncoder
+
+import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector, SubmissionConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
 
-class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper {
+class TenYearPlanControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-  val mockSubmissionConnector = mock[SubmissionConnector]
-
-  object TenYearPlanControllerTest extends TenYearPlanController {
+  object TestController extends TenYearPlanController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    val submissionConnector: SubmissionConnector = mockSubmissionConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  private def mockEnrolledRequest = when(TenYearPlanControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(TenYearPlanControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val model = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("Text"))
-  val emptyModel = TenYearPlanModel("", None)
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedYesWithTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("abcd"))
-  val keyStoreSavedNoWithNoTenYearPlan = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
-  val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
-  val falseKIModel = KiProcessingModel(Some(true), Some(false), Some(false), Some(false), None, Some(false))
-  val isKiKIModel = KiProcessingModel(Some(false), Some(true), Some(true), Some(true), Some(true), Some(true))
   val noMastersKIModel = KiProcessingModel(Some(true), Some(true), Some(true), None, Some(true), Some(true))
-  val emptyKIModel = KiProcessingModel(None, None, None, None, None, None)
+  val ineligibleKIModel = KiProcessingModel(Some(true), Some(false), Some(false), Some(false), None, Some(false))
 
-  implicit val hc = HeaderCarrier()
+  def setupShowMocks(tenYearPlanModel: Option[TenYearPlanModel] = None, kiProcessingModel: Option[KiProcessingModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(tenYearPlanModel))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(kiProcessingModel))
+  }
 
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
+  def setupSubmitMocks(isValid: Option[Boolean] = None, kiProcessingModel: Option[KiProcessingModel] = None): Unit = {
+    when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
+    (Matchers.any())).thenReturn(Future.successful(isValid))
+    when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(kiProcessingModel))
   }
 
   "TenYearPlanController" should {
     "use the correct keystore connector" in {
-      TenYearPlanController.keyStoreConnector shouldBe KeystoreConnector
+      TenYearPlanController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       TenYearPlanController.authConnector shouldBe FrontendAuthConnector
@@ -86,29 +67,24 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
     "use the correct enrolment connector" in {
       TenYearPlanController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct submission connector" in {
+      TenYearPlanController.submissionConnector shouldBe SubmissionConnector
+    }
   }
 
   "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedYesWithTenYearPlan)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(TenYearPlanControllerTest.show)(
+      setupShowMocks(Some(tenYearPlanModelYes), Some(trueKIModel))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(emptyKIModel)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(TenYearPlanControllerTest.show)(
+      setupShowMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -117,12 +93,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a valid No form submission to the TenYearPlanController with a false KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(isKiKIModel)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      setupSubmitMocks(Some(false), Some(isKiKIModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
@@ -135,12 +108,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a valid No form submission to the TenYearPlanController without a KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      setupSubmitMocks(Some(false))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
@@ -153,12 +123,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a valid No form submission to the TenYearPlanController without hasPercentageWithMasters in the KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(noMastersKIModel)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      setupSubmitMocks(Some(false), Some(noMastersKIModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
@@ -171,12 +138,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(false)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(falseKIModel)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      setupSubmitMocks(Some(false), Some(ineligibleKIModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
@@ -189,12 +153,9 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a valid Yes form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page with valid submission" in {
-      when(mockSubmissionConnector.validateSecondaryKiConditions(Matchers.any(),Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(Option(true)))
-      when(mockKeyStoreConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(trueKIModel)))
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      setupSubmitMocks(Some(true), Some(trueKIModel))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")(
         result => {
@@ -207,8 +168,8 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending an empty invalid form submission with validation errors to the TenYearPlanController" should {
     "redirect to itself" in {
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> "",
         "tenYearPlanDesc" -> "")(
         result => {
@@ -221,8 +182,8 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending an an invalid form submission with both Yes and a blank description to the TenYearPlanController" should {
     "redirect to itself with validation errors" in {
-      mockEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit,
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "")(
         result => {
@@ -236,22 +197,22 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a request with no session to TenYearPlanController" should {
     "return a 303" in {
-      status(TenYearPlanControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(TenYearPlanControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
 
   "Sending an Unauthenticated request with a session to TenYearPlanController" should {
     "return a 303" in {
-      status(TenYearPlanControllerTest.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(TenYearPlanControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -259,31 +220,31 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   "Sending a timed-out request to TenYearPlanController" should {
 
     "return a 303 in" in {
-      status(TenYearPlanControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to timeout page" in {
-      redirectLocation(TenYearPlanControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
     }
   }
 
   "Sending a request to TenYearPlanController when NOT enrolled" should {
 
     "return a 303 in" in {
-      mockNotEnrolledRequest
-      status(TenYearPlanControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+      mockNotEnrolledRequest()
+      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest
-      redirectLocation(TenYearPlanControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+      mockNotEnrolledRequest()
+      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
     }
   }
 
   "Sending a submission to the TenYearPlanController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TenYearPlanControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -297,7 +258,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
   "Sending a submission to the TenYearPlanController with no session" should {
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(TenYearPlanControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -310,7 +271,7 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a submission to the TenYearPlanController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TenYearPlanControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -321,8 +282,8 @@ class TenYearPlanControllerSpec extends UnitSpec with MockitoSugar with BeforeAn
 
   "Sending a submission to the TenYearPlanController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(TenYearPlanControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

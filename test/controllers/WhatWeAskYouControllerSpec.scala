@@ -18,34 +18,18 @@ package controllers
 
 import java.net.URLEncoder
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.EnrolmentConnector
-import controllers.helpers.FakeRequestHelper
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
+import helpers.ControllerSpec
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
-import scala.concurrent.Future
+class WhatWeAskYouControllerSpec extends ControllerSpec {
 
-class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication with FakeRequestHelper {
-
-  object WhatWeAskYouControllerTest extends WhatWeAskYouController {
+  object TestController extends WhatWeAskYouController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  private def mockEnrolledRequest = when(WhatWeAskYouControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(WhatWeAskYouControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  implicit val hc = HeaderCarrier()
 
   "WhatWeAskYouController" should {
     "use the correct auth connector" in {
@@ -55,8 +39,8 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Sending a GET request to WhatWeAskYouController when authenticated and enrolled" should {
     "return a 200" in {
-      mockEnrolledRequest
-      showWithSessionAndAuth(WhatWeAskYouControllerTest.show)(
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -65,8 +49,8 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Posting to the WhatWeAskYouController when authenticated and enrolled" should {
     "redirect to 'What we'll ask you' page" in {
-      mockEnrolledRequest
-      submitWithSessionAndAuth(WhatWeAskYouControllerTest.submit)(
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/taxpayer-reference")
@@ -77,11 +61,11 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Sending a request with no session to WhatWeAskYouController" should {
     "return a 303" in {
-      status(WhatWeAskYouControllerTest.show(fakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(WhatWeAskYouControllerTest.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -92,7 +76,7 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
     }
 
     s"should redirect to GG login" in {
-      redirectLocation(WhatWeAskYouControllerTest.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
         URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -100,30 +84,30 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
   "Sending a timed-out request to WhatWeAskYouController" should {
 
     "return a 303 in" in {
-      status(WhatWeAskYouControllerTest.show(timedOutFakeRequest)) shouldBe SEE_OTHER
+      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to timeout page" in {
-      redirectLocation(WhatWeAskYouControllerTest.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
+      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
     }
   }
 
   "Sending a request to WhatWeAskYouController when NOT enrolled" should {
     "return a 303 in" in {
-      mockNotEnrolledRequest
-      status(WhatWeAskYouControllerTest.show(authorisedFakeRequest)) shouldBe SEE_OTHER
+      mockNotEnrolledRequest()
+      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
     }
 
     s"should redirect to Subscription Servicec" in {
-      mockNotEnrolledRequest
-      redirectLocation(WhatWeAskYouControllerTest.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+      mockNotEnrolledRequest()
+      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
     }
   }
 
   "Sending a submission to the WhatWeAskYouController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(WhatWeAskYouControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -137,7 +121,7 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
   "Sending a submission to the WhatWeAskYouController with no session" should {
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(WhatWeAskYouControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -150,7 +134,7 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Sending a submission to the WhatWeAskYouController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(WhatWeAskYouControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -161,8 +145,8 @@ class WhatWeAskYouControllerSpec extends UnitSpec with MockitoSugar with WithFak
 
   "Sending a submission to the WhatWeAskYouController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(WhatWeAskYouControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

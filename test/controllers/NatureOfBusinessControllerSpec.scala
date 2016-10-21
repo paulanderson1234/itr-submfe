@@ -17,62 +17,30 @@
 package controllers
 
 import java.net.URLEncoder
-import java.util.UUID
 
-import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import builders.SessionBuilder
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
-import controllers.helpers.FakeRequestHelper
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import play.api.libs.json.Json
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
-import uk.gov.hmrc.play.test.UnitSpec
-import org.scalatest.mock.MockitoSugar
 
 import scala.concurrent.Future
 
-class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with FakeRequestHelper{
+class NatureOfBusinessControllerSpec extends ControllerSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  object NatureOfBusinessControllerTest extends NatureOfBusinessController {
+  object TestController extends NatureOfBusinessController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val keyStoreConnector: KeystoreConnector = mockKeyStoreConnector
-    override lazy val enrolmentConnector = mock[EnrolmentConnector]
-  }
-
-  private def mockEnrolledRequest = when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-
-  private def mockNotEnrolledRequest = when(NatureOfBusinessControllerTest.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(None))
-
-  val natureOfBusinessAsJson = """{"day": 23,"month": 11, "year": 1993}"""
-
-  val model = NatureOfBusinessModel("some text")
-  val emptyModel = NatureOfBusinessModel("")
-  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(model)))
-  val keyStoreSavedNatureOfBusiness = NatureOfBusinessModel("text some other")
-
-  implicit val hc = HeaderCarrier()
-
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "NatureOfBusinessController" should {
     "use the correct keystore connector" in {
-      NatureOfBusinessController.keyStoreConnector shouldBe KeystoreConnector
+      NatureOfBusinessController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
       NatureOfBusinessController.authConnector shouldBe FrontendAuthConnector
@@ -82,23 +50,23 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
   }
 
+  def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
+    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(natureOfBusinessModel))
+
   "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
-      mockEnrolledRequest
-      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
+      setupMocks(Some(natureOfBusinessModel))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      mockEnrolledRequest
-      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
+      setupMocks()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -106,11 +74,9 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a GET request to NatureOfBusinessController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      when(mockKeyStoreConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedNatureOfBusiness)))
-      mockNotEnrolledRequest
-      showWithSessionAndAuth(NatureOfBusinessControllerTest.show)(
+      setupMocks(Some(natureOfBusinessModel))
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -121,7 +87,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending an Unauthenticated request with a session to NatureOfBusinessController" should {
     "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(NatureOfBusinessControllerTest.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -134,7 +100,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a request with no session to NatureOfBusinessController" should {
     "return a 302 and redirect to GG login" in {
-      showWithoutSession(NatureOfBusinessControllerTest.show())(
+      showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -147,7 +113,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a timed-out request to NatureOfBusinessController" should {
     "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(NatureOfBusinessControllerTest.show())(
+      showWithTimeout(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -158,10 +124,10 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "natureofbusiness" -> "some text so it's valid"
 
-      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
@@ -172,10 +138,10 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest
+      mockEnrolledRequest()
       val formInput = "natureofbusiness" -> ""
 
-      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -187,7 +153,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
   "Sending a submission to the NatureOfBusinessController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(NatureOfBusinessControllerTest.submit)(
+      submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -198,7 +164,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
     }
 
     "redirect to the GG login page with no session" in {
-      submitWithoutSession(NatureOfBusinessControllerTest.submit)(
+      submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
@@ -211,7 +177,7 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a submission to the NatureOfBusinessController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(NatureOfBusinessControllerTest.submit)(
+      submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
@@ -222,8 +188,8 @@ class NatureOfBusinessControllerSpec extends UnitSpec with MockitoSugar with Bef
 
   "Sending a submission to the NatureOfBusinessController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      submitWithSessionAndAuth(NatureOfBusinessControllerTest.submit)(
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

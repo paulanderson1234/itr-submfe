@@ -16,79 +16,50 @@
 
 package views
 
-import java.util.UUID
-
-import auth.{Enrolment, Identifier, MockAuthConnector}
-import builders.SessionBuilder
-import common.{Constants, KeystoreKeys}
+import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{InvestmentGrowController, routes}
-import controllers.helpers.FakeRequestHelper
 import models._
 import org.jsoup.Jsoup
-import org.scalatest.BeforeAndAfterEach
-import org.scalatest.mock.MockitoSugar
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach {
+class InvestmentGrowSpec extends ViewSpec {
 
-  val mockKeyStoreConnector = mock[KeystoreConnector]
-
-  val investmentGrowModel = InvestmentGrowModel("It will help me to buy tobacco growing facilities")
-  val emptyInvestmentGrowModel = InvestmentGrowModel("")
-  val newGeoModelYes = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
-  val newGeoModelNo = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue)
-  val newProductModelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
-  val newProductModelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
-
-  class SetupPage {
-    val controller = new InvestmentGrowController {
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector : KeystoreConnector = mockKeyStoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends InvestmentGrowController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockKeyStoreConnector)
-  }
-
-  def setup(investmentGrowModel: Option[InvestmentGrowModel], newGeographicalMarketModel: Option[NewGeographicalMarketModel],
-            newProductModel: Option[NewProductModel], backLink: Option[String]): Unit = {
-    when(mockKeyStoreConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any()))
+  def setupMocks(investmentGrowModel: Option[InvestmentGrowModel] = None, newGeographicalMarketModel: Option[NewGeographicalMarketModel] = None,
+                 newProductModel: Option[NewProductModel] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(investmentGrowModel))
-    when(mockKeyStoreConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
-    when(mockKeyStoreConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(newGeographicalMarketModel))
+    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(newProductModel))
   }
 
   "The InvestmentGrow Page" should {
 
-    "Verify that the correct elements are loaded when coming from ProposedInvestment page" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from WhatWillUse page" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel),backLink = Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -105,16 +76,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when coming from PreviousBeforeDOFCS page" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from PreviousBeforeDOFCS page" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.PreviousBeforeDOFCSController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST
-        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
-
+        setupMocks(investmentGrowModel = Some(investmentGrowModel),backLink = Some(routes.PreviousBeforeDOFCSController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -130,15 +97,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when coming from NewProduct page" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from NewProduct page" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.NewProductController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST
-        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.NewProductController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -154,15 +118,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when coming from the SubsidiariesSpendingInvestment page)" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from the SubsidiariesSpendingInvestment page)" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.SubsidiariesSpendingInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST
-        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.SubsidiariesSpendingInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -179,15 +140,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
     }
 
 
-    "Verify that the correct elements are loaded when coming from the SubsidiariesNinetyOwned page" in new SetupPage {
+    "Verify that the correct elements are loaded when coming from the SubsidiariesNinetyOwned page" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.SubsidiariesNinetyOwnedController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST
-        ("investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.SubsidiariesNinetyOwnedController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -203,16 +161,13 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is true" in new SetupPage{
+    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is true" in new Setup{
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelYes),Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),
+          Some(newProductMarketModelYes),Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -233,16 +188,13 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is false" in new SetupPage{
+    "Verify that the correct elements are loaded when hasGeoMarket is true and hasNewProduct is false" in new Setup{
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelYes),Some(newProductModelNo),Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),
+          Some(newProductMarketModelNo),Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -262,16 +214,13 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is true" in new SetupPage{
+    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is true" in new Setup{
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelYes),Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelNo),
+          Some(newProductMarketModelYes),Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -291,16 +240,13 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is false" in new SetupPage{
+    "Verify that the correct elements are loaded when hasGeoMarket is false and hasNewProduct is false" in new Setup{
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),Some(newGeoModelNo),Some(newProductModelNo),Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(Some(investmentGrowModel),Some(newGeographicalMarketModelNo),
+          Some(newProductMarketModelNo),Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -317,16 +263,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "Verify that the correct elements are loaded when newGeoMarket is not defined and hasNewProduct is not defined" in new SetupPage{
+    "Verify that the correct elements are loaded when newGeoMarket is not defined and hasNewProduct is not defined" in new Setup{
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> "It will help me to buy tobacco growing facilities"
-        ))
+        setupMocks(investmentGrowModel = Some(investmentGrowModel), backLink = Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")
@@ -343,16 +285,12 @@ class InvestmentGrowSpec extends UnitSpec with WithFakeApplication with MockitoS
       document.getElementById("labelTextId").hasClass("visuallyhidden")
     }
 
-    "show an error no data entered" in new SetupPage {
+    "show an error no data entered" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        setup(Some(investmentGrowModel),None,None,Some(routes.ProposedInvestmentController.show().url))
-        val result = controller.submit.apply(authorisedFakeRequestToPOST(
-          "investmentGrowDesc" -> ""
-        ))
+        setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       document.title() shouldBe Messages("page.investment.InvestmentGrow.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
       document.getElementById("description-one").text() shouldBe Messages("page.investment.InvestmentGrow.example.text")

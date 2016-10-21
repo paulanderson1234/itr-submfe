@@ -19,7 +19,7 @@ package controllers
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import forms.RegisteredAddressForm._
 import models.RegisteredAddressModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,7 +30,7 @@ import scala.concurrent.Future
 
 object RegisteredAddressController extends RegisteredAddressController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,10 +38,10 @@ object RegisteredAddressController extends RegisteredAddressController
 
 trait RegisteredAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress).map {
+    s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress).map {
       case Some(data) => Ok(companyDetails.RegisteredAddress(registeredAddressForm.fill(data)))
       case None => Ok(companyDetails.RegisteredAddress(registeredAddressForm))
     }
@@ -53,7 +53,7 @@ trait RegisteredAddressController extends FrontendController with AuthorisedAndE
         Future.successful(BadRequest(companyDetails.RegisteredAddress(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.registeredAddress, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.registeredAddress, validFormData)
         Future.successful(Redirect(routes.DateOfIncorporationController.show))
       }
     )

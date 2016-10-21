@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{CommercialSaleModel, KiProcessingModel}
@@ -29,7 +29,7 @@ import views.html.companyDetails.CommercialSale
 import scala.concurrent.Future
 
 object CommercialSaleController extends CommercialSaleController {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -37,10 +37,10 @@ object CommercialSaleController extends CommercialSaleController {
 
 trait CommercialSaleController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
+    s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
       case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
       case None => Ok(CommercialSale(commercialSaleForm))
     }
@@ -57,7 +57,7 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
             Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
           }
           else {
-            keyStoreConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
         }
@@ -70,9 +70,9 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(CommercialSale(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
         for {
-          model <- keyStoreConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          model <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           route <- routeRequest(model)
         } yield route
       }

@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, KeystoreConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.TaxpayerReferenceModel
@@ -30,7 +30,7 @@ import views.html.companyDetails.TaxpayerReference
 
 object TaxpayerReferenceController extends TaxpayerReferenceController
 {
-  val keyStoreConnector: KeystoreConnector = KeystoreConnector
+  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,10 +38,10 @@ object TaxpayerReferenceController extends TaxpayerReferenceController
 
 trait TaxpayerReferenceController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
-  val keyStoreConnector: KeystoreConnector
+  val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    keyStoreConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference).map {
+    s4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference).map {
       case Some(data) => Ok(TaxpayerReference(taxPayerReferenceForm.fill(data)))
       case None => Ok(TaxpayerReference(taxPayerReferenceForm))
     }
@@ -53,7 +53,7 @@ trait TaxpayerReferenceController extends FrontendController with AuthorisedAndE
         Future.successful(BadRequest(TaxpayerReference(formWithErrors)))
       },
       validFormData => {
-        keyStoreConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.taxpayerReference, validFormData)
         Future.successful(Redirect(routes.RegisteredAddressController.show()))
       }
     )

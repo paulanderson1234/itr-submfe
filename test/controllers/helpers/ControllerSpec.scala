@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-package controllers.Helpers
+package controllers.helpers
 
-import auth.TAVCUser
+import auth.{Enrolment, Identifier}
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-object ControllerHelpers extends ControllerHelpers {
+trait ControllerSpec extends BaseSpec {
 
-}
+  def mockEnrolledRequest(): Unit = when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
 
-trait ControllerHelpers {
+  def mockNotEnrolledRequest(): Unit = when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    .thenReturn(Future.successful(None))
 
-  def getSavedBackLink(keystoreKey: String, s4lConnector: connectors.S4LConnector)
-                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[String]] = {
-    s4lConnector.fetchAndGetFormData[String](keystoreKey).flatMap {
-      case Some(data) => Future.successful(Some(data))
-      case None => Future.successful(None)
-    }
-  }
+  implicit val hc = HeaderCarrier()
+
 
 }

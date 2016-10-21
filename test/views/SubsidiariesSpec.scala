@@ -14,89 +14,51 @@
  * limitations under the License.
  */
 
-/*
- * Copyright 2016 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package views
 
-import auth.{Enrolment, Identifier, MockAuthConnector}
+import auth.MockAuthConnector
 import config.FrontendAppConfig
-import connectors.{EnrolmentConnector, KeystoreConnector}
 import controllers.{SubsidiariesController, routes}
-import controllers.helpers.FakeRequestHelper
 import models.SubsidiariesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import java.util.UUID
-
 import common.{Constants, KeystoreKeys}
-import org.scalatest.BeforeAndAfterEach
-import org.scalatestplus.play.OneServerPerSuite
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with BeforeAndAfterEach with OneServerPerSuite {
+class SubsidiariesSpec extends ViewSpec {
 
-  val mockKeystoreConnector = mock[KeystoreConnector]
-
-  val subsidiariesModelYes = new SubsidiariesModel(Constants.StandardRadioButtonYesValue)
-  val subsidiariesModelNo = new SubsidiariesModel(Constants.StandardRadioButtonNoValue)
-
-  class SetupPage {
-
-    val controller = new SubsidiariesController {
-      override lazy val applicationConfig = FrontendAppConfig
-      override lazy val authConnector = MockAuthConnector
-      val keyStoreConnector: KeystoreConnector = mockKeystoreConnector
-      override lazy val enrolmentConnector = mock[EnrolmentConnector]
-    }
-
-    when(controller.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+  object TestController extends SubsidiariesController {
+    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  override def beforeEach() {
-    reset(mockKeystoreConnector)
+  def setupMocks(subsidiariesModel: Option[SubsidiariesModel] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(subsidiariesModel))
+    when(mockS4lConnector.fetchAndGetFormData[String]
+      (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
   }
 
   "The Subsidiaries page" should {
 
     "Verify the Subsidiaries page contains the correct elements when a valid 'Yes' SubsidiariesModel is retrieved" +
-      "from keystore and IsKnowledgeIntensiveController backlink also retrieved" in new SetupPage {
+      "from keystore and IsKnowledgeIntensiveController back link also retrieved" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(subsidiariesModelYes)))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
-        ))
+        setupMocks(Some(subsidiariesModelYes),Some(routes.IsKnowledgeIntensiveController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       // Back link should change based saved backlink retrieved from keystore (IsKnowledgeIntensiveController in this test)
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -108,23 +70,15 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify the Subsidiaries page contains the correct elements when a valid 'Yes' SubsidiariesModel is retrieved" +
-      "from keystore and PercentageStaffWithMastersController backlink also retrieved" in new SetupPage {
+      "from keystore and PercentageStaffWithMastersController back link also retrieved" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.PercentageStaffWithMastersController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(subsidiariesModelYes)))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
-        ))
+        setupMocks(Some(subsidiariesModelYes), Some(routes.PercentageStaffWithMastersController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       // Back link should change based saved backlink retrieved from keystore (IsKnowledgeIntensiveController in this test)
       document.body.getElementById("back-link").attr("href") shouldEqual
-        routes.PercentageStaffWithMastersController.show().toString()
+        routes.PercentageStaffWithMastersController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -136,21 +90,12 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify the Subsidiaries page contains the correct elements when a valid 'No' SubsidiariesModel is retrieved" +
-      "from keystore and TenYearPlanController backlink also retrieved" in new SetupPage {
+      "from keystore and TenYearPlanController back link also retrieved" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.TenYearPlanController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
-        ))
+        setupMocks(Some(subsidiariesModelYes), Some(routes.TenYearPlanController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       // Back link should change based saved backlink retrieved from keystore (TenYearPlanController in this test)
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show().toString
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
@@ -164,21 +109,12 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify the Subsidiaries page contains the correct elements when a valid 'No' SubsidiariesModel is retrieved" +
-      "from keystore and CommercialSaleController backlink also retrieved" in new SetupPage {
+      "from keystore and CommercialSaleController back link also retrieved" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(subsidiariesModelNo)))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
-          "ownSubsidiaries" -> Constants.StandardRadioButtonYesValue
-        ))
+        setupMocks(Some(subsidiariesModelNo), Some(routes.CommercialSaleController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-
       // Back link should change based saved backlink retrieved from keystore (CommercialSaleController in this test)
       document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
@@ -192,23 +128,16 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify that Subsidiaries page contains the correct elements when an empty model " +
-      "is passed because nothing was returned from keystore" in new SetupPage {
+      "is passed because nothing was returned from keystore" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.CommercialSaleController.show().toString())))
-        when(mockKeystoreConnector.fetchAndGetFormData[SubsidiariesModel]
-          (Matchers.eq(KeystoreKeys.subsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
-        val result = controller.show.apply(authorisedFakeRequestToPOST(
+        setupMocks(backLink = Some(routes.CommercialSaleController.show().url))
+        val result = TestController.show.apply(authorisedFakeRequestToPOST(
           "ownSubsidiaries" -> Constants.StandardRadioButtonNoValue
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       // Back link should change based on the value of date of incorporation retrieved from keystore
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.Subsidiaries.heading")
       document.select("#subsidiaries-yes").size() shouldBe 1
@@ -220,44 +149,36 @@ class SubsidiariesSpec extends UnitSpec with WithFakeApplication with MockitoSug
     }
 
     "Verify that Subsidiaries page shows the error summary and has the correct back link when " +
-      " an invalid model (no radio button selection) is submitted" in new SetupPage {
+      " an invalid model (no radio button selection) is submitted" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(Option(routes.IsKnowledgeIntensiveController.show().toString())))
+        setupMocks(backLink = Some(routes.IsKnowledgeIntensiveController.show().url))
         //submit the model with no radio selected as a post action
-        val result = controller.submit.apply(authorisedFakeRequestToPOST(
+        val result = TestController.submit.apply(authorisedFakeRequestToPOST(
           "subsidiaries" -> ""
         ))
         Jsoup.parse(contentAsString(result))
       }
-
       // Make sure we have the expected error summary displayed and correct backv link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
     }
 
     // this should never happen but defensive code is present so test it..
     "Verify that Subsidiaries page shows the error summary and has a default 'date of incorporation' back link when " +
-      "no backlink is retrieved and an invalid model (no radio button selection) is submitted" in new SetupPage {
+      "no back link is retrieved and an invalid model (no radio button selection) is submitted" in new Setup {
       val document: Document = {
-        val userId = s"user-${UUID.randomUUID}"
-        when(mockKeystoreConnector.fetchAndGetFormData[String]
-          (Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any()))
-          .thenReturn(Future.successful(None))
+        setupMocks()
         //submit the model with no radio selected as a post action
-        val result = controller.submit.apply(authorisedFakeRequestToPOST(
+        val result = TestController.submit.apply(authorisedFakeRequestToPOST(
           "subsidiaries" -> ""
         ))
         Jsoup.parse(contentAsString(result))
       }
-
-      // Make sure we have the expected error summary displayed and correct backv link rendered on error
+      // Make sure we have the expected error summary displayed and correct back link rendered on error
       document.getElementById("error-summary-display").hasClass("error-summary--show")
       document.title() shouldBe Messages("page.companyDetails.Subsidiaries.title")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().toString()
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
     }
 
   }
