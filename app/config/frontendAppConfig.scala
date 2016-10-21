@@ -37,8 +37,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
 
-  private val contactFrontendService = baseUrl("contact-frontend")
-
   override lazy val assetsPrefix = loadConfig(s"assets.url") + loadConfig(s"assets.version")
   override lazy val analyticsToken = loadConfig(s"google-analytics.token")
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
@@ -47,6 +45,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val introductionUrl: String = configuration.getString(s"introduction.url").getOrElse("")
   override lazy val subscriptionUrl: String = loadConfig("investment-tax-relief-subscription.url")
 
+  private val contactFrontendService = baseUrl("contact-frontend")
   override val contactFormServiceIdentifier = "TAVC"
   override lazy val contactFrontendPartialBaseUrl = s"$contactFrontendService"
   override lazy val reportAProblemPartialUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
