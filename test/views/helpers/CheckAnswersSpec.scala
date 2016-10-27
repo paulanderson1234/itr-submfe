@@ -25,9 +25,12 @@ import scala.concurrent.Future
 
 trait CheckAnswersSpec extends ViewSpec {
 
-  def previousRFISetup(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
+  def previousRFISetup(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None,
+                       previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(hadPreviousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemes))
   }
 
   def investmentSetup(proposedInvestmentModel: Option[ProposedInvestmentModel] = None,

@@ -429,9 +429,11 @@ page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
 page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
 page.previousInvestment.schemeType.vct=Venture Capital Trust
 page.previousInvestment.schemeType.other=Another scheme
-page.investment.amount.label=Investment amount raised
-page.investment.amountSpent.label=How much of the investment have you spent?
-page.investment.dateOfShareIssue.label=Date of share issue
+page.investment.amount.label=Amount raised:
+page.investment.amountSpent.label=Amount spent:
+page.investment.dateOfShareIssue.label=Date of share issue:
+page.summaryQuestion.none.question=Previous schemes
+page.summaryQuestion.none.answer=None
 
 #summary questions section three
 page.summaryQuestion.companyDetailsSectionThree=Section 3: This investment
