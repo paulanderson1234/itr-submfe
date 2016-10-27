@@ -17,7 +17,7 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
@@ -46,10 +46,13 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
 
-        s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
-          case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), backUrl.get))
-          case None => Ok(Subsidiaries(subsidiariesForm, backUrl.get))
-        }
+//        s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries) map {
+//          case Some(data) => Ok(companyDetails.Subsidiaries(subsidiariesForm.fill(data), backUrl.get))
+//          case None => Ok(Subsidiaries(subsidiariesForm, backUrl.get))
+//        }
+        // DEFAULT VALUE TO NO AND REDIRECT TO NEXT PAGE
+        s4lConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, SubsidiariesModel(Constants.StandardRadioButtonNoValue))
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
       else {
         // no back link - user skipping - redirect to start of flow point
@@ -64,14 +67,17 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    subsidiariesForm.bindFromRequest.fold(
-      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
-        .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.
-          getOrElse(routes.DateOfIncorporationController.show().toString))))),
-      validForm => {
-        s4lConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
-        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-      }
-    )
+//    subsidiariesForm.bindFromRequest.fold(
+//      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
+//        .flatMap(url => Future.successful(BadRequest(companyDetails.Subsidiaries(invalidForm, url.
+//          getOrElse(routes.DateOfIncorporationController.show().toString))))),
+//      validForm => {
+//        s4lConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, validForm)
+//        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+//      }
+//    )
+    // DEFAULT VALUE TO NO AND REDIRECT TO NEXT PAGE
+    s4lConnector.saveFormData[SubsidiariesModel](KeystoreKeys.subsidiaries, SubsidiariesModel(Constants.StandardRadioButtonNoValue))
+    Future.successful(Redirect(routes.HadPreviousRFIController.show()))
   }
 }
