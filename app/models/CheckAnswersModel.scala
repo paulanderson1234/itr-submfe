@@ -29,6 +29,7 @@ case class CheckAnswersModel(
                               tenYearPlanModel: Option[TenYearPlanModel],
                               subsidiariesModel: Option[SubsidiariesModel],
                               hadPreviousRFIModel: Option[HadPreviousRFIModel],
+                              previousSchemes: Vector[PreviousSchemeModel],
                               proposedInvestmentModel: Option[ProposedInvestmentModel],
                               usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
                               previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
@@ -39,4 +40,3 @@ case class CheckAnswersModel(
                               contactDetailsModel: Option[ContactDetailsModel],
                               investmentGrowModel: Option[InvestmentGrowModel]
                               )
-

@@ -16,8 +16,10 @@
 
 package models
 
+import play.api.i18n.Messages
 import play.api.libs.json.Json
 import utils.{CostFormatter, DateFormatter}
+import common.Constants
 
 case class PreviousSchemeModel (schemeTypeDesc : String,
                                 investmentAmount : Int,
@@ -29,8 +31,32 @@ case class PreviousSchemeModel (schemeTypeDesc : String,
                                 processingId: Option[Int]
                                )
 
-object PreviousSchemeModel extends DateFormatter with CostFormatter{
+object PreviousSchemeModel extends DateFormatter with CostFormatter {
   implicit val format = Json.format[PreviousSchemeModel]
   implicit val writes = Json.writes[PreviousSchemeModel]
+
+  def toArrayString(previousSchemeModel: PreviousSchemeModel): Array[String] = {
+    val investmentSpent = s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemeModel.investmentAmount)}"
+    val investmentAmount = if(previousSchemeModel.investmentSpent.isDefined)
+      s"${Messages("page.investment.amountSpent.label")} ${getAmountAsFormattedString(previousSchemeModel.investmentSpent.get)}" else ""
+    val dateOfIssue = if(previousSchemeModel.day.isDefined && previousSchemeModel.month.isDefined && previousSchemeModel.year.isDefined)
+      s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemeModel.day.get,previousSchemeModel.month.get,
+        previousSchemeModel.year.get)}" else ""
+    (investmentAmount.isEmpty, dateOfIssue.isEmpty) match {
+      case (true,true) => Array(investmentSpent)
+      case (true,false) =>  Array(investmentSpent,dateOfIssue)
+      case (false,true) => Array(investmentSpent,investmentAmount)
+      case (false,false) => Array(investmentSpent,investmentAmount,dateOfIssue)
+    }
+  }
+
+  def getSchemeName(schemeType: String): String = {
+    schemeType match {
+      case Constants.schemeTypeEis => Messages("page.previousInvestment.schemeType.eis")
+      case Constants.schemeTypeSeis => Messages("page.previousInvestment.schemeType.seis")
+      case Constants.schemeTypeSitr => Messages("page.previousInvestment.schemeType.sitr")
+      case Constants.schemeTypeVct => Messages("page.previousInvestment.schemeType.vct")
+    }
+  }
 
 }
