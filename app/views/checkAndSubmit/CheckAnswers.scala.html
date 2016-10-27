@@ -22,19 +22,11 @@
             @tableHeaderHelper("companyDetailsSection",Messages("summaryQuestion.companyDetailsSection"))
             <!-- Data Rows-->
             <tbody>
-            <!-- Company Name-->
-            @textRowHelperBasic("companyName", Messages("summaryQuestion.companyName"),Messages("common.notAvailable"), Some(controllers.routes.IntroductionController.show().toString))
-            <!-- Company UTR-->
-            @if(checkAnswersModel.taxpayerReferenceModel.isDefined){
-                @textRowHelperBasic("utr", Messages("summaryQuestion.utr"),checkAnswersModel.taxpayerReferenceModel.get.utr, Some(controllers.routes.TaxpayerReferenceController.show().toString))
+            <!-- Nature Of Business -->
+            @if(checkAnswersModel.natureOfBusinessModel.isDefined){
+                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.routes.NatureOfBusinessController.show().toString))
             }else{
-                @textRowHelperBasic("utr", Messages("summaryQuestion.utr"),Messages("common.notAvailable"), Some(controllers.routes.TaxpayerReferenceController.show().toString))
-            }
-            <!-- Company Registered Address-->
-            @if(checkAnswersModel.registeredAddressModel.isDefined){
-                @textRowHelperBasic("registeredAddress", Messages("summaryQuestion.registeredAddress"), checkAnswersModel.registeredAddressModel.get.postcode,Some(controllers.routes.RegisteredAddressController.show().toString))
-            }else{
-                @textRowHelperBasic("registeredAddress", Messages("summaryQuestion.registeredAddress"), Messages("common.notAvailable"),Some(controllers.routes.RegisteredAddressController.show().toString))
+                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"), Messages("common.notAvailable"), Some(controllers.routes.NatureOfBusinessController.show().toString))
             }
             <!-- Date of Incorporation -->
             @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
@@ -43,18 +35,6 @@
                 }
             }else{
                 @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), Messages("common.notAvailable"), Some(controllers.routes.DateOfIncorporationController.show().toString))
-            }
-            <!-- Nature Of Business -->
-            @if(checkAnswersModel.natureOfBusinessModel.isDefined){
-                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.routes.NatureOfBusinessController.show().toString))
-            }else{
-                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"), Messages("common.notAvailable"), Some(controllers.routes.NatureOfBusinessController.show().toString))
-            }
-            <!-- Has made Commercial Sale -->
-            @if(checkAnswersModel.commercialSaleModel.isDefined){
-                @textRowHelperBasic("hasCommercialSale", Messages("summaryQuestion.hasCommercialSale"),checkAnswersModel.commercialSaleModel.get.hasCommercialSale, Some(controllers.routes.CommercialSaleController.show().toString))
-            }else{
-                @textRowHelperBasic("hasCommercialSale", Messages("summaryQuestion.hasCommercialSale"),  Messages("common.notAvailable"), Some(controllers.routes.CommercialSaleController.show().toString))
             }
             <!-- Date of First Commercial Sale -->
             @if(checkAnswersModel.commercialSaleModel.isDefined){
@@ -94,27 +74,18 @@
                     <!-- Percentage of Staff with Masters -->
                     @if(checkAnswersModel.percentageStaffWithMastersModel.isDefined){
                        @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
+                        <!--Ten Year Plan-->
+                        @if(checkAnswersModel.tenYearPlanModel.isDefined && checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters == Messages("common.radioNoLabel")){
+                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.tenYearPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
+                            @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan == Messages("common.radioYesLabel")){
+                                <!--Ten Year Plan Desc-->
+                                @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.tenYearPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
+                            }
+                        }
                     }else{
                        @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), Messages("common.notAvailable"), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                     }
-                    <!--Ten Year Plan-->
-                    @if(checkAnswersModel.tenYearPlanModel.isDefined){
-                       @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.tenYearPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
-                        @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan == Messages("common.radioYesLabel")){
-                            <!--Ten Year Plan Desc-->
-                           @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.tenYearPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
-                        }
-                    }else{
-                       @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.tenYearPlan"), Messages("common.notAvailable"), Some(controllers.routes.TenYearPlanController.show().toString))
-                    }
-
                 }
-            }
-            <!--Subsidiaries-->
-            @if(checkAnswersModel.subsidiariesModel.isDefined){
-               @textRowHelperBasic("subsidiaries", Messages("summaryQuestion.subsidiaries"), checkAnswersModel.subsidiariesModel.get.ownSubsidiaries, Some(controllers.routes.SubsidiariesController.show().toString))
-            }else{
-               @textRowHelperBasic("subsidiaries", Messages("summaryQuestion.subsidiaries"), Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesController.show().toString))
             }
 
             </tbody>
@@ -163,18 +134,6 @@
             @textRowHelperBasic("newProduct", Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.routes.NewProductController.show().toString))
             }else{
             @textRowHelperBasic("newProduct", Messages("page.summaryQuestion.newProduct"),  Messages("common.notAvailable"), Some(controllers.routes.NewProductController.show().toString))
-            }
-            <!-- Subsidiaries Spending Investment page-->
-            @if(checkAnswersModel.subsidiariesSpendingInvestmentModel.isDefined){
-            @textRowHelperBasic("subsSpendingInvest", Messages("page.summaryQuestion.subsSpendingInvest"), checkAnswersModel.subsidiariesSpendingInvestmentModel.get.subSpendingInvestment, Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
-            }else{
-            @textRowHelperBasic("subsSpendingInvest", Messages("page.summaryQuestion.subsSpendingInvest"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesSpendingInvestmentController.show().toString))
-            }
-            <!-- Subsidiaries 90% Owned page-->
-            @if(checkAnswersModel.subsidiariesNinetyOwnedModel.isDefined){
-            @textRowHelperBasic("subNinetyOwned", Messages("page.summaryQuestion.subNinetyOwned"), checkAnswersModel.subsidiariesNinetyOwnedModel.get.ownNinetyPercent, Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
-            }else{
-            @textRowHelperBasic("subNinetyOwned", Messages("page.summaryQuestion.subNinetyOwned"),  Messages("common.notAvailable"), Some(controllers.routes.SubsidiariesNinetyOwnedController.show().toString))
             }
             <!-- Investment Grow page-->
             @if(checkAnswersModel.investmentGrowModel.isDefined){

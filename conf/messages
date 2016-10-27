@@ -388,7 +388,7 @@ page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
 page.checkAndSubmit.checkAnswers.bullet.two=company accounts, or a cash flow forecast if you''ve not yet submitted any accounts
 
 #summaryQuestions
-summaryQuestion.companyDetailsSection =Section 1: Company details
+summaryQuestion.companyDetailsSection =Section 1: Business details
 summaryQuestion.companyName =Company name
 summaryQuestion.utr =Company Unique Taxpayer Reference
 summaryQuestion.registeredAddress =Registered address

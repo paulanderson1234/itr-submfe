@@ -96,28 +96,12 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       investmentTableTbody.select("tr").get(4).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
-      // subsidiaries spending investment
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-question").text() shouldBe
-        Messages("page.summaryQuestion.subsSpendingInvest")
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-answer").text() shouldBe
-        subsidiariesSpendingInvestmentModelYes.subSpendingInvestment
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-link")
-        .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
-
-      // 90% owned
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-question").text() shouldBe
-        Messages("page.summaryQuestion.subNinetyOwned")
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-answer").text() shouldBe
-        subsidiariesNinetyOwnedModelNo.ownNinetyPercent
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-link")
-        .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
-
       // investment Grow
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-question").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-question").text() shouldBe
         Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-answer").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-answer").text() shouldBe
         investmentGrowModel.investmentGrowDesc
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-link")
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-link")
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
     }
   }
@@ -177,25 +161,11 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       investmentTableTbody.select("tr").get(4).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
-      // subsidiaries spending investment
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-question").text() shouldBe
-        Messages("page.summaryQuestion.subsSpendingInvest")
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(5).getElementById("subsSpendingInvest-link")
-        .attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
-
-      // 90% owned
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-question").text() shouldBe
-        Messages("page.summaryQuestion.subNinetyOwned")
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(6).getElementById("subNinetyOwned-link")
-        .attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
-
       // investment Grow
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-question").text() shouldBe
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-question").text() shouldBe
         Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(7).getElementById("investmentGrow-link")
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-link")
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
     }
   }
