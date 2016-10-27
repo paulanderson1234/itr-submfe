@@ -449,7 +449,8 @@ page.summaryQuestion.investmentGrow=How the investment will help your company gr
 #summary questions section four
 page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact Details
 page.summaryQuestion.name=Name
-page.summaryQuestion.telephone=Telephone number
+page.summaryQuestion.telephone=Landline
+page.summaryQuestion.mobile=Mobile
 page.summaryQuestion.email=Email address
 page.summaryQuestion.contactAddress=Contact address
 
@@ -469,9 +470,10 @@ page.address.country.select = Select one country
 #contact details page
 page.contactInformation.contactDetails.heading=Who should we contact about your application?
 page.contactInformation.contactDetails.title=Contact details
-page.contactInformation.contactDetails.forename.label=Forename
-page.contactInformation.contactDetails.surname.label=Surname
-page.contactInformation.contactDetails.phoneNumber.label=Telephone number
+page.contactInformation.contactDetails.forename.label=First name
+page.contactInformation.contactDetails.surname.label=Last name
+page.contactInformation.contactDetails.phoneNumber.label=Landline(optional)
+page.contactInformation.contactDetails.mobileNumber.label=Mobile(optional)
 page.contactInformation.contactDetails.email.label=Email address
 
 #summary questions section five

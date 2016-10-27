@@ -28,7 +28,7 @@ class TestModelConversionSpec extends UnitSpec{
     postcode = Some("TF1 4NY"), countryCode = "GB")
 
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
-    surname = "Flinsstone", telephoneNumber = "01952 255899", email = "rubble@jurassic.com")
+    surname = "Flinsstone", telephoneNumber = Some("01952 255899"), mobileNumber = None, email = "rubble@jurassic.com")
 
   val schemeTypes :SchemeTypesModel = SchemeTypesModel(eis = true, seis = false, vct = false, sitr = false)
   val testAgentRef = "AARN1234567"

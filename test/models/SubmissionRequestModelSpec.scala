@@ -26,7 +26,7 @@ class SubmissionRequestModelSpec extends UnitSpec {
   // form json to model - unapply
   "call unapply successfully to create as Json" in {
     implicit val formats = Json.format[SubmissionRequest]
-    val cd = ContactDetailsModel("gary", "hull", "01952 256555", "fred@fred.com")
+    val cd = ContactDetailsModel("gary", "hull", Some("01952 256555"), None , "fred@fred.com")
     val yd = YourCompanyNeedModel("AA")
     val sub = new SubmissionRequest(cd, yd)
 
@@ -42,7 +42,7 @@ class SubmissionRequestModelSpec extends UnitSpec {
     val request =  Json.parse(testJson.toString).as[SubmissionRequest]
 
     request.contactDetails.email  shouldBe "fred@fred.com"
-    request.contactDetails.telephoneNumber  shouldBe "01952 256555"
+    request.contactDetails.telephoneNumber.get  shouldBe "01952 256555"
     request.contactDetails.forename  shouldBe "gary"
     request.contactDetails.surname  shouldBe "hull"
     request.yourCompanyNeedModel.needAAorCS  shouldBe "AA"

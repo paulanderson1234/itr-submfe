@@ -32,7 +32,7 @@ class ContactDetailsFormSpec extends UnitSpec {
 
   "Creating a form using a valid model" should {
     "return a form with the data specified in the model" in {
-      val model = ContactDetailsModel("Percy", "Montague", "06472 778833", "1234@email.com")
+      val model = ContactDetailsModel("Percy", "Montague", Some("06472 778833"), None, "1234@email.com")
       val form = contactDetailsForm.fill(model)
       form.data("forename") shouldBe "Percy"
       form.data("surname") shouldBe "Montague"
@@ -80,27 +80,6 @@ class ContactDetailsFormSpec extends UnitSpec {
       }
       "associate the correct error message to the error" in {
         form.error("surname").get.message shouldBe Messages("error.required")
-      }
-    }
-  }
-
-  "Creating a form using an invalid post" when {
-    "supplied with no data for telephoneNumber" should {
-      lazy val form = contactDetailsForm.bind(Map(
-        "forename" -> "Tim",
-        "surname" -> "Roth",
-        "telephoneNumber" -> "",
-        "email" -> "Test@email.com")
-      )
-      "raise form error" in {
-        form.hasErrors shouldBe true
-      }
-      "raise 1 form error" in {
-        form.errors.length shouldBe 1
-        form.errors.head.key shouldBe "telephoneNumber"
-      }
-      "associate the correct error message to the error" in {
-        form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
       }
     }
   }
@@ -160,13 +139,11 @@ class ContactDetailsFormSpec extends UnitSpec {
       "raise form error" in {
         form.hasErrors shouldBe true
       }
-      "raise 2 form errors" in {
-        form.errors.length shouldBe 2
-        form.errors.head.key shouldBe "telephoneNumber"
-        form.errors(1).key shouldBe "email"
+      "raise 1 form errors" in {
+        form.errors.length shouldBe 1
+        form.errors(0).key shouldBe "email"
       }
       "associate the correct error message to the error" in {
-        form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
         form.error("email").get.message shouldBe Messages("validation.error.email")
       }
     }
@@ -183,16 +160,14 @@ class ContactDetailsFormSpec extends UnitSpec {
       "raise form error" in {
         form.hasErrors shouldBe true
       }
-      "raise 3 form errors" in {
-        form.errors.length shouldBe 3
+      "raise 2 form errors" in {
+        form.errors.length shouldBe 2
         form.errors.head.key shouldBe "forename"
         form.errors(1).key shouldBe "surname"
-        form.errors(2).key shouldBe "telephoneNumber"
       }
       "associate the correct error message to the error" in {
         form.error("forename").get.message shouldBe Messages("error.required")
         form.error("surname").get.message shouldBe Messages("error.required")
-        form.error("telephoneNumber").get.message shouldBe Messages("validation.error.telephoneNumber")
       }
     }
   }

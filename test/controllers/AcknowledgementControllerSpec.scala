@@ -34,8 +34,8 @@ import scala.concurrent.Future
 
 class AcknowledgementControllerSpec extends ControllerSpec {
 
-  val contactValid = ContactDetailsModel("Frank", "The Tank", "01384 555678", "email@gmail.com")
-  val contactInvalid = ContactDetailsModel("Frank", "The Tank", "01384 555678", "email@badrequest.com")
+  val contactValid = ContactDetailsModel("Frank", "The Tank", Some("01384 555678"), None, "email@gmail.com")
+  val contactInvalid = ContactDetailsModel("Frank", "The Tank", Some("01384 555678"), None, "email@badrequest.com")
   val yourCompanyNeed = YourCompanyNeedModel("AA")
   val submissionRequestValid = SubmissionRequest(contactValid, yourCompanyNeed)
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)

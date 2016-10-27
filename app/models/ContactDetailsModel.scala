@@ -18,10 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class ContactDetailsModel(forename : String,
-                          surname : String,
-                          telephoneNumber: String,
-                          email : String ) {
+case class ContactDetailsModel(forename : String, surname : String, telephoneNumber: Option[String], mobileNumber: Option[String], email : String ) {
 
   val fullName =  s"$forename $surname"
 }
