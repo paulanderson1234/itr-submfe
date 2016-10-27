@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
@@ -51,9 +51,12 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
-  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hadPreviousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+  }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
@@ -74,7 +77,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
+    "redirect to subscription" in {
       setupMocks(Some(hadPreviousRFIModelYes))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
@@ -126,6 +129,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
       mockEnrolledRequest()
+      setupMocks()
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {

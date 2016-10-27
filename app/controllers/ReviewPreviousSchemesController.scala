@@ -20,10 +20,11 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.PreviousSchemesHelper
+import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import forms.PreviousSchemeForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.previousInvestment.ReviewPreviousSchemes
+import views.html.previousInvestment.{PreviousScheme, ReviewPreviousSchemes}
 
 import scala.concurrent.Future
 
@@ -34,13 +35,27 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
-      Future.successful(Ok(ReviewPreviousSchemes(previousSchemes))))
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap{
+          previousSchemes =>
+            if(previousSchemes.nonEmpty) Future.successful(Ok(ReviewPreviousSchemes(previousSchemes,backUrl.get)))
+            else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+        }
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+      }
+    }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkReviewPreviousSchemes, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
 
   def add: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
