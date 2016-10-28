@@ -124,6 +124,9 @@ POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanc
 
 GET        /annual-turnover-error                   controllers.AnnualTurnoverErrorController.show
 
+GET        /sign-out                                controllers.SignOutController.signout
+GET        /signed-out                              controllers.SignOutController.show
+
 #Feedback routes
 GET         /feedback               controllers.feedback.FeedbackController.show
 POST        /feedback               controllers.feedback.FeedbackController.submit
