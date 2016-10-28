@@ -277,6 +277,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       //Has ten year plan
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-question").text() shouldBe
         Messages("summaryQuestion.developmentPlan")
+
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-answer").text() shouldBe
         tenYearPlanModelYes.hasTenYearPlan
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-link")
@@ -284,6 +285,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       //Ten year plan description
       companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-question").text() shouldBe
         Messages("summaryQuestion.developmentPlanDesc")
+
       companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-answer").text() shouldBe
         tenYearPlanModelYes.tenYearPlanDesc.get
       companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-link")
@@ -436,9 +438,9 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModelNo.staffWithMasters)
       companyDetailsTableTBody.select("tr").get(6).getElementById("percentageStaffWithMasters-link")
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
+
       //Has ten year plan
-      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-question").text() shouldBe
-        Messages("summaryQuestion.developmentPlan")
+      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-question").text() shouldBe Messages("summaryQuestion.developmentPlan")
       companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-answer").text() shouldBe
         tenYearPlanModelNo.hasTenYearPlan
       companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-link")

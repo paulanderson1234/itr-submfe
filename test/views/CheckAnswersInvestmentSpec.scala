@@ -159,6 +159,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
         Messages("page.summaryQuestion.investmentGrow")
       investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
       investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-link")
+
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
     }
   }
