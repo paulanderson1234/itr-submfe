@@ -38,6 +38,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   }
 
   val contactDetailsModel = ContactDetailsModel("Test", "Name", Some("01111 111111"), None, "test@test.com")
+  val confirmContactDetailsModel = ConfirmContactDetailsModel(Constants.StandardRadioButtonYesValue, contactDetailsModel)
 
   val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
     "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
