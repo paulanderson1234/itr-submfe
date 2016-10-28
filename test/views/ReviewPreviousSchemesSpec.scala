@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{ReviewPreviousSchemesController, routes}
 import models.PreviousSchemeModel
@@ -39,16 +40,20 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setupMocks(previousSchemeVectorList: Option[Vector[PreviousSchemeModel]] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+  def setupMocks(previousSchemeVectorList: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(previousSchemeVectorList))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+  }
+
 
   "The Review Previous Schemes Spec page" should {
 
     "Verify that Review Previous Schemes page contains the correct table rows and data " +
       "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new Setup {
       val document: Document = {
-        setupMocks(Some(previousSchemeVectorList))
+        setupMocks(Some(previousSchemeVectorList), Some(routes.PreviousSchemeController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
