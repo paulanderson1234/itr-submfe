@@ -51,11 +51,14 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
-  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None, backLink: Option[String] = None): Unit = {
+  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None, backLink: Option[String] = None,
+                 previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hadPreviousRFIModel))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(previousSchemes))
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
@@ -126,15 +129,31 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
-    "redirect to itself" in {
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
+    "and there are previous enrolments" should {
+    "redirect to review schemes page" in {
+      mockEnrolledRequest()
+      setupMocks(previousSchemes = Some(previousSchemesValid))
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(TestController.submit,formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+        }
+      )
+    }
+  }
+
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
+    "and there are no previous enrolments" should {
+    "redirect to previous scheme page" in {
       mockEnrolledRequest()
       setupMocks()
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+          redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url)
         }
       )
     }
