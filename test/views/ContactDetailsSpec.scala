@@ -56,6 +56,7 @@ class ContactDetailsSpec extends ViewSpec {
       document.getElementById("label-forename").text() shouldBe Messages("page.contactInformation.contactDetails.forename.label")
       document.getElementById("label-surname").text() shouldBe Messages("page.contactInformation.contactDetails.surname.label")
       document.getElementById("label-telephoneNumber").text() shouldBe Messages("page.contactInformation.contactDetails.phoneNumber.label")
+      document.getElementById("label-mobileNumber").text() shouldBe Messages("page.contactInformation.contactDetails.mobileNumber.label")
       document.getElementById("label-email").text() shouldBe Messages("page.contactInformation.contactDetails.email.label")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().url
@@ -73,6 +74,7 @@ class ContactDetailsSpec extends ViewSpec {
       document.getElementById("label-forename").text() contains Messages("page.contactInformation.contactDetails.forename.label")
       document.getElementById("label-surname").text() contains Messages("page.contactInformation.contactDetails.surname.label")
       document.getElementById("label-telephoneNumber").text() contains Messages("page.contactInformation.contactDetails.phoneNumber.label")
+      document.getElementById("label-mobileNumber").text() shouldBe Messages("page.contactInformation.contactDetails.mobileNumber.label")
       document.getElementById("label-email").text() contains Messages("page.contactInformation.contactDetails.email.label")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().url

@@ -20,6 +20,8 @@ import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.{CheckAnswersController, routes}
 import controllers.helpers.FakeRequestHelper
+import models.PreviousSchemeModel
+import models.PreviousSchemeModel._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Mockito._
@@ -41,7 +43,57 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
-      " when an empty set of company detail models are passed" in new Setup {
+      " when a Vector of previous schemes can be retrieved" in new Setup {
+      val document: Document = {
+        previousRFISetup(Some(hadPreviousRFIModelYes), Some(previousSchemesValid))
+        investmentSetup()
+        contactDetailsSetup()
+        companyDetailsSetup()
+        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        Jsoup.parse(contentAsString(result))
+      }
+
+      document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
+      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
+
+      //Section 1 table heading
+      document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
+      //Previous RFI None
+      document.getElementById("previousScheme-0-question").text shouldBe PreviousSchemeModel.getSchemeName(previousSchemesValid(0).schemeTypeDesc)
+      document.getElementById("previousScheme-0-Line0").text shouldBe
+        s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemesValid(0).investmentAmount)}"
+      document.getElementById("previousScheme-0-Line1").text shouldBe
+        s"${Messages("page.investment.amountSpent.label")} ${getAmountAsFormattedString(previousSchemesValid(0).investmentSpent.get)}"
+      document.getElementById("previousScheme-0-Line2").text shouldBe
+        s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(0).day.get,previousSchemesValid(0).month.get,
+          previousSchemesValid(0).year.get)}"
+      document.getElementById("previousScheme-0-link").attr("href") shouldBe routes.ReviewPreviousSchemesController.show().url
+      document.getElementById("previousScheme-1-question").text shouldBe PreviousSchemeModel.getSchemeName(previousSchemesValid(1).schemeTypeDesc)
+      document.getElementById("previousScheme-1-Line0").text shouldBe
+        s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemesValid(1).investmentAmount)}"
+      document.getElementById("previousScheme-1-Line1").text shouldBe
+        s"${Messages("page.investment.amountSpent.label")} ${getAmountAsFormattedString(previousSchemesValid(1).investmentSpent.get)}"
+      document.getElementById("previousScheme-1-Line2").text shouldBe
+        s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(1).day.get,previousSchemesValid(1).month.get,
+          previousSchemesValid(1).year.get)}"
+      document.getElementById("previousScheme-1-link").attr("href") shouldBe routes.ReviewPreviousSchemesController.show().url
+      document.getElementById("previousScheme-2-question").text shouldBe previousSchemesValid(2).otherSchemeName.get
+      document.getElementById("previousScheme-2-Line0").text shouldBe
+        s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemesValid(2).investmentAmount)}"
+      document.getElementById("previousScheme-2-Line1").text shouldBe
+        s"${Messages("page.investment.amountSpent.label")} ${getAmountAsFormattedString(previousSchemesValid(2).investmentSpent.get)}"
+      document.getElementById("previousScheme-2-Line2").text shouldBe
+        s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(2).day.get,previousSchemesValid(2).month.get,
+          previousSchemesValid(2).year.get)}"
+      document.getElementById("previousScheme-2-link").attr("href") shouldBe routes.ReviewPreviousSchemesController.show().url
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
+    }
+
+    "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
+      " when an empty Vector is be retrieved" in new Setup {
       val document: Document = {
         previousRFISetup()
         investmentSetup()
@@ -51,23 +103,17 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
         Jsoup.parse(contentAsString(result))
       }
 
-
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
       document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
-      lazy val previousRfiTableTbody = document.getElementById("previous-rfi-table").select("tbody")
-      lazy val notAvailableMessage = Messages("common.notAvailable")
-
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
       //Previous RFI None
-      previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-subHeading").text() shouldBe
-        notAvailableMessage
-      previousRfiTableTbody.select("tr").get(0).getElementById("emptyPreviousRFISection-link")
-        .attr("href") shouldEqual routes.HadPreviousRFIController.show().url
-
+      document.getElementById("noPreviousScheme-question").text shouldBe Messages("page.summaryQuestion.none.question")
+      document.getElementById("noPreviousScheme-answer").text shouldBe Messages("page.summaryQuestion.none.answer")
+      document.getElementById("noPreviousScheme-link").attr("href") shouldBe routes.HadPreviousRFIController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
     }

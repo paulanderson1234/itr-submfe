@@ -49,6 +49,16 @@
             )
 
             @input(
+            contactDetailsForm("mobileNumber"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-mobileNumber",
+            '_label -> Messages("page.contactInformation.contactDetails.mobileNumber.label"),
+            '_maxlength -> "24",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "mobileNumber"
+            )
+
+            @input(
             contactDetailsForm("email"),
             '_divClass -> "form-label",
             '_labelId -> "label-email",

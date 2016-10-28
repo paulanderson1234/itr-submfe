@@ -4,6 +4,7 @@
 @import views.html.helpers.summary.textRowHelperBasic
 @import views.html.helpers.summary.textRowHelperMultiLine
 @import views.html.helpers.summary.textSubSectionHelper
+@import common.Constants
 
 @(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_])
 
@@ -125,7 +126,15 @@
             @tableHeaderHelper("previousRFISection", Messages("summaryQuestion.previousRFISection"))
             <!-- Data Rows-->
             <tbody>
-           @textSubSectionHelper("emptyPreviousRFISection", Messages("common.notAvailable"),Some(controllers.routes.HadPreviousRFIController.show().toString))
+            @if(checkAnswersModel.previousSchemes.length > 0){
+                @for((previousScheme, index) <- checkAnswersModel.previousSchemes.zipWithIndex){
+                    @textRowHelperMultiLine(s"previousScheme-$index", previousScheme.otherSchemeName.getOrElse(PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)),
+                        PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.routes.ReviewPreviousSchemesController.show().url))
+                }
+            }else{
+                @textRowHelperBasic("noPreviousScheme", Messages("page.summaryQuestion.none.question"), Messages("page.summaryQuestion.none.answer"), Some(controllers.routes.HadPreviousRFIController.show().url))
+            }
+
             </tbody>
         </table>
 
@@ -196,7 +205,11 @@
                 @defining(checkAnswersModel.contactDetailsModel.get) { contactDetails =>
                 <!-- contact details -->
                 @textRowHelperBasic("name", Messages("page.summaryQuestion.name"), contactDetails.fullName, Some(controllers.routes.ContactDetailsController.show().toString))
-                @textRowHelperBasic("telephone", Messages("page.summaryQuestion.telephone"), contactDetails.telephoneNumber, Some(controllers.routes.ContactDetailsController.show().toString))
+                @if(contactDetails.telephoneNumber.isDefined){
+                    @textRowHelperBasic("telephone", Messages("page.summaryQuestion.telephone"), contactDetails.telephoneNumber.get, Some(controllers.routes.ContactDetailsController.show().toString))
+                }@if(contactDetails.mobileNumber.isDefined){
+                    @textRowHelperBasic("mobile", Messages("page.summaryQuestion.mobile"), contactDetails.mobileNumber.get, Some(controllers.routes.ContactDetailsController.show().toString))
+                }
                 @textRowHelperBasic("email", Messages("page.summaryQuestion.email"), contactDetails.email, Some(controllers.routes.ContactDetailsController.show().toString))
                 @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Array("Company Name Ltd.", "2 Telford Plaza", "Lawn Central", "Telford", "TF3 4NT"),
                 Some(controllers.routes.ConfirmCorrespondAddressController.show().toString))

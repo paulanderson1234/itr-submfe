@@ -66,28 +66,43 @@ class SubsidiariesControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
   }
 
   "Sending a GET request to SubsidiariesController when authenticated and enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
+    "return a 303" in {
       setupMocks(Some(routes.TenYearPlanController.show().url), Some(subsidiariesModelYes))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
-        result => status(result) shouldBe OK
+        result => status(result) shouldBe SEE_OTHER
       )
     }
 
-    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
-      setupMocks(Some(routes.PercentageStaffWithMastersController.show().url))
+    "redirect to the HadPreviousRFI page" in {
+      setupMocks(Some(routes.TenYearPlanController.show().url), Some(subsidiariesModelYes))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
-        result => status(result) shouldBe OK
+        result => redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
       )
     }
+//    "return a 200 when something is fetched from keystore" in {
+//      setupMocks(Some(routes.TenYearPlanController.show().url), Some(subsidiariesModelYes))
+//      mockEnrolledRequest()
+//      showWithSessionAndAuth(TestController.show)(
+//        result => status(result) shouldBe OK
+//      )
+//    }
+//
+//    "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
+//      setupMocks(Some(routes.PercentageStaffWithMastersController.show().url))
+//      mockEnrolledRequest()
+//      showWithSessionAndAuth(TestController.show)(
+//        result => status(result) shouldBe OK
+//      )
+//    }
   }
 
   "Sending a GET request to SubsidiariesController when authenticated and NOT enrolled" should {
@@ -162,23 +177,34 @@ class SubsidiariesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
   }
 
   "Sending an invalid form submission with validation errors to the SubsidiariesController when authenticated and enrolled" should {
-    "redirect to itself with errors" in {
+    "redirect to the previous investment before page" in {
       setupMocks(Some(routes.TenYearPlanController.show().url))
       mockEnrolledRequest()
-      val formInput = "ownSubsidiaries" -> ""
+      val formInput = "subsidiaries" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
-          status(result) shouldBe BAD_REQUEST
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
+//    "redirect to itself with errors" in {
+//      setupMocks(Some(routes.TenYearPlanController.show().url))
+//      mockEnrolledRequest()
+//      val formInput = "ownSubsidiaries" -> ""
+//      submitWithSessionAndAuth(TestController.submit, formInput)(
+//        result => {
+//          status(result) shouldBe BAD_REQUEST
+//        }
+//      )
+//    }
   }
 
   "Sending a submission to the SubsidiariesController when not authenticated" should {

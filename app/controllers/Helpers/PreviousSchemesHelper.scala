@@ -126,4 +126,9 @@ trait PreviousSchemesHelper {
     result.flatMap(deletedVectorList => s4lConnector.saveFormData(KeystoreKeys.previousSchemes, deletedVectorList))
   }
 
+  def clearPreviousInvestments(s4lConnector: connectors.S4LConnector)
+                                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+    s4lConnector.saveFormData(KeystoreKeys.previousSchemes, Vector[PreviousSchemeModel]())
+  }
+
 }

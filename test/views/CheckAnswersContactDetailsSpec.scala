@@ -64,7 +64,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
       contactDetailsTable.select("tr").get(1).getElementById("telephone-question").text() shouldBe
         Messages("page.summaryQuestion.telephone")
       contactDetailsTable.select("tr").get(1).getElementById("telephone-answer").text() shouldBe
-        contactDetailsModel.telephoneNumber
+        contactDetailsModel.telephoneNumber.get
       contactDetailsTable.select("tr").get(1).getElementById("telephone-link")
         .attr("href") shouldBe routes.ContactDetailsController.show().toString
 
