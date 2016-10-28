@@ -152,8 +152,9 @@ class ContactDetailsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val formInput = Seq(
         "forename" -> "Hank",
-        "surname" -> "The Tank",
+        "surname" -> "",
         "telephoneNumber" -> "",
+        "mobileNumber" -> "",
         "email" -> "thisiavalidemail@valid.com")
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {

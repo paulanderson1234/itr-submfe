@@ -25,7 +25,8 @@ object ContactDetailsForm {
     mapping(
       "forename" -> nonEmptyText,
       "surname" -> nonEmptyText,
-      "telephoneNumber" -> utils.Validation.telephoneNumberCheck,
+      "telephoneNumber" -> optional(utils.Validation.telephoneNumberCheck),
+      "mobileNumber" -> optional(utils.Validation.telephoneNumberCheck),
       "email" -> utils.Validation.emailCheck
     )(ContactDetailsModel.apply)(ContactDetailsModel.unapply)
   )

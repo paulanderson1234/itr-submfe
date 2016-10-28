@@ -358,7 +358,7 @@ class TaxPayerReferenceFormSpec extends UnitSpec {
     // form json to model - unapply
     "call unapply successfully to create ss Json" in {
       implicit val formats = Json.format[SubmissionRequest]
-      val cd = ContactDetailsModel("gary", "hull", "01952 256555", "fred@fred.com")
+      val cd = ContactDetailsModel("gary", "hull", Some("01952 256555"), None, "fred@fred.com")
       val yd = YourCompanyNeedModel("AA")
       val sub = new SubmissionRequest(cd,yd)
     }
