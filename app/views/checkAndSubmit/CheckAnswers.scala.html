@@ -76,10 +76,10 @@
                        @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                         <!--Ten Year Plan-->
                         @if(checkAnswersModel.tenYearPlanModel.isDefined && checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters == Messages("common.radioNoLabel")){
-                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.tenYearPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
+                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.developmentPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
                             @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan == Messages("common.radioYesLabel")){
                                 <!--Ten Year Plan Desc-->
-                                @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.tenYearPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
+                                @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.developmentPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
                             }
                         }
                     }else{
@@ -120,8 +120,6 @@
             <!--Previous before DOFCS page-->
             @if(checkAnswersModel.previousBeforeDOFCSModel.isDefined){
             @textRowHelperBasic("previousBeforeDOFCS", Messages("page.summaryQuestion.previousBeforeDOFCS"), checkAnswersModel.previousBeforeDOFCSModel.get.previousBeforeDOFCS, Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
-            }else{
-            @textRowHelperBasic("previousBeforeDOFCS", Messages("page.summaryQuestion.previousBeforeDOFCS"),  Messages("common.notAvailable"), Some(controllers.routes.PreviousBeforeDOFCSController.show().toString))
             }
             <!-- New Geographical Market page-->
             @if(checkAnswersModel.newGeographicalMarketModel.isDefined){

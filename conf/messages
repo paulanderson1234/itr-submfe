@@ -400,8 +400,8 @@ summaryQuestion.knowledgeIntensive =Knowledge intensive
 summaryQuestion.operatingCosts =Operating costs
 summaryQuestion.rdCosts =Research and development costs
 summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's degrees
-summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
-summaryQuestion.tenYearPlanDesc =How your company will do that
+summaryQuestion.developmentPlan =Plan to develop something that you''ll own the rights to
+summaryQuestion.developmentPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
 
 #previous schmeme
@@ -439,7 +439,7 @@ page.summaryQuestion.proposedInvestment=Amount to be raised
 page.summaryQuestion.usedRAndD=Used for research and development
 page.summaryQuestion.whatWillUseFor=What you''ll use it for
 page.summaryQuestion.usedInvestReasonBefore=Same reason as a previous investment
-page.summaryQuestion.previousBeforeDOFCS=Got the investment before [DoFCS+7years]
+page.summaryQuestion.previousBeforeDOFCS=Got the investment within 7 or 10 years of your first commercial sale
 page.summaryQuestion.newGeoMarket=Launching somewhere new
 page.summaryQuestion.newProduct=Entering a new product market
 page.summaryQuestion.subsSpendingInvest=Company owned or controlled by [company name] to spend this investment

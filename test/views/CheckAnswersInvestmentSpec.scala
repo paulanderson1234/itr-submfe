@@ -140,32 +140,25 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
       investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-link")
         .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
 
-      // previous docfs
-      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-question").text() shouldBe
-        Messages("page.summaryQuestion.previousBeforeDOFCS")
-      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(2).getElementById("previousBeforeDOFCS-link")
-        .attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
-
       // new geographical market
-      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-question").text() shouldBe
+      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-question").text() shouldBe
         Messages("page.summaryQuestion.newGeoMarket")
-      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(3).getElementById("newGeoMarket-link")
+      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-link")
         .attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
 
       // new prodcut
-      investmentTableTbody.select("tr").get(4).getElementById("newProduct-question").text() shouldBe
+      investmentTableTbody.select("tr").get(3).getElementById("newProduct-question").text() shouldBe
         Messages("page.summaryQuestion.newProduct")
-      investmentTableTbody.select("tr").get(4).getElementById("newProduct-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(4).getElementById("newProduct-link")
+      investmentTableTbody.select("tr").get(3).getElementById("newProduct-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(3).getElementById("newProduct-link")
         .attr("href") shouldEqual routes.NewProductController.show().url
 
       // investment Grow
-      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-question").text() shouldBe
+      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-question").text() shouldBe
         Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(5).getElementById("investmentGrow-link")
+      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
+      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-link")
         .attr("href") shouldEqual routes.InvestmentGrowController.show().url
     }
   }
