@@ -472,8 +472,8 @@ page.contactInformation.contactDetails.heading=Who should we contact about your 
 page.contactInformation.contactDetails.title=Contact details
 page.contactInformation.contactDetails.forename.label=First name
 page.contactInformation.contactDetails.surname.label=Last name
-page.contactInformation.contactDetails.phoneNumber.label=Landline(optional)
-page.contactInformation.contactDetails.mobileNumber.label=Mobile(optional)
+page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)
+page.contactInformation.contactDetails.mobileNumber.label=Mobile (optional)
 page.contactInformation.contactDetails.email.label=Email address
 
 #summary questions section five
