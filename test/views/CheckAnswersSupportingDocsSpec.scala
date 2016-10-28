@@ -68,7 +68,6 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       lazy val supportingDocsTableBody = document.getElementById("supporting-docs-table").select("tbody")
 
@@ -77,7 +76,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
       supportingDocsTableBody .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
       supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-company-accounts").text() shouldBe
-        Messages("page.checkAndSubmit.checkAnswers.bullet.two")
+        Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
       supportingDocsTableBody .select("tr").get(2).getElementById("shareholder-agree").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
       supportingDocsTableBody .select("tr").get(3).getElementById("memorandum-docs").text() shouldBe

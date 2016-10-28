@@ -57,7 +57,6 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
@@ -205,7 +204,6 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
@@ -293,7 +291,6 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
@@ -433,7 +430,6 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
@@ -521,7 +517,6 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")

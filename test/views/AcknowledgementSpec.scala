@@ -51,12 +51,12 @@ class AcknowledgementSpec extends ViewSpec {
       //dropdown
       document.body.getElementById("help").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.help")
       document.body.getElementById("send-us").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.sendUs")
-      document.body.getElementById("business-plan").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.businessPlan")
-      document.body.getElementById("company-accounts").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.companyAccounts")
-      document.body.getElementById("subsidiary-accounts").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.subsidiaryAccounts")
-      document.body.getElementById("shareholder-agreements").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.shareholderAgreements")
-      document.body.getElementById("articles-of-association").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.articlesOfAssociation")
-      document.body.getElementById("docs-prospectus").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.docsProspectus")
+      document.body.getElementById("business-plan").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
+      document.body.getElementById("company-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
+      document.body.getElementById("subsidiary-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
+      document.body.getElementById("shareholder-agreements").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
+      document.body.getElementById("articles-of-association").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
+
       //waiting times
       document.body.getElementById("waiting-time").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.waitingTime")
       document.body.getElementById("course-of-action").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.courseOfAction")
