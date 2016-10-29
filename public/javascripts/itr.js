@@ -108,7 +108,7 @@ $(document).ready($(function() {
 
         $checkbox.change(function() {
 
-//            ClearRevealingContentInputs();
+            ClearRevealingContentInputs();
             if ($checkbox.val() === 'Other') {
                  //alert($checkbox.val());
                 $hiddenOtherScheme.show();
