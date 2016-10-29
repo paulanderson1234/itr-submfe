@@ -478,6 +478,10 @@ page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)
 page.contactInformation.contactDetails.mobileNumber.label=Mobile (optional)
 page.contactInformation.contactDetails.email.label=Email address
 
+#Confirm Contact Details Page
+page.contactInformation.ConfirmContactDetails.heading=Are these the contact details you want us to use for this application?
+page.contactInformation.ConfirmContactDetails.title=Are these the contact details you want us to use for this application?
+
 #summary questions section five
 page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
 page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:

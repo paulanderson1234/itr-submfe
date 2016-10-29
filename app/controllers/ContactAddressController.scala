@@ -45,7 +45,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress).map {
+    s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
       case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
       case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("","")), countriesList))
     }
@@ -58,6 +58,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
           formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode")) else formWithErrors, countriesList)))
       },
       validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
         Future.successful(Redirect(routes.SupportingDocumentsController.show()))

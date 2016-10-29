@@ -101,6 +101,9 @@ POST       /supporting-documents                    controllers.SupportingDocume
 GET        /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.show
 POST       /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.submit
 
+GET        /confirm-contact-details                 controllers.ConfirmContactDetailsController.show
+POST       /confirm-contact-details                 controllers.ConfirmContactDetailsController.submit
+
 GET        /check-your-answers                      controllers.CheckAnswersController.show
 POST       /check-your-answers                      controllers.CheckAnswersController.submit
 

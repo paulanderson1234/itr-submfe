@@ -4,11 +4,11 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress, hiddenField}
 
-@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel])(implicit request: Request[_])
+@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], backLink: String)(implicit request: Request[_])
 
 @main_template(Messages("page.contactInformation.ConfirmCorrespondAddress.title")){
 
-    @backButtonWithProgress(controllers.routes.ContactDetailsController.show().toString, Messages("common.section.progress.company.details.four"))
+    @backButtonWithProgress(backLink, Messages("common.section.progress.company.details.four"))
 
     <div class="grid-row">
         <div class="column-two-thirds">

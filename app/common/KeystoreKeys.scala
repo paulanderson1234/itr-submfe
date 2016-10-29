@@ -42,7 +42,10 @@ trait KeystoreKeys {
   val investmentGrow: String = "investment:investmentGrow"
   val confirmContactAddress: String = "contactInformation:confirmCorrespondAddress"
   val checkYourAnswers: String = "checkAndSubmit:checkYourAnswers"
-  val contactDetails: String = "examples:contactDetails"
+  val manualContactAddress: String = "contactInformation:manualCorrespondAddress"
+  val manualContactDetails: String = "contactInformation:manualContactDetails"
+  val contactDetails: String = "contactInformation:contactDetails"
+  val confirmContactDetails: String = "contactInformation:confirmContactDetails"
   val contactAddress: String = "contactInformation:contactAddress"
   val previousSchemes: String = "previousInvestmentScheme:previousInvestmentSchemes"
 
@@ -60,5 +63,6 @@ trait KeystoreKeys {
   val backLinkReviewPreviousSchemes: String = "backLink:reviewPreviousSchemes"
   val backLinkProposedInvestment: String = "backLink:proposedInvestment"
   val backLinkIneligibleForKI: String = "backLink:IneligibleForKI"
+  val backLinkConfirmCorrespondence: String = "backLink:ConfirmCorrespondenceAddress"
 
 }
