@@ -73,6 +73,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
       //Section 5 table heading
       document.getElementById("supportingDocsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.supportingDocsSection")
+      document.getElementById("supportingDocs-sub-text").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")
       supportingDocsTableBody .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
       supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-company-accounts").text() shouldBe
