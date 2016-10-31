@@ -16,6 +16,7 @@
 
 package controllers.feedback
 
+import auth.MockConfig
 import config.AppConfig
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -63,19 +64,7 @@ class FeedbackControllerSpec extends UnitSpec with MockitoSugar with WithFakeApp
 
     override def contactFormReferer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 
-    override val applicationConfig: AppConfig = new AppConfig {
-      override val assetsPrefix: String = ""
-      override val reportAProblemNonJSUrl: String = ""
-      override val contactFrontendPartialBaseUrl: String = ""
-      override val analyticsHost: String = ""
-      override val analyticsToken: String = ""
-      override val reportAProblemPartialUrl: String = ""
-      override val contactFormServiceIdentifier: String = ""
-      override val ggSignInUrl: String = ""
-      override val notAuthorisedRedirectUrl: String = ""
-      override val introductionUrl: String = ""
-      override val subscriptionUrl: String = ""
-    }
+    override val applicationConfig = MockConfig
   }
 
   "GET /feedback" should {

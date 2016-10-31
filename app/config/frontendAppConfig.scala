@@ -27,10 +27,12 @@ trait AppConfig {
   val reportAProblemNonJSUrl: String
   val notAuthorisedRedirectUrl: String
   val ggSignInUrl: String
+  val ggSignOutUrl: String
   val introductionUrl: String
   val subscriptionUrl: String
   val contactFormServiceIdentifier: String
   val contactFrontendPartialBaseUrl: String
+  val signOutPageUrl: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -42,8 +44,10 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
   override lazy val notAuthorisedRedirectUrl = configuration.getString("not-authorised-callback.url").getOrElse("")
   override lazy val ggSignInUrl: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
+  override lazy val ggSignOutUrl: String = configuration.getString(s"government-gateway-sign-out.host").getOrElse("")
   override lazy val introductionUrl: String = configuration.getString(s"introduction.url").getOrElse("")
   override lazy val subscriptionUrl: String = loadConfig("investment-tax-relief-subscription.url")
+  override lazy val signOutPageUrl: String = configuration.getString(s"sign-out-page.url").getOrElse("")
 
   private val contactFrontendService = baseUrl("contact-frontend")
   override val contactFormServiceIdentifier = "TAVC"

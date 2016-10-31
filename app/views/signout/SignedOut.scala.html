@@ -1,0 +1,9 @@
+@()(implicit request: Request[_])
+
+@main_template(Messages("page.signout.SignedOut.title"),userLoggedIn = false) {
+
+<h1 id="signout-header" class="heading-xlarge">@Messages("page.signout.SignedOut.header")</h1>
+
+<p><a href="http://www.gov.uk">@Messages("page.signout.SignedOut.explore")</a></p>
+
+}
