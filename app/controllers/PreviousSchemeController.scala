@@ -72,6 +72,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
           Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
       },
       validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
         validFormData.processingId match {
           case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
             _ => Redirect(routes.ReviewPreviousSchemesController.show())
