@@ -65,4 +65,7 @@ trait KeystoreKeys {
   val backLinkIneligibleForKI: String = "backLink:IneligibleForKI"
   val backLinkConfirmCorrespondence: String = "backLink:ConfirmCorrespondenceAddress"
 
+  //application in progress key
+  val applicationInProgress: String = "applicationInProgress"
+
 }

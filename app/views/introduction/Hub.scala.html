@@ -1,0 +1,22 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{externalLink, backButton}
+
+@(partial: Html)(implicit request: Request[_])
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.introduction.qualifyingForScheme.title"), bodyClasses = None) {
+
+<div class="grid-column">
+    <div class="column-two-thirds">
+        <div class="form-group">
+            <h1 class="heading-xlarge">@Messages("page.introduction.hub.heading")</h1>
+            @partial
+        </div>
+    </div>
+</div>
+}
+
+
+
+
