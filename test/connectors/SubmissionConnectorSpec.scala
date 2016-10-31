@@ -129,7 +129,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     }
   }
 
-  "Calling submitAdvancedAssurance with a email with a valid model" should {
+  "Calling submitAdvancedAssurance with a valid model" should {
 
     "return a OK" in {
 
@@ -138,6 +138,19 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
         .thenReturn(Future.successful(HttpResponse(OK)))
       val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest, tavcReferenceId)
       await(result).status shouldBe OK
+    }
+  }
+
+  "Calling submitAdvancedAssurance with a valid model but empty tavcRef" should {
+
+    "return throw an illegal argument exception" in {
+
+      val validRequest = fullSubmissionSourceData
+      when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
+
+      val exception = the[IllegalArgumentException] thrownBy TargetSubmissionConnector.submitAdvancedAssurance(fullSubmissionSourceData, "")
+      exception.getMessage shouldBe "requirement failed: [SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed"
     }
   }
 
