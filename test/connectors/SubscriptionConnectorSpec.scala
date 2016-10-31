@@ -42,6 +42,7 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import play.api.http.Status
 import play.api.libs.json.Json
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.SessionId
@@ -52,8 +53,8 @@ import scala.concurrent.Future
 
 class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
-  object TargetSubscriptionConnector extends SubscriptionConnector with FrontendController with FakeRequestHelper {
-    override val serviceUrl = "host"
+  object TargetSubscriptionConnector extends SubscriptionConnector with FrontendController with FakeRequestHelper with ServicesConfig {
+    override val serviceUrl = baseUrl("investment-tax-relief-subscription")
     override val http = mock[WSHttp]
   }
 
