@@ -69,13 +69,9 @@ trait SubmissionConnector {
 
   //TODO: put all these methods in a service?
   def submitAdvancedAssurance(submissionRequest: Submission, tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-
     if(tavcReferenceNumber.isEmpty) {
-      println("logger==========================")
       Logger.warn("[SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed")
     }
-
-    println("require==========================")
     require(tavcReferenceNumber.nonEmpty, "[SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed")
 
     val json = Json.toJson(submissionRequest)
