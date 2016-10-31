@@ -130,12 +130,12 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
       lazy val response = await(result)
 
-      "return a Status OK (200) response" in {
+      "return a Status BAD_REQUEST (400) response" in {
         setupMockedResponse(failedResponse)
         response.status shouldBe Status.BAD_REQUEST
       }
 
-      "Have a successful Json Body response" in {
+      "Have a non-successful Json Body response" in {
         setupMockedResponse(failedResponse)
         response.json shouldBe failedResponse.json
       }
