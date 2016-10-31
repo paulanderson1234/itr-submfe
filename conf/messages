@@ -366,7 +366,7 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include:
+page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include your company''s:
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
@@ -385,7 +385,7 @@ page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
-
+page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Company details
@@ -484,20 +484,23 @@ page.contactInformation.ConfirmContactDetails.title=Are these the contact detail
 
 #summary questions section five
 page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
-page.summaryQuestion.supportingDocsSectionSubText=When you send your application, remember to include your company''s:
 
 #acknowledgement
-page.checkAndSubmit.acknowledgement.title=Submission complete
-page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve submitted your form
-page.checkAndSubmit.acknowledgement.refNumberHeading=Your application reference number is
-page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete, see below.
-page.checkAndSubmit.acknowledgement.toDoNext=What to do next
-page.checkAndSubmit.acknowledgement.emailTo=Email your supporting documents to
-page.checkAndSubmit.acknowledgement.subjectLineInclude=In the subject line include your:
-page.checkAndSubmit.acknowledgement.applicationReferenceNumber=application reference number
-page.checkAndSubmit.acknowledgement.companyName= company name
-page.checkAndSubmit.acknowledgement.help=Which documents do I need to send?
-page.checkAndSubmit.acknowledgement.sendUs=Remember to include your company''s:
+page.checkAndSubmit.acknowledgement.title=You''ve submitted your answers
+page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve sent your answers
+page.checkAndSubmit.acknowledgement.refNumberHeading=Make a note of your reference number:
+page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete
+page.checkAndSubmit.acknowledgement.toDoNext=What happens next
+page.checkAndSubmit.acknowledgement.remember=Remember to include your company''s:
+page.checkAndSubmit.acknowledgement.priorToReview=Before we can review your application, you’ll need to email or post documentation to us.
+page.checkAndSubmit.acknowledgement.emailTo=You can email your supporting documents to
+page.checkAndSubmit.acknowledgement.subjectLineInclude=Put your company name and application reference number in the subject line.
+page.checkAndSubmit.acknowledgement.alternative=Or, you can post copies to:
+page.checkAndSubmit.acknowledgement.hmrc=HM Revenue & Customs
+page.checkAndSubmit.acknowledgement.hmrc.address1=P.O. Box 121
+page.checkAndSubmit.acknowledgement.hmrc.address2=Telford
+page.checkAndSubmit.acknowledgement.hmrc.address3=Shropshire
+page.checkAndSubmit.acknowledgement.hmrc.postcode=TF1 1AA
 page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
 page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.
 
@@ -520,6 +523,11 @@ page.investment.AnnualTurnoverError.title=Annual turnover error
 page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
 page.investment.AnnualTurnoverError.guidance=Link back to guidance
+
+#signout page
+page.signout.SignedOut.title = You have successfully signed out
+page.signout.SignedOut.header = You''re signed out
+page.signout.SignedOut.explore = Explore GOV.UK
 
 ## Feedback ##
 feedback.title = Feedback

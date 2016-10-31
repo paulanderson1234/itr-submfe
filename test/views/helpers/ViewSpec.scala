@@ -33,6 +33,6 @@ trait ViewSpec extends BaseSpec {
 
   def getExternalLinkText(linkText: String): String = s"""$linkText ${Messages("common.externalLink")}"""
 
-  def getExternalEmailText(emailText: String): String = s"$emailText enterprise.centre@hmrc.gsi.gov.uk."
+  def getExternalEmailText(emailTextPre: String, emailTextPost: String): String = s"$emailTextPre enterprise.centre@hmrc.gsi.gov.uk. $emailTextPost"
 }
 

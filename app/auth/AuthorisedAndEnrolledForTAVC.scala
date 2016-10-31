@@ -60,6 +60,13 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
     } yield result
   }
 
+  def getTavCReferenceNumber()(implicit hc: HeaderCarrier): Future[String] = {
+    for {
+      authority <- authConnector.currentAuthority
+      tavcRef <- enrolmentConnector.getTavcReferencNumber(authority.fold("")(_.uri))
+    } yield tavcRef
+  }
+
   private def mapToEnrolledResult: Option[Enrolment] => EnrolmentResult = {
     case Some(tavcEnrolment) if tavcEnrolment.state == "Activated" => Enrolled
     case _ => NotEnrolled

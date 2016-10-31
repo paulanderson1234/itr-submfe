@@ -54,11 +54,14 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   class SetupPageMinimum() {
+
+    when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     setUpMocksMinimumRequiredModels(mockS4lConnector)
   }
 
   def setupMocks(): Unit =
-    when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+    when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
 
   "AcknowledgementController" should {
@@ -205,7 +208,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 5xx when an invalid email is submitted" in new SetupPageFull {
-      when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any())(Matchers.any()))
+      when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
