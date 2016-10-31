@@ -232,7 +232,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-details")
+          redirectLocation(result) shouldBe Some(routes.ConfirmContactDetailsController.show().url)
         }
       )
     }

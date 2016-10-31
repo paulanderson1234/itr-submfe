@@ -40,7 +40,7 @@ trait ContactDetailsController extends FrontendController with AuthorisedAndEnro
   val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails).map {
+    s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
       case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
       case None => Ok(ContactDetails(contactDetailsForm))
     }
@@ -52,6 +52,7 @@ trait ContactDetailsController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(ContactDetails(formWithErrors)))
       },
       validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.manualContactDetails, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
         Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
       }

@@ -71,8 +71,17 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
         validFormData.hadPreviousRFI match {
 
           case Constants.StandardRadioButtonYesValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
-            Future.successful(Redirect(routes.PreviousSchemeController.show()))
+            getAllInvestmentFromKeystore(s4lConnector).flatMap {
+              previousSchemes =>
+                if(previousSchemes.nonEmpty) {
+                  s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
+                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+                }
+                else {
+                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+                  Future.successful(Redirect(routes.PreviousSchemeController.show()))
+                }
+            }
           }
           case Constants.StandardRadioButtonNoValue => {
             s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())

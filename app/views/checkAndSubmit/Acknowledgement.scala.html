@@ -7,8 +7,6 @@
 
 @main_template(Messages("page.checkAndSubmit.acknowledgement.title"), bodyClasses = None) {
 
-@backButton(controllers.routes.CheckAnswersController.show().toString)
-
 <div class="grid-row">
     <div class="column-two-thirds">
 
@@ -21,32 +19,47 @@
 
         </div>
 
+        <br>
+
+        <div class="form-group notice">
+            <i class="icon icon-important"></i>
+            <strong id ="legal-not-complete" class="bold-medium">
+                @Messages("page.checkAndSubmit.acknowledgement.application.not.complete")
+            </strong>
+        </div>
+
+        <br>
+
         <div class="form-group">
             <h2 id= "what-next" class="heading-medium">@Messages("page.checkAndSubmit.acknowledgement.toDoNext")</h2>
 
-            <p id="email-to">@Messages("page.checkAndSubmit.acknowledgement.emailTo") <a id="email-to-ref" href="mailto:enterprise.centre@@hmrc.gsi.gov.uk">enterprise.centre@@hmrc.gsi.gov.uk</a>.</p>
+            <p id="prior-to-review">@Messages("page.checkAndSubmit.acknowledgement.priorToReview")</p>
 
-            <p id="subject-line-include">@Messages("page.checkAndSubmit.acknowledgement.subjectLineInclude")</p>
+            <p id="remember-to-include">@Messages("page.checkAndSubmit.acknowledgement.remember")</p>
 
-            <ul class="list-bullet">
-                <li id="application-reference-number">@Messages("page.checkAndSubmit.acknowledgement.applicationReferenceNumber")</li>
-                <li id="company-name">@Messages("page.checkAndSubmit.acknowledgement.companyName")</li>
+            <ul class="list list-bullet">
+                <li id="business-plan">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</li>
+                <li id="company-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</li>
+                <li id="shareholder-agree">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</li>
+                <li id="memorandum-articles">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</li>
+                <li id="prospectus-docs">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</li>
             </ul>
 
-            <details>
-                <summary><span id="help" class="summary">@Messages("page.checkAndSubmit.acknowledgement.help")</span></summary>
-                <div class="panel panel-indent panel-border-narrow">
-                    <p id="send-us">@Messages("page.checkAndSubmit.acknowledgement.sendUs")</p>
-                    <ul class="list-bullet">
-                        <li id="business-plan">@Messages("page.checkAndSubmit.acknowledgement.businessPlan")</li>
-                        <li id="company-accounts">@Messages("page.checkAndSubmit.acknowledgement.companyAccounts")</li>
-                        <li id="subsidiary-accounts">@Messages("page.checkAndSubmit.acknowledgement.subsidiaryAccounts")</li>
-                        <li id="shareholder-agreements">@Messages("page.checkAndSubmit.acknowledgement.shareholderAgreements")</li>
-                        <li id="articles-of-association">@Messages("page.checkAndSubmit.acknowledgement.articlesOfAssociation")</li>
-                        <li id="docs-prospectus">@Messages("page.checkAndSubmit.acknowledgement.docsProspectus")</li>
-                    </ul>
-                </div>
-            </details>
+
+            <p id="email-to">@Messages("page.checkAndSubmit.acknowledgement.emailTo") <a id="email-to-ref" href="mailto:enterprise.centre@@hmrc.gsi.gov.uk">enterprise.centre@@hmrc.gsi.gov.uk</a>.
+                @Messages("page.checkAndSubmit.acknowledgement.subjectLineInclude")</p>
+
+            <p id="alternative">@Messages("page.checkAndSubmit.acknowledgement.alternative")</p>
+
+
+            <div class="form-group">
+                <p id="hmrc-address">@Messages("page.checkAndSubmit.acknowledgement.hmrc") <br>
+                             @Messages("page.checkAndSubmit.acknowledgement.hmrc.address1") <br>
+                             @Messages("page.checkAndSubmit.acknowledgement.hmrc.address2") <br>
+                             @Messages("page.checkAndSubmit.acknowledgement.hmrc.address3") <br>
+                             @Messages("page.checkAndSubmit.acknowledgement.hmrc.postcode")</p>
+            </div>
+
         </div>
 
         <div class="form-group">

@@ -366,12 +366,12 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include:
+page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include your company''s:
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
-page.supportingDocuments.SupportingDocuments.bullet.two=company accounts
-page.supportingDocuments.SupportingDocuments.bullet.three=shareholder agreements, or drafts
-page.supportingDocuments.SupportingDocuments.bullet.four=Memorandum and Articles of Association
-page.supportingDocuments.SupportingDocuments.bullet.five=prospectuses and other documents for attracting investment
+page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
+page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
+page.supportingDocuments.SupportingDocuments.bullet.four=prospectuses and other documents for attracting investment
+page.supportingDocuments.SupportingDocuments.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
 
@@ -384,8 +384,8 @@ page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence ad
 page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.print.text=Print this page
-page.checkAndSubmit.checkAnswers.button.confirm=Confirm your answers
-page.checkAndSubmit.checkAnswers.bullet.two=company accounts, or a cash flow forecast if you''ve not yet submitted any accounts
+page.checkAndSubmit.checkAnswers.button.confirm=Submit
+page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Business details
@@ -411,15 +411,15 @@ page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
 page.investment.PreviousScheme.title=Previous scheme?
 validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
-validation.error.SchemeName.Present=Name of that scheme should not be entered for this scheme type
+validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
 page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
 page.investment.PreviousScheme.companiesHouse = Companies House database
 page.investment.PreviousScheme.howToFind=How can you find this out?
 page.investment.PreviousScheme.title=Previous schemes
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
-validation.error.ShareIssueDate.Future=Date of share issue cannot be a future date
-page.investment.PreviousScheme.otherSchemeName.label=Name of that scheme
+validation.error.ShareIssueDate.Future=Date of investment cannot be a future date
+page.investment.PreviousScheme.otherSchemeName.label=What was it''s name?
 
 
 #summary questions section two
@@ -428,10 +428,10 @@ page.previousInvestment.schemeType.eis=Enterprise Investment Scheme
 page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
 page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
 page.previousInvestment.schemeType.vct=Venture Capital Trust
-page.previousInvestment.schemeType.other=Another scheme
+page.previousInvestment.schemeType.other=Other scheme
 page.investment.amount.label=Amount raised:
 page.investment.amountSpent.label=Amount spent:
-page.investment.dateOfShareIssue.label=Date of share issue:
+page.investment.dateOfShareIssue.label=Date of investment:
 page.summaryQuestion.none.question=Previous schemes
 page.summaryQuestion.none.answer=None
 
@@ -478,28 +478,29 @@ page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)
 page.contactInformation.contactDetails.mobileNumber.label=Mobile (optional)
 page.contactInformation.contactDetails.email.label=Email address
 
+#Confirm Contact Details Page
+page.contactInformation.ConfirmContactDetails.heading=Are these the contact details you want us to use for this application?
+page.contactInformation.ConfirmContactDetails.title=Are these the contact details you want us to use for this application?
+
 #summary questions section five
 page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
-page.summaryQuestion.supportingDocsSectionSubText=Remember to include your:
 
 #acknowledgement
-page.checkAndSubmit.acknowledgement.title=Submission complete
-page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve submitted your form
-page.checkAndSubmit.acknowledgement.refNumberHeading=Your application reference number is
-page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete, see below.
-page.checkAndSubmit.acknowledgement.toDoNext=What to do next
-page.checkAndSubmit.acknowledgement.emailTo=Email your supporting documents to
-page.checkAndSubmit.acknowledgement.subjectLineInclude=In the subject line include your:
-page.checkAndSubmit.acknowledgement.applicationReferenceNumber=application reference number
-page.checkAndSubmit.acknowledgement.companyName= company name
-page.checkAndSubmit.acknowledgement.help=Which documents do I need to send?
-page.checkAndSubmit.acknowledgement.sendUs= Send us:
-page.checkAndSubmit.acknowledgement.businessPlan=your business plan
-page.checkAndSubmit.acknowledgement.companyAccounts=our company accounts from the past [year/three/five years]
-page.checkAndSubmit.acknowledgement.subsidiaryAccounts=[accounts for companies that [your company] owns or controls]
-page.checkAndSubmit.acknowledgement.shareholderAgreements=shareholder agreements, or drafts of them
-page.checkAndSubmit.acknowledgement.articlesOfAssociation=your memorandum and articles of association
-page.checkAndSubmit.acknowledgement.docsProspectus=documents like prospectuses that you’ll use to attract investment
+page.checkAndSubmit.acknowledgement.title=You''ve submitted your answers
+page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve sent your answers
+page.checkAndSubmit.acknowledgement.refNumberHeading=Make a note of your reference number:
+page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete
+page.checkAndSubmit.acknowledgement.toDoNext=What happens next
+page.checkAndSubmit.acknowledgement.remember=Remember to include your company''s:
+page.checkAndSubmit.acknowledgement.priorToReview=Before we can review your application, you’ll need to email or post documentation to us.
+page.checkAndSubmit.acknowledgement.emailTo=You can email your supporting documents to
+page.checkAndSubmit.acknowledgement.subjectLineInclude=Put your company name and application reference number in the subject line.
+page.checkAndSubmit.acknowledgement.alternative=Or, you can post copies to:
+page.checkAndSubmit.acknowledgement.hmrc=HM Revenue & Customs
+page.checkAndSubmit.acknowledgement.hmrc.address1=P.O. Box 121
+page.checkAndSubmit.acknowledgement.hmrc.address2=Telford
+page.checkAndSubmit.acknowledgement.hmrc.address3=Shropshire
+page.checkAndSubmit.acknowledgement.hmrc.postcode=TF1 1AA
 page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
 page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.
 

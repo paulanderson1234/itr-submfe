@@ -19,6 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
@@ -63,24 +64,41 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
-  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(previousSchemes))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+  }
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
-    "return a 200 OK when a populated vector is returned from keystore" in {
-      setupMocks(Some(previousSchemeVectorList))
+    "return a 200 OK when a populated vector is returned from keystore and a back link is retrieved" in {
+      setupMocks(Some(previousSchemeVectorList), Some(routes.HadPreviousRFIController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
-    "return a 200 OK when nothing is returned from keystore (recover block executed which creates empty vector) when authenticated and enrolled" in {
+    "redirect to HadPreviousRFI when nothing is returned from keystore when authenticated and enrolled" in {
       setupMocks()
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
-        result => status(result) shouldBe OK
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+        }
+      )
+    }
+
+    "redirect to HadPreviousRFI when no previous schemes are returned from keystore when authenticated and enrolled" in {
+      setupMocks(backLink = Some(routes.HadPreviousRFIController.show().url))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+        }
       )
     }
   }
@@ -89,7 +107,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     "redirect to the Subscription Service" in {
       setupMocks(Some(previousSchemeVectorList))
       mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
+      showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)

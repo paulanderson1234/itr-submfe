@@ -56,7 +56,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
+
 
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
@@ -106,7 +106,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
-      document.getElementById("print-this-page").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.print.text")
+
 
       //Section 1 table heading
       document.getElementById("previousRFISection-table-heading").text() shouldBe Messages("summaryQuestion.previousRFISection")
