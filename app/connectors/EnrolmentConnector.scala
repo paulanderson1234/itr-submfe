@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import auth.Enrolment
+import common.Constants
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -38,7 +40,7 @@ trait EnrolmentConnector extends ServicesConfig {
     http.GET[HttpResponse](getUrl).map {
       response =>
         response.status match {
-          case OK => response.json.as[Seq[Enrolment]].find(_.key == "HMRC-TAVC-ORG")
+          case OK => response.json.as[Seq[Enrolment]].find(_.key == Constants.enrolmentOrgKey)
           case status => None
         }
     }
@@ -46,10 +48,7 @@ trait EnrolmentConnector extends ServicesConfig {
 
   def getTavcReferencNumber(uri: String)(implicit hc: HeaderCarrier): Future[String] = {
     getTAVCEnrolment(uri).map {
-      case Some(enrolment) => {
-        val identifier = enrolment.identifiers.find(_.key == "TAVCRef")
-        identifier.fold("")(_.value)
-      }
+      case Some(enrolment) => enrolment.identifiers.find(_.key == Constants.enrolmentTavcRefKey).fold("")(_.value)
       case _ => ""
     }
   }

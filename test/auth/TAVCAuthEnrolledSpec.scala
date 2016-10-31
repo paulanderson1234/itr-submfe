@@ -27,9 +27,8 @@ import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.play.http.HeaderCarrier
-import scala.concurrent.ExecutionContext.Implicits.global
-
 import scala.concurrent.Future
+
 
 class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
 
@@ -107,9 +106,8 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
       implicit val hc = HeaderCarrier()
       when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(""))
-      val resullt = AuthEnrolledTestController.getTavCReferenceNumber()(hc).map { x =>
-        x shouldBe ""
-      }
+      val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
+      await(result) shouldBe ""
     }
   }
 
@@ -118,9 +116,8 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
       implicit val hc = HeaderCarrier()
       when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful("XATAVC000123456"))
-      val resullt = AuthEnrolledTestController.getTavCReferenceNumber()(hc).map { x =>
-        x shouldBe "XATAVC000123456"
-      }
+      val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
+      await(result) shouldBe "XATAVC000123456"
     }
   }
 }
