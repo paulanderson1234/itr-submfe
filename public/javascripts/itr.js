@@ -95,6 +95,17 @@ $(document).ready($(function() {
         var $hiddenOtherScheme = $('#hidden-other-scheme')
         var $hiddenInvestmentSpent = $('#hidden-investment-spent')
 
+        $hiddenInvestmentSpent.hide();
+        $hiddenOtherScheme.hide();
+
+        if ($checkbox.val() === 'Other' && $checkbox.prop('checked')) {
+            $hiddenOtherScheme.show();
+        }
+
+        if ($checkbox.val() === 'SEIS' && $checkbox.prop('checked')) {
+            $hiddenInvestmentSpent.show();
+        }
+
         $checkbox.change(function() {
 
             ClearRevealingContentInputs();

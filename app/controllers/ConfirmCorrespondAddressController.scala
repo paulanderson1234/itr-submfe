@@ -20,8 +20,10 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.Helpers.ControllerHelpers
 import forms.ConfirmCorrespondAddressForm._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.contactInformation.ConfirmCorrespondAddress
 
@@ -40,21 +42,24 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def getAddressModels = {
-      for {
-        confirmCorrespondAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
-        contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
-      } yield (confirmCorrespondAddress, contactAddress)
+    def routeRequest: Option[String] => Future[Result] = {
+      case Some(backLink) => {
+        for {
+          confirmCorrespondAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
+        } yield confirmCorrespondAddress match {
+          case Some(storedAddress) =>
+            Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(storedAddress), backLink))
+          case _ =>
+            Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(ConfirmCorrespondAddressModel("", getSubscriptionAddress)), backLink))
+        }
+      }
+      case _ => Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
     }
 
-    getAddressModels.map {
-      case (_, Some(contactAddress)) if contactAddress.addressline1.length > 0 =>
-        Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(
-          ConfirmCorrespondAddressModel("", contactAddress))))
-      case (_, _) =>
-        Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(
-          ConfirmCorrespondAddressModel("", getSubscriptionAddress))))
-    }
+    for {
+      backLink <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkConfirmCorrespondence, s4lConnector)
+      route <- routeRequest(backLink)
+    } yield route
   }
 
   //TODO: get the address below from ETMP when play this story
@@ -63,25 +68,35 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    confirmCorrespondAddressForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors)))
-      },
-      validFormData => {
-        validFormData.contactAddressUse match {
-          case Constants.StandardRadioButtonYesValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
-              routes.ConfirmCorrespondAddressController.show().toString())
-            s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
-            Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+
+    def routeRequest: Option[String] => Future[Result] = {
+      case Some(backLink) => {
+        confirmCorrespondAddressForm.bindFromRequest().fold(
+          formWithErrors => {
+            Future.successful(BadRequest(ConfirmCorrespondAddress(formWithErrors, backLink)))
+          },
+          validFormData => {
+            s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
+            validFormData.contactAddressUse match {
+              case Constants.StandardRadioButtonYesValue => {
+                s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
+                  routes.ConfirmCorrespondAddressController.show().toString())
+                s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
+                Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+              }
+              case Constants.StandardRadioButtonNoValue => {
+                Future.successful(Redirect(routes.ContactAddressController.show()))
+              }
+            }
           }
-          case Constants.StandardRadioButtonNoValue => {
-            // Clear the saved address as user does not want to use it
-            s4lConnector.saveFormData(KeystoreKeys.contactAddress, AddressModel("", ""))
-            Future.successful(Redirect(routes.ContactAddressController.show()))
-          }
-        }
+        )
       }
-    )
+      case _ => Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
+    }
+
+    for {
+      backLink <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkConfirmCorrespondence, s4lConnector)
+      route <- routeRequest(backLink)
+    } yield route
   }
 }

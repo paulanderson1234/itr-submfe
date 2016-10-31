@@ -1,12 +1,12 @@
 @import models.PreviousSchemeModel
 @import config.FrontendAppConfig
-@(previousSchemes: Vector[PreviousSchemeModel])(implicit request: Request[_])
+@(previousSchemes: Vector[PreviousSchemeModel], backUrl: String)(implicit request: Request[_])
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField}
 
 @main_template(Messages("page.previousInvestment.reviewPreviousSchemes.title")) {
 
-@backButtonWithProgress(controllers.routes.PreviousSchemeController.show().toString, Messages("summaryQuestion.previousRFISection"))
+@backButtonWithProgress(backUrl, Messages("summaryQuestion.previousRFISection"))
 
 <div class="grid-column">
     <div class="column-two-thirds">

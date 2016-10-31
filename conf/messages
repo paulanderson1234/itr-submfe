@@ -411,15 +411,15 @@ page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
 page.investment.PreviousScheme.title=Previous scheme?
 validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
-validation.error.SchemeName.Present=Name of that scheme should not be entered for this scheme type
+validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
 page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
 page.investment.PreviousScheme.companiesHouse = Companies House database
 page.investment.PreviousScheme.howToFind=How can you find this out?
 page.investment.PreviousScheme.title=Previous schemes
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
-validation.error.ShareIssueDate.Future=Date of share issue cannot be a future date
-page.investment.PreviousScheme.otherSchemeName.label=Name of that scheme
+validation.error.ShareIssueDate.Future=Date of investment cannot be a future date
+page.investment.PreviousScheme.otherSchemeName.label=What was it''s name?
 
 
 #summary questions section two
@@ -428,10 +428,10 @@ page.previousInvestment.schemeType.eis=Enterprise Investment Scheme
 page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
 page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
 page.previousInvestment.schemeType.vct=Venture Capital Trust
-page.previousInvestment.schemeType.other=Another scheme
+page.previousInvestment.schemeType.other=Other scheme
 page.investment.amount.label=Amount raised:
 page.investment.amountSpent.label=Amount spent:
-page.investment.dateOfShareIssue.label=Date of share issue:
+page.investment.dateOfShareIssue.label=Date of investment:
 page.summaryQuestion.none.question=Previous schemes
 page.summaryQuestion.none.answer=None
 
@@ -477,6 +477,10 @@ page.contactInformation.contactDetails.surname.label=Last name
 page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)
 page.contactInformation.contactDetails.mobileNumber.label=Mobile (optional)
 page.contactInformation.contactDetails.email.label=Email address
+
+#Confirm Contact Details Page
+page.contactInformation.ConfirmContactDetails.heading=Are these the contact details you want us to use for this application?
+page.contactInformation.ConfirmContactDetails.title=Are these the contact details you want us to use for this application?
 
 #summary questions section five
 page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents

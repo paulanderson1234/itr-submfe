@@ -69,7 +69,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
         },
       validForm => {
         s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
-        Future.successful(Redirect(routes.ContactDetailsController.show()))
+        Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
       }
     )
   }
