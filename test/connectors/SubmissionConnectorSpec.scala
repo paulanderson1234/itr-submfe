@@ -136,7 +136,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val validRequest = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest, tavcReferenceId)
       await(result).status shouldBe OK
     }
   }
@@ -148,7 +148,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe BAD_REQUEST
     }
   }
@@ -161,7 +161,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(FORBIDDEN)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe FORBIDDEN
     }
   }
@@ -174,7 +174,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe SERVICE_UNAVAILABLE
     }
   }
@@ -186,7 +186,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request)
+      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe INTERNAL_SERVER_ERROR
     }
   }

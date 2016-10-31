@@ -27,6 +27,7 @@ import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.play.http.HeaderCarrier
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
 
@@ -34,21 +35,21 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
 
   "Government Gateway Provider" should {
     "have an account type additional parameter set to organisation" in {
-      val ggw=new GovernmentGatewayProvider(MockConfig.introductionUrl,MockConfig.ggSignInUrl)
+      val ggw = new GovernmentGatewayProvider(MockConfig.introductionUrl, MockConfig.ggSignInUrl)
       ggw.additionalLoginParameters("accountType") shouldEqual List("organisation")
     }
   }
 
   "Government Gateway Provider" should {
     "have a login url set from its second constructor parameter" in {
-      val ggw=new GovernmentGatewayProvider(MockConfig.introductionUrl,MockConfig.ggSignInUrl)
+      val ggw = new GovernmentGatewayProvider(MockConfig.introductionUrl, MockConfig.ggSignInUrl)
       ggw.loginURL shouldEqual MockConfig.ggSignInUrl
     }
   }
 
   "Government Gateway Provider" should {
     "have a continueURL constructed from its first constructor parameter" in {
-      val ggw=new GovernmentGatewayProvider(MockConfig.introductionUrl,MockConfig.ggSignInUrl)
+      val ggw = new GovernmentGatewayProvider(MockConfig.introductionUrl, MockConfig.ggSignInUrl)
       ggw.continueURL shouldEqual MockConfig.introductionUrl
     }
   }
@@ -56,7 +57,7 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
   "Government Gateway Provider" should {
     "handle a session timeout with a redirect" in {
       implicit val fakeRequest = FakeRequest()
-      val ggw=new GovernmentGatewayProvider(MockConfig.introductionUrl,MockConfig.ggSignInUrl)
+      val ggw = new GovernmentGatewayProvider(MockConfig.introductionUrl, MockConfig.ggSignInUrl)
       val timeoutHandler = ggw.handleSessionTimeout(fakeRequest)
       status(timeoutHandler) shouldBe SEE_OTHER
       redirectLocation(timeoutHandler) shouldBe Some("/investment-tax-relief/session-timeout")
@@ -64,7 +65,7 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
   }
 
   "Extract previously logged in time of logged in user" should {
-    s"return ${ggUser.previouslyLoggedInAt.get}"  in {
+    s"return ${ggUser.previouslyLoggedInAt.get}" in {
       val user = TAVCUser(ggUser.allowedAuthContext)
       user.previouslyLoggedInAt shouldBe ggUser.previouslyLoggedInAt
     }
@@ -92,11 +93,34 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
   "Calling authenticated async action with a GG login session with a HMRC-TAVC-ORG enrolment" should {
     "result in a status OK" in {
       implicit val hc = HeaderCarrier()
-      val enrolledUser = Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated")
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       status(result) shouldBe Status.OK
+    }
+  }
+
+
+  "Calling authenticated getTavCReferenceNumber when it is not found on the enrolement" should {
+    "return an empty TavcReference" in {
+      implicit val hc = HeaderCarrier()
+      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(""))
+      val resullt = AuthEnrolledTestController.getTavCReferenceNumber()(hc).map { x =>
+        x shouldBe ""
+      }
+    }
+  }
+
+  "Calling authenticated getTavCReferenceNumber when it is exists on the enrolement" should {
+    "return the TavcReference" in {
+      implicit val hc = HeaderCarrier()
+      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful("XATAVC000123456 "))
+      val resullt = AuthEnrolledTestController.getTavCReferenceNumber()(hc).map { x =>
+        x shouldBe "XATAVC000123456 "
+      }
     }
   }
 }

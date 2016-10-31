@@ -28,7 +28,9 @@ import scala.concurrent.Future
 trait EnrolmentConnector extends ServicesConfig {
 
   def serviceUrl: String
+
   def authorityUri: String
+
   def http: HttpGet with HttpPost
 
   def getTAVCEnrolment(uri: String)(implicit hc: HeaderCarrier): Future[Option[Enrolment]] = {
@@ -39,6 +41,16 @@ trait EnrolmentConnector extends ServicesConfig {
           case OK => response.json.as[Seq[Enrolment]].find(_.key == "HMRC-TAVC-ORG")
           case status => None
         }
+    }
+  }
+
+  def getTavcReferencNumber(uri: String)(implicit hc: HeaderCarrier): Future[String] = {
+    getTAVCEnrolment(uri).map {
+      case Some(enrolment) => {
+        val identifier = enrolment.identifiers.find(_.key == "TAVCRef")
+        identifier.fold("")(_.value)
+      }
+      case _ => ""
     }
   }
 }

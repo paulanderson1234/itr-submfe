@@ -53,6 +53,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
+      tavcRef  <- getTavCReferenceNumber()
       // company name also a required field when it is implemented
 
       // potentially optional or required
@@ -66,8 +67,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
-      result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails,
-        proposedInvestment, investmentGrow, dateOfIncorporation, contactAddress, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+      result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
+        investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
     } yield result
   }
@@ -90,6 +91,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        investmentGrowModel: Option[InvestmentGrowModel],
                                        dateOfIncorporation: Option[DateOfIncorporationModel],
                                        contactAddress: Option[AddressModel],
+                                       tavcReferenceNumber:String,
 
                                        // potentially optional or potentially required
                                        subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
@@ -133,7 +135,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             , tempCompanyAddress, previousSchemes)
         ))
 
-        val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission)
+        val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
         submissionResponseModel.map { submissionResponse =>
           submissionResponse.status match {
             case OK => Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))

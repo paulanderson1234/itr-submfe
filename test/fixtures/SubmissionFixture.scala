@@ -23,6 +23,9 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
 import models.submission._
+import play.api.libs.json.Json
+import play.api.test.Helpers._
+import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -69,6 +72,7 @@ trait SubmissionFixture {
   }
 
   def setUpMocksMinimumRequiredModels(mockS4lConnector: S4LConnector) {
+
 
     // mandatory minimum
     when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -164,7 +168,7 @@ trait SubmissionFixture {
 
   val schemeTypes: SchemeTypesModel = SchemeTypesModel(eis = true, seis = false, vct = false, sitr = false)
   val testAgentRef = "AARN1234567"
-  val tavcReferenceId = "AA1234567890000"
+  val tavcReferenceId = "XATAVC000123456"
 
   val marketInfo = SubmitMarketInfoModel(newGeographicalMarketModel = NewGeographicalMarketModel(Constants.StandardRadioButtonNoValue),
     newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue))
