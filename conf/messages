@@ -5,6 +5,7 @@ common.button.continueNextSection=Continue to next section
 common.button.continueFirstSection=Continue to first section
 common.button.continueThirdSection=Continue to Section 3
 common.button.snc=Save and continue
+common.button.delete=Delete
 common.button.sign-in=Sign in
 common.button.back=Back
 common.button.start=Start now
@@ -530,13 +531,13 @@ page.signout.SignedOut.header = You''re signed out
 page.signout.SignedOut.explore = Explore GOV.UK
 
 #hub page
+page.introduction.hub.title=Applications Overview
 page.introduction.hub.heading=Applications Overview
 page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
-page.introduction.hub.existing.continue.button=Continue
-page.introduction.hub.existing.delete.button=Delete
+
 
 ## Feedback ##
 feedback.title = Feedback

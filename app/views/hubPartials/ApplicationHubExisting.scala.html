@@ -3,7 +3,7 @@
 @()(implicit request: Request[_])
 
 <div class="form-group">
-    <h4 class="heading-small">@Messages("page.introduction.hub.existing.heading")</h4>
+    <h4 class="heading-small" id="hub-application-heading">@Messages("page.introduction.hub.existing.heading")</h4>
 
     <table id="hub-existing-table">
         <tbody>
@@ -15,9 +15,9 @@
         </tr>
         <tr>
             <td id="hub-application">@Messages("page.introduction.hub.existing.advanced.assurance.type")</td>
-            <td id="continue"><a id="continue-ref" href=@routes.YourCompanyNeedController.show.toString>@Messages("page.introduction.hub.existing.continue.button")</a></td>
-            <td id="delete"> @form(action = controllers.routes.HubController.delete) {
-                <button class="button--link-style font-xsmall" type="submit" id="delete-link"> @Messages("page.introduction.hub.existing.delete.button")</button>
+            <td id="continue"><a id="continue-ref" href=@routes.YourCompanyNeedController.show.toString>@Messages("common.button.continue")</a></td>
+            <td id="delete"> @form(action = controllers.routes.ApplicationHubController.delete) {
+                <button class="button--link-style font-xsmall" type="submit" id="delete-link"> @Messages("common.button.delete")</button>
                 }</td>
         </tr>
         </tbody>

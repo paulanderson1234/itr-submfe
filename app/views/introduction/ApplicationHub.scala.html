@@ -1,11 +1,21 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.{externalLink, backButton}
+@import config.FrontendAppConfig
 
 @(partial: Html)(implicit request: Request[_])
 
-@import config.FrontendAppConfig
+@sidebar = {
 
-@main_template(title = Messages("page.introduction.qualifyingForScheme.title"), bodyClasses = None) {
+<h4 class="heading-small" id="hub-application-heading"> ACME Limited</h4>
+<div class="form group">
+    <p>Company contact details</p>
+    <p>Contact name</p>
+    <p>0123456789</p>
+    <p>namecompany.com</p>
+</div>
+}
+
+@main_template(title = Messages("page.introduction.hub.title"), bodyClasses = None,  sidebarLinks = Some(sidebar)) {
 
 <div class="grid-column">
     <div class="column-two-thirds">

@@ -1,6 +1,0 @@
-@import uk.gov.hmrc.play.views.html.helpers.{form}
-@()(implicit request: Request[_])
-
-@form(action = controllers.routes.HubController.submit()) {
-    <button class="button" type="submit" id="createNewApplication">@Messages("page.introduction.hub.button")</button>
-}

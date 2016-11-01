@@ -29,7 +29,7 @@ import scala.concurrent.Future
 /**
   * Created by jade on 31/10/16.
   */
-object HubController extends HubController{
+object ApplicationHubController extends ApplicationHubController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -37,16 +37,14 @@ object HubController extends HubController{
 }
 
 
-trait HubController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val s4lConnector: S4LConnector
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
-      case Some(true) => Ok(Hub(HubExisting()))
-      case _ => Ok(Hub(HubNew()))
+      case Some(true) => Ok(ApplicationHub(ApplicationHubExisting()))
+      case _ => Ok(ApplicationHub(ApplicationHubNew()))
     }
   }
 
@@ -56,8 +54,9 @@ trait HubController extends FrontendController with AuthorisedAndEnrolledForTAVC
   }
 
   val delete = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.clearCache()
-    Future.successful(Redirect(routes.HubController.show()))
+    s4lConnector.clearCache().map{
+      case _ => Redirect(routes.ApplicationHubController.show())
+    }
   }
 
 }
