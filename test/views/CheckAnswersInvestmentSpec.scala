@@ -46,6 +46,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
         Some(subsidiariesNinetyOwnedModelNo),Some(investmentGrowModel))
         contactDetailsSetup()
         companyDetailsSetup()
+        contactAddressSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -116,6 +117,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()
+        contactAddressSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }

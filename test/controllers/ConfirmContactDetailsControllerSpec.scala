@@ -81,16 +81,16 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   }
 
   //TODO: Re-introduce when we try to get the contactDetails from ETMP when it is then possible to mock a return none for this
-//    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-//      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-//      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//      mockEnrolledRequest
-//      showWithSessionAndAuth(ConfirmContactDetailsControllerTest.show())(
-//        result => status(result) shouldBe OK
-//      )
-//    }
-//  }
+  //    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
+  //      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+  //      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
+  //        .thenReturn(Future.successful(None))
+  //      mockEnrolledRequest
+  //      showWithSessionAndAuth(ConfirmContactDetailsControllerTest.show())(
+  //        result => status(result) shouldBe OK
+  //      )
+  //    }
+  //  }
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
 
@@ -163,7 +163,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       )
     }
   }
-    "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
+  "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
       setupMocks(Some(confirmContactDetailsModel))
       mockEnrolledRequest()
@@ -194,13 +194,13 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
         "contactDetails.telephoneNumber" -> "01234 567890",
         "contactDetails.mobileNumber" -> "01234 567890",
         "contactDetails.email" -> "thisiavalidemail@valid.com")
-       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
-          result => {
-            status(result) shouldBe BAD_REQUEST
-          }
-        )
-      }
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
     }
+  }
 
   "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
 

@@ -43,6 +43,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       val document: Document = {
         previousRFISetup()
         contactDetailsSetup()
+        contactAddressSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
@@ -143,6 +144,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       val document: Document = {
         previousRFISetup()
         contactDetailsSetup()
+        contactAddressSetup()
         investmentSetup()
         companyDetailsSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
@@ -194,6 +196,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       val document: Document = {
         previousRFISetup()
         contactDetailsSetup()
+        contactAddressSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
@@ -300,6 +303,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       val document: Document = {
         previousRFISetup()
         contactDetailsSetup()
+        contactAddressSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelNo), Some(operatingCostsModel),
@@ -353,6 +357,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       val document: Document = {
         previousRFISetup()
         contactDetailsSetup()
+        contactAddressSetup()
         investmentSetup()
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),

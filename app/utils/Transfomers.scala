@@ -18,9 +18,12 @@ package utils
 
 import java.text.NumberFormat
 
+import akka.actor.Address
+import models.AddressModel
+
 import scala.util.{Failure, Success, Try}
 
-object Transfomers {
+object Transformers {
 
   val stringToBigDecimal: String => BigDecimal = (input) => Try(BigDecimal(input.trim)) match {
     case Success(value) => value
@@ -46,5 +49,10 @@ object Transfomers {
 
   val integerToFormattedNumber: Int => String = {
     (value) => NumberFormat.getNumberInstance.format(value)
+  }
+
+  val addressModelToFlattenedArray : AddressModel => Array[String] = {
+    (contactAddress) => Array(Option(contactAddress.addressline1),Option(contactAddress.addressline2),contactAddress.addressline3,
+      contactAddress.addressline4,contactAddress.postcode,Option(contactAddress.countryCode)).flatten
   }
 }

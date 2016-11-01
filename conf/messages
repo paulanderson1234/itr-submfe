@@ -449,7 +449,7 @@ page.summaryQuestion.subNinetyOwned=[Company name] owns more than 90% of that co
 page.summaryQuestion.investmentGrow=How the investment will help your company grow
 
 #summary questions section four
-page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact Details
+page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact details for this application
 page.summaryQuestion.name=Name
 page.summaryQuestion.telephone=Landline
 page.summaryQuestion.mobile=Mobile
@@ -470,8 +470,8 @@ page.address.country.select = Select one country
 #page.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 
 #contact details page
+page.contactInformation.contactDetails.title=Who should we contact about your application?
 page.contactInformation.contactDetails.heading=Who should we contact about your application?
-page.contactInformation.contactDetails.title=Contact details
 page.contactInformation.contactDetails.forename.label=First name
 page.contactInformation.contactDetails.surname.label=Last name
 page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)

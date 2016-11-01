@@ -57,6 +57,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
         Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(subsidiariesSpendingInvestmentModelYes),Some(subsidiariesNinetyOwnedModelNo),
         Some(investmentGrowModel))
       contactDetailsSetup(Some(contactDetailsModel))
+      contactAddressSetup(Some(contactAddressModel))
       companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
         Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
@@ -73,6 +74,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
+      contactAddressSetup()
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
@@ -86,6 +88,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
+      contactAddressSetup()
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
