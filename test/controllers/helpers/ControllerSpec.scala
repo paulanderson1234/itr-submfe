@@ -25,8 +25,12 @@ import scala.concurrent.Future
 
 trait ControllerSpec extends BaseSpec {
 
-  def mockEnrolledRequest(): Unit = when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-    .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+  def mockEnrolledRequest(): Unit = {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+    when(mockEnrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(tavcReferenceId))
+  }
 
   def mockNotEnrolledRequest(): Unit = when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
     .thenReturn(Future.successful(None))

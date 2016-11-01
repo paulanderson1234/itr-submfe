@@ -2,7 +2,7 @@
 
 @()(implicit request: Request[_])
 
-@main_template(Messages("session.timeout.message")) {
+@main_template(Messages("session.timeout.message"), userLoggedIn = false) {
 
     <h1 class="heading-large">@Messages("session.timeout.message")</h1>
 

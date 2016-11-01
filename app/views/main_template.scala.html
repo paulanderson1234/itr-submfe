@@ -7,7 +7,8 @@ mainClass: Option[String] = None,
 scriptElem: Option[Html] = None,
 articleLayout: Boolean = true,
 backLink: Option[String] = None,
-sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Request[_])
+sectionProgress: Option[String] = None,
+userLoggedIn: Boolean = true)(mainContent: Html)(implicit request : Request[_])
 
 
 @import uk.gov.hmrc.play.views.html.layouts
@@ -47,5 +48,6 @@ sectionProgress: Option[String] = None)(mainContent: Html)(implicit request : Re
     contentHeader = Some(contentHeader),
     mainContent = contentLayout,
     serviceInfoContent = serviceInfoContent,
-    scriptElem = scriptElem
+    scriptElem = scriptElem,
+    userLoggedIn = userLoggedIn
 )

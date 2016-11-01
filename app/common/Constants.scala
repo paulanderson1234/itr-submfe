@@ -50,4 +50,7 @@ trait Constants {
   val PageInvestmentSchemeVctValue : String = "Venture Capital Trust"
   val PageInvestmentSchemeAnotherValue : String = "Another scheme"
 
+  val enrolmentOrgKey = "HMRC-TAVC-ORG"
+  val enrolmentTavcRefKey = "TAVCRef"
+
 }
