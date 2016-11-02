@@ -25,8 +25,12 @@ import controllers.helpers.ControllerSpec
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.http.Status
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HttpResponse
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
 import scala.concurrent.Future
@@ -48,6 +52,9 @@ class ApplicationHubControllerSpec extends ControllerSpec{
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(bool))
   }
+
+  val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(true)))
+
 
   "ApplicationHubController" should {
     "use the correct auth connector" in {
@@ -143,6 +150,31 @@ class ApplicationHubControllerSpec extends ControllerSpec{
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
+    "redirect to 'your company need' page if table is not empty" in {
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/your-company-need")
+        }
+      )
+    }
+  }
+//
+  "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
+    "redirect to itself and delete the application currently in progress" in {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(Status.OK))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.delete)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/hub")
         }
       )
     }

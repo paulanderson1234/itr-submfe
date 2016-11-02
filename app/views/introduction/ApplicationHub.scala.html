@@ -5,7 +5,6 @@
 @(partial: Html)(implicit request: Request[_])
 
 @sidebar = {
-
 <h4 class="heading-small" id="hub-application-heading"> ACME Limited</h4>
 <div class="form group">
     <p>Company contact details</p>
@@ -14,6 +13,7 @@
     <p>namecompany.com</p>
 </div>
 }
+
 
 @main_template(title = Messages("page.introduction.hub.title"), bodyClasses = None,  sidebarLinks = Some(sidebar)) {
 

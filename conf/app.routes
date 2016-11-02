@@ -131,7 +131,7 @@ GET        /sign-out                                controllers.SignOutControlle
 GET        /signed-out                              controllers.SignOutController.show
 
 GET        /hub                                     controllers.ApplicationHubController.show
-POST       /hub                                     controllers.ApplicationHubController.submit
+POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 
 #Feedback routes
