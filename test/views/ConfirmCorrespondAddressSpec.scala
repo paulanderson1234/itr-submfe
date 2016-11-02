@@ -56,7 +56,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
   }
 
   def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any()))
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(subscriptionDetails)
 
 
