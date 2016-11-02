@@ -24,6 +24,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
+import utils.CountriesHelper
 
 class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
 
@@ -42,6 +43,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
         previousRFISetup()
         investmentSetup()
         contactDetailsSetup(Some(contactDetailsModel))
+        contactAddressSetup(Some(contactAddressModel))
         companyDetailsSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
@@ -52,57 +54,46 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
       //Section table heading
       document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
-      // fullname
-      contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
-        Messages("page.summaryQuestion.name")
-      contactDetailsTable.select("tr").get(0).getElementById("name-answer").text() shouldBe
+      // contactDetails
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-question").text() shouldBe
+        Messages("page.summaryQuestion.contactDetails")
+
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line0").text() shouldBe
         contactDetailsModel.fullName
-      contactDetailsTable.select("tr").get(0).getElementById("name-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // telephone
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-question").text() shouldBe
-        Messages("page.summaryQuestion.telephone")
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-answer").text() shouldBe
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line1").text() shouldBe
         contactDetailsModel.telephoneNumber.get
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // email
-      contactDetailsTable.select("tr").get(2).getElementById("email-question").text() shouldBe
-        Messages("page.summaryQuestion.email")
-      contactDetailsTable.select("tr").get(2).getElementById("email-answer").text() shouldBe
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line2").text() shouldBe
+        contactDetailsModel.mobileNumber.get
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line3").text() shouldBe
         contactDetailsModel.email
-      contactDetailsTable.select("tr").get(2).getElementById("email-link")
+
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-link")
         .attr("href") shouldBe routes.ContactDetailsController.show().toString
 
       //address
-      contactDetailsTable.select("tr").get(3).getElementById("address-question").text() shouldBe
+      contactDetailsTable.select("tr").get(1).getElementById("address-question").text() shouldBe
         Messages("page.summaryQuestion.contactAddress")
-      contactDetailsTable.select("tr").get(3).getElementById("address-Line0").text() shouldBe
-        "Company Name Ltd."
-      contactDetailsTable.select("tr").get(3).getElementById("address-Line1").text() shouldBe
-        "2 Telford Plaza"
-      contactDetailsTable.select("tr").get(3).getElementById("address-Line2").text() shouldBe
-        "Lawn Central"
-      contactDetailsTable.select("tr").get(3).getElementById("address-Line3").text() shouldBe
-        "Telford"
-      contactDetailsTable.select("tr").get(3).getElementById("address-Line4").text() shouldBe
-        "TF3 4NT"
-      contactDetailsTable.select("tr").get(3).getElementById("address-link")
-        .attr("href") shouldBe routes.ConfirmCorrespondAddressController.show().toString
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line0").text() shouldBe
+        contactAddressModel.addressline1
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line1").text() shouldBe
+        contactAddressModel.addressline2
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line2").text() shouldBe
+        CountriesHelper.getSelectedCountry(contactAddressModel.countryCode)
+      contactDetailsTable.select("tr").get(1).getElementById("address-link")
+        .attr("href") shouldBe routes.ContactAddressController.show().toString
     }
   }
 
   "The Check Answers page" should {
 
-    "Verify that the Check Answers page contains the correct elements for Section 4: Contact Details" +
+    "Verify that the Check Answers page contains an empty table for Section 4: Contact Details" +
       " when the contact details model is not populated" in new Setup {
       val document: Document = {
         previousRFISetup()
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()
+        contactAddressSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -113,39 +104,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
       //Section table heading
       document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
-      // fullname
-      contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
-        Messages("page.summaryQuestion.name")
-        contactDetailsTable.select("tr").get(0).getElementById("name-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(0).getElementById("name-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // telephone
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-question").text() shouldBe
-        Messages("page.summaryQuestion.telephone")
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // email
-      contactDetailsTable.select("tr").get(2).getElementById("email-question").text() shouldBe
-        Messages("page.summaryQuestion.email")
-      contactDetailsTable.select("tr").get(2).getElementById("email-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(2).getElementById("email-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-
-      // address
-      contactDetailsTable.select("tr").get(3).getElementById("address-question").text() shouldBe
-        Messages("page.summaryQuestion.contactAddress")
-      contactDetailsTable.select("tr").get(3).getElementById("address-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(3).getElementById("address-link")
-        .attr("href") shouldBe routes.ConfirmCorrespondAddressController.show().toString
+      contactDetailsTable.select("tr").size() shouldBe 0
     }
   }
-
 }

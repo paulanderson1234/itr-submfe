@@ -23,12 +23,12 @@ import common.Constants
 trait CostFormatter {
 
   def getOperatingAndRDCostsAsFormattedString(value: String, taxYear: String): String= {
-    val transformedValue = Transfomers.integerToFormattedNumber(value.toInt)
+    val transformedValue = Transformers.integerToFormattedNumber(value.toInt)
     Constants.taxYearFormattedAnswer(transformedValue,taxYear)
   }
 
   def getAmountAsFormattedString(value: Int): String = {
-    val transformedValue = Transfomers.integerToFormattedNumber(value)
+    val transformedValue = Transformers.integerToFormattedNumber(value)
     Constants.amountFormattedAnswer(transformedValue)
   }
 }
