@@ -139,7 +139,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
   "The Check Answers page" should {
 
-    "Verify that the Check Answers page contains the correct elements for Section 1: Company details" +
+    "Verify that the Check Answers page contains an empty table for Section 1: Company details" +
       " when an empty set of company detail models are passed" in new Setup {
       val document: Document = {
         previousRFISetup()
@@ -160,28 +160,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       //Section 1 table heading
       document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
-      //Nature of business
-      companyDetailsTableTBody.select("tr").get(0).getElementById("natureOfBusiness-question").text() shouldBe
-        Messages("summaryQuestion.natureOfBusiness")
-      companyDetailsTableTBody.select("tr").get(0).getElementById("natureOfBusiness-answer").text() shouldBe
-        notAvailableMessage
-      companyDetailsTableTBody.select("tr").get(0).getElementById("natureOfBusiness-link")
-        .attr("href") shouldEqual routes.NatureOfBusinessController.show().url
-      //Date of incorporation
-      companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-question").text() shouldBe
-        Messages("summaryQuestion.dateOfIncorporation")
-      companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-answer").text() shouldBe
-        notAvailableMessage
-      companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-link")
-        .attr("href") shouldEqual routes.DateOfIncorporationController.show().url
-      //Is Knowledge Intensive
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-question").text() shouldBe
-        Messages("summaryQuestion.knowledgeIntensive")
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-answer").text() shouldBe
-        notAvailableMessage
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-link")
-        .attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
-
+      companyDetailsTableTBody.select("tr").size() shouldBe 0
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url

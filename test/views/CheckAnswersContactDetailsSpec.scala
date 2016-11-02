@@ -101,7 +101,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
 
   "The Check Answers page" should {
 
-    "Verify that the Check Answers page contains the correct elements for Section 4: Contact Details" +
+    "Verify that the Check Answers page contains an empty table for Section 4: Contact Details" +
       " when the contact details model is not populated" in new Setup {
       val document: Document = {
         previousRFISetup()
@@ -119,30 +119,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
       //Section table heading
       document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
-      // fullname
-      contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
-        Messages("page.summaryQuestion.name")
-        contactDetailsTable.select("tr").get(0).getElementById("name-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(0).getElementById("name-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // email
-      contactDetailsTable.select("tr").get(1).getElementById("email-question").text() shouldBe
-        Messages("page.summaryQuestion.email")
-      contactDetailsTable.select("tr").get(1).getElementById("email-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(1).getElementById("email-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-
-      // address
-      contactDetailsTable.select("tr").get(2).getElementById("address-question").text() shouldBe
-        Messages("page.summaryQuestion.contactAddress")
-      contactDetailsTable.select("tr").get(2).getElementById("address-answer").text() shouldBe
-        notAvailableMessage
-      contactDetailsTable.select("tr").get(2).getElementById("address-link")
-        .attr("href") shouldBe routes.ConfirmCorrespondAddressController.show().toString
+      contactDetailsTable.select("tr").size() shouldBe 0
     }
   }
 }

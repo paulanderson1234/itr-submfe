@@ -27,16 +27,12 @@
             <!-- Nature Of Business -->
             @if(checkAnswersModel.natureOfBusinessModel.isDefined){
                 @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.routes.NatureOfBusinessController.show().toString))
-            }else{
-                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"), Messages("common.notAvailable"), Some(controllers.routes.NatureOfBusinessController.show().toString))
             }
             <!-- Date of Incorporation -->
             @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
                 @defining(checkAnswersModel.dateOfIncorporationModel.get) { dateOfIncorporationModel =>
                     @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.routes.DateOfIncorporationController.show().toString))
                 }
-            }else{
-                @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), Messages("common.notAvailable"), Some(controllers.routes.DateOfIncorporationController.show().toString))
             }
             <!-- Date of First Commercial Sale -->
             @if(checkAnswersModel.commercialSaleModel.isDefined){
@@ -49,8 +45,6 @@
             <!--Is Knowledge Intensive -->
             @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
                 @textRowHelperBasic("knowledgeIntensive", Messages("summaryQuestion.knowledgeIntensive"),checkAnswersModel.isKnowledgeIntensiveModel.get.isKnowledgeIntensive, Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
-            }else{
-                @textRowHelperBasic("knowledgeIntensive", Messages("summaryQuestion.knowledgeIntensive"), Messages("common.notAvailable"), Some(controllers.routes.IsKnowledgeIntensiveController.show().toString))
             }
             <!--If Knowledge Intensive is Yes-->
             @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
@@ -69,9 +63,6 @@
                                                             OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts3rdYear,Messages("page.companyDetails.OperatingCosts.row.heading.three"))),
                                                             Some(controllers.routes.OperatingCostsController.show().toString), Some(true))
                         }
-                    }else{
-                       @textRowHelperBasic("operatingCosts", Messages("summaryQuestion.operatingCosts"), Messages("common.notAvailable"),Some(controllers.routes.OperatingCostsController.show().toString))
-                       @textRowHelperBasic("rdCosts", Messages("summaryQuestion.rdCosts"), Messages("common.notAvailable"), Some(controllers.routes.OperatingCostsController.show().toString))
                     }
                     <!-- Percentage of Staff with Masters -->
                     @if(checkAnswersModel.percentageStaffWithMastersModel.isDefined){
@@ -84,8 +75,6 @@
                                 @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.developmentPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
                             }
                         }
-                    }else{
-                       @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), Messages("common.notAvailable"), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                     }
                 }
             }
@@ -118,14 +107,10 @@
             <!--Proposed Investment-->
             @if(checkAnswersModel.proposedInvestmentModel.isDefined){
             @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.routes.ProposedInvestmentController.show().toString))
-            }else{
-            @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), Messages("common.notAvailable"), Some(controllers.routes.ProposedInvestmentController.show().toString))
             }
             <!--Used investment reason before page-->
             @if(checkAnswersModel.usedInvestmentReasonBeforeModel.isDefined){
             @textRowHelperBasic("usedInvestReasonBefore", Messages("page.summaryQuestion.usedInvestReasonBefore"), checkAnswersModel.usedInvestmentReasonBeforeModel.get.usedInvestmentReasonBefore, Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
-            }else{
-            @textRowHelperBasic("usedInvestReasonBefore", Messages("page.summaryQuestion.usedInvestReasonBefore"),  Messages("common.notAvailable"), Some(controllers.routes.UsedInvestmentReasonBeforeController.show().toString))
             }
             <!--Previous before DOFCS page-->
             @if(checkAnswersModel.previousBeforeDOFCSModel.isDefined){
@@ -134,20 +119,14 @@
             <!-- New Geographical Market page-->
             @if(checkAnswersModel.newGeographicalMarketModel.isDefined){
             @textRowHelperBasic("newGeoMarket", Messages("page.summaryQuestion.newGeoMarket"), checkAnswersModel.newGeographicalMarketModel.get.isNewGeographicalMarket, Some(controllers.routes.NewGeographicalMarketController.show().toString))
-            }else{
-            @textRowHelperBasic("newGeoMarket", Messages("page.summaryQuestion.newGeoMarket"),  Messages("common.notAvailable"), Some(controllers.routes.NewGeographicalMarketController.show().toString))
             }
             <!-- New product market page-->
             @if(checkAnswersModel.newProductModel.isDefined){
             @textRowHelperBasic("newProduct", Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.routes.NewProductController.show().toString))
-            }else{
-            @textRowHelperBasic("newProduct", Messages("page.summaryQuestion.newProduct"),  Messages("common.notAvailable"), Some(controllers.routes.NewProductController.show().toString))
             }
             <!-- Investment Grow page-->
             @if(checkAnswersModel.investmentGrowModel.isDefined){
             @textRowHelperBasic("investmentGrow", Messages("page.summaryQuestion.investmentGrow"), checkAnswersModel.investmentGrowModel.get.investmentGrowDesc, Some(controllers.routes.InvestmentGrowController.show().toString))
-            }else{
-            @textRowHelperBasic("investmentGrow", Messages("page.summaryQuestion.investmentGrow"),  Messages("common.notAvailable"), Some(controllers.routes.InvestmentGrowController.show().toString))
             }
             </tbody>
         </table>
@@ -172,14 +151,8 @@
                 @if(checkAnswersModel.contactAddressModel.isDefined){
                     @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Transformers.addressModelToFlattenedArray(checkAnswersModel.contactAddressModel.get),
                     Some(controllers.routes.ConfirmCorrespondAddressController.show().toString))
-                }else{
-                    @textRowHelperBasic("address", Messages("page.summaryQuestion.contactAddress"), Messages("common.notAvailable"),Some(controllers.routes.ConfirmCorrespondAddressController.show().toString))
                 }
             }
-            }else{
-                @textRowHelperBasic("name", Messages("page.summaryQuestion.name"), Messages("common.notAvailable"), Some(controllers.routes.ContactDetailsController.show().toString))
-                @textRowHelperBasic("email", Messages("page.summaryQuestion.email"), Messages("common.notAvailable"), Some(controllers.routes.ContactDetailsController.show().toString))
-                @textRowHelperBasic("address", Messages("page.summaryQuestion.contactAddress"), Messages("common.notAvailable"),Some(controllers.routes.ConfirmCorrespondAddressController.show().toString))
             }
             </tbody>
         </table>

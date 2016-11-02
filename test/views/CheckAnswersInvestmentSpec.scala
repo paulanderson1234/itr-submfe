@@ -110,7 +110,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
 
   "The Check Answers page" should {
 
-    "Verify that the Check Answers page contains the correct elements for Section 3: Investment" +
+    "Verify that the Check Answers page contains an empty table for Section 3: Investment" +
       " when the investment models are empty" in new Setup {
       val document: Document = {
         previousRFISetup()
@@ -127,42 +127,7 @@ class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
 
       //Section table heading
       document.getElementById("investmentSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionThree")
-
-      //proposed investment
-      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-question").text() shouldBe
-        Messages("page.summaryQuestion.proposedInvestment")
-      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(0).getElementById("proposedInvestment-link")
-        .attr("href") shouldEqual routes.ProposedInvestmentController.show().url
-
-      // same reason as before
-      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-question").text() shouldBe
-        Messages("page.summaryQuestion.usedInvestReasonBefore")
-      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(1).getElementById("usedInvestReasonBefore-link")
-        .attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
-
-      // new geographical market
-      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-question").text() shouldBe
-        Messages("page.summaryQuestion.newGeoMarket")
-      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(2).getElementById("newGeoMarket-link")
-        .attr("href") shouldEqual routes.NewGeographicalMarketController.show().url
-
-      // new prodcut
-      investmentTableTbody.select("tr").get(3).getElementById("newProduct-question").text() shouldBe
-        Messages("page.summaryQuestion.newProduct")
-      investmentTableTbody.select("tr").get(3).getElementById("newProduct-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(3).getElementById("newProduct-link")
-        .attr("href") shouldEqual routes.NewProductController.show().url
-
-      // investment Grow
-      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-question").text() shouldBe
-        Messages("page.summaryQuestion.investmentGrow")
-      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-answer").text() shouldBe notAvailableMessage
-      investmentTableTbody.select("tr").get(4).getElementById("investmentGrow-link")
-
-        .attr("href") shouldEqual routes.InvestmentGrowController.show().url
+      investmentTableTbody.select("tr").size() shouldBe 0
     }
   }
 }
