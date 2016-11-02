@@ -450,10 +450,7 @@ page.summaryQuestion.investmentGrow=How the investment will help your company gr
 
 #summary questions section four
 page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact details for this application
-page.summaryQuestion.name=Name
-page.summaryQuestion.telephone=Landline
-page.summaryQuestion.mobile=Mobile
-page.summaryQuestion.email=Email address
+page.summaryQuestion.contactDetails=Contact details
 page.summaryQuestion.contactAddress=Contact address
 
 

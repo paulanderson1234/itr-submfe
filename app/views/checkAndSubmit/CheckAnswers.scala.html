@@ -6,6 +6,7 @@
 @import views.html.helpers.summary.textSubSectionHelper
 @import common.Constants
 @import utils.Transformers
+@import utils.CountriesHelper
 
 @(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_])
 
@@ -136,21 +137,13 @@
             @tableHeaderHelper("contactDetailsSection", Messages("page.summaryQuestion.companyDetailsSectionFour"))
             <!--Data rows-->
             <tbody>
-            <!--contact Details-->
-
                 @if(checkAnswersModel.contactDetailsModel.isDefined){
                 @defining(checkAnswersModel.contactDetailsModel.get) { contactDetails =>
-                <!-- contact details -->
-                @textRowHelperBasic("name", Messages("page.summaryQuestion.name"), contactDetails.fullName, Some(controllers.routes.ContactDetailsController.show().toString))
-                @if(contactDetails.telephoneNumber.isDefined){
-                    @textRowHelperBasic("telephone", Messages("page.summaryQuestion.telephone"), contactDetails.telephoneNumber.get, Some(controllers.routes.ContactDetailsController.show().toString))
-                }@if(contactDetails.mobileNumber.isDefined){
-                    @textRowHelperBasic("mobile", Messages("page.summaryQuestion.mobile"), contactDetails.mobileNumber.get, Some(controllers.routes.ContactDetailsController.show().toString))
-                }
-                @textRowHelperBasic("email", Messages("page.summaryQuestion.email"), contactDetails.email, Some(controllers.routes.ContactDetailsController.show().toString))
+                    @textRowHelperMultiLine("contactDetails", Messages("page.summaryQuestion.contactDetails"), Transformers.contactDetailsModelToFlattenedArray(contactDetails),
+                    Some(controllers.routes.ContactDetailsController.show().toString))
                 @if(checkAnswersModel.contactAddressModel.isDefined){
-                    @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Transformers.addressModelToFlattenedArray(checkAnswersModel.contactAddressModel.get),
-                    Some(controllers.routes.ConfirmCorrespondAddressController.show().toString))
+                    @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Transformers.addressModelToFlattenedArray(checkAnswersModel.contactAddressModel.get.copy(countryCode = CountriesHelper.getSelectedCountry(checkAnswersModel.contactAddressModel.get.countryCode))),
+                    Some(controllers.routes.ContactAddressController.show().toString))
                 }
             }
             }

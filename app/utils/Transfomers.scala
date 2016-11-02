@@ -19,7 +19,7 @@ package utils
 import java.text.NumberFormat
 
 import akka.actor.Address
-import models.AddressModel
+import models.{AddressModel, ContactDetailsModel}
 
 import scala.util.{Failure, Success, Try}
 
@@ -54,5 +54,10 @@ object Transformers {
   val addressModelToFlattenedArray : AddressModel => Array[String] = {
     (contactAddress) => Array(Option(contactAddress.addressline1),Option(contactAddress.addressline2),contactAddress.addressline3,
       contactAddress.addressline4,contactAddress.postcode,Option(contactAddress.countryCode)).flatten
+  }
+
+  val contactDetailsModelToFlattenedArray : ContactDetailsModel => Array[String] = {
+    (contactDetails) => Array(Option(contactDetails.fullName),contactDetails.telephoneNumber, contactDetails.mobileNumber,
+      Option(contactDetails.email)).flatten
   }
 }

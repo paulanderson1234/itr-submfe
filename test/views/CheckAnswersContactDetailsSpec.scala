@@ -24,6 +24,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
+import utils.CountriesHelper
 
 class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
 
@@ -53,49 +54,33 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
       //Section table heading
       document.getElementById("contactDetailsSection-table-heading").text() shouldBe Messages("page.summaryQuestion.companyDetailsSectionFour")
 
-      // fullname
-      contactDetailsTable.select("tr").get(0).getElementById("name-question").text() shouldBe
-        Messages("page.summaryQuestion.name")
-      contactDetailsTable.select("tr").get(0).getElementById("name-answer").text() shouldBe
+      // contactDetails
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-question").text() shouldBe
+        Messages("page.summaryQuestion.contactDetails")
+
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line0").text() shouldBe
         contactDetailsModel.fullName
-      contactDetailsTable.select("tr").get(0).getElementById("name-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // telephone
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-question").text() shouldBe
-        Messages("page.summaryQuestion.telephone")
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-answer").text() shouldBe
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line1").text() shouldBe
         contactDetailsModel.telephoneNumber.get
-      contactDetailsTable.select("tr").get(1).getElementById("telephone-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // mobile
-      contactDetailsTable.select("tr").get(2).getElementById("mobile-question").text() shouldBe
-        Messages("page.summaryQuestion.mobile")
-      contactDetailsTable.select("tr").get(2).getElementById("mobile-answer").text() shouldBe
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line2").text() shouldBe
         contactDetailsModel.mobileNumber.get
-      contactDetailsTable.select("tr").get(2).getElementById("mobile-link")
-        .attr("href") shouldBe routes.ContactDetailsController.show().toString
-
-      // email
-      contactDetailsTable.select("tr").get(3).getElementById("email-question").text() shouldBe
-        Messages("page.summaryQuestion.email")
-      contactDetailsTable.select("tr").get(3).getElementById("email-answer").text() shouldBe
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-Line3").text() shouldBe
         contactDetailsModel.email
-      contactDetailsTable.select("tr").get(3).getElementById("email-link")
+
+      contactDetailsTable.select("tr").get(0).getElementById("contactDetails-link")
         .attr("href") shouldBe routes.ContactDetailsController.show().toString
 
       //address
-      contactDetailsTable.select("tr").get(4).getElementById("address-question").text() shouldBe
+      contactDetailsTable.select("tr").get(1).getElementById("address-question").text() shouldBe
         Messages("page.summaryQuestion.contactAddress")
-      contactDetailsTable.select("tr").get(4).getElementById("address-Line0").text() shouldBe
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line0").text() shouldBe
         contactAddressModel.addressline1
-      contactDetailsTable.select("tr").get(4).getElementById("address-Line1").text() shouldBe
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line1").text() shouldBe
         contactAddressModel.addressline2
-      contactDetailsTable.select("tr").get(4).getElementById("address-Line2").text() shouldBe
-        contactAddressModel.countryCode
-      contactDetailsTable.select("tr").get(4).getElementById("address-link")
-        .attr("href") shouldBe routes.ConfirmCorrespondAddressController.show().toString
+      contactDetailsTable.select("tr").get(1).getElementById("address-Line2").text() shouldBe
+        CountriesHelper.getSelectedCountry(contactAddressModel.countryCode)
+      contactDetailsTable.select("tr").get(1).getElementById("address-link")
+        .attr("href") shouldBe routes.ContactAddressController.show().toString
     }
   }
 
