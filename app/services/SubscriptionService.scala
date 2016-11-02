@@ -19,6 +19,7 @@ package services
 import auth.TAVCUser
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubscriptionConnector}
+import models.{ConfirmContactDetailsModel, ConfirmCorrespondAddressModel}
 import models.etmp.SubscriptionTypeModel
 import play.api.Logger
 import uk.gov.hmrc.play.frontend.auth.AuthContext
@@ -40,8 +41,8 @@ trait SubscriptionService {
       case Some(subscriptionDetails) =>
         Try (subscriptionDetails.json.as[SubscriptionTypeModel]) match {
           case Success(subscriptionData) =>
-            s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, subscriptionData.contactDetails)
-            s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, subscriptionData.contactAddress)
+            s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, ConfirmContactDetailsModel("", subscriptionData.contactDetails))
+            s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
             Some(subscriptionData)
           case Failure(ex) =>
             Logger.error(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
