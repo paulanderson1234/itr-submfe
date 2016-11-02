@@ -15,7 +15,8 @@
  */
 
 package connectors
-import config.WSHttp
+import config.{FrontendAppConfig, WSHttp}
+import models.registration.RegistrationDetailsModel
 import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
@@ -26,13 +27,15 @@ import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
-  val serviceUrl = baseUrl("investment-tax-relief-submission")
-  val http = WSHttp
+  override lazy val serviceUrl = FrontendAppConfig.submissionUrl
+  override lazy val http = WSHttp
+  override lazy val getRegistrationDetailsUrl = FrontendAppConfig.getRegistrationDetailsUrl
 }
 
 trait SubmissionConnector {
   val serviceUrl: String
   val http: HttpGet with HttpPost with HttpPut
+  val getRegistrationDetailsUrl: String
 
   def validateKiCostConditions(operatingCostYear1: Int, operatingCostYear2: Int, operatingCostYear3: Int,
                                rAndDCostsYear1: Int, rAndDCostsYear2: Int, rAndDCostsYear3: Int)
@@ -78,6 +81,10 @@ trait SubmissionConnector {
     val targetSubmissionModel = Json.parse(json.toString()).as[DesSubmitAdvancedAssuranceModel]
 
     http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceNumber/submit", Json.toJson(targetSubmissionModel))
+  }
+
+  def getRegistrationDetails(safeID: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationDetailsModel]] = {
+    http.GET[Option[RegistrationDetailsModel]](s"$serviceUrl$getRegistrationDetailsUrl$safeID")
   }
 
 }

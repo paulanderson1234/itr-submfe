@@ -36,11 +36,11 @@ trait SubscriptionService {
         Try (subscriptionDetails.json.as[SubscriptionTypeModel]) match {
           case Success(subscriptionData) => Some(subscriptionData)
           case Failure(ex) =>
-            Logger.error(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
+            Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
             None
         }
       case _ =>
-        Logger.error(s"[SubscriptionService][getEtmpContactDetails] - No Subscription Details Retrieved")
+        Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - No Subscription Details Retrieved")
         None
     }
   }

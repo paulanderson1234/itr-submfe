@@ -63,7 +63,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   def getTavCReferenceNumber()(implicit hc: HeaderCarrier): Future[String] = {
     for {
       authority <- authConnector.currentAuthority
-      tavcRef <- enrolmentConnector.getTavcReferencNumber(authority.fold("")(_.uri))
+      tavcRef <- enrolmentConnector.getTavcReferenceNumber(authority.fold("")(_.uri))
     } yield tavcRef
   }
 
