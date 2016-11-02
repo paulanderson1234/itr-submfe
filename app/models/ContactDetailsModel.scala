@@ -22,8 +22,8 @@ case class ContactDetailsModel
 (
   forename : String,
   surname : String,
-  telephoneNumber: Option[String],
-  mobileNumber: Option[String],
+  telephoneNumber: Option[String] = None,
+  mobileNumber: Option[String] = None,
   email : String
 ){
   val fullName =  s"$forename $surname"

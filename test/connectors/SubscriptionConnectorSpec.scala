@@ -40,6 +40,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
+import play.api.Logger
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
@@ -103,9 +104,10 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
     """.stripMargin
   )))
 
-  def setupMockedResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
-    when(TargetSubscriptionConnector.http.GET[HttpResponse](
-      Matchers.eq(s"${TargetSubscriptionConnector.serviceUrl}/investment-tax-relief-subscription/$validTavcReference/subscription"))(Matchers.any(), Matchers.any()))
+  def setupMockedResponse(data: Option[HttpResponse]): OngoingStubbing[Future[Option[HttpResponse]]] = {
+    when(TargetSubscriptionConnector.http.GET[Option[HttpResponse]](
+      Matchers.eq(s"${TargetSubscriptionConnector.serviceUrl}/investment-tax-relief-subscription/$validTavcReference/subscription"))
+      (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 
@@ -113,31 +115,50 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
 
     "expecting a successful response" should {
       lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
-      lazy val response = await(result)
 
       "return a Status OK (200) response" in {
-        setupMockedResponse(successResponse)
-        response.status shouldBe Status.OK
+        setupMockedResponse(Some(successResponse))
+        await(result) match {
+          case Some(response) => response.status shouldBe Status.OK
+          case _ => fail("No response was received, when one was expected")
+        }
       }
 
       "Have a successful Json Body response" in {
-        setupMockedResponse(successResponse)
-        response.json shouldBe successResponse.json
+        setupMockedResponse(Some(successResponse))
+        await(result) match {
+          case Some(response) => response.json shouldBe successResponse.json
+          case _ => fail("No response was received, when one was expected")
+        }
       }
     }
 
     "expecting a non-successful response" should {
       lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
-      lazy val response = await(result)
 
       "return a Status BAD_REQUEST (400) response" in {
-        setupMockedResponse(failedResponse)
-        response.status shouldBe Status.BAD_REQUEST
+        setupMockedResponse(Some(failedResponse))
+        await(result) match {
+          case Some(response) => response.status shouldBe Status.BAD_REQUEST
+          case _ => fail("No response was received, when one was expected")
+        }
       }
 
       "Have a non-successful Json Body response" in {
-        setupMockedResponse(failedResponse)
-        response.json shouldBe failedResponse.json
+        setupMockedResponse(Some(failedResponse))
+        await(result) match {
+          case Some(response) => response.json shouldBe failedResponse.json
+          case _ => fail("No response was received, when one was expected")
+        }
+      }
+    }
+
+    "expecting a no response" should {
+      lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
+
+      "return a None" in {
+        setupMockedResponse(None)
+        await(result).isEmpty shouldBe true
       }
     }
   }
