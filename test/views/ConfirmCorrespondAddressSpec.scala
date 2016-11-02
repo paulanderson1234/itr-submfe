@@ -19,24 +19,25 @@ package views
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import controllers.{ConfirmCorrespondAddressController, routes}
-import models.{AddressModel, ConfirmCorrespondAddressModel}
+import controllers.helpers.ControllerSpec
+import controllers.ConfirmCorrespondAddressController
+import models.etmp.SubscriptionTypeModel
+import models.ConfirmCorrespondAddressModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
+import services.SubscriptionService
 import views.helpers.ViewSpec
-
+import data.SubscriptionTestData._
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressSpec extends ViewSpec {
-
-  //TODO: Mock this return when it is obtained from ETMP
-  val addressFromEtmp =  AddressModel("Company Name Ltd.", "2 Telford Plaza", Some("Lawn Central"), Some("Telford"), Some("TF3 4NT"))
+class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
+    override lazy val subscriptionService = mock[SubscriptionService]
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
@@ -54,12 +55,19 @@ class ConfirmCorrespondAddressSpec extends ViewSpec {
       .thenReturn(Future.successful(backLink))
   }
 
+  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any()))
+      .thenReturn(subscriptionDetails)
+
+
   "The Confirm Correspondence Address page" should {
 
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid ConfirmCorrespondAddressModel is passed" +
       "and there is no data already stored so it uses the ETMP address" in new Setup {
       val document: Document = {
         setupMocks(None,Some("backLink"))
+        mockEnrolledRequest()
+        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
@@ -76,12 +84,12 @@ class ConfirmCorrespondAddressSpec extends ViewSpec {
       document.body.select("#contactAddressUse-no").size() shouldBe 1
       document.body.getElementById("storedAddressDiv")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
-      document.body.getElementById("line1-display").text shouldBe addressFromEtmp.addressline1
-      document.body.getElementById("line2-display").text shouldBe addressFromEtmp.addressline2
-      document.body.getElementById("line3-display").text shouldBe addressFromEtmp.addressline3.getOrElse("")
-      document.body.getElementById("line4-display").text shouldBe addressFromEtmp.addressline4.getOrElse("")
-      document.body.getElementById("postcode-display").text shouldBe addressFromEtmp.postcode.getOrElse("")
-      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(addressFromEtmp.countryCode)
+      document.body.getElementById("line1-display").text shouldBe expectedContactAddressFull.addressline1
+      document.body.getElementById("line2-display").text shouldBe expectedContactAddressFull.addressline2
+      document.body.getElementById("line3-display").text shouldBe expectedContactAddressFull.addressline3.getOrElse("")
+      document.body.getElementById("line4-display").text shouldBe expectedContactAddressFull.addressline4.getOrElse("")
+      document.body.getElementById("postcode-display").text shouldBe expectedContactAddressFull.postcode.getOrElse("")
+      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(expectedContactAddressFull.countryCode)
       }
 
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid" +
@@ -144,7 +152,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec {
       document.body.getElementById("line3-display").text shouldBe "LineX 3 Posted"
       document.body.getElementById("line4-display").text shouldBe "LineX 4 Posted"
       document.body.getElementById("postcode-display").text shouldBe "TXX 3XX"
-      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(addressFromEtmp.countryCode)
+      document.body.getElementById("country-display").text shouldBe utils.CountriesHelper.getSelectedCountry(expectedContactAddressFull.countryCode)
     }
   }
 }
