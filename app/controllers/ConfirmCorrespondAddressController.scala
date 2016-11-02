@@ -58,10 +58,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
         tavcRef <- getTavCReferenceNumber()
         subscriptionDetails <- subscriptionService.getEtmpSubscriptionDetails(tavcRef)
       } yield subscriptionDetails match {
-        case Some(subscriptionData) =>
-          s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, subscriptionData.contactDetails)
-          s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, subscriptionData.contactAddress)
-          Some(ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
+        case Some(subscriptionData) => Some(ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
         case _ => None
       }
     }

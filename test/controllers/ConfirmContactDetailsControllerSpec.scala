@@ -47,7 +47,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(confirmContactDetailsModel)
 
   def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any()))
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
       .thenReturn(subscriptionDetails)
 
   "ConfirmContactDetailsController" should {

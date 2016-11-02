@@ -55,10 +55,7 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
         tavcRef <- getTavCReferenceNumber()
         subscriptionDetails <- subscriptionService.getEtmpSubscriptionDetails(tavcRef)
       } yield subscriptionDetails match {
-        case Some(subscriptionData) =>
-          s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, subscriptionData.contactDetails)
-          s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, subscriptionData.contactAddress)
-          Some(ConfirmContactDetailsModel("", subscriptionData.contactDetails))
+        case Some(subscriptionData) => Some(ConfirmContactDetailsModel("", subscriptionData.contactDetails))
         case _ => None
       }
     }
