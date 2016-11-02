@@ -87,6 +87,7 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
             Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
           }
           case Constants.StandardRadioButtonNoValue => {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkConfirmCorrespondence, routes.ContactDetailsController.show().url)
             Future.successful(Redirect(routes.ContactDetailsController.show()))
           }
         }
