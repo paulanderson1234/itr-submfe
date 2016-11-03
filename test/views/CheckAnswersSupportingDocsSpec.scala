@@ -60,6 +60,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
         investmentSetup()
         contactDetailsSetup()
         companyDetailsSetup()
+        contactAddressSetup()
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }

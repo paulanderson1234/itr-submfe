@@ -23,23 +23,27 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
-import models.{AddressModel, ConfirmCorrespondAddressModel}
+import models.etmp.SubscriptionTypeModel
+import models.ConfirmCorrespondAddressModel
+import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
-
+import services.SubscriptionService
+import data.SubscriptionTestData._
 import scala.concurrent.Future
 
 class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
+    override lazy val subscriptionService = mock[SubscriptionService]
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setupMocks
+  def setupSaveForLaterMocks
   (
     confirmCorrespondAddressModel: Option[ConfirmCorrespondAddressModel] = None,
     backLink: Option[String] = None
@@ -49,6 +53,10 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
     when(TestController.s4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(backLink))
   }
+
+  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(subscriptionDetails)
 
   "ConfirmCorrespondAddressController" should {
     "use the correct auth connector" in {
@@ -62,44 +70,103 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => status(result) shouldBe OK
-      )
+  "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" when {
+
+    "there is address data stored in S4L" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return a Status OK (200) when something is fetched from keystore" in {
+        setupSaveForLaterMocks(Some(confirmCorrespondAddressModel), Some("back-link"))
+        mockSubscriptionServiceResponse()
+        mockEnrolledRequest()
+        status(result) shouldBe OK
+      }
+
+      "Use the stored S4L addressline1 on the rendered page" in {
+        document.getElementById("address.addressline1").attr("value") shouldBe addressModel.addressline1
+      }
+
+      "Use the stored S4L addressline2 on the rendered page" in {
+        document.getElementById("address.addressline2").attr("value") shouldBe addressModel.addressline2
+      }
+
+      "Use the stored S4L addressline3 on the rendered page" in {
+        document.getElementById("address.addressline3").attr("value") shouldBe addressModel.addressline3.get
+      }
+
+      "Use the stored S4L addressline4 on the rendered page" in {
+        document.getElementById("address.addressline4").attr("value") shouldBe addressModel.addressline4.get
+      }
+
+      "Use the stored S4L postcode on the rendered page" in {
+        document.getElementById("address.postcode").attr("value") shouldBe addressModel.postcode.get
+      }
+
+      "Use the stored S4L countryCode on the rendered page" in {
+        document.getElementById("address.countryCode").attr("value") shouldBe addressModel.countryCode
+      }
     }
   }
 
-  //TODO: mock the addressModel returned form ETMP when implemented (currently is hard coded return in controller)
-  "Sending an Authenticated and Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
-    "return a 200 when no contact address exists but an address is returned from ETMP" in {
-      setupMocks(None,Some("backLink"))
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => status(result) shouldBe OK
-      )
+  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
+
+    "there is no data stored in S4L and data from ETMP is retrieved" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return Status OK (200)" in {
+        setupSaveForLaterMocks(None, Some("back-link"))
+        mockEnrolledRequest()
+        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
+        status(result) shouldBe OK
+      }
+
+      "Use the ETMP addressline1 on the rendered page" in {
+        document.getElementById("address.addressline1").attr("value") shouldBe expectedContactAddressFull.addressline1
+      }
+
+      "Use the ETMP addressline2 on the rendered page" in {
+        document.getElementById("address.addressline2").attr("value") shouldBe expectedContactAddressFull.addressline2
+      }
+
+      "Use the ETMP addressline3 on the rendered page" in {
+        document.getElementById("address.addressline3").attr("value") shouldBe expectedContactAddressFull.addressline3.get
+      }
+
+      "Use the ETMP addressline4 on the rendered page" in {
+        document.getElementById("address.addressline4").attr("value") shouldBe expectedContactAddressFull.addressline4.get
+      }
+
+      "Use the ETMP postcode on the rendered page" in {
+        document.getElementById("address.postcode").attr("value") shouldBe expectedContactAddressFull.postcode.get
+      }
+
+      "Use the ETMP countryCode on the rendered page" in {
+        document.getElementById("address.countryCode").attr("value") shouldBe expectedContactAddressFull.countryCode
+      }
+    }
+
+    "there is no data stored in S4L and no data returned from ETMP" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return INTERNAL_SERVER_ERROR (500)" in {
+        setupSaveForLaterMocks(None, Some("back-link"))
+        mockEnrolledRequest()
+        mockSubscriptionServiceResponse()
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
     }
   }
-
-
-  //TODO: Re-introduce when we try to get the addressModel form ETMP when it is then possible to mock a return none for this
-//    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-//      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-//      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//      mockEnrolledRequest
-//      showWithSessionAndAuth(ConfirmCorrespondAddressControllerTest.show())(
-//        result => status(result) shouldBe OK
-//      )
-//    }
-//  }
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
 
     "return a 303 to the subscription url" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
@@ -150,7 +217,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect Supporting Documents when the Yes option is selected" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactAddressUse" -> Constants.StandardRadioButtonYesValue,
@@ -171,7 +238,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
   }
     "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactAddressUse" -> Constants.StandardRadioButtonNoValue,
@@ -193,7 +260,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   "Submitting a invalid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactAddressUse" -> "",
@@ -215,7 +282,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the GG login page" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -231,7 +298,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the GG login page" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       submitWithoutSession(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -247,7 +314,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the timeout page" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       submitWithTimeout(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -259,7 +326,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   "Submitting a form to ConfirmCorrespondAddressController when NOT enrolled" should {
     "return a 303 and redirect to the Subscription Service" in {
-      setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
       mockNotEnrolledRequest()
       val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(

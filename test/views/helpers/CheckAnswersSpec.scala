@@ -63,6 +63,11 @@ trait CheckAnswersSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactDetailsModel))
   }
 
+  def contactAddressSetup(contactAddressModel: Option[AddressModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(contactAddressModel))
+  }
+
   def companyDetailsSetup(yourCompanyNeedModel: Option[YourCompanyNeedModel] = None, taxpayerReferenceModel: Option[TaxpayerReferenceModel] = None,
                           registeredAddressModel: Option[RegisteredAddressModel] = None, dateOfIncorporationModel: Option[DateOfIncorporationModel] = None,
                           natureOfBusinessModel: Option[NatureOfBusinessModel] = None, commercialSaleModel: Option[CommercialSaleModel] = None,

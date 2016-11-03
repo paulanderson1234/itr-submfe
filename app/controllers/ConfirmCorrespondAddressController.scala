@@ -18,19 +18,22 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.ConfirmCorrespondAddressForm._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.mvc.Result
+import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.contactInformation.ConfirmCorrespondAddress
 
 import scala.concurrent.Future
 
 object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressController{
-  val s4lConnector: S4LConnector = S4LConnector
+  val subscriptionService = SubscriptionService
+  val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -39,20 +42,37 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
 trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val subscriptionService: SubscriptionService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest: Option[String] => Future[Result] = {
-      case Some(backLink) => {
-        for {
-          confirmCorrespondAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
-        } yield confirmCorrespondAddress match {
-          case Some(storedAddress) =>
-            Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(storedAddress), backLink))
-          case _ =>
-            Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(ConfirmCorrespondAddressModel("", getSubscriptionAddress)), backLink))
-        }
+    def getStoredConfirmContactAddress: Future[Option[ConfirmCorrespondAddressModel]] = {
+      for {
+        confirmContactAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
+      } yield confirmContactAddress
+    }
+
+    def getEtmpContactAddress: Option[ConfirmCorrespondAddressModel] => Future[Option[ConfirmCorrespondAddressModel]] = {
+      case Some(storedConfirmContactAddress) => Future.successful(Some(storedConfirmContactAddress))
+      case _ => for {
+        tavcRef <- getTavCReferenceNumber()
+        subscriptionDetails <- subscriptionService.getEtmpSubscriptionDetails(tavcRef)
+      } yield subscriptionDetails match {
+        case Some(subscriptionData) => Some(ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
+        case _ => None
       }
+    }
+
+    def routeRequest: Option[String] => Future[Result] = {
+      case Some(backLink) =>
+        for {
+          storedConfirmContactAddress <- getStoredConfirmContactAddress
+          etmpContactAddress <- getEtmpContactAddress(storedConfirmContactAddress) //Only calls DES if no stored details passed to it
+        } yield (storedConfirmContactAddress, etmpContactAddress) match {
+          case (Some(storedData), _) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(storedData), backLink))
+          case (_, Some(etmpData)) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(etmpData), backLink))
+          case _ => InternalServerError(internalServerErrorTemplate)
+        }
       case _ => Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
     }
 
@@ -60,11 +80,6 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
       backLink <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkConfirmCorrespondence, s4lConnector)
       route <- routeRequest(backLink)
     } yield route
-  }
-
-  //TODO: get the address below from ETMP when play this story
-  def getSubscriptionAddress: AddressModel = {
-    AddressModel("Company Name Ltd.", "2 Telford Plaza", Some("Lawn Central"), Some("Telford"), Some("TF3 4NT"))
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>

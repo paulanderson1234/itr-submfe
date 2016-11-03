@@ -24,28 +24,31 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
 import models.ConfirmContactDetailsModel
+import models.etmp.SubscriptionTypeModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
-
-import scala.concurrent.Future
+import services.SubscriptionService
+import data.SubscriptionTestData._
+import org.jsoup.Jsoup
 
 class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
   object TestController extends ConfirmContactDetailsController {
+    override lazy val subscriptionService = mock[SubscriptionService]
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setupMocks
-  (
-    confirmContactDetailsModel: Option[ConfirmContactDetailsModel] = None
-  ): Unit = {
+  def mockSaveForLaterResponse(confirmContactDetailsModel: Option[ConfirmContactDetailsModel] = None): Unit =
     when(TestController.s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.eq(KeystoreKeys.confirmContactDetails))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(confirmContactDetailsModel))
-  }
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(confirmContactDetailsModel)
+
+  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+      .thenReturn(subscriptionDetails)
 
   "ConfirmContactDetailsController" should {
     "use the correct auth connector" in {
@@ -59,43 +62,91 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => status(result) shouldBe OK
-      )
+  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
+
+    "there is data stored in S4L" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return a Status OK (200) when something is fetched from keystore" in {
+        mockSaveForLaterResponse(Some(confirmContactDetailsModel))
+        mockSubscriptionServiceResponse()
+        mockEnrolledRequest()
+        status(result) shouldBe OK
+      }
+
+      "Use the S4L stored forename on the rendered page" in {
+        document.getElementById("contactDetails.forename").attr("value") shouldBe contactDetailsModel.forename
+      }
+
+      "Use the S4L stored surname on the rendered page" in {
+        document.getElementById("contactDetails.surname").attr("value") shouldBe contactDetailsModel.surname
+      }
+
+      "Use the S4L stored telephoneNumber on the rendered page" in {
+        document.getElementById("contactDetails.telephoneNumber").attr("value") shouldBe contactDetailsModel.telephoneNumber.get
+      }
+
+      "Use the S4L stored email on the rendered page" in {
+        document.getElementById("contactDetails.email").attr("value") shouldBe contactDetailsModel.email
+      }
     }
   }
 
-  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" +
-    "where there is no data already stored" should {
-    "return a 200 when nothing is retrieved from Keystore" in {
-      setupMocks()
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => status(result) shouldBe OK
-      )
+  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
+
+    "there is no data stored in S4L and data from ETMP is retrieved" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return Status OK (200)" in {
+        mockSaveForLaterResponse()
+        mockEnrolledRequest()
+        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
+        status(result) shouldBe OK
+      }
+
+      "Use the ETMP forename on the rendered page" in {
+        document.getElementById("contactDetails.forename").attr("value") shouldBe expectedContactDetailsFull.forename
+      }
+
+      "Use the ETMP surname on the rendered page" in {
+        document.getElementById("contactDetails.surname").attr("value") shouldBe expectedContactDetailsFull.surname
+      }
+
+      "Use the ETMP telephoneNumber on the rendered page" in {
+        document.getElementById("contactDetails.telephoneNumber").attr("value") shouldBe expectedContactDetailsFull.telephoneNumber.get
+      }
+
+      "Use the ETMP mobileNumber on the rendered page" in {
+        document.getElementById("contactDetails.mobileNumber").attr("value") shouldBe expectedContactDetailsFull.mobileNumber.get
+      }
+
+      "Use the ETMP email on the rendered page" in {
+        document.getElementById("contactDetails.email").attr("value") shouldBe expectedContactDetailsFull.email
+      }
+    }
+
+    "there is no data stored in S4L and no data returned from ETMP" should {
+
+      lazy val result = await(TestController.show()(authorisedFakeRequest))
+      lazy val document = Jsoup.parse(bodyOf(result))
+
+      "return Status INTERNAL_SERVER_ERROR (500)" in {
+        mockSaveForLaterResponse()
+        mockEnrolledRequest()
+        mockSubscriptionServiceResponse()
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
     }
   }
-
-  //TODO: Re-introduce when we try to get the contactDetails from ETMP when it is then possible to mock a return none for this
-//    "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-//      when(mockKeyStoreConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-//      when(mockKeyStoreConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any()))
-//        .thenReturn(Future.successful(None))
-//      mockEnrolledRequest
-//      showWithSessionAndAuth(ConfirmContactDetailsControllerTest.show())(
-//        result => status(result) shouldBe OK
-//      )
-//    }
-//  }
 
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
 
     "return a 303 to the subscription url" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
@@ -146,7 +197,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect Confirm Correspondence Address Page when the Yes option is selected" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonYesValue,
@@ -163,9 +214,9 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       )
     }
   }
-    "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
+  "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonNoValue,
@@ -185,7 +236,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
   "Submitting a invalid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> "",
@@ -194,19 +245,19 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
         "contactDetails.telephoneNumber" -> "01234 567890",
         "contactDetails.mobileNumber" -> "01234 567890",
         "contactDetails.email" -> "thisiavalidemail@valid.com")
-       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
-          result => {
-            status(result) shouldBe BAD_REQUEST
-          }
-        )
-      }
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
     }
+  }
 
   "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the GG login page" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -222,7 +273,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the GG login page" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       submitWithoutSession(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -238,7 +289,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
     "return a 303 and redirect to the timeout page" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       submitWithTimeout(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -250,7 +301,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
   "Submitting a form to ConfirmContactDetailsController when NOT enrolled" should {
     "return a 303 and redirect to the Subscription Service" in {
-      setupMocks(Some(confirmContactDetailsModel))
+      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockNotEnrolledRequest()
       val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
