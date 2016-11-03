@@ -46,7 +46,7 @@ trait EnrolmentConnector extends ServicesConfig {
     }
   }
 
-  def getTavcReferencNumber(uri: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def getTavcReferenceNumber(uri: String)(implicit hc: HeaderCarrier): Future[String] = {
     getTAVCEnrolment(uri).map {
       case Some(enrolment) => enrolment.identifiers.find(_.key == Constants.enrolmentTavcRefKey).fold("")(_.value)
       case _ => ""

@@ -104,7 +104,7 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
   "Calling authenticated getTavCReferenceNumber when it is not found on the enrolement" should {
     "return an empty TavcReference" in {
       implicit val hc = HeaderCarrier()
-      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(""))
       val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
       await(result) shouldBe ""
@@ -114,7 +114,7 @@ class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with Mockit
   "Calling authenticated getTavCReferenceNumber when it is exists on the enrolement" should {
     "return the TavcReference" in {
       implicit val hc = HeaderCarrier()
-      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful("XATAVC000123456"))
       val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
       await(result) shouldBe "XATAVC000123456"

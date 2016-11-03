@@ -28,7 +28,7 @@ trait ControllerSpec extends BaseSpec {
   def mockEnrolledRequest(): Unit = {
     when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
-    when(mockEnrolmentConnector.getTavcReferencNumber(Matchers.any())(Matchers.any()))
+    when(mockEnrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(tavcReferenceId))
   }
 
