@@ -21,11 +21,13 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import forms.ConfirmContactDetailsForm._
-import models.ConfirmContactDetailsModel
+import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.contactInformation.ConfirmContactDetails
 import config.FrontendGlobal.internalServerErrorTemplate
+import play.api.mvc.Result
+
 import scala.concurrent.Future
 
 object ConfirmContactDetailsController extends ConfirmContactDetailsController{
@@ -43,31 +45,23 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def getStoredConfirmContactDetails: Future[Option[ConfirmContactDetailsModel]] = {
-      for {
-        confirmContactDetails <- s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails)
-      } yield confirmContactDetails
-    }
+    def getContactDetails: Future[Option[ContactDetailsModel]] = for {
+      tavcRef <- getTavCReferenceNumber()
+      contactDetails <- subscriptionService.getSubscriptionContactDetails(tavcRef)
+    } yield contactDetails
 
-    def getEtmpContactDetails: Option[ConfirmContactDetailsModel] => Future[Option[ConfirmContactDetailsModel]] = {
-      case Some(storedContactDetails) => Future.successful(Some(storedContactDetails))
-      case _ => for {
-        tavcRef <- getTavCReferenceNumber()
-        subscriptionDetails <- subscriptionService.getEtmpSubscriptionDetails(tavcRef)
-      } yield subscriptionDetails match {
-        case Some(subscriptionData) => Some(ConfirmContactDetailsModel("", subscriptionData.contactDetails))
-        case _ => None
+    def routeRequest: Option[ConfirmContactDetailsModel] => Future[Result] = {
+      case Some(savedData) => Future.successful(Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(savedData))))
+      case _ => getContactDetails.map {
+        case Some(data) => Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("", data))))
+        case _ => InternalServerError(internalServerErrorTemplate)
       }
     }
 
     for {
-      storedContactDetails <- getStoredConfirmContactDetails
-      etmpContactDetails <- getEtmpContactDetails(storedContactDetails) //Only calls DES if no stored details passed to it
-    } yield (storedContactDetails, etmpContactDetails) match {
-      case (Some(storedData), _) => Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(storedData)))
-      case (_, Some(etmpData)) => Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(etmpData)))
-      case _ => InternalServerError(internalServerErrorTemplate)
-    }
+      confirmContactAddress <- s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails)
+      route <- routeRequest(confirmContactAddress)
+    } yield route
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>

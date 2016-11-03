@@ -17,16 +17,11 @@
 package connectors
 
 import config.WSHttp
-import models.etmp.SubscriptionTypeModel
-import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
-import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
-
 import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object SubscriptionConnector extends SubscriptionConnector with ServicesConfig {
   val serviceUrl = baseUrl("investment-tax-relief-subscription")
@@ -38,10 +33,9 @@ trait SubscriptionConnector {
   val http: HttpGet with HttpPost with HttpPut
 
   def getSubscriptionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[Option[HttpResponse]] =
-    Try (http.GET[Option[HttpResponse]](s"$serviceUrl/investment-tax-relief-subscription/$tavcReferenceNumber/subscription")) match {
-      case Success(response) => response
-      case Failure(exception) =>
-        Logger.error(s"[SubscriptionConnector][getSubscriptionDetails] - Unexpected HTTP GET error. Message=${exception.getMessage}")
-        Future.successful(None)
+    http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-subscription/$tavcReferenceNumber/subscription").map(Some(_)).recover {
+      case _ =>
+        Logger.warn(s"[SubscriptionConnector][getSubscriptionDetails] - Upstream HTTP GET error")
+        None
     }
 }

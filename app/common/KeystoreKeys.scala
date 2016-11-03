@@ -56,6 +56,9 @@ trait KeystoreKeys {
   // registration keys
   val registrationDetails: String = "registration:registrationDetails"
 
+  // Subscription Details keys
+  val subscriptionDetails: String = "subscription:subscriptionDetails"
+
   // backlink keys
   val backLinkSupportingDocs: String = "backLink:SupportingDocs"
   val backLinkNewGeoMarket: String = "backLink:NewGeoMarket"
