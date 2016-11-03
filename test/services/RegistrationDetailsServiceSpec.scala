@@ -21,7 +21,7 @@ import auth.ggUser.allowedAuthContext
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubmissionConnector}
 import models.{AddressModel, ContactDetailsModel}
-import models.etmp.SubscriptionTypeModel
+import models.SubscriptionDetailsModel
 import models.registration.RegistrationDetailsModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
@@ -64,7 +64,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
 
   val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
   val registrationDetailsModel = RegistrationDetailsModel("test name", addressModel)
-  val subscriptionTypeModel = SubscriptionTypeModel("XA0001234567890",ContactDetailsModel("test","name",email = "test@test.com"), addressModel)
+  val subscriptionTypeModel = SubscriptionDetailsModel("XA0001234567890",ContactDetailsModel("test","name",email = "test@test.com"), addressModel)
   val httpResponse = HttpResponse(OK,Some(minimumRegResponse))
   val successResponse = Future.successful(httpResponse)
   val failedResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
@@ -79,7 +79,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
   }
 
   def setupMocks(registrationDetailsModel1: Option[RegistrationDetailsModel] = None, response: Future[HttpResponse] = failedResponse,
-                 subscriptionTypeModel: Option[SubscriptionTypeModel] = None): Unit = {
+                 subscriptionTypeModel: Option[SubscriptionDetailsModel] = None): Unit = {
     when(mockS4LConnector.fetchAndGetFormData[RegistrationDetailsModel](Matchers.eq(KeystoreKeys.registrationDetails))
       (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(registrationDetailsModel1))
     when(mockSubscriptionService.getEtmpSubscriptionDetails(Matchers.eq(tavcRef))
