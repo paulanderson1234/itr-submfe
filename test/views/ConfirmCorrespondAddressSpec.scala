@@ -22,7 +22,7 @@ import config.FrontendAppConfig
 import controllers.helpers.ControllerSpec
 import controllers.ConfirmCorrespondAddressController
 import models.etmp.SubscriptionTypeModel
-import models.ConfirmCorrespondAddressModel
+import models.{AddressModel, ConfirmCorrespondAddressModel, SubscriptionDetailsModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -32,6 +32,7 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import views.helpers.ViewSpec
 import data.SubscriptionTestData._
+
 import scala.concurrent.Future
 
 class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
@@ -44,20 +45,20 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setupMocks
+  def setupSaveForLaterMocks
   (
     confirmCorrespondAddressModel: Option[ConfirmCorrespondAddressModel] = None,
     backLink: Option[String] = None
   ): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(confirmCorrespondAddressModel))
-    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(backLink))
   }
 
-  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(subscriptionDetails)
+  def mockSubscriptionServiceResponse(address: Option[AddressModel] = None): Unit =
+    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(address))
 
 
   "The Confirm Correspondence Address page" should {
@@ -65,9 +66,9 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid ConfirmCorrespondAddressModel is passed" +
       "and there is no data already stored so it uses the ETMP address" in new Setup {
       val document: Document = {
-        setupMocks(None,Some("backLink"))
+        setupSaveForLaterMocks(None,Some("backLink"))
         mockEnrolledRequest()
-        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
+        mockSubscriptionServiceResponse(Some(expectedContactAddressFull))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
@@ -95,7 +96,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid" +
       "and there is data stored for the confirmCorrespondenceAddress" in new Setup {
       val document: Document = {
-        setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+        setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
         ))
@@ -123,7 +124,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
     "Verify that the Confirm Correspondence Address page contains the correct elements " +
       "when an invalid ConfirmCorrespondAddressModel is passed" in new Setup {
       val document: Document = {
-        setupMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+        setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
         val result = TestController.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> "",
           "address.addressline1" -> "LineX 1 Posted",

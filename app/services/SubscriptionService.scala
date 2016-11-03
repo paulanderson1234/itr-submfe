@@ -19,10 +19,10 @@ package services
 import auth.TAVCUser
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubscriptionConnector}
-import models.{ConfirmContactDetailsModel, ConfirmCorrespondAddressModel}
+import models._
 import models.etmp.SubscriptionTypeModel
 import play.api.Logger
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import play.api.libs.json.Json
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.util.Success
@@ -36,22 +36,32 @@ trait SubscriptionService {
   val subscriptionConnector: SubscriptionConnector
   val s4lConnector: S4LConnector
 
-  def getEtmpSubscriptionDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubscriptionTypeModel]] = {
-    subscriptionConnector.getSubscriptionDetails(tavcRef) map {
-      case Some(subscriptionDetails) =>
-        Try (subscriptionDetails.json.as[SubscriptionTypeModel]) match {
-          case Success(subscriptionData) =>
-            s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, ConfirmContactDetailsModel("", subscriptionData.contactDetails))
-            s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
-            Some(subscriptionData)
-          case Failure(ex) =>
-            Logger.error(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
-            None
-        }
-      case _ =>
-        Logger.error(s"[SubscriptionService][getEtmpContactDetails] - No Subscription Details Retrieved")
-        None
+  def getEtmpSubscriptionDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubscriptionDetailsModel]] = {
+    s4lConnector.fetchAndGetFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails).flatMap[Option[SubscriptionDetailsModel]] {
+      case Some(subscriptionData) => Future.successful(Some(subscriptionData))
+      case _ => subscriptionConnector.getSubscriptionDetails(tavcRef) map {
+        case Some(subscriptionDetails) =>
+          Try(subscriptionDetails.json.as[SubscriptionTypeModel]) match {
+            case Success(subscriptionData) =>
+              s4lConnector.saveFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails, Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
+              Some(Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
+            case Failure(ex) =>
+              Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
+              None
+          }
+        case _ =>
+          Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - No Subscription Details Retrieved")
+          None
+      }
     }
+  }
+
+  def getSubscriptionContactDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ContactDetailsModel]] = {
+    getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[ContactDetailsModel]](None)(data => Some(data.contactDetails)))
+  }
+
+  def getSubscriptionContactAddress(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[AddressModel]] = {
+    getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[AddressModel]](None)(data => Some(data.contactAddress)))
   }
 }
 

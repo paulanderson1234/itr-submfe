@@ -81,6 +81,29 @@ object SubscriptionTestData {
     """.stripMargin
   )
 
+  val subscriptionDetailsFull = Json.parse(
+    s"""
+       |{
+       |     "safeId": "$expectedSafeID",
+       |     "contactDetails": {
+       |          "forename": "John",
+       |          "surname": "Brown",
+       |          "telephoneNumber": "0000 10000",
+       |          "mobileNumber": "0000 2000",
+       |          "email": "john.smith@noplace.atall.com"
+       |     },
+       |     "contactAddress": {
+       |          "addressline1": "12 some street",
+       |          "addressline2": "some line 2",
+       |          "addressline3": "some line 3",
+       |          "addressline4": "some line 4",
+       |          "postcode": "AA1 1AA",
+       |          "countryCode": "GB"
+       |     }
+       |}
+    """.stripMargin
+  )
+
   val invalidSubscriptionJson = Json.parse(
     s"""
        |{

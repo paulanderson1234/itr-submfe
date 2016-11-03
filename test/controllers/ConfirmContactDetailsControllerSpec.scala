@@ -23,7 +23,7 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
-import models.ConfirmContactDetailsModel
+import models.{ConfirmContactDetailsModel, ContactDetailsModel, SubscriptionDetailsModel}
 import models.etmp.SubscriptionTypeModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -42,13 +42,17 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def mockSaveForLaterResponse(confirmContactDetailsModel: Option[ConfirmContactDetailsModel] = None): Unit =
-    when(TestController.s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.eq(KeystoreKeys.confirmContactDetails))
+  def mockSaveForLaterResponse
+  (
+    confirmContactDetailsModel: Option[ConfirmContactDetailsModel] = None
+  ): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.eq(KeystoreKeys.confirmContactDetails))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(confirmContactDetailsModel)
+  }
 
-  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
-      .thenReturn(subscriptionDetails)
+  def mockSubscriptionServiceResponse(contactDetails: Option[ContactDetailsModel] = None): Unit =
+    when(TestController.subscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+      .thenReturn(contactDetails)
 
   "ConfirmContactDetailsController" should {
     "use the correct auth connector" in {
@@ -64,7 +68,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
 
-    "there is data stored in S4L" should {
+    "there is data stored in S4L for Confirm Contact Details" should {
 
       lazy val result = await(TestController.show()(authorisedFakeRequest))
       lazy val document = Jsoup.parse(bodyOf(result))
@@ -92,11 +96,8 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
         document.getElementById("contactDetails.email").attr("value") shouldBe contactDetailsModel.email
       }
     }
-  }
 
-  "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
-
-    "there is no data stored in S4L and data from ETMP is retrieved" should {
+    "there is no data stored in S4L and data from Subscription Service is retrieved" should {
 
       lazy val result = await(TestController.show()(authorisedFakeRequest))
       lazy val document = Jsoup.parse(bodyOf(result))
@@ -104,7 +105,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       "return Status OK (200)" in {
         mockSaveForLaterResponse()
         mockEnrolledRequest()
-        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
+        mockSubscriptionServiceResponse(Some(expectedContactDetailsFull))
         status(result) shouldBe OK
       }
 
