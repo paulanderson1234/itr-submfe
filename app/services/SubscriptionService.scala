@@ -46,23 +46,21 @@ trait SubscriptionService {
               s4lConnector.saveFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails, Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
               Some(Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
             case Failure(ex) =>
-              Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
+              Logger.warn(s"[SubscriptionService][getEtmpSubscriptionDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
               None
           }
         case _ =>
-          Logger.warn(s"[SubscriptionService][getEtmpContactDetails] - No Subscription Details Retrieved")
+          Logger.warn(s"[SubscriptionService][getEtmpSubscriptionDetails] - No Subscription Details Retrieved")
           None
       }
     }
   }
 
-  def getSubscriptionContactDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ContactDetailsModel]] = {
+  def getSubscriptionContactDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ContactDetailsModel]] =
     getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[ContactDetailsModel]](None)(data => Some(data.contactDetails)))
-  }
 
-  def getSubscriptionContactAddress(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[AddressModel]] = {
+  def getSubscriptionContactAddress(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[AddressModel]] =
     getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[AddressModel]](None)(data => Some(data.contactAddress)))
-  }
 }
 
 object SubscriptionService extends SubscriptionService {
