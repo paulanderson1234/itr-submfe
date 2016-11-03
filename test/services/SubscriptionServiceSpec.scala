@@ -17,6 +17,7 @@
 package services
 
 import auth.{TAVCUser, ggUser}
+import common.KeystoreKeys
 import connectors.{S4LConnector, SubscriptionConnector}
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
@@ -32,6 +33,7 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 import data.SubscriptionTestData._
+import models.SubscriptionDetailsModel
 import play.api.http.Status._
 
 import scala.concurrent.Future
@@ -46,49 +48,73 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndA
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
   implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
 
-  def setupMockedResponse(data: Option[HttpResponse]): OngoingStubbing[Future[Option[HttpResponse]]] = {
+  def setupMockedResponse(data: Option[HttpResponse] = None): OngoingStubbing[Future[Option[HttpResponse]]] = {
     when(TargetSubscriptionService.subscriptionConnector.getSubscriptionDetails(Matchers.eq(validTavcReference))(Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 
+  def setupMockedSaveForLaterResponse(subscriptionDetails: Option[SubscriptionDetailsModel] = None)
+  :OngoingStubbing[Future[Option[SubscriptionDetailsModel]]] = {
+    when(TargetSubscriptionService.s4lConnector.fetchAndGetFormData[SubscriptionDetailsModel]
+      (Matchers.eq(KeystoreKeys.subscriptionDetails))(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(subscriptionDetails))
+  }
+
   "Calling getEtmpSubscriptionDetails" when {
 
-    "expecting a successful response with all data" should {
+    "there is data stored in S4l for the Subscription Details" should {
       lazy val result = TargetSubscriptionService.getEtmpSubscriptionDetails(validTavcReference)
       lazy val response = await(result)
 
-      "have the expected contact details" in {
-        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeFull))))
+      "have the expected stored contact details" in {
+        setupMockedSaveForLaterResponse(Some(subscriptionDetailsFull.as[SubscriptionDetailsModel]))
+        setupMockedResponse(None)
         response.get.contactDetails shouldBe expectedContactDetailsFull
       }
 
-      "have the expected contact address" in {
-        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeFull))))
+      "have the expected stored contact address" in {
         response.get.contactAddress shouldBe expectedContactAddressFull
       }
 
-      "have the expected safeId" in {
-        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeFull))))
+      "have the expected stored safeId" in {
         response.get.safeId shouldBe expectedSafeID
       }
     }
 
-    "expecting a successful response with the minimum data set (excludes options)" should {
+    "there is no stored data and a successful response with all data is received from DES/ETMP" should {
+      lazy val result = TargetSubscriptionService.getEtmpSubscriptionDetails(validTavcReference)
+      lazy val response = await(result)
+
+      "have the expected contact details" in {
+        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeFull))))
+        setupMockedSaveForLaterResponse()
+        response.get.contactDetails shouldBe expectedContactDetailsFull
+      }
+
+      "have the expected contact address" in {
+        response.get.contactAddress shouldBe expectedContactAddressFull
+      }
+
+      "have the expected safeId" in {
+        response.get.safeId shouldBe expectedSafeID
+      }
+    }
+
+    "there is no stored data and a successful response with the minimum data set (excludes options)" should {
       lazy val result = TargetSubscriptionService.getEtmpSubscriptionDetails(validTavcReference)
       lazy val response = await(result)
 
       "have the expected contact details" in {
         setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeMin))))
+        setupMockedSaveForLaterResponse()
         response.get.contactDetails shouldBe expectedContactDetailsMin
       }
 
       "have the expected contact address" in {
-        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeMin))))
         response.get.contactAddress shouldBe expectedContactAddressMin
       }
 
       "have the expected safeId" in {
-        setupMockedResponse(Some(HttpResponse(OK, Some(subscriptionTypeMin))))
         response.get.safeId shouldBe expectedSafeID
       }
     }
@@ -98,7 +124,8 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndA
       lazy val response = await(result)
 
       "have no subscription details returned" in {
-        setupMockedResponse(None)
+        setupMockedResponse()
+        setupMockedSaveForLaterResponse()
         response.isEmpty shouldBe true
       }
     }
@@ -109,6 +136,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
       "have no subscription details returned" in {
         setupMockedResponse(Some(HttpResponse(OK, Some(invalidSubscriptionJson))))
+        setupMockedSaveForLaterResponse()
         response.isEmpty shouldBe true
       }
     }

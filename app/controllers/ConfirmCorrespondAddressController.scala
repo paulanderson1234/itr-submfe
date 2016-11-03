@@ -23,7 +23,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.ConfirmCorrespondAddressForm._
-import models.{AddressModel, ConfirmCorrespondAddressModel}
+import models.{AddressModel, ConfirmCorrespondAddressModel, ContactDetailsModel}
 import play.api.mvc.Result
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -46,39 +46,26 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def getStoredConfirmContactAddress: Future[Option[ConfirmCorrespondAddressModel]] = {
-      for {
-        confirmContactAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
-      } yield confirmContactAddress
-    }
 
-    def getEtmpContactAddress: Option[ConfirmCorrespondAddressModel] => Future[Option[ConfirmCorrespondAddressModel]] = {
-      case Some(storedConfirmContactAddress) => Future.successful(Some(storedConfirmContactAddress))
-      case _ => for {
-        tavcRef <- getTavCReferenceNumber()
-        subscriptionDetails <- subscriptionService.getEtmpSubscriptionDetails(tavcRef)
-      } yield subscriptionDetails match {
-        case Some(subscriptionData) => Some(ConfirmCorrespondAddressModel("", subscriptionData.contactAddress))
-        case _ => None
-      }
-    }
+    def getContactAddress: Future[Option[AddressModel]] = for {
+      tavcRef <- getTavCReferenceNumber()
+      contactAddress <- subscriptionService.getSubscriptionContactAddress(tavcRef)
+    } yield contactAddress
 
-    def routeRequest: Option[String] => Future[Result] = {
-      case Some(backLink) =>
-        for {
-          storedConfirmContactAddress <- getStoredConfirmContactAddress
-          etmpContactAddress <- getEtmpContactAddress(storedConfirmContactAddress) //Only calls DES if no stored details passed to it
-        } yield (storedConfirmContactAddress, etmpContactAddress) match {
-          case (Some(storedData), _) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(storedData), backLink))
-          case (_, Some(etmpData)) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(etmpData), backLink))
+    def routeRequest: (Option[ConfirmCorrespondAddressModel], Option[String]) => Future[Result] = {
+      case (Some(savedData), Some(backLink)) =>
+        Future.successful(Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(savedData), backLink)))
+      case (_, Some(backLink)) => getContactAddress.map {
+          case Some(data) => Ok(ConfirmCorrespondAddress(confirmCorrespondAddressForm.fill(ConfirmCorrespondAddressModel("", data)), backLink))
           case _ => InternalServerError(internalServerErrorTemplate)
         }
-      case _ => Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
+      case (_,_) => Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
     }
 
     for {
       backLink <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkConfirmCorrespondence, s4lConnector)
-      route <- routeRequest(backLink)
+      confirmCorrespondenceAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
+      route <- routeRequest(confirmCorrespondenceAddress, backLink)
     } yield route
   }
 
