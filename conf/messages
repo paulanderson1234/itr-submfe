@@ -415,7 +415,7 @@ summaryQuestion.previousRFISection =Section 2: Previous schemes
 
 page.investment.amount.label=Amount raised:
 page.investment.amountSpent.label=Amount spent:
-page.investment.dateOfShareIssue.label=Date of investment
+page.investment.dateOfShareIssue.label=Date of investment:
 page.summaryQuestion.none.question=Previous schemes
 page.summaryQuestion.none.answer=None
 

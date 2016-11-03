@@ -74,7 +74,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("label-amount-spent").text() shouldBe Messages("page.previousInvestment.amountSpent.label")
       document.getElementById("label-other-scheme").text() shouldBe Messages("page.investment.PreviousScheme.otherSchemeName.label")
 
-      document.getElementById("question-text-id").text() shouldBe Messages("page.investment.dateOfShareIssue.label")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")
       document.body.getElementById("investmentDay").parent.text shouldBe Messages("common.date.fields.day")
       document.body.getElementById("investmentMonth").parent.text shouldBe Messages("common.date.fields.month")
       document.body.getElementById("investmentYear").parent.text shouldBe Messages("common.date.fields.year")
@@ -112,7 +112,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("label-amount-spent").text() shouldBe Messages("page.investment.amountSpent.label")
       document.getElementById("label-other-scheme").text() shouldBe Messages("page.investment.PreviousScheme.otherSchemeName.label")
 
-      document.getElementById("question-text-id").text() shouldBe Messages("page.investment.dateOfShareIssue.label")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")
       document.body.getElementById("investmentDay").parent.text shouldBe Messages("common.date.fields.day")
       document.body.getElementById("investmentMonth").parent.text shouldBe Messages("common.date.fields.month")
       document.body.getElementById("investmentYear").parent.text shouldBe Messages("common.date.fields.year")
