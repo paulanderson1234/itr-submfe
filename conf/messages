@@ -48,7 +48,7 @@ common.date.error.invalidDate=Date must have a valid day, month and a year with 
 
 ##common section headings##
 common.section.progress.company.details.one=Section 1 of 5: Company details
-common.section.progress.company.details.two=Section 2 of 5: Previous tax relief investment schemes
+common.section.progress.company.details.two=Section 2 of 5: Previous schemes
 common.section.progress.company.details.three=Section 3 of 5: This investment
 common.section.progress.company.details.five=Section 5 of 5: Supporting documents
 common.section.progress.company.details.four=Section 4 of 5: Contact details
@@ -404,34 +404,18 @@ summaryQuestion.developmentPlan =Plan to develop something that you''ll own the 
 summaryQuestion.developmentPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
 
-#previous schmeme
-page.investment.PreviousScheme.heading=Which schemes has your company used?
-page.investment.PreviousScheme.schemeType=Scheme
-page.investment.PreviousScheme.button.add=Add this scheme
-page.investment.PreviousScheme.button.update=Update this scheme
-page.investment.PreviousScheme.title=Previous scheme?
-validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
-validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
-page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
-page.investment.PreviousScheme.companiesHouse = Companies House database
-page.investment.PreviousScheme.howToFind=How can you find this out?
-page.investment.PreviousScheme.title=Previous schemes
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
 validation.error.ShareIssueDate.Future=Date of investment cannot be a future date
-page.investment.PreviousScheme.otherSchemeName.label=What was it''s name?
+page.investment.PreviousScheme.otherSchemeName.label=What was its name?
 
 
 #summary questions section two
 summaryQuestion.previousRFISection =Section 2: Previous schemes
-page.previousInvestment.schemeType.eis=Enterprise Investment Scheme
-page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
-page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
-page.previousInvestment.schemeType.vct=Venture Capital Trust
-page.previousInvestment.schemeType.other=Other scheme
+
 page.investment.amount.label=Amount raised:
 page.investment.amountSpent.label=Amount spent:
-page.investment.dateOfShareIssue.label=Date of investment:
+page.investment.dateOfShareIssue.label=Date of investment
 page.summaryQuestion.none.question=Previous schemes
 page.summaryQuestion.none.answer=None
 
@@ -511,9 +495,30 @@ page.investment.LifetimeAllowanceExceeded.link=Back to investment schemes
 page.previousInvestment.reviewPreviousSchemes.title=Review previous schemes
 page.previousInvestment.reviewPreviousSchemes.heading=Previous schemes
 page.previousInvestment.reviewPreviousSchemes.scheme=Scheme
-page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue=Dates of share issue
-page.previousInvestment.reviewPreviousSchemes.investmentAmount=Investment Amount
+page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue=Date of investment
+page.previousInvestment.reviewPreviousSchemes.investmentAmount=Investment amount raised
 page.previousInvestment.reviewPreviousSchemes.add=Add another scheme
+page.previousInvestment.schemeType.eis=Enterprise Investment Scheme
+page.previousInvestment.schemeType.seis=Seed Enterprise Investment Scheme
+page.previousInvestment.schemeType.sitr=Social Investment Tax Relief
+page.previousInvestment.schemeType.vct=Venture Capital Trust
+page.previousInvestment.schemeType.other=Other
+page.previousInvestment.amountSpent.label=Investment amount spent
+
+#previous schmeme
+page.investment.PreviousScheme.heading=Which schemes has your company used?
+page.investment.PreviousScheme.schemeType=Scheme
+page.investment.PreviousScheme.button.add=Add this scheme
+page.investment.PreviousScheme.button.update=Update this scheme
+page.investment.PreviousScheme.title=Previous scheme?
+validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
+validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
+page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
+page.investment.PreviousScheme.companiesHouse = Companies House database
+page.investment.PreviousScheme.howToFind=How can you find this out?
+page.investment.PreviousScheme.title=Previous schemes
+page.investment.PreviousScheme.investmentAmount=Investment amount raised
+
 
 #annual turnover error
 page.investment.AnnualTurnoverError.title=Annual turnover error

@@ -62,7 +62,7 @@ trait SubmissionConnector {
 
   def checkAveragedAnnualTurnover(proposedInvestmentAmount: ProposedInvestmentModel, annualTurnoverCostsModel: AnnualTurnoverCostsModel)
                                  (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-zannual-turnover/check-averaged-annual-turnover/" +
       s"proposed-investment-amount/${proposedInvestmentAmount.investmentAmount}/annual-turn-over/${annualTurnoverCostsModel.amount1}" +
       s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
   }
