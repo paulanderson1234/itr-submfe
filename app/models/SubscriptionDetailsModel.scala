@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-package models.etmp
+package models
 
-import models._
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
-case class SubscriptionTypeModel
+case class SubscriptionDetailsModel
 (
   safeId: String,
   contactDetails: ContactDetailsModel,
   contactAddress: AddressModel
 )
 
-object SubscriptionTypeModel {
+object SubscriptionDetailsModel {
+  implicit val format = Json.format[SubscriptionDetailsModel]
+  implicit val writes = Json.writes[SubscriptionDetailsModel]
+}
+
+object EtmpSubscriptionDetailsModel {
 
   implicit val careads: Reads[AddressModel] = (
       (__ \\ "addressLine1").read[String] and
@@ -50,11 +54,11 @@ object SubscriptionTypeModel {
 
   implicit val cdwrites = Json.writes[ContactDetailsModel]
 
-  implicit val streads: Reads[SubscriptionTypeModel] = (
+  implicit val streads: Reads[SubscriptionDetailsModel] = (
       (__ \\ "subscriptionType" \\ "safeId").read[String] and
       (__ \\ "subscriptionType").read[ContactDetailsModel] and
       (__ \\ "subscriptionType" \\ "correspondenceDetails" \\ "contactAddress").read[AddressModel]
-    )(SubscriptionTypeModel.apply _)
+    )(SubscriptionDetailsModel.apply _)
 
-  implicit val stwrites = Json.writes[SubscriptionTypeModel]
+  implicit val stwrites = Json.writes[SubscriptionDetailsModel]
 }

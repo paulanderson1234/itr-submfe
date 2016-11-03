@@ -23,14 +23,14 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
-import models.etmp.SubscriptionTypeModel
-import models.ConfirmCorrespondAddressModel
+import models.{AddressModel, ConfirmCorrespondAddressModel, SubscriptionDetailsModel}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.SubscriptionService
 import data.SubscriptionTestData._
+
 import scala.concurrent.Future
 
 class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
@@ -48,15 +48,15 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
     confirmCorrespondAddressModel: Option[ConfirmCorrespondAddressModel] = None,
     backLink: Option[String] = None
   ): Unit = {
-    when(TestController.s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
+    when(mockS4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](Matchers.eq(KeystoreKeys.confirmContactAddress))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(confirmCorrespondAddressModel))
-    when(TestController.s4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(backLink))
   }
 
-  def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(subscriptionDetails)
+  def mockSubscriptionServiceResponse(address: Option[AddressModel] = None): Unit =
+    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(address))
 
   "ConfirmCorrespondAddressController" should {
     "use the correct auth connector" in {
@@ -112,7 +112,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to ConfirmContactDetailsController" when {
 
-    "there is no data stored in S4L and data from ETMP is retrieved" should {
+    "there is no data stored in S4L and data from Subscription Service is retrieved" should {
 
       lazy val result = await(TestController.show()(authorisedFakeRequest))
       lazy val document = Jsoup.parse(bodyOf(result))
@@ -120,7 +120,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       "return Status OK (200)" in {
         setupSaveForLaterMocks(None, Some("back-link"))
         mockEnrolledRequest()
-        mockSubscriptionServiceResponse(Some(subscriptionTypeFull.as[SubscriptionTypeModel]))
+        mockSubscriptionServiceResponse(Some(expectedContactAddressFull))
         status(result) shouldBe OK
       }
 

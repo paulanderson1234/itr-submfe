@@ -104,8 +104,8 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
     """.stripMargin
   )))
 
-  def setupMockedResponse(data: Option[HttpResponse]): OngoingStubbing[Future[Option[HttpResponse]]] = {
-    when(TargetSubscriptionConnector.http.GET[Option[HttpResponse]](
+  def setupMockedResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
+    when(TargetSubscriptionConnector.http.GET[HttpResponse](
       Matchers.eq(s"${TargetSubscriptionConnector.serviceUrl}/investment-tax-relief-subscription/$validTavcReference/subscription"))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
@@ -117,7 +117,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
 
       "return a Status OK (200) response" in {
-        setupMockedResponse(Some(successResponse))
+        setupMockedResponse(successResponse)
         await(result) match {
           case Some(response) => response.status shouldBe Status.OK
           case _ => fail("No response was received, when one was expected")
@@ -125,7 +125,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       }
 
       "Have a successful Json Body response" in {
-        setupMockedResponse(Some(successResponse))
+        setupMockedResponse(successResponse)
         await(result) match {
           case Some(response) => response.json shouldBe successResponse.json
           case _ => fail("No response was received, when one was expected")
@@ -137,7 +137,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
 
       "return a Status BAD_REQUEST (400) response" in {
-        setupMockedResponse(Some(failedResponse))
+        setupMockedResponse(failedResponse)
         await(result) match {
           case Some(response) => response.status shouldBe Status.BAD_REQUEST
           case _ => fail("No response was received, when one was expected")
@@ -145,20 +145,11 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       }
 
       "Have a non-successful Json Body response" in {
-        setupMockedResponse(Some(failedResponse))
+        setupMockedResponse(failedResponse)
         await(result) match {
           case Some(response) => response.json shouldBe failedResponse.json
           case _ => fail("No response was received, when one was expected")
         }
-      }
-    }
-
-    "expecting a no response" should {
-      lazy val result = TargetSubscriptionConnector.getSubscriptionDetails(validTavcReference)
-
-      "return a None" in {
-        setupMockedResponse(None)
-        await(result).isEmpty shouldBe true
       }
     }
   }
