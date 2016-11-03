@@ -32,19 +32,19 @@ object ETMPRegistrationDetailsModel {
 
   implicit val readsA: Reads[AddressModel] = (
     (__ \ "addressLine1").read[String] and
-    (__ \ "addressLine2").read[String] and
-    (__ \ "addressLine3").readNullable[String] and
-    (__ \ "addressLine4").readNullable[String] and
-    (__ \ "postalCode").readNullable[String] and
-    (__ \ "countryCode").read[String]
-  )(AddressModel.apply _)
+      (__ \ "addressLine2").read[String] and
+      (__ \ "addressLine3").readNullable[String] and
+      (__ \ "addressLine4").readNullable[String] and
+      (__ \ "postalCode").readNullable[String] and
+      (__ \ "countryCode").read[String]
+    )(AddressModel.apply _)
 
   implicit val writesA = Json.writes[AddressModel]
 
   implicit val readsRDM: Reads[RegistrationDetailsModel] = (
     (__ \ "organisation" \ "organisationName").read[String] and
-    (__ \ "addressDetails").read[AddressModel]
-  )(RegistrationDetailsModel.apply _)
+      (__ \ "addressDetails").read[AddressModel]
+    )(RegistrationDetailsModel.apply _)
 
   implicit val writesRDM = Json.writes[RegistrationDetailsModel]
 

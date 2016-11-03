@@ -19,8 +19,9 @@ package services
 import auth.TAVCUser
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubmissionConnector}
-import models.registration.RegistrationDetailsModel
+import models.registration.{ETMPRegistrationDetailsModel, RegistrationDetailsModel}
 import play.api.Logger
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,18 +42,26 @@ trait RegistrationDetailsService {
     s4LConnector.fetchAndGetFormData[RegistrationDetailsModel](KeystoreKeys.registrationDetails).flatMap[Option[RegistrationDetailsModel]] {
       case Some(registrationDetailsModel) => Future.successful(Some(registrationDetailsModel))
       case None => subscriptionService.getEtmpSubscriptionDetails(tavcRef).flatMap[Option[RegistrationDetailsModel]] {
-          case Some(subscriptionTypeModel) => submissionConnector.getRegistrationDetails(subscriptionTypeModel.safeId).map {
-            case Some(registrationDetailsModel) => {
-              s4LConnector.saveFormData(KeystoreKeys.registrationDetails,registrationDetailsModel)
-              Some(registrationDetailsModel)
+        case Some(subscriptionTypeModel) => submissionConnector.getRegistrationDetails(subscriptionTypeModel.safeId).map {
+          registrationDetailsModel =>
+            registrationDetailsModel.json.validate[RegistrationDetailsModel](ETMPRegistrationDetailsModel.readsRDM) match {
+              case data: JsSuccess[RegistrationDetailsModel] => {
+                s4LConnector.saveFormData(KeystoreKeys.registrationDetails, data.value)
+                Some(data.value)
+              }
+              case e: JsError => {
+                Logger.warn(s"[RegistrationDetailsServce][getRegistrationDetails] - Failed to parse JSON response. Errors=${e.errors}")
+                None
+              }
             }
-            case None => {
-              Logger.warn(s"[RegistrationDetailsServce][getRegistrationDetails] - No Registration Details Retrieved")
-              None
-            }
+        }.recover {
+          case _ => {
+            Logger.warn(s"[RegistrationDetailsServce][getRegistrationDetails] - No Registration Details Retrieved")
+            None
           }
-          case None => Future.successful(None)
         }
+        case None => Future.successful(None)
+      }
     }
   }
 

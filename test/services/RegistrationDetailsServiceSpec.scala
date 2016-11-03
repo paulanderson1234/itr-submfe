@@ -26,8 +26,10 @@ import models.registration.RegistrationDetailsModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
-import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.libs.json.Json
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import play.api.test.Helpers._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -39,9 +41,33 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
   val mockSubscriptionService = mock[SubscriptionService]
   val tavcRef = "XATAVC000123456"
 
+  val minimumRegResponse = Json.parse(
+    """
+      |{
+      |   "sapNumber": "0123456789",
+      |   "safeId": "XA0001234567890",
+      |   "isEditable": true,
+      |   "isAnAgent": false,
+      |   "isAnIndividual": false,
+      |   "organisation": {
+      |    "organisationName": "test name"
+      |   },
+      |   "addressDetails": {
+      |       "addressLine1": "line1",
+      |       "addressLine2": "line2",
+      |       "countryCode": "NZ"
+      |   },
+      |   "contactDetails": {
+      |   }
+      |}""".stripMargin
+  )
+
   val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
   val registrationDetailsModel = RegistrationDetailsModel("test name", addressModel)
   val subscriptionTypeModel = SubscriptionTypeModel("XA0001234567890",ContactDetailsModel("test","name",email = "test@test.com"), addressModel)
+  val httpResponse = HttpResponse(OK,Some(minimumRegResponse))
+  val successResponse = Future.successful(httpResponse)
+  val failedResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
 
   implicit val hc = HeaderCarrier()
   implicit val user = TAVCUser(allowedAuthContext)
@@ -52,14 +78,14 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
     override lazy val subscriptionService = mockSubscriptionService
   }
 
-  def setupMocks(registrationDetailsModel1: Option[RegistrationDetailsModel] = None, registrationDetailsModel2: Option[RegistrationDetailsModel] = None,
+  def setupMocks(registrationDetailsModel1: Option[RegistrationDetailsModel] = None, response: Future[HttpResponse] = failedResponse,
                  subscriptionTypeModel: Option[SubscriptionTypeModel] = None): Unit = {
     when(mockS4LConnector.fetchAndGetFormData[RegistrationDetailsModel](Matchers.eq(KeystoreKeys.registrationDetails))
       (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(registrationDetailsModel1))
     when(mockSubscriptionService.getEtmpSubscriptionDetails(Matchers.eq(tavcRef))
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscriptionTypeModel))
     when(mockSubmissionConnector.getRegistrationDetails(Matchers.any())
-      (Matchers.any())).thenReturn(Future.successful(registrationDetailsModel2))
+      (Matchers.any())).thenReturn(response)
   }
 
   "RegistrationDetailsService" should {
@@ -85,7 +111,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
       lazy val result = TestService.getRegistrationDetails(tavcRef)
 
       "Return the registration details model" in {
-        setupMocks(None,Some(registrationDetailsModel),Some(subscriptionTypeModel))
+        setupMocks(None,successResponse,Some(subscriptionTypeModel))
         await(result) shouldBe Some(registrationDetailsModel)
       }
 
@@ -96,7 +122,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
       lazy val result = TestService.getRegistrationDetails(tavcRef)
 
       "Return None" in {
-        setupMocks(None,None,Some(subscriptionTypeModel))
+        setupMocks(None,failedResponse,Some(subscriptionTypeModel))
         await(result) shouldBe None
       }
 

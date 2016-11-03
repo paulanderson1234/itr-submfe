@@ -83,8 +83,8 @@ trait SubmissionConnector {
     http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceNumber/submit", Json.toJson(targetSubmissionModel))
   }
 
-  def getRegistrationDetails(safeID: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationDetailsModel]] = {
-    http.GET[Option[RegistrationDetailsModel]](s"$serviceUrl$getRegistrationDetailsUrl$safeID")
+  def getRegistrationDetails(safeID: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$serviceUrl$getRegistrationDetailsUrl$safeID")
   }
 
 }
