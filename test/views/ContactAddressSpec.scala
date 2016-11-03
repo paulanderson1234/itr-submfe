@@ -27,7 +27,6 @@ import views.html.contactInformation.ContactAddress
 
 class ContactAddressSpec extends ViewSpec {
 
-  val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
   val emptyAddressModel = new AddressModel("", "", countryCode = "")
 
   lazy val form = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",

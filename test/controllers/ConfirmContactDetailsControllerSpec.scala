@@ -47,7 +47,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(confirmContactDetailsModel)
 
   def mockSubscriptionServiceResponse(subscriptionDetails: Option[SubscriptionTypeModel] = None): Unit =
-    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any()))
+    when(TestController.subscriptionService.getEtmpSubscriptionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
       .thenReturn(subscriptionDetails)
 
   "ConfirmContactDetailsController" should {
@@ -214,7 +214,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       )
     }
   }
-    "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
+  "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
       mockEnrolledRequest()
@@ -245,13 +245,13 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
         "contactDetails.telephoneNumber" -> "01234 567890",
         "contactDetails.mobileNumber" -> "01234 567890",
         "contactDetails.email" -> "thisiavalidemail@valid.com")
-       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
-          result => {
-            status(result) shouldBe BAD_REQUEST
-          }
-        )
-      }
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe BAD_REQUEST
+        }
+      )
     }
+  }
 
   "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
 

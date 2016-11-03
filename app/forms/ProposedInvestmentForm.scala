@@ -16,7 +16,7 @@
 
 package forms
 
-import utils.Transfomers._
+import utils.Transformers._
 import utils.Validation._
 import models.ProposedInvestmentModel
 import play.api.data.Form

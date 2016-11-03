@@ -388,7 +388,7 @@ page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
 
 #summaryQuestions
-summaryQuestion.companyDetailsSection =Section 1: Company details
+summaryQuestion.companyDetailsSection =Section 1: Business details
 summaryQuestion.companyName =Company name
 summaryQuestion.utr =Company Unique Taxpayer Reference
 summaryQuestion.registeredAddress =Registered address
@@ -400,8 +400,8 @@ summaryQuestion.knowledgeIntensive =Knowledge intensive
 summaryQuestion.operatingCosts =Operating costs
 summaryQuestion.rdCosts =Research and development costs
 summaryQuestion.percentageStaffWithMasters =Percentage of staff with master's degrees
-summaryQuestion.tenYearPlan =Ten-year plan to focus on new patents, or non-physical products
-summaryQuestion.tenYearPlanDesc =How your company will do that
+summaryQuestion.developmentPlan =Plan to develop something that you''ll own the rights to
+summaryQuestion.developmentPlanDesc =How your company will do that
 summaryQuestion.subsidiaries =Own or control any other companies
 
 #previous schmeme
@@ -441,7 +441,7 @@ page.summaryQuestion.proposedInvestment=Amount to be raised
 page.summaryQuestion.usedRAndD=Used for research and development
 page.summaryQuestion.whatWillUseFor=What you''ll use it for
 page.summaryQuestion.usedInvestReasonBefore=Same reason as a previous investment
-page.summaryQuestion.previousBeforeDOFCS=Got the investment before [DoFCS+7years]
+page.summaryQuestion.previousBeforeDOFCS=Got the investment within 7 or 10 years of your first commercial sale
 page.summaryQuestion.newGeoMarket=Launching somewhere new
 page.summaryQuestion.newProduct=Entering a new product market
 page.summaryQuestion.subsSpendingInvest=Company owned or controlled by [company name] to spend this investment
@@ -449,11 +449,8 @@ page.summaryQuestion.subNinetyOwned=[Company name] owns more than 90% of that co
 page.summaryQuestion.investmentGrow=How the investment will help your company grow
 
 #summary questions section four
-page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact Details
-page.summaryQuestion.name=Name
-page.summaryQuestion.telephone=Landline
-page.summaryQuestion.mobile=Mobile
-page.summaryQuestion.email=Email address
+page.summaryQuestion.companyDetailsSectionFour=Section 4: Contact details for this application
+page.summaryQuestion.contactDetails=Contact details
 page.summaryQuestion.contactAddress=Contact address
 
 
@@ -470,8 +467,8 @@ page.address.country.select = Select one country
 #page.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 
 #contact details page
+page.contactInformation.contactDetails.title=Who should we contact about your application?
 page.contactInformation.contactDetails.heading=Who should we contact about your application?
-page.contactInformation.contactDetails.title=Contact details
 page.contactInformation.contactDetails.forename.label=First name
 page.contactInformation.contactDetails.surname.label=Last name
 page.contactInformation.contactDetails.phoneNumber.label=Landline (optional)
