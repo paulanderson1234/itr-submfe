@@ -20,6 +20,7 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.introduction._
 import views.html.hubPartials._
