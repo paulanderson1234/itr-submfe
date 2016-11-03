@@ -35,7 +35,7 @@ trait SubscriptionConnector {
   def getSubscriptionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[Option[HttpResponse]] =
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-subscription/$tavcReferenceNumber/subscription").map(Some(_)).recover {
       case _ =>
-        Logger.error(s"[SubscriptionConnector][getSubscriptionDetails] - Upstream HTTP GET error")
+        Logger.warn(s"[SubscriptionConnector][getSubscriptionDetails] - Upstream HTTP GET error")
         None
     }
 }

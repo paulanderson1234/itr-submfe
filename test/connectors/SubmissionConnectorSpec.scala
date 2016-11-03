@@ -34,11 +34,12 @@ package connectors
 
 import java.util.UUID
 
-import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
+import auth.MockConfig
+import models.{AddressModel, AnnualTurnoverCostsModel, ProposedInvestmentModel}
 import models.submission.{AnnualCostModel, TurnoverCostModel}
 import play.api.test.Helpers._
 import fixtures.SubmissionFixture
-
+import models.registration.RegistrationDetailsModel
 import org.scalatest.BeforeAndAfterEach
 import org.scalatestplus.play.OneServerPerSuite
 import org.mockito.Matchers
@@ -58,9 +59,14 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val mockHttp : WSHttp = mock[WSHttp]
   val sessionId = UUID.randomUUID.toString
 
+  val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
+  val registrationDetailsModel = RegistrationDetailsModel("test name", addressModel)
+  val safeID = "XA000123456789"
+
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
-    override val serviceUrl = "dummy"
+    override val serviceUrl = MockConfig.submissionUrl
     override val http = mockHttp
+    override val getRegistrationDetailsUrl = MockConfig.getRegistrationDetailsUrl
   }
 
   val validResponse = true
@@ -202,6 +208,19 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe INTERNAL_SERVER_ERROR
     }
+  }
+
+  "Calling getRegistrationDetails with a safeID" should {
+
+    lazy val result = TargetSubmissionConnector.getRegistrationDetails(safeID)
+
+    "return a RegistrationDetailsModel" in {
+      when(mockHttp.GET[Option[RegistrationDetailsModel]](Matchers.eq(
+        s"${TargetSubmissionConnector.serviceUrl}${TargetSubmissionConnector.getRegistrationDetailsUrl}$safeID"))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(registrationDetailsModel))
+      await(result) shouldBe Some(registrationDetailsModel)
+    }
+
   }
 
 }
