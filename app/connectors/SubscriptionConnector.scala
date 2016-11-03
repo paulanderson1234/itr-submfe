@@ -17,8 +17,7 @@
 package connectors
 
 import config.WSHttp
-import models.etmp.SubscriptionTypeModel
-import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
+import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel, SubscriptionDetailsModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}

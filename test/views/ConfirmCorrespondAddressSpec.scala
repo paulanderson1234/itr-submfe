@@ -21,8 +21,7 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.helpers.ControllerSpec
 import controllers.ConfirmCorrespondAddressController
-import models.etmp.SubscriptionTypeModel
-import models.{AddressModel, ConfirmCorrespondAddressModel, SubscriptionDetailsModel}
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers

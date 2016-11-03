@@ -24,7 +24,6 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
 import models.{ConfirmContactDetailsModel, ContactDetailsModel, SubscriptionDetailsModel}
-import models.etmp.SubscriptionTypeModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._

@@ -20,11 +20,8 @@ import auth.TAVCUser
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubscriptionConnector}
 import models._
-import models.etmp.SubscriptionTypeModel
 import play.api.Logger
-import play.api.libs.json.Json
 import uk.gov.hmrc.play.http.HeaderCarrier
-
 import scala.util.Success
 import scala.util.Failure
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -41,12 +38,12 @@ trait SubscriptionService {
       case Some(subscriptionData) => Future.successful(Some(subscriptionData))
       case _ => subscriptionConnector.getSubscriptionDetails(tavcRef) map {
         case Some(subscriptionDetails) =>
-          Try(subscriptionDetails.json.as[SubscriptionTypeModel]) match {
+          Try(subscriptionDetails.json.as[SubscriptionDetailsModel](EtmpSubscriptionDetailsModel.streads)) match {
             case Success(subscriptionData) =>
-              s4lConnector.saveFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails, Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
-              Some(Json.toJson(subscriptionData).as[SubscriptionDetailsModel])
+              s4lConnector.saveFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails, subscriptionData)
+              Some(subscriptionData)
             case Failure(ex) =>
-              Logger.warn(s"[SubscriptionService][getEtmpSubscriptionDetails] - Failed to parse JSON response into SubscriptionTypeModel. Message=${ex.getMessage}")
+              Logger.warn(s"[SubscriptionService][getEtmpSubscriptionDetails] - Failed to parse JSON response. Message=${ex.getMessage}")
               None
           }
         case _ =>

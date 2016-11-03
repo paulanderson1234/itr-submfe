@@ -23,7 +23,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
-import models.etmp.SubscriptionTypeModel
 import models.{AddressModel, ConfirmCorrespondAddressModel, SubscriptionDetailsModel}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
