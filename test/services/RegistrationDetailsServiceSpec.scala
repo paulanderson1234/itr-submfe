@@ -57,7 +57,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
     when(mockS4LConnector.fetchAndGetFormData[RegistrationDetailsModel](Matchers.eq(KeystoreKeys.registrationDetails))
       (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(registrationDetailsModel1))
     when(mockSubscriptionService.getEtmpSubscriptionDetails(Matchers.eq(tavcRef))
-      (Matchers.any())).thenReturn(Future.successful(subscriptionTypeModel))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscriptionTypeModel))
     when(mockSubmissionConnector.getRegistrationDetails(Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(registrationDetailsModel2))
   }
