@@ -20,13 +20,15 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.PreviousSchemesHelper
+import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import forms.HadPreviousRFIForm._
-import models.HadPreviousRFIModel
+import forms.NewGeographicalMarketForm._
+import models.{HadPreviousRFIModel, NewGeographicalMarketModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 import views.html._
+import views.html.investment.NewGeographicalMarket
 
 /*
  * Copyright 2016 HM Revenue & Customs
@@ -53,18 +55,31 @@ object HadPreviousRFIController extends HadPreviousRFIController{
 trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   val s4lConnector: S4LConnector
-
+//
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
-      case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data)))
-      case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm))
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
+          case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data), backUrl.getOrElse("")))
+          case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm, backUrl.getOrElse("")))
+        }
+      }
+      else Future.successful(Redirect(routes.CommercialSaleController.show()))
     }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
+
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     hadPreviousRFIForm.bindFromRequest().fold(
       formWithErrors => {
-        Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors)))
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
+          case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
+          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
+        }
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)

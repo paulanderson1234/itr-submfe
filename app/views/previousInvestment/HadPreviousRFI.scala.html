@@ -3,11 +3,11 @@
 @import common.Constants
 @import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary}
 
-@(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_])
+@(hadPreviousRFIForm: Form[HadPreviousRFIModel], backUrl: String)(implicit request: Request[_])
 
 @main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
 
-    @backButtonWithProgress(controllers.routes.SubsidiariesController.show().toString, Messages("common.section.progress.company.details.two"))
+    @backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
 
     @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
