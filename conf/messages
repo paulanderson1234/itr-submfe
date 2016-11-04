@@ -211,7 +211,7 @@ page.introduction.WhatWeAskYou.print.text=Print this page
 #commercial sale page
 page.companyDetails.CommercialSale.title=Has your company had its first commercial sale yet? If so, when?
 page.companyDetails.CommercialSale.heading=Has your company sold any goods or services commercially yet?
-page.companyDetails.CommercialSale.question.hint=When was it''s first commercial sale?
+page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
@@ -420,7 +420,7 @@ page.investment.PreviousScheme.title=Previous schemes
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
 validation.error.ShareIssueDate.Future=Date of investment cannot be a future date
-page.investment.PreviousScheme.otherSchemeName.label=What was its name?
+page.investment.PreviousScheme.otherSchemeName.label=What was it''s name?
 
 
 #summary questions section two
