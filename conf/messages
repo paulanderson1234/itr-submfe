@@ -492,7 +492,7 @@ page.investment.LifetimeAllowanceExceeded.reason=You''ve already raised more tha
 page.investment.LifetimeAllowanceExceeded.link=Back to investment schemes
 
 #review previous schemes
-page.previousInvestment.reviewPreviousSchemes.title=Review previous schemes
+page.previousInvestment.reviewPreviousSchemes.title=Previous schemes
 page.previousInvestment.reviewPreviousSchemes.heading=Previous schemes
 page.previousInvestment.reviewPreviousSchemes.scheme=Scheme
 page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue=Date of investment
@@ -510,13 +510,12 @@ page.investment.PreviousScheme.heading=Which schemes has your company used?
 page.investment.PreviousScheme.schemeType=Scheme
 page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
-page.investment.PreviousScheme.title=Previous scheme?
+page.investment.PreviousScheme.title=Which schemes has your company used?
 validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
 validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
 page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the
 page.investment.PreviousScheme.companiesHouse = Companies House database
 page.investment.PreviousScheme.howToFind=How can you find this out?
-page.investment.PreviousScheme.title=Previous schemes
 page.investment.PreviousScheme.investmentAmount=Investment amount raised
 
 
