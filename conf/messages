@@ -441,7 +441,7 @@ page.summaryQuestion.contactAddress=Contact address
 
 #supply contact address
 page.contactInformation.ProvideContactAddress.heading=Where should we send your correspondence?
-page.contactInformation.ProvideContactAddress.title=Provide correspondence address
+page.contactInformation.ProvideContactAddress.title=Where should we send your correspondence?
 page.contactInformation.ProvideContactAddress.addressline1.label=Address line 1
 page.contactInformation.ProvideContactAddress.addressline2.label=Address line 2
 page.contactInformation.ProvideContactAddress.addressline3.label=Address line 3 (optional)
