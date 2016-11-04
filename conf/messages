@@ -43,7 +43,7 @@ common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
 common.externalLink=opens in a new window
 common.date.error.invalidDate=Enter a valid date
-common.date.hint.example= For example, 31 3 1980
+common.date.hint.example= For example, 31 3 1980.
 common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
@@ -177,7 +177,7 @@ page.companyDetails.DateOfIncorporation.heading= When was your company incorpora
 page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
 date.hint.dateOfIncorporation= For example, 31 3 1980.
 page.companyDetails.DateOfIncorporation.whereToFind=Where can I find this?
-page.companyDetails.DateOfIncorporation.location= It''s on your certificate of registration. You can also find it by searching for your company on the
+page.companyDetails.DateOfIncorporation.location= It''s on your certificate of incorporation. You can also find it by searching for your company on the
 page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
 
 #What we'll ask you page
@@ -209,9 +209,9 @@ page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything els
 page.introduction.WhatWeAskYou.print.text=Print this page
 
 #commercial sale page
-page.companyDetails.CommercialSale.title=Has your company sold anything commercially yet?
-page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
-page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
+page.companyDetails.CommercialSale.title=Has your company had its first commercial sale yet? If so, when?
+page.companyDetails.CommercialSale.heading=Has your company sold any goods or services commercially yet?
+page.companyDetails.CommercialSale.question.hint=When was it''s first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
