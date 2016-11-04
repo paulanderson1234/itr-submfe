@@ -20,12 +20,10 @@ import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.ControllerHelpers
-import forms.InvestmentGrowForm._
-import models.{AddressModel, ApplicationHubModel, ContactDetailsModel, InvestmentGrowModel}
-import play.api.Logger
+import models.ApplicationHubModel
 import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubscriptionService}
+import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.introduction._

@@ -166,15 +166,111 @@ class ApplicationHubControllerSpec extends ControllerSpec{
       )
     }
   }
-//
+
   "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
     "redirect to itself and delete the application currently in progress" in {
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(Status.OK))
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.delete)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/hub")
+        }
+      )
+    }
+  }
+
+  "Posting to 'newApplication' when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(TestController.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(TestController.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Posting to 'newApplication' in the ApplicationHubController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(TestController.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Posting to 'newApplication' in the ApplicationHubController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
+
+  "Posting to 'delete' when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(TestController.delete)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(TestController.delete)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Posting to 'delete' in the ApplicationHubController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(TestController.delete)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Posting to 'delete' in the ApplicationHubController when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.delete)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }
