@@ -299,11 +299,12 @@ page.investment.help.link=What happens if I raise more or less than I''m expecti
 page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
-page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
-page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master''s degrees?
-page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
+page.knowledgeIntensive.PercentageStaffWithMasters.title=Do more than 20% of your staff who do research and development have master''s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff who do research and development have master''s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.hint=It must be a master''s degree that is closely related to the role they perform.
 page.percentageStaffWithMasters.more = More than 20%
 page.percentageStaffWithMasters.less = Less than 20%
+page.percentageStaffWithMasters.yes.hint=You''ll need to meet this condition when you get the investment and for 3 years afterwards.
 
 #used investment reason before page
 page.investment.UsedInvestmentReasonBefore.title=Used investment scheme before
