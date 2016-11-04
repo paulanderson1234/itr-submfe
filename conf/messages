@@ -377,8 +377,8 @@ page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-dat
 page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
 
 #Confirm Correspondence Address
-page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
-page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
+page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
+page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondence address you want us to use for this application?
 
 
 #check your answers page
