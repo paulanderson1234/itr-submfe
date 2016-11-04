@@ -25,6 +25,7 @@ trait Constants {
   def amountFormattedAnswer(value: String) : String= s"£$value"
   val SuggestedTextMaxLength: Int = 2048
   val SuggestedTextMaxLengthLower: Int = 1024
+  val SuggestedTenYearPlan: Int = 250
 
   val businessActivityPreparation = "Preparing To Trade"
   val businessActivityRAndD = "Research And Development"

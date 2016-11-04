@@ -186,3 +186,16 @@ related ul {
 .summaryLink {
     width: 1em;
 }
+
+
+.removeLink:hover, .button--link-style:focus, .button--link-style:active {
+    color: #2e8aca;
+    /*background-color:#ffbf47;*/
+    outline: thin dotted;
+}
+
+.in-focusd {
+  /*outline: 3px solid #ffbf47;*/
+  background-color:#ffbf47 !important;
+  color:red;
+}

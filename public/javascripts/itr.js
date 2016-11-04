@@ -4,6 +4,25 @@ $("#ninetyPercentErrorSection").hide();
 
 $(document).ready($(function() {
 
+  $(".removeLink").each(function()  {
+
+//              $( this ).on( 'focus', function() {
+//              	$( this ).closest( 'label' ).addClass( 'in-focus' );
+//              });
+//              $( this ).on( 'focusout', function(){
+//              	$( this ).closest( 'label' ).removeClass( 'in-focus' );
+//              });
+
+      $( this ).on( 'focus', function() {
+     // alert('on foc')
+              	$( this ).addClass( 'in-focusd' );
+              });
+              $( this ).on( 'focusout', function(){
+              	$( this ).removeClass( 'in-focusd' );
+              });
+        });
+
+
     $('*[data-hidden]').each(function() {
 
         var $self = $(this);
