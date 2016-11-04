@@ -1,7 +1,7 @@
 @import models.PercentageStaffWithMastersModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
-@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, formHiddenYesNoRadioNoError, formHint}
 
 @(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_])
 
@@ -18,16 +18,13 @@
     @form(action = controllers.routes.PercentageStaffWithMastersController.submit()) {
 
         <div class="form-group">
-            @formInputRadioGroup(
-            field = percentageStaffWithMastersForm("staffWithMasters"),
-            Seq(
-            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
-            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-            '_legend -> Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading"),
-            '_legendClass -> "visuallyhidden",
-            '_labelAfter -> true,
-            '_labelClass -> "block-label",
-            '_groupClass -> "inline"
+            @formHiddenYesNoRadioNoError(
+            percentageStaffWithMastersForm,
+            "staffWithMasters",
+            Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint"),
+            formHint("yes-hint", Messages("page.percentageStaffWithMasters.yes.hint")),
+            None,
+            Some("visuallyhidden")
             )
         </div>
 

@@ -43,7 +43,7 @@ common.date.fields.year=Year
 common.date.hint=For example, 4 9 2016
 common.externalLink=opens in a new window
 common.date.error.invalidDate=Enter a valid date
-common.date.hint.example= For example, 31 3 1980
+common.date.hint.example= For example, 31 3 1980.
 common.date.error.invalidDate=Date must have a valid day, month and a year with 4 numbers
 
 ##common section headings##
@@ -172,12 +172,12 @@ page.introduction.YourCompanyNeed.complianceStatement=A reference number so inve
 
 #Date of incorporation page
 validation.error.DateOfIncorporation.Future=Date of incorporation cannot be a future date
-page.companyDetails.DateOfIncorporation.title= Date of incorporation
+page.companyDetails.DateOfIncorporation.title= When was your company incorporated?
 page.companyDetails.DateOfIncorporation.heading= When was your company incorporated?
 page.companyDetails.DateOfIncorporation.question= When was your company incorporated?
-date.hint.dateOfIncorporation= For example, 31 3 1980
+date.hint.dateOfIncorporation= For example, 31 3 1980.
 page.companyDetails.DateOfIncorporation.whereToFind=Where can I find this?
-page.companyDetails.DateOfIncorporation.location= It''s on your certificate of registration. You can also find it by searching for your company on the
+page.companyDetails.DateOfIncorporation.location= It''s on your certificate of incorporation. You can also find it by searching for your company on the
 page.companyDetails.DateOfIncorporation.companiesHouse = Companies House database
 
 #What we'll ask you page
@@ -209,8 +209,8 @@ page.introduction.WhatWeAskYou.bullet.prospectuses=Prospectuses and anything els
 page.introduction.WhatWeAskYou.print.text=Print this page
 
 #commercial sale page
-page.companyDetails.CommercialSale.title=Has your company sold anything commercially yet?
-page.companyDetails.CommercialSale.heading=Has your company sold anything commercially yet?
+page.companyDetails.CommercialSale.title=Has your company had its first commercial sale yet? If so, when?
+page.companyDetails.CommercialSale.heading=Has your company sold any goods or services commercially yet?
 page.companyDetails.CommercialSale.question.hint=When was its first commercial sale?
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
@@ -299,11 +299,12 @@ page.investment.help.link=What happens if I raise more or less than I''m expecti
 page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
-page.knowledgeIntensive.PercentageStaffWithMasters.title=Percentage of staff with masters
-page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff have master''s degrees?
-page.knowledgeIntensive.PercentageStaffWithMasters.hint=This is one of the conditions for knowledge intensive companies
+page.knowledgeIntensive.PercentageStaffWithMasters.title=Do more than 20% of your staff who do research and development have master''s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.heading=Do more than 20% of your staff who do research and development have master''s degrees?
+page.knowledgeIntensive.PercentageStaffWithMasters.hint=It must be a master''s degree that is closely related to the role they perform.
 page.percentageStaffWithMasters.more = More than 20%
 page.percentageStaffWithMasters.less = Less than 20%
+page.percentageStaffWithMasters.yes.hint=You''ll need to meet this condition when you get the investment and for 3 years afterwards.
 
 #used investment reason before page
 page.investment.UsedInvestmentReasonBefore.title=Used investment scheme before
@@ -376,8 +377,8 @@ page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-dat
 page.supportingDocuments.SupportingDocuments.text.three=We can''t accept emails that are larger than 10MB.
 
 #Confirm Correspondence Address
-page.contactInformation.ConfirmCorrespondAddress.heading=Is this the contact address you want to use?
-page.contactInformation.ConfirmCorrespondAddress.title=Confirm correspondence address
+page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
+page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondence address you want us to use for this application?
 
 
 #check your answers page
@@ -407,7 +408,7 @@ summaryQuestion.subsidiaries =Own or control any other companies
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
 validation.error.ShareIssueDate.Future=Date of investment cannot be a future date
-page.investment.PreviousScheme.otherSchemeName.label=What was its name?
+page.investment.PreviousScheme.otherSchemeName.label=What was it''s name?
 
 
 #summary questions section two
@@ -440,7 +441,7 @@ page.summaryQuestion.contactAddress=Contact address
 
 #supply contact address
 page.contactInformation.ProvideContactAddress.heading=Where should we send your correspondence?
-page.contactInformation.ProvideContactAddress.title=Provide correspondence address
+page.contactInformation.ProvideContactAddress.title=Where should we send your correspondence?
 page.contactInformation.ProvideContactAddress.addressline1.label=Address line 1
 page.contactInformation.ProvideContactAddress.addressline2.label=Address line 2
 page.contactInformation.ProvideContactAddress.addressline3.label=Address line 3 (optional)
