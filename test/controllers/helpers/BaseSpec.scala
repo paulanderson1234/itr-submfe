@@ -37,6 +37,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     reset(mockSubmissionConnector)
   }
 
+  val applicationHubModel = ApplicationHubModel("Jades Company", AddressModel("2 Telford Plaxa","Lawn Central", None,None,Some("tf4 2ls"),"GB"), ContactDetailsModel("Jade ","Young",Some("0123324234234"),Some("4567324234324"),"j@j.com"))
+
   val contactDetailsModel = ContactDetailsModel("Test", "Name", Some("01111 111111"), Some("0872552488"), "test@test.com")
   val contactDetailsOneNumberModel = ContactDetailsModel("Test", "Name", None, Some("0872552488"), "test@test.com")
   val confirmContactDetailsModel = ConfirmContactDetailsModel(Constants.StandardRadioButtonYesValue, contactDetailsModel)

@@ -32,36 +32,25 @@
 
 package views
 
-import java.util.UUID
-
-import auth.MockAuthConnector
-import builders.SessionBuilder
-import config.{AppConfig, FrontendAppConfig}
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.{ApplicationHubController, IntroductionController}
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
 import play.api.i18n.Messages
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import views.helpers.ViewSpec
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 import views.html.introduction.ApplicationHub
 
 class ApplicationHubSpec extends ViewSpec {
 
-
   "The Application Hub page" should {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it" in {
-      lazy val view = ApplicationHub(ApplicationHubNew()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModel, ApplicationHubNew()(fakeRequest))(fakeRequest)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
     }
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it" in {
-      lazy val view = ApplicationHub(ApplicationHubExisting()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModel, ApplicationHubExisting()(fakeRequest))(fakeRequest)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")

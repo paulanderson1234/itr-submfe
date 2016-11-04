@@ -16,11 +16,18 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.Helpers.ControllerHelpers
+import forms.InvestmentGrowForm._
+import models.{AddressModel, ApplicationHubModel, ContactDetailsModel, InvestmentGrowModel}
+import play.api.Logger
+import play.api.mvc.Result
+import services.{RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.introduction._
 import views.html.hubPartials._
 
@@ -42,10 +49,36 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
-      case Some(true) => Ok(ApplicationHub(ApplicationHubExisting()))
-      case _ => Ok(ApplicationHub(ApplicationHubNew()))
+
+    def routeRequest(applicationHubModel: Option[ApplicationHubModel]): Future[Result] = {
+      if(applicationHubModel.isDefined) {
+        s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
+          case Some(true) => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubExisting()))
+          case _ => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubNew()))
+        }
+      }
+      else Future.successful(InternalServerError)
     }
+
+
+    def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = {
+      (for{
+        tavcRef <- getTavCReferenceNumber()
+        registrationDetailsModel <- RegistrationDetailsService.getRegistrationDetails(tavcRef)
+        subscriptionDetailsModel <- SubscriptionService.getSubscriptionContactDetails(tavcRef)
+      }yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName,registrationDetailsModel.get.addressModel,subscriptionDetailsModel.get))).recover {
+        case _ =>
+          Logger.warn(s"[ApplicationHubController][getApplicationModel] - ApplicationHubModel components not found")
+          None
+      }
+    }
+
+    for {
+      applicationHubModel <- getApplicationHubModel()
+      route <- routeRequest(applicationHubModel)
+    } yield route
+
+
   }
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
