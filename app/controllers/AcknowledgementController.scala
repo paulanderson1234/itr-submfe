@@ -110,7 +110,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       postcode = Some("TF1 4NY"), countryCode = "GB")
     val tempCompanyName = "Company Name Ltd"
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
-    val tempMostRecentYear = 2015
 
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
       contactAddress) match {
@@ -125,9 +124,9 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           schemeTypes = SchemeTypesModel(eis = true),
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           annualCosts = if (operatingCosts.nonEmpty)
-            Some(Converters.operatingCostsToList(operatingCosts.get, tempMostRecentYear)) else None,
+            Some(Converters.operatingCostsToList(operatingCosts.get)) else None,
           annualTurnover = if (turnoverCosts.nonEmpty)
-            Some(Converters.turnoverCostsToList(turnoverCosts.get, tempMostRecentYear)) else None,
+            Some(Converters.turnoverCostsToList(turnoverCosts.get)) else None,
           knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
             subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempCompanyAddress),

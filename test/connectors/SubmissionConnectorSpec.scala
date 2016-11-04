@@ -128,7 +128,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     "return a valid response" in {
 
       val proposedInvestment = ProposedInvestmentModel(50)
-      val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100")
+      val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100","2005","2006","2007","2008","2009")
 
       val result = TargetSubmissionConnector.checkAveragedAnnualTurnover(proposedInvestment,annualTurnoverCosts)
       await(result) shouldBe Some(validResponse)

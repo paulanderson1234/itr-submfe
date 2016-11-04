@@ -20,7 +20,8 @@ import play.api.libs.json.Json
 import utils.CostFormatter
 
 case class OperatingCostsModel(operatingCosts1stYear : String, operatingCosts2ndYear : String, operatingCosts3rdYear : String,
-                               rAndDCosts1stYear: String, rAndDCosts2ndYear : String, rAndDCosts3rdYear : String)
+                               rAndDCosts1stYear: String, rAndDCosts2ndYear : String, rAndDCosts3rdYear : String,
+                               firstYear: String, secondYear: String, thirdYear: String)
 
 object OperatingCostsModel extends CostFormatter{
   implicit val format = Json.format[OperatingCostsModel]

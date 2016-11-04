@@ -50,7 +50,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
 
   val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
 
-  val operatingCostsModel = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
+  val operatingCostsModel = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250", "2006", "2005", "2004")
 
   val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
 
@@ -119,7 +119,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     "Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus"))
   val tenYearPlanModelNo = TenYearPlanModel(Constants.StandardRadioButtonNoValue, None)
 
-  val annualTurnoverCostsModel = AnnualTurnoverCostsModel("750000", "800000", "934000", "231000", "340000")
+  val annualTurnoverCostsModel = AnnualTurnoverCostsModel("750000", "800000", "934000", "231000", "340000", "2004", "2005", "2006", "2007", "2008")
 
   val usedInvestmentReasonBeforeModelYes = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonYesValue)
   val usedInvestmentReasonBeforeModelNo = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonNoValue)

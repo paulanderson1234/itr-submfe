@@ -76,6 +76,7 @@ validation.common.error.fieldRequired=This field is required
 validation.error.DateNotEntered=You must enter a valid day, month and year
 validation.error.enterDate=Please enter a date
 validation.error.operatingCosts=Please enter a value into
+validation.error.fourDigitYear=Please enter a valid year
 
 ## Session Timeout message ##
 session.timeout.message=Your session has ended
@@ -235,15 +236,16 @@ page.knowledgeIntensive.IneligibleForKI.description.two = You can still continue
 
 #Operating Costs Page
 page.companyDetails.OperatingCosts.title = Operating costs
-page.companyDetails.OperatingCosts.heading = In the past 3 tax years how much have you spent on running your company?
-page.companyDetails.OperatingCosts.hint.one = Operating costs include office rent, wages and marketing.
-page.companyDetails.OperatingCosts.hint.two = Tax years end on 5 April.
+page.companyDetails.OperatingCosts.heading = What were the operating costs from your last 3 annual accounts?
+page.companyDetails.OperatingCosts.hint.one = Operating costs are all of the costs on your profit and loss account or income statement.
+page.companyDetails.OperatingCosts.hint.two = We also need the end-year values of your accounting periods. An accounting period is the time covered by your Company Tax Return.
 page.companyDetails.OperatingCosts.col.heading.one = Dates Column
-page.companyDetails.OperatingCosts.col.heading.two = Operating costs
-page.companyDetails.OperatingCosts.col.heading.three = Research and Development costs
-page.companyDetails.OperatingCosts.row.heading.one = 2015 - 2016
-page.companyDetails.OperatingCosts.row.heading.two = 2014 - 2015
-page.companyDetails.OperatingCosts.row.heading.three = 2013 - 2014
+page.companyDetails.OperatingCosts.col.heading.two = End-year of accounting period
+page.companyDetails.OperatingCosts.col.heading.three = Operating costs
+page.companyDetails.OperatingCosts.col.heading.four = Research and Development costs
+page.companyDetails.OperatingCosts.row.heading.one = Most recent
+page.companyDetails.OperatingCosts.row.heading.two = Year 2
+page.companyDetails.OperatingCosts.row.heading.three = Year 3
 page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be greater than 0 and must be up to 9 numbers.
 page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be greater than 0 and must be up to 9 numbers.
 page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be greater than 0 and must be up to 9 numbers.
@@ -256,7 +258,8 @@ page.companyDetails.TurnoverCosts.title = Annual turnover
 page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
 page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
-page.companyDetails.TurnoverCosts.col.heading.two = Turnover costs
+page.companyDetails.TurnoverCosts.col.heading.two = Turnover year
+page.companyDetails.TurnoverCosts.col.heading.three = Turnover costs
 page.companyDetails.TurnoverCosts.row.heading.one = Most recent
 page.companyDetails.TurnoverCosts.row.heading.two = Year 2
 page.companyDetails.TurnoverCosts.row.heading.three = Year 3

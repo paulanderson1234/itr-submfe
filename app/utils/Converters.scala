@@ -25,39 +25,30 @@ object Converters extends Converters{
 
 trait Converters {
 
-  def operatingCostsToList(operatingCostsModel: OperatingCostsModel, mostRecentYear: Int): List[AnnualCostModel] = {
+  def operatingCostsToList(operatingCostsModel: OperatingCostsModel): List[AnnualCostModel] = {
 
-    require(mostRecentYear >= 1000 && mostRecentYear <= 9999, "most recent year must be a 4 digit integer")
-
-    val period1 = mostRecentYear.toString
-    val period2 = (mostRecentYear - 1) toString
-    val period3 = (mostRecentYear - 2).toString
+    require(operatingCostsModel.firstYear.toInt >= 1000 && operatingCostsModel.firstYear.toInt <= 9999, "most recent year must be a 4 digit integer")
 
     List(
-      AnnualCostModel(period1, CostModel(amount = operatingCostsModel.operatingCosts1stYear),
+      AnnualCostModel(operatingCostsModel.firstYear, CostModel(amount = operatingCostsModel.operatingCosts1stYear),
         CostModel(amount = operatingCostsModel.rAndDCosts1stYear)),
-      AnnualCostModel(period2, CostModel(amount = operatingCostsModel.operatingCosts2ndYear),
+      AnnualCostModel(operatingCostsModel.secondYear, CostModel(amount = operatingCostsModel.operatingCosts2ndYear),
         CostModel(amount = operatingCostsModel.rAndDCosts2ndYear)),
-      AnnualCostModel(period3, CostModel(amount = operatingCostsModel.operatingCosts3rdYear),
+      AnnualCostModel(operatingCostsModel.thirdYear, CostModel(amount = operatingCostsModel.operatingCosts3rdYear),
         CostModel(amount = operatingCostsModel.rAndDCosts3rdYear)))
   }
 
-  def turnoverCostsToList(turnoverCostModel: AnnualTurnoverCostsModel, mostRecentYear: Int): List[TurnoverCostModel] = {
+  def turnoverCostsToList(turnoverCostModel: AnnualTurnoverCostsModel): List[TurnoverCostModel] = {
 
-    require(mostRecentYear >= 1000 && mostRecentYear <= 9999, "most recent year must be a 4 digit integer")
+    require(turnoverCostModel.firstYear.toInt >= 1000 && turnoverCostModel.firstYear.toInt <= 9999, "most recent year must be a 4 digit integer")
 
-    val period1 = mostRecentYear.toString
-    val period2 = (mostRecentYear - 1) toString
-    val period3 = (mostRecentYear - 2).toString
-    val period4 = (mostRecentYear - 3).toString
-    val period5 = (mostRecentYear - 4).toString
 
     List(
-      TurnoverCostModel(period1, CostModel(amount = turnoverCostModel.amount1)),
-      TurnoverCostModel(period2, CostModel(amount = turnoverCostModel.amount2)),
-      TurnoverCostModel(period3, CostModel(amount = turnoverCostModel.amount3)),
-      TurnoverCostModel(period4, CostModel(amount = turnoverCostModel.amount4)),
-      TurnoverCostModel(period5, CostModel(amount = turnoverCostModel.amount5))
+      TurnoverCostModel(turnoverCostModel.firstYear, CostModel(amount = turnoverCostModel.amount1)),
+      TurnoverCostModel(turnoverCostModel.secondYear, CostModel(amount = turnoverCostModel.amount2)),
+      TurnoverCostModel(turnoverCostModel.thirdYear, CostModel(amount = turnoverCostModel.amount3)),
+      TurnoverCostModel(turnoverCostModel.fourthYear, CostModel(amount = turnoverCostModel.amount4)),
+      TurnoverCostModel(turnoverCostModel.fifthYear, CostModel(amount = turnoverCostModel.amount5))
      )
   }
 }
