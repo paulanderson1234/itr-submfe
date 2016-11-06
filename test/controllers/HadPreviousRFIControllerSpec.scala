@@ -59,11 +59,13 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(previousSchemes))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(backLink))
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(hadPreviousRFIModelYes))
+      setupMocks(Some(hadPreviousRFIModelYes), Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
@@ -71,7 +73,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      setupMocks()
+      setupMocks(None,Some(routes.ProposedInvestmentController.show().url))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
@@ -81,7 +83,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
     "redirect to subscription" in {
-      setupMocks(Some(hadPreviousRFIModelYes))
+      setupMocks(Some(hadPreviousRFIModelYes),Some(routes.ProposedInvestmentController.show().url))
       mockNotEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
@@ -133,7 +135,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     "and there are previous enrolments" should {
     "redirect to review schemes page" in {
       mockEnrolledRequest()
-      setupMocks(previousSchemes = Some(previousSchemesValid))
+      setupMocks(previousSchemes = Some(previousSchemesValid), backLink = Some(routes.ProposedInvestmentController.show().url))
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -148,7 +150,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     "and there are no previous enrolments" should {
     "redirect to previous scheme page" in {
       mockEnrolledRequest()
-      setupMocks()
+      setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -174,6 +176,11 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
+
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
       mockEnrolledRequest()
       val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
