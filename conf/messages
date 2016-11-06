@@ -255,11 +255,12 @@ page.companyDetails.OperatingCosts.error.field.six = Research and Development Co
 
 #Turnover Costs Page
 page.companyDetails.TurnoverCosts.title = Annual turnover
-page.companyDetails.TurnoverCosts.heading = What was your company’s annual turnover in the past 5 years?
-page.companyDetails.TurnoverCosts.hint.one = These should be your accounting years, which end when your annual accounts are due.
+page.companyDetails.TurnoverCosts.heading = What was your company''s annual turnover in the past 5 years?
+page.companyDetails.TurnoverCosts.hint.one = Annual turnover is the amount of money your company makes in a year before tax.
+page.companyDetails.TurnoverCosts.hint.two = We also need the end-year values of your accounting periods. An accounting period is the time covered by your Company Tax Return.
 page.companyDetails.TurnoverCosts.col.heading.one = Turnover year
-page.companyDetails.TurnoverCosts.col.heading.two = Turnover year
-page.companyDetails.TurnoverCosts.col.heading.three = Turnover costs
+page.companyDetails.TurnoverCosts.col.heading.two = End-year of accounting period
+page.companyDetails.TurnoverCosts.col.heading.three = Annual turnover
 page.companyDetails.TurnoverCosts.row.heading.one = Most recent
 page.companyDetails.TurnoverCosts.row.heading.two = Year 2
 page.companyDetails.TurnoverCosts.row.heading.three = Year 3
