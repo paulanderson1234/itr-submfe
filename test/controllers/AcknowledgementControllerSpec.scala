@@ -27,7 +27,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
 import models.submission.SubmissionResponse
 
 import scala.concurrent.Future
@@ -52,6 +52,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   class SetupPageFull() {
     setUpMocks(mockS4lConnector)
+    setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
   class SetupPageMinimum() {
@@ -59,6 +60,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     setUpMocksMinimumRequiredModels(mockS4lConnector)
+    setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
   def setupMocks(): Unit =
@@ -81,7 +83,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 when a valid submission data is submitted" in new SetupPageFull {
+    "return a 200 and delete the current application when a valid submission data is submitted" in new SetupPageFull {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -90,7 +93,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+    "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -197,6 +201,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 if KI is set to false" in {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))

@@ -47,7 +47,6 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     ContactDetailsModel("Joe","Bloggs",None,None,"test@gmail.com"))
 
   val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
-  val registrationDetailsModel = RegistrationDetailsModel("Company ltd", addressModel)
   val subscriptionDetailsModel = SubscriptionDetailsModel("",contactDetailsModel,contactAddressModel)
 
   val contactDetailsModel = ContactDetailsModel("Test", "Name", Some("01111 111111"), Some("0872552488"), "test@test.com")

@@ -60,7 +60,6 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val sessionId = UUID.randomUUID.toString
 
   val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
-  val registrationDetailsModel = RegistrationDetailsModel("test name", addressModel)
   val safeID = "XA000123456789"
 
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
