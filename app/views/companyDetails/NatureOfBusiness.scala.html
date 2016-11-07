@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import models.NatureOfBusinessModel
+@import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary, input}
 
 @(natureOfbusinessForm: Form[NatureOfBusinessModel])(implicit request: Request[_])
@@ -37,6 +38,7 @@
             '_label -> Messages("page.companyDetails.natureofbusiness.heading"),
             '_labelTextClass -> "visuallyhidden",
             '_inputClass -> "input--fullwidth",
+            '_maxlength-> Constants.SuggestetNatureOfBusinessLength,
             '_inputHint -> Messages("page.companyDetails.natureofbusiness.question.hint"),
             'id -> "utr"
             )

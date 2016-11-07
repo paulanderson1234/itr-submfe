@@ -184,9 +184,10 @@ trait SubmissionFixture {
     newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue))
 
    val opcostFull = OperatingCostsModel(operatingCosts1stYear = "101", operatingCosts2ndYear = "102",
-    operatingCosts3rdYear = "103", rAndDCosts1stYear = "201", rAndDCosts2ndYear = "202", rAndDCosts3rdYear = "203")
+    operatingCosts3rdYear = "103", rAndDCosts1stYear = "201", rAndDCosts2ndYear = "202", rAndDCosts3rdYear = "203",
+     firstYear = "2005", secondYear = "2004", thirdYear = "2003")
 
-  val costsFull = utils.Converters.operatingCostsToList(opcostFull, 2005)
+  val costsFull = utils.Converters.operatingCostsToList(opcostFull)
 
   val turnover = List(TurnoverCostModel("2003", turnover = CostModel("66")),
     TurnoverCostModel("2004", turnover = CostModel("67")),
@@ -271,6 +272,6 @@ trait SubmissionFixture {
   val newGeographicalMarketValid = NewGeographicalMarketModel(Constants.StandardRadioButtonYesValue)
   val newProductValid = NewProductModel(Constants.StandardRadioButtonYesValue)
   val tenYearPlanValid = TenYearPlanModel(Constants.StandardRadioButtonYesValue, Some("To borrow to invest as in business plan"))
-  val operatingCostsValid = OperatingCostsModel("12", "13", "14", "15", "16", "17")
-  val turnoverCostsValid = AnnualTurnoverCostsModel("12", "13", "14", "15", "16")
+  val operatingCostsValid = OperatingCostsModel("12", "13", "14", "15", "16", "17", "2005", "2004", "2003")
+  val turnoverCostsValid = AnnualTurnoverCostsModel("12", "13", "14", "15", "16", "2003", "2004", "2005", "2006", "2007")
 }

@@ -57,7 +57,7 @@
                 '_divClass -> "form-label",
                 '_labelId -> "label-amount",
                 '_hintId -> "label-amount-hint",
-                '_label -> Messages("page.investment.amount.heading"),
+                '_label -> Messages("page.investment.PreviousScheme.investmentAmount"),
                 '_labelTextClass -> "heading-small block",
                 '_inputHint -> "",
                 '_inputClass -> "input--normal input--no-spinner input--left-padding",
@@ -73,7 +73,7 @@
                 '_divClass -> "form-label",
                 '_labelId -> "label-amount-spent",
                 '_hintId -> "label-amount-spent-hint",
-                '_label -> Messages("page.investment.amountSpent.label"),
+                '_label -> Messages("page.previousInvestment.amountSpent.label"),
                 '_labelTextClass -> "heading-small block",
                 '_inputHint -> "",
                 '_inputClass -> "input--normal input--no-spinner input--left-padding",
@@ -87,7 +87,7 @@
             <div class="form-group divider--top--thick"></div>
 
             @formInlineDateInput(previousSchemeForm,"investment",
-                Some(Messages("page.investment.dateOfShareIssue.label")),
+                Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
                 false, Some(Messages("common.date.hint.example")), Some("heading-small"))
 
             <details>

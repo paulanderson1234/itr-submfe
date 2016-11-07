@@ -6,7 +6,7 @@
 
 @main_template(Messages("page.previousInvestment.reviewPreviousSchemes.title")) {
 
-@backButtonWithProgress(backUrl, Messages("summaryQuestion.previousRFISection"))
+@backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
 
 <div class="grid-column">
     <div class="column-two-thirds">
@@ -37,7 +37,7 @@
                     <td id="scheme-amount-@{index}">@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
                     <td id="change-@{index}"><a id="change-ref-@{index}" href=@routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString>@Messages("common.base.change")</a></td>
                     <td id="remove-@{index}"> @form(action = controllers.routes.ReviewPreviousSchemesController.remove(previousScheme.processingId.getOrElse(0))) {
-                        <button class="button--link-style font-xsmall" type="submit" id="remove-link-@{index}"> @Messages("common.base.remove")</button>
+                        <button class="button--link-style font-xsmall removeLink" type="submit" id="remove-link-@{index}"> @Messages("common.base.remove")</button>
                         }</td>
                 </tr>
             }

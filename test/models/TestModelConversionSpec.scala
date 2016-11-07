@@ -37,9 +37,10 @@ class TestModelConversionSpec extends UnitSpec{
     newProductModel = NewProductModel(Constants.StandardRadioButtonYesValue))
 
   val opcostFull = OperatingCostsModel(operatingCosts1stYear = "101", operatingCosts2ndYear = "102",
-    operatingCosts3rdYear = "103", rAndDCosts1stYear = "201", rAndDCosts2ndYear = "202", rAndDCosts3rdYear = "203")
+    operatingCosts3rdYear = "103", rAndDCosts1stYear = "201", rAndDCosts2ndYear = "202", rAndDCosts3rdYear = "203",
+    firstYear = "2005", secondYear = "2004", thirdYear = "2003")
 
-  val costsFull = utils.Converters.operatingCostsToList(opcostFull, 2005)
+  val costsFull = utils.Converters.operatingCostsToList(opcostFull)
 
   val turnover = List(TurnoverCostModel("2003", turnover = CostModel("66")),
     TurnoverCostModel("2004", turnover = CostModel("67")),

@@ -4,6 +4,17 @@ $("#ninetyPercentErrorSection").hide();
 
 $(document).ready($(function() {
 
+  $(".removeLink").each(function()  {
+
+      $( this ).on( 'focus', function() {
+              	$( this ).addClass( 'in-focusd' );
+              });
+              $( this ).on( 'focusout', function(){
+              	$( this ).removeClass( 'in-focusd' );
+              });
+        });
+
+
     $('*[data-hidden]').each(function() {
 
         var $self = $(this);

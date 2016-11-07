@@ -19,7 +19,6 @@ package auth
 import config.AppConfig
 
 object MockConfig extends AppConfig {
-  override val assetsPrefix: String = ""
   override val analyticsToken: String = ""
   override val analyticsHost: String = ""
   override val reportAProblemPartialUrl: String = ""

@@ -274,7 +274,7 @@ object Validation {
   }
 
   def telephoneNumberCheck: Mapping[String] = {
-    val validTelephoneNumberLine = """^[0-9\(\)\+ ]{0,23}\S$""".r
+    val validTelephoneNumberLine = """^[A-Z0-9 )/(*#-]{1,24}$""".r
     val telephoneNumberCheckConstraint: Constraint[String] =
       Constraint("contraints.telephoneNumber")({
         text =>
@@ -484,6 +484,20 @@ object Validation {
         ""
       }
     }
+  }
+
+  def fourDigitYearCheck: Mapping[String] = {
+    val validYear = """[0-9]{4}""".r
+    val yearCheckConstraint: Constraint[String] =
+      Constraint("contraints.utrTen")({
+        text =>
+          val error = text match {
+            case validYear() => Nil
+            case _ => Seq(ValidationError(Messages("validation.error.fourDigitYear")))
+          }
+          if (error.isEmpty) Valid else Invalid(error)
+      })
+    text().verifying(yearCheckConstraint)
   }
 }
 
