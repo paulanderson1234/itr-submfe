@@ -23,7 +23,7 @@ private object AppDependencies {
   private val playJsonLoggerVersion = "2.1.1"
   private val frontendBootstrapVersion = "6.7.0"
   private val govukTemplateVersion = "4.0.0"
-  private val playUiVersion = "4.16.0"
+  private val playUiVersion = "4.17.2"
   private val playPartialsVersion = "4.6.0"
   private val playAuthorisedFrontendVersion = "5.7.0"
   private val playConfigVersion = "2.1.0"
@@ -52,7 +52,7 @@ private object AppDependencies {
   }
 
   object Test {
-    def apply() = new TestDependencies {
+    def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
         "org.scalatest" %% "scalatest" % "2.2.6" % scope,
@@ -64,5 +64,5 @@ private object AppDependencies {
     }.test
   }
 
-  def apply() = compile ++ Test()
+  def apply(): Seq[ModuleID] = compile ++ Test()
 }
