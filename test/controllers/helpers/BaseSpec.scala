@@ -19,10 +19,12 @@ package controllers.helpers
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
+import models.registration.RegistrationDetailsModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
+import services.{RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
@@ -30,6 +32,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val mockS4lConnector = mock[S4LConnector]
   val mockEnrolmentConnector = mock[EnrolmentConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
+  val mockSubscriptionService= mock[SubscriptionService]
+  val mockRegistrationDetailsService = mock[RegistrationDetailsService]
 
   override def beforeEach() {
     reset(mockS4lConnector)
@@ -37,7 +41,14 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     reset(mockSubmissionConnector)
   }
 
-  val applicationHubModel = ApplicationHubModel("Jades Company", AddressModel("2 Telford Plaxa","Lawn Central", None,None,Some("tf4 2ls"),"GB"), ContactDetailsModel("Jade ","Young",Some("0123324234234"),Some("4567324234324"),"j@j.com"))
+  val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", Some("Telford Central"),Some("Shropshire"),
+    Some("tf4 2ls"),"GB"), ContactDetailsModel("Joe","Bloggs",Some("0123324234234"),Some("4567324234324"),"test@gmail.com"))
+  val applicationHubModelMin = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", None,None,None,"GB"),
+    ContactDetailsModel("Joe","Bloggs",None,None,"test@gmail.com"))
+
+  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
+  val registrationDetailsModel = RegistrationDetailsModel("Company ltd", addressModel)
+  val subscriptionDetailsModel = SubscriptionDetailsModel("",contactDetailsModel,contactAddressModel)
 
   val contactDetailsModel = ContactDetailsModel("Test", "Name", Some("01111 111111"), Some("0872552488"), "test@test.com")
   val contactDetailsOneNumberModel = ContactDetailsModel("Test", "Name", None, Some("0872552488"), "test@test.com")
@@ -53,8 +64,6 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val natureOfBusinessModel = NatureOfBusinessModel("Creating new products")
 
   val operatingCostsModel = OperatingCostsModel("4100200", "3600050", "4252500", "410020", "360005", "425250")
-
-  val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
 
   val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, addressModel)
 

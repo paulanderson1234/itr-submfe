@@ -4,13 +4,14 @@
 @import models.ApplicationHubModel
 @import views.html.helpers.multiLineHelper
 @import utils.Transformers
+@import utils.CountriesHelper
 
 @(applicationHubModel: ApplicationHubModel, partial: Html)(implicit request: Request[_])
 
 @sidebar = {
-    <h4 class="heading-small" id="hub-application-heading"> @applicationHubModel.organisationName</h4>
+    <h4 class="heading-small" id="organisation-name"> @applicationHubModel.organisationName</h4>
     <div class = "form-group">
-        @multiLineHelper("address", Transformers.addressModelToFlattenedArray(applicationHubModel.registeredAddress))
+        @multiLineHelper("address", Transformers.addressModelToFlattenedArray(applicationHubModel.registeredAddress.copy(countryCode = CountriesHelper.getSelectedCountry(applicationHubModel.registeredAddress.countryCode))))
     </div>
 
     <div class = "form-group">

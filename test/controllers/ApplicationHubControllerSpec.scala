@@ -29,7 +29,9 @@ import play.api.http.Status
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import services.{RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.http.HttpResponse
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
@@ -46,11 +48,24 @@ class ApplicationHubControllerSpec extends ControllerSpec{
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val subscriptionService = mockSubscriptionService
+    override lazy val registrationDetailsService = mockRegistrationDetailsService
   }
 
   def setupMocks(bool: Option[Boolean]): Unit = {
+    when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
+      thenReturn(Future.successful(Some(registrationDetailsModel)))
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+      thenReturn(Future.successful(Some(contactDetailsModel)))
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(bool))
+  }
+
+  def setupMocksNotAvailable(): Unit = {
+    when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
+      thenReturn(Future.successful(None))
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+      thenReturn(Future.successful(None))
   }
 
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(true)))
@@ -66,6 +81,12 @@ class ApplicationHubControllerSpec extends ControllerSpec{
     "use the correct enrolment connector" in {
       ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct registration service" in {
+      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+    }
+    "use the correct service service" in {
+      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+    }
   }
 
   "Sending a GET request to ApplicationHubController when authenticated and enrolled" should {
@@ -76,7 +97,6 @@ class ApplicationHubControllerSpec extends ControllerSpec{
         result => {
           status(result) shouldBe OK
           contentAsString(result) contains ApplicationHubExisting
-          //document.body()
         }
       )
     }
@@ -88,7 +108,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("create-new-application").text() shouldBe Messages("page.introduction.hub.button")
+          contentAsString(result) contains ApplicationHubNew
         }
       )
     }
@@ -100,7 +120,17 @@ class ApplicationHubControllerSpec extends ControllerSpec{
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
-          document.getElementById("create-new-application").text() shouldBe Messages("page.introduction.hub.button")
+          contentAsString(result) contains ApplicationHubNew
+        }
+      )
+    }
+
+    "return a 500 when an ApplicationHubModel cannot be composed" in {
+      setupMocksNotAvailable()
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
+        result => {
+          status(result) shouldBe INTERNAL_SERVER_ERROR
         }
       )
     }

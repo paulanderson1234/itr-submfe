@@ -47,6 +47,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val registrationDetailsService = mockRegistrationDetailsService
   }
 
   class SetupPageFull() {

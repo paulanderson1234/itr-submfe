@@ -17,10 +17,12 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
-import models.ApplicationHubModel
+import models.registration.RegistrationDetailsModel
+import models._
 import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubscriptionService}
 import play.Logger
@@ -39,32 +41,38 @@ object ApplicationHubController extends ApplicationHubController{
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   val s4lConnector: S4LConnector = S4LConnector
+  val subscriptionService: SubscriptionService = SubscriptionService
+  val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
 }
 
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val s4lConnector: S4LConnector
+  val subscriptionService: SubscriptionService
+  val registrationDetailsService: RegistrationDetailsService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(applicationHubModel: Option[ApplicationHubModel]): Future[Result] = {
       if(applicationHubModel.isDefined) {
+
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
           case Some(true) => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubExisting()))
           case _ => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubNew()))
         }
       }
-      else Future.successful(InternalServerError)
+      else Future.successful(InternalServerError(internalServerErrorTemplate))
     }
 
 
     def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = {
       (for{
         tavcRef <- getTavCReferenceNumber()
-        registrationDetailsModel <- RegistrationDetailsService.getRegistrationDetails(tavcRef)
-        subscriptionDetailsModel <- SubscriptionService.getSubscriptionContactDetails(tavcRef)
-      }yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName,registrationDetailsModel.get.addressModel,subscriptionDetailsModel.get))).recover {
+        registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
+        subscriptionDetailsModel <- subscriptionService.getSubscriptionContactDetails(tavcRef)
+      }yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName,registrationDetailsModel.get.addressModel,
+        subscriptionDetailsModel.get))).recover {
         case _ =>
           Logger.warn(s"[ApplicationHubController][getApplicationModel] - ApplicationHubModel components not found")
           None

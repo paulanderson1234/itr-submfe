@@ -34,6 +34,7 @@ package views
 
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
+import utils.CountriesHelper
 import views.helpers.ViewSpec
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 import views.html.introduction.ApplicationHub
@@ -42,18 +43,82 @@ class ApplicationHubSpec extends ViewSpec {
 
   "The Application Hub page" should {
 
-    "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it" in {
-      lazy val view = ApplicationHub(applicationHubModel, ApplicationHubNew()(fakeRequest))(fakeRequest)
+    "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
+      "the model used contains the max fields" in {
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest))(fakeRequest)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMax.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMax.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe applicationHubModelMax.registeredAddress.addressline3.get
+      document.body.getElementById("address-line3").text() shouldBe applicationHubModelMax.registeredAddress.addressline4.get
+      document.body.getElementById("address-line4").text() shouldBe applicationHubModelMax.registeredAddress.postcode.get
+      document.body.getElementById("address-line5").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMax.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMax.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMax.contactDetails.telephoneNumber.get
+      document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
+      document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
     }
 
-    "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it" in {
-      lazy val view = ApplicationHub(applicationHubModel, ApplicationHubExisting()(fakeRequest))(fakeRequest)
+    "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
+      "the model used contains the max amount of fields" in {
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting()(fakeRequest))(fakeRequest)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMax.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMax.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe applicationHubModelMax.registeredAddress.addressline3.get
+      document.body.getElementById("address-line3").text() shouldBe applicationHubModelMax.registeredAddress.addressline4.get
+      document.body.getElementById("address-line4").text() shouldBe applicationHubModelMax.registeredAddress.postcode.get
+      document.body.getElementById("address-line5").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMax.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMax.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMax.contactDetails.telephoneNumber.get
+      document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
+      document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
+    }
+
+    "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and" +
+      "the model used contains the min amount of fields" in {
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest))(fakeRequest)
+      val document = Jsoup.parse(view.body)
+      document.title shouldEqual Messages("page.introduction.hub.title")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMin.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMin.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMin.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
+    }
+
+    "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
+      "the model used contains the min amount of fields" in {
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting()(fakeRequest))(fakeRequest)
+      val document = Jsoup.parse(view.body)
+      document.title shouldEqual Messages("page.introduction.hub.title")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMin.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMin.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMin.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
     }
   }
 }

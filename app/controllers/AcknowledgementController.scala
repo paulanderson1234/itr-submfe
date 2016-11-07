@@ -16,14 +16,16 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{TAVCUser, AuthorisedAndEnrolledForTAVC}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
+import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
 import play.api.mvc.{AnyContent, Request, Result}
+import services.{RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 
@@ -35,12 +37,14 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
 }
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
+  val registrationDetailsService: RegistrationDetailsService
 
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -54,6 +58,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef  <- getTavCReferenceNumber()
+      registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
       // company name also a required field when it is implemented
 
       // potentially optional or required
@@ -67,9 +72,12 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
+      //Registration details
+
+
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
         investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts)
+        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts,registrationDetailsModel)
     } yield result
   }
 
@@ -102,13 +110,12 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        newProduct: Option[NewProductModel],
                                        tenYearPlan: Option[TenYearPlanModel],
                                        operatingCosts: Option[OperatingCostsModel],
-                                       turnoverCosts: Option[AnnualTurnoverCostsModel])
-                                             (implicit request: Request[AnyContent]): Future[Result] = {
+                                       turnoverCosts: Option[AnnualTurnoverCostsModel],
+                                       registrationDetailsModel: Option[RegistrationDetailsModel])
+                                             (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
 
-    val tempCompanyAddress: AddressModel = AddressModel(addressline1 = "Company line 1 Ltd",
-      addressline2 = "Company Line 2", addressline3 = Some("Company Line 3"), addressline4 = Some("Company Line 4"),
-      postcode = Some("TF1 4NY"), countryCode = "GB")
-    val tempCompanyName = "Company Name Ltd"
+
+    val tempAddress = None
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
     val tempMostRecentYear = 2015
 
@@ -130,15 +137,17 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             Some(Converters.turnoverCostsToList(turnoverCosts.get, tempMostRecentYear)) else None,
           knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
-            subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempCompanyAddress),
-          organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, tempCompanyName
-            , tempCompanyAddress, previousSchemes)
+            subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempAddress),
+          organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, registrationDetailsModel.get.organisationName
+            , registrationDetailsModel.get.addressModel, previousSchemes)
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
         submissionResponseModel.map { submissionResponse =>
           submissionResponse.status match {
-            case OK => Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+            case OK =>
+              s4lConnector.clearCache()
+              Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
             case _ => InternalServerError
           }
         }
@@ -166,11 +175,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   private def buildSubsidiaryPerformingTrade(subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
                                                   subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
                                                   tradeName: String,
-                                                  tradeAddress: AddressModel):Option[SubsidiaryPerformingTradeModel] = {
+                                                  tradeAddress: Option[AddressModel]):Option[SubsidiaryPerformingTradeModel] = {
 
     if (subsidiariesSpendInvest.fold("")(_.subSpendingInvestment) == Constants.StandardRadioButtonYesValue)
       Some(SubsidiaryPerformingTradeModel(ninetyOwnedModel = subsidiariesNinetyOwned.get,
-        organisationName = tradeName, companyAddress = Some(tradeAddress),
+        organisationName = tradeName, companyAddress = tradeAddress,
         ctUtr = None, crn = None)) else None
   }
 
