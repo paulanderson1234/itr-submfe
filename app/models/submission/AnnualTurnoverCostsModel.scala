@@ -19,7 +19,8 @@ package models
 import play.api.libs.json.Json
 import utils.CostFormatter
 
-case class AnnualTurnoverCostsModel(amount1:String, amount2:String, amount3: String, amount4:String, amount5:String)
+case class AnnualTurnoverCostsModel(amount1:String, amount2:String, amount3: String, amount4:String, amount5:String,
+                                    firstYear: String, secondYear: String, thirdYear: String, fourthYear: String, fifthYear: String)
 
 object AnnualTurnoverCostsModel extends CostFormatter{
   implicit val format = Json.format[AnnualTurnoverCostsModel]

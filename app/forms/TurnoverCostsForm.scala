@@ -29,7 +29,12 @@ object TurnoverCostsForm {
       "amount2" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.two"),
       "amount3" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.three"),
       "amount4" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.four"),
-      "amount5" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.five")
+      "amount5" -> mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.TurnoverCosts.error.field.five"),
+      "firstYear" -> fourDigitYearCheck,
+      "secondYear" -> fourDigitYearCheck,
+      "thirdYear" -> fourDigitYearCheck,
+      "fourthYear" -> fourDigitYearCheck,
+      "fifthYear" -> fourDigitYearCheck
     )(AnnualTurnoverCostsModel.apply)(AnnualTurnoverCostsModel.unapply)
   )
 }

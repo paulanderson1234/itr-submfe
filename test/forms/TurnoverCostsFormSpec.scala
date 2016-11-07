@@ -41,8 +41,18 @@ class TurnoverCostsFormSpec extends UnitSpec {
   }
 
   val turnoverCostsJson = {
-    """{"amount1":"750000","amount2":"800000","amount3":"934000","amount4":"231000","amount5":"340000"}""".stripMargin}
-  val turnoverCostsModel = AnnualTurnoverCostsModel("750000", "800000", "934000", "231000", "340000")
+    """{
+      |"amount1":"750000",
+      |"amount2":"800000",
+      |"amount3":"934000",
+      |"amount4":"231000",
+      |"amount5":"340000",
+      |"firstYear":"2003",
+      |"secondYear":"2004",
+      |"thirdYear":"2005",
+      |"fourthYear":"2006",
+      |"fifthYear":"2007"}""".stripMargin}
+  val turnoverCostsModel = AnnualTurnoverCostsModel("750000", "800000", "934000", "231000", "340000", "2003", "2004", "2005", "2006", "2007")
 
   // turnover Costs 1st Year validation
   "The Turnover Costs Form" should {
@@ -52,7 +62,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -72,7 +87,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -92,7 +112,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "231000",
         "amount3" -> "800000",
         "amount4" -> "934000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -113,7 +138,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -131,7 +161,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -153,7 +188,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "555555",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -174,7 +214,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -194,7 +239,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "ABCD",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -214,7 +264,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "100ABCD",
         "amount3" -> "800000",
         "amount4" -> "934000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -235,7 +290,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "999999999",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -253,7 +313,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "9999999991",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -275,7 +340,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "0",
         "amount3" -> "934000",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -296,7 +366,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "934000",
         "amount3" -> "",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -316,7 +391,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "934000",
         "amount3" -> "ABCD",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -336,7 +416,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "100ABCD",
         "amount4" -> "934000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -357,7 +442,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "999999999",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -375,7 +465,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "9999999991",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -397,7 +492,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "555555",
         "amount3" -> "0",
         "amount4" -> "231000",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -418,7 +518,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -438,7 +543,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "ABCD",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -458,7 +568,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "100ABCD",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -479,7 +594,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "999999999",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -497,7 +617,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "9999999991",
-        "amount5" -> "340000"
+        "amount5" -> "340000",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -520,7 +645,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "340000",
-        "amount5" -> ""
+        "amount5" -> "",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -540,7 +670,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "340000",
-        "amount5" -> "ABCD"
+        "amount5" -> "ABCD",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -560,7 +695,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "340000",
-        "amount5" -> "100ABCD"
+        "amount5" -> "100ABCD",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -581,7 +721,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "340000",
-        "amount5" -> "999999999"
+        "amount5" -> "999999999",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -599,7 +744,12 @@ class TurnoverCostsFormSpec extends UnitSpec {
         "amount2" -> "800000",
         "amount3" -> "934000",
         "amount4" -> "340000",
-        "amount5" -> "9999999991"
+        "amount5" -> "9999999991",
+        "firstYear" -> "2003",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2005",
+        "fourthYear" -> "2006",
+        "fifthYear" -> "2007"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -637,8 +787,8 @@ class TurnoverCostsFormSpec extends UnitSpec {
 
       implicit val formats = Json.format[AnnualTurnoverCostsModel]
 
-      val addressJson = Json.toJson(turnoverCostsModel).toString
-      addressJson shouldBe turnoverCostsJson
+      val addressJson = Json.toJson(turnoverCostsModel)
+      addressJson shouldBe Json.parse(turnoverCostsJson)
 
     }
   }
@@ -659,8 +809,8 @@ class TurnoverCostsFormSpec extends UnitSpec {
     "call unapply successfully to create expected Json" in {
       implicit val formats = Json.format[AnnualTurnoverCostsModel]
       val turnoverCostsForm = TurnoverCostsForm.turnoverCostsForm.fill(turnoverCostsModel)
-      val formJson = Json.toJson(turnoverCostsForm.get).toString
-      formJson shouldBe turnoverCostsJson
+      val formJson = Json.toJson(turnoverCostsForm.get)
+      formJson shouldBe Json.parse(turnoverCostsJson)
     }
   }
 }

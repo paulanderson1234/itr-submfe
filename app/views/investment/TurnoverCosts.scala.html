@@ -1,6 +1,6 @@
 @import models.AnnualTurnoverCostsModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress, input}
 
 @(operatingCostsForm: Form[AnnualTurnoverCostsModel])(implicit request: Request[_])
 
@@ -17,6 +17,7 @@
         @form(action = controllers.routes.TurnoverCostsController.submit()) {
 
         <p class="form-hint" id="turnover-costs-hint-one">@Messages("page.companyDetails.TurnoverCosts.hint.one")</p>
+        <p class="form-hint" id="turnover-costs-hint-two">@Messages("page.companyDetails.TurnoverCosts.hint.two")</p>
 
         <details>
             <summary><span id="help" class="summary">@Messages("page.companyDetails.TurnoverCosts.help.link")</span></summary>
@@ -30,12 +31,23 @@
                 <thead>
                 <tr>
                     <th class="visuallyhidden" id="col-heading-one" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.one")</th>
-                    <th id="col-heading-two" class="visuallyhidden" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.two")</th>
+                    <th id="col-heading-two" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.two")</th>
+                    <th id="col-heading-three" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.three")</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.TurnoverCosts.row.heading.one")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("firstYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.TurnoverCosts.row.heading.one"),
+                        'id -> "firstYear"
+                        )
+                    </td>
                     <td>
 
                         @inputWithCurrencySymbol(
@@ -55,6 +67,16 @@
                 <tr>
                     <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.TurnoverCosts.row.heading.two")</td>
                     <td>
+                        @input(
+                        operatingCostsForm("secondYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.TurnoverCosts.row.heading.two"),
+                        'id -> "secondYear"
+                        )
+                    </td>
+                    <td>
                         @inputWithCurrencySymbol(
                         operatingCostsForm("amount2"),
                         '_divClass -> "form-label",
@@ -70,6 +92,16 @@
                 </tr>
                 <tr>
                     <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.TurnoverCosts.row.heading.three")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("thirdYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.TurnoverCosts.row.heading.three"),
+                        'id -> "thirdYear"
+                        )
+                    </td>
                     <td>
 
                         @inputWithCurrencySymbol(
@@ -88,6 +120,16 @@
                 <tr>
                     <td class="heading-small" id="row-heading-four">@Messages("page.companyDetails.TurnoverCosts.row.heading.four")</td>
                     <td>
+                        @input(
+                        operatingCostsForm("fourthYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.TurnoverCosts.row.heading.four"),
+                        'id -> "fourthYear"
+                        )
+                    </td>
+                    <td>
                         @inputWithCurrencySymbol(
                         operatingCostsForm("amount4"),
                         '_divClass -> "form-label",
@@ -104,6 +146,16 @@
                 </tr>
                 <tr>
                     <td class="heading-small" id="row-heading-five">@Messages("page.companyDetails.TurnoverCosts.row.heading.five")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("fifthYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.TurnoverCosts.row.heading.five"),
+                        'id -> "fifthYear"
+                        )
+                    </td>
                     <td>
 
                         @inputWithCurrencySymbol(
