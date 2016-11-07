@@ -22,9 +22,6 @@ import play.api.i18n.Messages
 import views.helpers.ViewSpec
 import views.html.hubPartials.ApplicationHubExisting
 
-/**
-  * Created by jade on 01/11/16.
-  */
 class ApplicationHubExistingSpec extends ViewSpec{
 
   "The Application Hub 'Existing' partial" should {

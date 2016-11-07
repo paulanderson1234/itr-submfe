@@ -119,14 +119,15 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(turnoverCostsValid)))
   }
 
-  def setUpMocksTestMinimumRequiredModels(mockS4lConnector: S4LConnector,
+  def setUpMocksTestMinimumRequiredModels(mockS4lConnector: S4LConnector, mockRegistrationService: RegistrationDetailsService,
                                           kiModel: Option[KiProcessingModel],
                                           natureBusiness: Option[NatureOfBusinessModel],
                                           contactDetails: Option[ContactDetailsModel],
                                           proposedInvestment: Option[ProposedInvestmentModel],
                                           investGrow: Option[InvestmentGrowModel],
                                           dateIncorp: Option[DateOfIncorporationModel],
-                                          contactAddress: Option[AddressModel]
+                                          contactAddress: Option[AddressModel],
+                                          returnRegistrationDetails: Boolean
                                          )
   {
 
@@ -145,6 +146,10 @@ trait SubmissionFixture {
       .thenReturn( if(dateIncorp.nonEmpty) Future.successful(Option(dateIncorp.get)) else Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn( if(contactAddress.nonEmpty) Future.successful(Option(contactAddress.get)) else Future.successful(None))
+
+      when(mockRegistrationService.getRegistrationDetails(Matchers.eq(tavcReferenceId))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(if(returnRegistrationDetails) Future.successful(Option(registrationDetailsModel)) else Future.successful(None))
+
 
     // can be empty to pass
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))

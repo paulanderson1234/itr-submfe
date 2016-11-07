@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{TAVCUser, AuthorisedAndEnrolledForTAVC}
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
@@ -24,8 +24,9 @@ import controllers.Helpers.PreviousSchemesHelper
 import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
+import play.Logger
 import play.api.mvc.{AnyContent, Request, Result}
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.RegistrationDetailsService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 
@@ -49,7 +50,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     for {
-    // minimum required fields to continue
+     // minimum required fields to continue
       kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
       contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
@@ -59,7 +60,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef  <- getTavCReferenceNumber()
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
-      // company name also a required field when it is implemented
 
       // potentially optional or required
       operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
@@ -72,9 +72,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
-      //Registration details
-
-
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
         investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts,registrationDetailsModel)
@@ -84,12 +81,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
   //noinspection ScalaStyle
   //TODO:
-  // 1) MostRecent year used in this function will be passed in (used to calculate period ending for costs and turnover)
-  // 2) Address Models (company and correspondence) will need passing in when properly implemented
-  // from ETMP lookup) to replace tempAddress used below
-  // 3) 5 years Annual turnover costs to be passed as list (or converted to list) when implemented - mapping in place already
-  // 4) company name required
-  // 5) subsidiary performing trade name is required if subsidiary and needs retrieving
+  // 1) subsidiary performing trade name/adress is required if subsidiary and needs retrieving (post MVP)
   private def createSubmissionDetailsModel(
                                        //required
                                        kiProcModel: Option[KiProcessingModel],
@@ -114,14 +106,13 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                        registrationDetailsModel: Option[RegistrationDetailsModel])
                                              (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
 
-
     val tempAddress = None
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
-      contactAddress) match {
+      contactAddress, registrationDetailsModel) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress)) => {
+      Some(cntAddress), Some(regDetail)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
@@ -137,8 +128,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
             subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempAddress),
-          organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, registrationDetailsModel.get.organisationName
-            , registrationDetailsModel.get.addressModel, previousSchemes)
+          organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, regDetail.organisationName
+            ,regDetail.addressModel, previousSchemes)
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
@@ -147,13 +138,19 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             case OK =>
               s4lConnector.clearCache()
               Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-            case _ => InternalServerError
+            case _ => {
+              Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+              InternalServerError
+            }
           }
         }
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _,_) => Future.successful(Redirect(routes.IntroductionController.show()))
+      case (_, _, _, _, _, _,_,_) => {
+          Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
+          Future.successful(Redirect(routes.IntroductionController.show()))
+        }
     }
   }
 

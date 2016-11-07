@@ -17,11 +17,10 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
-import models.registration.RegistrationDetailsModel
 import models._
 import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubscriptionService}
@@ -33,9 +32,6 @@ import views.html.hubPartials._
 
 import scala.concurrent.Future
 
-/**
-  * Created by jade on 31/10/16.
-  */
 object ApplicationHubController extends ApplicationHubController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -46,7 +42,7 @@ object ApplicationHubController extends ApplicationHubController{
 }
 
 
-trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
   val subscriptionService: SubscriptionService
@@ -55,23 +51,22 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(applicationHubModel: Option[ApplicationHubModel]): Future[Result] = {
-      if(applicationHubModel.isDefined) {
+      if (applicationHubModel.nonEmpty) {
 
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
-          case Some(true) => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubExisting()))
-          case _ => Ok(ApplicationHub(applicationHubModel.get,ApplicationHubNew()))
+          case Some(true) => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubExisting()))
+          case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew()))
         }
       }
       else Future.successful(InternalServerError(internalServerErrorTemplate))
     }
 
-
     def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = {
-      (for{
+      (for {
         tavcRef <- getTavCReferenceNumber()
         registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
         subscriptionDetailsModel <- subscriptionService.getSubscriptionContactDetails(tavcRef)
-      }yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName,registrationDetailsModel.get.addressModel,
+      } yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName, registrationDetailsModel.get.addressModel,
         subscriptionDetailsModel.get))).recover {
         case _ =>
           Logger.warn(s"[ApplicationHubController][getApplicationModel] - ApplicationHubModel components not found")
@@ -84,7 +79,6 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       route <- routeRequest(applicationHubModel)
     } yield route
 
-
   }
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -93,7 +87,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   }
 
   val delete = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.clearCache().map{
+    s4lConnector.clearCache().map {
       case _ => Redirect(routes.ApplicationHubController.show())
     }
   }
