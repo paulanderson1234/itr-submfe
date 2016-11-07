@@ -130,6 +130,10 @@ GET        /annual-turnover-error                   controllers.AnnualTurnoverEr
 GET        /sign-out                                controllers.SignOutController.signout
 GET        /signed-out                              controllers.SignOutController.show
 
+GET        /hub                                     controllers.ApplicationHubController.show
+POST       /hub                                     controllers.ApplicationHubController.newApplication
+POST       /hub-delete                              controllers.ApplicationHubController.delete
+
 #Feedback routes
 GET         /feedback               controllers.feedback.FeedbackController.show
 POST        /feedback               controllers.feedback.FeedbackController.submit

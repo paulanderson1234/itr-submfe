@@ -3,6 +3,7 @@
 
 @()(implicit request: Request[_])
 @sidebar = {
+<h2 id="read-more-heading" class="heading-medium">@Messages("common.readMore")</h2>
 <ul>
     <li>
         <a id="how-to-apply" href="@controllers.routes.HowToApplyController.show()">

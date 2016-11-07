@@ -19,7 +19,6 @@ userLoggedIn: Boolean = true)(mainContent: Html)(implicit request : Request[_])
 
 @sidebarContent = {
 <div class="service-info">
-    <h2 id="read-more-heading" class="heading-medium">@Messages("common.readMore")</h2>
     @sidebarLinks.get
 </div>
 }

@@ -13,12 +13,16 @@
 
     <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.natureofbusiness.heading")</h1>
 
-    <h2 id="description-two" class="lede">@Messages("page.companyDetails.natureofbusiness.example.text")</h2>
+    <span class="form-hint">
+        <p id="description-two" class="lede">@Messages("page.companyDetails.natureofbusiness.example.text")</p>
+    </span>
 
     <ul class="list list-bullet">
-        <li id="bullet-one">@Messages("page.companyDetails.natureofbusiness.bullet.one")</li>
-        <li id="bullet-two">@Messages("page.companyDetails.natureofbusiness.bullet.two")</li>
-        <li id="bullet-three">@Messages("page.companyDetails.natureofbusiness.bullet.three")</li>
+        <span class="form-hint">
+            <li id="bullet-one">@Messages("page.companyDetails.natureofbusiness.bullet.one")</li>
+            <li id="bullet-two">@Messages("page.companyDetails.natureofbusiness.bullet.two")</li>
+            <li id="bullet-three">@Messages("page.companyDetails.natureofbusiness.bullet.three")</li>
+        </span>
     </ul>
 
     @form(action = controllers.routes.NatureOfBusinessController.submit()) {

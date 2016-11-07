@@ -18,6 +18,7 @@ package fixtures
 
 import common.{Constants, KeystoreKeys}
 import connectors.S4LConnector
+import models.registration.RegistrationDetailsModel
 import models.{KiProcessingModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -25,6 +26,7 @@ import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE
 import models.submission._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import services.RegistrationDetailsService
 import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
@@ -50,6 +52,7 @@ trait SubmissionFixture {
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
 
+
     // potentially mandatory
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(subsidiariesSpendInvestValid)))
@@ -69,6 +72,11 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(operatingCostsValid)))
     when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(turnoverCostsValid)))
+  }
+
+  def setUpMocksRegistrationService(mockRegistrationService: RegistrationDetailsService): Unit = {
+    when(mockRegistrationService.getRegistrationDetails(Matchers.eq(tavcReferenceId))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(Option(registrationDetailsModel)))
   }
 
   def setUpMocksMinimumRequiredModels(mockS4lConnector: S4LConnector) {
@@ -111,14 +119,15 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(turnoverCostsValid)))
   }
 
-  def setUpMocksTestMinimumRequiredModels(mockS4lConnector: S4LConnector,
+  def setUpMocksTestMinimumRequiredModels(mockS4lConnector: S4LConnector, mockRegistrationService: RegistrationDetailsService,
                                           kiModel: Option[KiProcessingModel],
                                           natureBusiness: Option[NatureOfBusinessModel],
                                           contactDetails: Option[ContactDetailsModel],
                                           proposedInvestment: Option[ProposedInvestmentModel],
                                           investGrow: Option[InvestmentGrowModel],
                                           dateIncorp: Option[DateOfIncorporationModel],
-                                          contactAddress: Option[AddressModel]
+                                          contactAddress: Option[AddressModel],
+                                          returnRegistrationDetails: Boolean
                                          )
   {
 
@@ -137,6 +146,10 @@ trait SubmissionFixture {
       .thenReturn( if(dateIncorp.nonEmpty) Future.successful(Option(dateIncorp.get)) else Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn( if(contactAddress.nonEmpty) Future.successful(Option(contactAddress.get)) else Future.successful(None))
+
+      when(mockRegistrationService.getRegistrationDetails(Matchers.eq(tavcReferenceId))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(if(returnRegistrationDetails) Future.successful(Option(registrationDetailsModel)) else Future.successful(None))
+
 
     // can be empty to pass
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -162,6 +175,8 @@ trait SubmissionFixture {
   val fullCorrespondenceAddress: AddressModel = AddressModel(addressline1 = "line 1",
     addressline2 = "Line 2", addressline3 = Some("Line 3"), addressline4 = Some("Line 4"),
     postcode = Some("TF1 4NY"), countryCode = "GB")
+
+  val registrationDetailsModel = RegistrationDetailsModel("Company ltd", fullCorrespondenceAddress)
 
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
     surname = "Flinsstone", telephoneNumber = Some("01952 255899"), mobileNumber = None, email = "rubble@jurassic.com")
