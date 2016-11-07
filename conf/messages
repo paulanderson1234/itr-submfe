@@ -284,7 +284,7 @@ page.companyDetails.RegisteredAddress.description.one=Enter the address manually
 page.companyDetails.natureofbusiness.heading=What does your company do?
 page.companyDetails.natureofbusiness.title=What does your company do?
 page.companyDetails.natureofbusiness.question.hint=Suggested limit: 15 words
-page.companyDetails.natureofbusiness.example.text=For example
+page.companyDetails.natureofbusiness.example.text=For example:
 page.companyDetails.natureofbusiness.bullet.one=making motor vehicle parts and accessories
 page.companyDetails.natureofbusiness.bullet.two=developing software for businesses
 page.companyDetails.natureofbusiness.bullet.three=sound recording and music publishing
@@ -296,7 +296,7 @@ page.investment.amount.title=How much do you want to raise through this investme
 page.investment.amount.heading=How much do you want to raise through this investment?
 page.investment.amount.hint=The amount can''t be more than £5 million
 page.investment.help.link=What happens if I raise more or less than I''m expecting to?
-page.investment.help.link.text=You''ll still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
+page.investment.help.link.text=You might still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
 page.knowledgeIntensive.PercentageStaffWithMasters.title=Do more than 20% of your staff who do research and development have master''s degrees?
