@@ -537,8 +537,8 @@ page.signout.SignedOut.header = You''re signed out
 page.signout.SignedOut.explore = Explore GOV.UK
 
 #hub page
-page.introduction.hub.title=Applications Overview
-page.introduction.hub.heading=Applications Overview
+page.introduction.hub.title=Applications overview
+page.introduction.hub.heading=Applications overview
 page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
