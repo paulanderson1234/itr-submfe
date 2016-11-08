@@ -1,0 +1,6 @@
+@(id: String, lines: Array[String])
+
+@for((line, index) <- lines.zipWithIndex) {
+<span class="font-xsmall" id="@{id}-line@{index}">@line</span>
+<br>
+}

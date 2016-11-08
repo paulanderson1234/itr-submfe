@@ -60,7 +60,6 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val sessionId = UUID.randomUUID.toString
 
   val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
-  val registrationDetailsModel = RegistrationDetailsModel("test name", addressModel)
   val safeID = "XA000123456789"
 
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
@@ -128,7 +127,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     "return a valid response" in {
 
       val proposedInvestment = ProposedInvestmentModel(50)
-      val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100")
+      val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100","2005","2006","2007","2008","2009")
 
       val result = TargetSubmissionConnector.checkAveragedAnnualTurnover(proposedInvestment,annualTurnoverCosts)
       await(result) shouldBe Some(validResponse)

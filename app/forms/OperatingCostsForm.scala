@@ -29,7 +29,10 @@ object OperatingCostsForm {
       "operatingCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberNonZeroValidation("page.companyDetails.OperatingCosts.error.field.three"),
       "rAndDCosts1stYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.four"),
       "rAndDCosts2ndYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.five"),
-      "rAndDCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.six")
+      "rAndDCosts3rdYear" -> utils.Validation.mandatoryMaxTenNumberValidation("page.companyDetails.OperatingCosts.error.field.six"),
+      "firstYear" -> utils.Validation.fourDigitYearCheck,
+      "secondYear" -> utils.Validation.fourDigitYearCheck,
+      "thirdYear" -> utils.Validation.fourDigitYearCheck
     )(OperatingCostsModel.apply)(OperatingCostsModel.unapply)
   )
 }

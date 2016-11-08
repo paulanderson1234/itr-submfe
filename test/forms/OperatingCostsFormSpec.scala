@@ -40,9 +40,18 @@ class OperatingCostsFormSpec extends UnitSpec {
     )
   }
 
-  val operatingCostsJson = {
-    """{"operatingCosts1stYear":"750000","operatingCosts2ndYear":"800000","operatingCosts3rdYear":"934000","rAndDCosts1stYear":"231000","rAndDCosts2ndYear":"340000","rAndDCosts3rdYear":"344000"}""".stripMargin}
-  val operatingCostsModel = OperatingCostsModel("750000", "800000", "934000", "231000", "340000", "344000")
+  val operatingCostsJson =
+    """{"operatingCosts1stYear":"750000",
+      |"operatingCosts2ndYear":"800000",
+      |"operatingCosts3rdYear":"934000",
+      |"rAndDCosts1stYear":"231000",
+      |"rAndDCosts2ndYear":"340000",
+      |"rAndDCosts3rdYear":"344000",
+      |"firstYear":"2005",
+      |"secondYear":"2004",
+      |"thirdYear":"2003"
+      |}""".stripMargin
+  val operatingCostsModel = OperatingCostsModel("750000", "800000", "934000", "231000", "340000", "344000", "2005", "2004", "2003")
 
   // operating Costs 1st Year validation
   "The Operating Costs Form" should {
@@ -53,7 +62,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -74,7 +86,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -95,7 +110,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "800000",
         "rAndDCosts1stYear" -> "934000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -117,7 +135,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -136,7 +157,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -159,7 +183,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -181,7 +208,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -202,7 +232,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -223,7 +256,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "800000",
         "rAndDCosts1stYear" -> "934000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -245,7 +281,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -264,7 +303,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -287,7 +329,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -309,7 +354,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -330,7 +378,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "ABCD",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -351,7 +402,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "100ABCD",
         "rAndDCosts1stYear" -> "934000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -373,7 +427,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "999999999",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -392,7 +449,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "9999999991",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -415,7 +475,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "0",
         "rAndDCosts1stYear" -> "231000",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -437,7 +500,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -458,7 +524,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "ABCD",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -479,7 +548,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "100ABCD",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -501,7 +573,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "999999999",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -520,7 +595,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "9999999991",
         "rAndDCosts2ndYear" -> "340000",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -544,7 +622,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -565,7 +646,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "ABCD",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -586,7 +670,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "100ABCD",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -608,7 +695,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "999999999",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -627,7 +717,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "9999999991",
-        "rAndDCosts3rdYear" -> "344000"
+        "rAndDCosts3rdYear" -> "344000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -651,7 +744,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> ""
+        "rAndDCosts3rdYear" -> "",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -672,7 +768,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "ABCD"
+        "rAndDCosts3rdYear" -> "ABCD",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -693,7 +792,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "100ABCD"
+        "rAndDCosts3rdYear" -> "100ABCD",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) =>
@@ -715,7 +817,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "999999999"
+        "rAndDCosts3rdYear" -> "999999999",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -734,7 +839,10 @@ class OperatingCostsFormSpec extends UnitSpec {
         "operatingCosts3rdYear" -> "934000",
         "rAndDCosts1stYear" -> "340000",
         "rAndDCosts2ndYear" -> "344000",
-        "rAndDCosts3rdYear" -> "9999999991"
+        "rAndDCosts3rdYear" -> "9999999991",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
       bindWithError(request) match {
         case Some(err) => {
@@ -763,6 +871,9 @@ class OperatingCostsFormSpec extends UnitSpec {
       operatingCosts.rAndDCosts1stYear shouldBe "231000"
       operatingCosts.rAndDCosts2ndYear shouldBe "340000"
       operatingCosts.rAndDCosts3rdYear shouldBe "344000"
+      operatingCosts.firstYear shouldBe "2005"
+      operatingCosts.secondYear shouldBe "2004"
+      operatingCosts.thirdYear shouldBe "2003"
 
     }
   }
@@ -773,8 +884,8 @@ class OperatingCostsFormSpec extends UnitSpec {
 
       implicit val formats = Json.format[OperatingCostsModel]
 
-      val addressJson = Json.toJson(operatingCostsModel).toString
-      addressJson shouldBe operatingCostsJson
+      val addressJson = Json.toJson(operatingCostsModel)
+      addressJson shouldBe Json.parse(operatingCostsJson)
 
     }
   }
@@ -790,14 +901,17 @@ class OperatingCostsFormSpec extends UnitSpec {
       operatingCostsForm.get.rAndDCosts1stYear shouldBe "231000"
       operatingCostsForm.get.rAndDCosts2ndYear shouldBe "340000"
       operatingCostsForm.get.rAndDCosts3rdYear shouldBe "344000"
+      operatingCostsForm.get.firstYear shouldBe "2005"
+      operatingCostsForm.get.secondYear shouldBe "2004"
+      operatingCostsForm.get.thirdYear shouldBe "2003"
     }
 
     // form json to model - unapply
     "call unapply successfully to create expected Json" in {
       implicit val formats = Json.format[OperatingCostsModel]
       val operatingCostsForm = OperatingCostsForm.operatingCostsForm.fill(operatingCostsModel)
-      val formJson = Json.toJson(operatingCostsForm.get).toString
-      formJson shouldBe operatingCostsJson
+      val formJson = Json.toJson(operatingCostsForm.get)
+      formJson shouldBe Json.parse(operatingCostsJson)
     }
   }
 }

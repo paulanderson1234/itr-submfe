@@ -27,7 +27,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
 import models.submission.SubmissionResponse
 
 import scala.concurrent.Future
@@ -47,10 +47,12 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val registrationDetailsService = mockRegistrationDetailsService
   }
 
   class SetupPageFull() {
     setUpMocks(mockS4lConnector)
+    setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
   class SetupPageMinimum() {
@@ -58,6 +60,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     setUpMocksMinimumRequiredModels(mockS4lConnector)
+    setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
   def setupMocks(): Unit =
@@ -80,7 +83,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 when a valid submission data is submitted" in new SetupPageFull {
+    "return a 200 and delete the current application when a valid submission data is submitted" in new SetupPageFull {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -89,7 +93,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+    "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -99,9 +104,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory KiProcessingModel is missing from keystore" in {
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, kiModel = None,
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, kiModel = None,
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -113,9 +118,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory NatureOfBusinessModel is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -127,9 +132,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory ContactDetailsModel is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -141,9 +146,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory ProposedInvestmentModel is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -155,9 +160,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory InvestmentGrowModel is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -169,9 +174,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory DateOfIncorporationModel is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -183,9 +188,23 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory AddressModel (contact address) is missing from keystore" in {
 
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValid),
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, true)
+      setupMocks()
+      mockEnrolledRequest()
+      val result = TestController.show.apply(authorisedFakeRequest)
+      status(result) shouldBe SEE_OTHER
+      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+    }
+  }
+
+  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+    "return a 303 redirect if mandatory registrationDetailsModel is from registration details service" in {
+
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
+        Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), false)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -196,9 +215,10 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 if KI is set to false" in {
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, Some(kiProcModelValidAssertNo),
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress))
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)

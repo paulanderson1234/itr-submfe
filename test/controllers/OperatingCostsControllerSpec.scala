@@ -144,7 +144,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "1000",
         "rAndDCosts1stYear" -> "100",
         "rAndDCosts2ndYear" -> "100",
-        "rAndDCosts3rdYear" -> "100"
+        "rAndDCosts3rdYear" -> "100",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -166,7 +169,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "1000",
         "rAndDCosts1stYear" -> "100",
         "rAndDCosts2ndYear" -> "100",
-        "rAndDCosts3rdYear" -> "100"
+        "rAndDCosts3rdYear" -> "100",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -188,7 +194,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "0",
         "rAndDCosts1stYear" -> "0",
         "rAndDCosts2ndYear" -> "0",
-        "rAndDCosts3rdYear" -> "0"
+        "rAndDCosts3rdYear" -> "0",
+        "firstYear" -> "0",
+        "secondYear" -> "0",
+        "thirdYear" -> "0"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -209,7 +218,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "10",
         "rAndDCosts2ndYear" -> "10",
-        "rAndDCosts3rdYear" -> "10"
+        "rAndDCosts3rdYear" -> "10",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -231,7 +243,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "10",
         "rAndDCosts2ndYear" -> "10",
-        "rAndDCosts3rdYear" -> "10"
+        "rAndDCosts3rdYear" -> "10",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -253,7 +268,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "100",
         "rAndDCosts1stYear" -> "0",
         "rAndDCosts2ndYear" -> "0",
-        "rAndDCosts3rdYear" -> "0"
+        "rAndDCosts3rdYear" -> "0",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003"
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -275,7 +293,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> " ",
         "rAndDCosts1stYear" -> " ",
         "rAndDCosts2ndYear" -> " ",
-        "rAndDCosts3rdYear" -> " "
+        "rAndDCosts3rdYear" -> " ",
+        "firstYear" -> " ",
+        "secondYear" -> " ",
+        "thirdYear" -> " "
       )
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
@@ -297,7 +318,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "300000",
         "rAndDCosts1stYear" -> "",
         "rAndDCosts2ndYear" -> "",
-        "rAndDCosts3rdYear" -> "")
+        "rAndDCosts3rdYear" -> "",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003")
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
@@ -317,7 +341,10 @@ class OperatingCostsControllerSpec extends ControllerSpec {
         "operatingCosts3rdYear" -> "300000",
         "rAndDCosts1stYear" -> "aaaaa",
         "rAndDCosts2ndYear" -> "10000",
-        "rAndDCosts3rdYear" -> "12000")
+        "rAndDCosts3rdYear" -> "12000",
+        "firstYear" -> "2005",
+        "secondYear" -> "2004",
+        "thirdYear" -> "2003")
 
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {

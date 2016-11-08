@@ -158,7 +158,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           "amount2" -> "100",
           "amount3" -> "100",
           "amount4" -> "100",
-          "amount5" -> "100"
+          "amount5" -> "100",
+          "firstYear" -> "2003",
+          "secondYear" -> "2004",
+          "thirdYear" -> "2005",
+          "fourthYear" -> "2006",
+          "fifthYear" -> "2007"
         )
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
@@ -176,7 +181,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
             "amount2" -> "100",
             "amount3" -> "100",
             "amount4" -> "100",
-            "amount5" -> "100"
+            "amount5" -> "100",
+            "firstYear" -> "2003",
+            "secondYear" -> "2004",
+            "thirdYear" -> "2005",
+            "fourthYear" -> "2006",
+            "fifthYear" -> "2007"
           )
           submitWithSessionAndAuth(TestController.submit, formInput: _*)(
             result => {
@@ -194,7 +204,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           "amount2" -> "100",
           "amount3" -> "100",
           "amount4" -> "100",
-          "amount5" -> "100"
+          "amount5" -> "100",
+          "firstYear" -> "2003",
+          "secondYear" -> "2004",
+          "thirdYear" -> "2005",
+          "fourthYear" -> "2006",
+          "fifthYear" -> "2007"
         )
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
@@ -212,7 +227,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           "amount2" -> "100",
           "amount3" -> "100",
           "amount4" -> "100",
-          "amount5" -> "100"
+          "amount5" -> "100",
+          "firstYear" -> "2003",
+          "secondYear" -> "2004",
+          "thirdYear" -> "2005",
+          "fourthYear" -> "2006",
+          "fifthYear" -> "2007"
         )
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
@@ -230,7 +250,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           "amount2" -> "100",
           "amount3" -> "100",
           "amount4" -> "100",
-          "amount5" -> "100"
+          "amount5" -> "100",
+          "firstYear" -> "2003",
+          "secondYear" -> "2004",
+          "thirdYear" -> "2005",
+          "fourthYear" -> "2006",
+          "fifthYear" -> "2007"
         )
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
@@ -252,7 +277,12 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           "amount2" -> "",
           "amount3" -> "",
           "amount4" -> "",
-          "amount5" -> ""
+          "amount5" -> "",
+          "firstYear" -> "2003",
+          "secondYear" -> "2004",
+          "thirdYear" -> "2005",
+          "fourthYear" -> "2006",
+          "fifthYear" -> "2007"
         )
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {

@@ -1,6 +1,6 @@
 @import models.OperatingCostsModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress, input}
 
 @(operatingCostsForm: Form[OperatingCostsModel])(implicit request: Request[_])
 
@@ -26,11 +26,22 @@
                     <th class="visuallyhidden" id="col-heading-one" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.one")</th>
                     <th id="col-heading-two" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.two")</th>
                     <th id="col-heading-three" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.three")</th>
+                    <th id="col-heading-four" scope="col">@Messages("page.companyDetails.OperatingCosts.col.heading.four")</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.OperatingCosts.row.heading.one")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("firstYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.OperatingCosts.row.heading.one"),
+                        'id -> "operating-year-one"
+                        )
+                    </td>
                     <td>
 
                         @inputWithCurrencySymbol(
@@ -63,6 +74,16 @@
                 <tr>
                     <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.OperatingCosts.row.heading.two")</td>
                     <td>
+                        @input(
+                        operatingCostsForm("secondYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.OperatingCosts.row.heading.two"),
+                        'id -> "operating-year-two"
+                        )
+                    </td>
+                    <td>
 
                         @inputWithCurrencySymbol(
                         operatingCostsForm("operatingCosts2ndYear"),
@@ -94,6 +115,16 @@
                 </tr>
                 <tr>
                     <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.OperatingCosts.row.heading.three")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("thirdYear"),
+                        '_divClass -> "form-label",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        '_inputHint -> Messages("page.companyDetails.OperatingCosts.row.heading.three"),
+                        'id -> "operating-year-three"
+                        )
+                    </td>
                     <td>
 
                         @inputWithCurrencySymbol(
