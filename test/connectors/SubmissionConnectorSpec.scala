@@ -65,7 +65,6 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
     override val http = mockHttp
-    override val getRegistrationDetailsUrl = MockConfig.getRegistrationDetailsUrl
   }
 
   val validResponse = true
@@ -215,7 +214,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     "return a RegistrationDetailsModel" in {
       when(mockHttp.GET[Option[RegistrationDetailsModel]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}${TargetSubmissionConnector.getRegistrationDetailsUrl}$safeID"))
+        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/registration/registration-details/safeid/$safeID"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(registrationDetailsModel))
       await(result) shouldBe Some(registrationDetailsModel)
     }
