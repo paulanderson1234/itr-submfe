@@ -32,7 +32,6 @@ trait AppConfig {
   val contactFormServiceIdentifier: String
   val contactFrontendPartialBaseUrl: String
   val signOutPageUrl: String
-  val getRegistrationDetailsUrl: String
   val submissionUrl: String
 }
 
@@ -54,6 +53,5 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val contactFrontendPartialBaseUrl = s"$contactFrontendService"
   override lazy val reportAProblemPartialUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
-  override lazy val getRegistrationDetailsUrl = loadConfig("get-registration-details.url")
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
 }
