@@ -53,8 +53,7 @@ class AcknowledgementSpec extends ViewSpec {
       document.body.getElementById("memorandum-articles").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
       document.body.getElementById("prospectus-docs").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
       //email to
-      document.body.getElementById("email-to").text() shouldBe getExternalEmailText(Messages("page.checkAndSubmit.acknowledgement.emailTo"),
-        Messages("page.checkAndSubmit.acknowledgement.subjectLineInclude"))
+      document.body.getElementById("email-to").text() shouldBe getExternalEmailText(Messages("page.checkAndSubmit.acknowledgement.emailTo"))
       document.body.getElementById("email-to").getElementById("email-to-ref").attr("href") shouldEqual "mailto:enterprise.centre@hmrc.gsi.gov.uk"
 
 
