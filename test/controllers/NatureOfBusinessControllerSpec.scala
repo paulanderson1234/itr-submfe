@@ -123,14 +123,14 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
   }
 
   "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
-    "redirect to the commercial sale page" in {
+    "redirect to the date of incorporation page" in {
       mockEnrolledRequest()
       val formInput = "natureofbusiness" -> "some text so it's valid"
 
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }

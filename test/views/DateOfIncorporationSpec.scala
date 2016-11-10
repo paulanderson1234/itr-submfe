@@ -62,7 +62,7 @@ class DateOfIncorporationSpec extends ViewSpec {
       document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
@@ -83,7 +83,7 @@ class DateOfIncorporationSpec extends ViewSpec {
       document.body.getElementById("company-house-db").text() shouldEqual getExternalLinkText(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"))
       document.body.getElementById("company-house-db").attr("href") shouldEqual "https://www.gov.uk/get-information-about-a-company"
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
 

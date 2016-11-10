@@ -32,7 +32,7 @@ class ApplicationHubExistingSpec extends ViewSpec{
       document.getElementById("hub-application-in-progress").text() shouldBe Messages("page.introduction.hub.existing.table.heading")
       document.getElementById("hub-application").text() shouldBe Messages("page.introduction.hub.existing.advanced.assurance.type")
       document.getElementById("continue").text() shouldBe Messages("common.button.continue")
-      document.getElementById("continue-ref").attr("href") shouldEqual routes.YourCompanyNeedController.show().toString()
+      document.getElementById("continue-ref").attr("href") shouldEqual routes.NatureOfBusinessController.show().toString()
       document.getElementById("delete-link").text() shouldBe Messages("common.button.delete")
 
     }
