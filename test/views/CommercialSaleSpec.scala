@@ -62,7 +62,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
     }
@@ -82,7 +82,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
     }
@@ -101,7 +101,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
@@ -121,7 +121,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.NatureOfBusinessController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

@@ -186,12 +186,12 @@ class ApplicationHubControllerSpec extends ControllerSpec{
   }
 
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'your company need' page if table is not empty" in {
+    "redirect to 'nature of business' page if table is not empty" in {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.newApplication)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/your-company-need")
+          redirectLocation(result) shouldBe Some(routes.NatureOfBusinessController.show().url)
         }
       )
     }
@@ -204,7 +204,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
       submitWithSessionAndAuth(TestController.delete)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/hub")
+          redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
         }
       )
     }

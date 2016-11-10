@@ -61,7 +61,7 @@ class NatureOfBusinessSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ApplicationHubController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
@@ -84,7 +84,7 @@ class NatureOfBusinessSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.companyDetails.natureofbusiness.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ApplicationHubController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 

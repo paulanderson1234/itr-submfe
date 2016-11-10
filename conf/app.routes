@@ -4,39 +4,19 @@ GET         /assets/*file            controllers.Assets.at(path="/public", file)
 
 #Start route
 #####################################################################################################################
-
-GET        /                                        controllers.IntroductionController.show
-GET        /start                                   controllers.IntroductionController.show
-POST       /start                                   controllers.IntroductionController.submit
-
-GET        /qualifying-for-scheme                   controllers.QualifyingForSchemeController.show
-POST       /qualifying-for-scheme                   controllers.QualifyingForSchemeController.submit
-
+GET        /                                        controllers.ApplicationHubController.show
+#####################################################################################################################
 
 #Session Timeout route
 #####################################################################################################################
 GET         /session-timeout         controllers.TimeoutController.timeout
-GET         /restart                 controllers.IntroductionController.restart
 #####################################################################################################################
-
-GET        /how-to-apply                            controllers.HowToApplyController.show
-POST       /how-to-apply                            controllers.HowToApplyController.submit
-
-GET        /taxpayer-reference                       controllers.TaxpayerReferenceController.show
-POST       /taxpayer-reference                       controllers.TaxpayerReferenceController.submit
-
-
-GET        /your-company-need                       controllers.YourCompanyNeedController.show
-POST       /your-company-need                       controllers.YourCompanyNeedController.submit
 
 GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
 POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
 
 GET        /commercial-sale                         controllers.CommercialSaleController.show
 POST       /commercial-sale                         controllers.CommercialSaleController.submit
-
-GET        /what-we-ask-you                         controllers.WhatWeAskYouController.show
-POST       /what-we-ask-you                         controllers.WhatWeAskYouController.submit
 
 GET        /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.show
 POST       /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.submit
@@ -46,9 +26,6 @@ POST       /ineligible-for-knowledge-intensive      controllers.IneligibleForKIC
 
 GET        /subsidiaries                            controllers.SubsidiariesController.show
 POST       /subsidiaries                            controllers.SubsidiariesController.submit
-
-GET        /registered-address                      controllers.RegisteredAddressController.show
-POST       /registered-address                      controllers.RegisteredAddressController.submit
 
 GET        /nature-of-business                      controllers.NatureOfBusinessController.show
 POST       /nature-of-business                      controllers.NatureOfBusinessController.submit
@@ -138,6 +115,8 @@ POST       /hub-delete                              controllers.ApplicationHubCo
 GET        /trading-for-too-long                    controllers.TradingForTooLongController.show
 
 #Feedback routes
-GET         /feedback               controllers.feedback.FeedbackController.show
-POST        /feedback               controllers.feedback.FeedbackController.submit
-GET         /thankyou               controllers.feedback.FeedbackController.thankyou
+#####################################################################################################################
+GET         /feedback                               controllers.feedback.FeedbackController.show
+POST        /feedback                               controllers.feedback.FeedbackController.submit
+GET         /thankyou                               controllers.feedback.FeedbackController.thankyou
+#####################################################################################################################

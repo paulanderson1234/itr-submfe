@@ -16,6 +16,7 @@
 
 package utils
 
+import java.lang.String
 import java.text.NumberFormat
 
 import akka.actor.Address
@@ -59,5 +60,12 @@ object Transformers {
   val contactDetailsModelToFlattenedArray : ContactDetailsModel => Array[String] = {
     (contactDetails) => Array(Option(contactDetails.fullName),contactDetails.telephoneNumber, contactDetails.mobileNumber,
       Option(contactDetails.email)).flatten
+  }
+
+  def poundToPence(pounds: Either[String, Int]): String = {
+    pounds match {
+      case Left(pounds) => pounds ++ "00"
+      case Right(pounds) => (pounds * 100).toString
+    }
   }
 }
