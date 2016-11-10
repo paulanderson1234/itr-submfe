@@ -33,6 +33,7 @@
 
     @if(!labelAfter && elements.args.contains('_label)) { <span id="labelTextId" class="@if( elements.args.get('_labelTextClass) ){ @elements.args.get('_labelTextClass) }">@elements.label</span> }
     @if( elements.args.get('_info) ) { <p id="infoId" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info)</p> }
+    @if( elements.args.get('_info2) ) { <p id="infoId-2" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info2)</p> }
     <textarea
             @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
             @if( elements.args.get('_rows) ){ rows="@elements.args.get('_rows)" }

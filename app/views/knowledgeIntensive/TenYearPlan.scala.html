@@ -13,7 +13,8 @@
 
 <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.knowledgeIntensive.TenYearPlan.heading")</h1>
 
-<p class = "form-hint" id="desc-one">@Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
+<p class = "form-hint" id="desc-one">@Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")</p>
+<p class = "form-hint" id="desc-two">@Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")</p>
 
     @form(action = controllers.routes.TenYearPlanController.submit()) {
 
@@ -27,7 +28,8 @@
     '_rows -> "10",
     '_maxLength-> Constants.SuggestedTextMaxLengthLower,
     '_label-> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
-    '_info-> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two"),
+    '_info-> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.three"),
+    '_info2-> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.four"),
     '_infoTextClass-> "form-hint"
     ),
     None,
