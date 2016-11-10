@@ -60,16 +60,8 @@ common.error.summary.heading=This page has errors
 
 
 #validation errors
-validation.error.countrypostcode=Postcode must be entered if United Kingdom is selected for country
-validation.error.optionaladdresssline=Address line must be no more than 27 valid characters if entered
-validation.error.mandatoryaddresssline=Address line must be entered and no more than 27 characters
-validation.error.linefouraddresssline=Address line must be no more than 17 valid characters if entered
-validation.error.postcode=Please enter a valid postcode
-validation.error.postcodelookup=Please enter a valid postcode
 validation.error.country=Country must be no more than 20 valid characters if entered
 validation.error.postcode=Please enter a valid postcode
-validation.error.email=Enter a valid email address
-validation.error.telephoneNumber=Please enter a valid telephone number
 validation.error.crn=Please enter a valid CRN
 validation.error.invalidDate=You have not entered a valid date
 validation.error.utrTenChar=Only 10 numeric digits should be entered
@@ -77,7 +69,15 @@ validation.common.error.fieldRequired=This field is required
 validation.error.DateNotEntered=You must enter a valid day, month and year
 validation.error.enterDate=Please enter a date
 validation.error.operatingCosts=Please enter a value into
-validation.error.fourDigitYear=Please enter a valid year
+validation.error.fourDigitYear=Enter a valid year
+validation.error.optionaladdresssline=Use fewer than 28 characters in the address line
+validation.error.mandatoryaddresssline=Address line must be entered
+validation.error.telephoneNumber=Enter a valid telephone number
+validation.error.postcode=Enter a valid postcode
+validation.error.countryCode=Country must be entered
+validation.error.linefouraddresssline=Use fewer than 18 characters in the address line
+validation.error.countrypostcode=Postcode must be entered if country selected is United Kingdom
+validation.error.email=Enter a valid email address
 
 ## Session Timeout message ##
 session.timeout.message=Your session has ended
@@ -247,12 +247,12 @@ page.companyDetails.OperatingCosts.col.heading.four = Research and Development c
 page.companyDetails.OperatingCosts.row.heading.one = Most recent
 page.companyDetails.OperatingCosts.row.heading.two = Year 2
 page.companyDetails.OperatingCosts.row.heading.three = Year 3
-page.companyDetails.OperatingCosts.error.field.one = Operating Costs 1st Year must be greater than 0 and must be up to 9 numbers.
-page.companyDetails.OperatingCosts.error.field.two = Operating Costs 2nd Year must be greater than 0 and must be up to 9 numbers.
-page.companyDetails.OperatingCosts.error.field.three = Operating Costs 3rd Year must be greater than 0 and must be up to 9 numbers.
-page.companyDetails.OperatingCosts.error.field.four = Research and Development Costs 1st Year must be up to 9 numbers.
-page.companyDetails.OperatingCosts.error.field.five = Research and Development Costs 2nd Year must be up to 9 numbers.
-page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
+page.companyDetails.OperatingCosts.error.field.one = Enter a value greater than 0 and fewer than 10 numbers for your most recent operating costs
+page.companyDetails.OperatingCosts.error.field.two = Enter a value greater than 0 and fewer than 10 numbers for your year 2 operating costs
+page.companyDetails.OperatingCosts.error.field.three = Enter a value greater than 0 and fewer than 10 numbers for your year 3 operating costs
+page.companyDetails.OperatingCosts.error.field.four = Enter fewer than 10 numbers for your most recent research and development costs
+page.companyDetails.OperatingCosts.error.field.five = Enter fewer than 10 numbers for your year 2 research and development costs
+page.companyDetails.OperatingCosts.error.field.six = Enter fewer than 10 numbers for your year 3 research and development costs
 
 #Turnover Costs Page
 page.companyDetails.TurnoverCosts.title = What was your company''s annual turnover in the past 5 years?
@@ -267,11 +267,11 @@ page.companyDetails.TurnoverCosts.row.heading.two = Year 2
 page.companyDetails.TurnoverCosts.row.heading.three = Year 3
 page.companyDetails.TurnoverCosts.row.heading.four = Year 4
 page.companyDetails.TurnoverCosts.row.heading.five = Year 5
-page.companyDetails.TurnoverCosts.error.field.one = Most recent turnover must be up to 9 numbers.
-page.companyDetails.TurnoverCosts.error.field.two = Year 2 turnover must be up to 9 numbers.
-page.companyDetails.TurnoverCosts.error.field.three = Year 3 turnover must be up to 9 numbers.
-page.companyDetails.TurnoverCosts.error.field.four = Year 4 turnover must be up to 9 numbers.
-page.companyDetails.TurnoverCosts.error.field.five = Year 5 turnover must be up to 9 numbers.
+page.companyDetails.TurnoverCosts.error.field.one = Enter fewer than 10 numbers for your most recent turnover
+page.companyDetails.TurnoverCosts.error.field.two = Enter fewer than 10 numbers for your year 2 turnover
+page.companyDetails.TurnoverCosts.error.field.three = Enter fewer than 10 numbers for your year 3 turnover
+page.companyDetails.TurnoverCosts.error.field.four = Enter fewer than 10 numbers for your year 4 turnover
+page.companyDetails.TurnoverCosts.error.field.five = Enter fewer than 10 numbers for your year 5 turnover
 page.companyDetails.TurnoverCosts.help.link= What''s annual turnover?
 page.companyDetails.TurnoverCosts.help.text= It''s the amount of money your company makes in a year before tax.
 
