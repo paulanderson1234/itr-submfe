@@ -43,8 +43,8 @@ class TradingForTooLongSpec extends ViewSpec {
       document.title shouldEqual Messages("page.investment.TradingForTooLong.title")
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.investment.TradingForTooLong.heading")
       document.body.getElementById("tradingTooLongReason").text() shouldEqual Messages("page.investment.TradingForTooLong.reason")
-      document.body.getElementById("reason-one").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.one")
-      document.body.getElementById("reason-two").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.two")
+      document.body.getElementById("trading-too-long").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.one")
+      document.body.getElementById("not-new-business").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.two")
       document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154"
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
 
