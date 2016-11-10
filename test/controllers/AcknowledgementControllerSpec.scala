@@ -111,7 +111,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -125,7 +125,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -139,7 +139,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -153,7 +153,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -167,7 +167,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -181,7 +181,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -195,7 +195,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 
@@ -209,7 +209,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.IntroductionController.show().url)
+      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
     }
   }
 

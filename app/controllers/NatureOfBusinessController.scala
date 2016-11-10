@@ -54,7 +54,7 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-        Future.successful(Redirect(routes.CommercialSaleController.show()))
+        Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
     )
   }
