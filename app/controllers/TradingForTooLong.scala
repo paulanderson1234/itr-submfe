@@ -18,15 +18,13 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.EnrolmentConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 
 import scala.concurrent.Future
 
 object TradingForTooLongController extends TradingForTooLongController
 {
-  val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -36,9 +34,5 @@ trait TradingForTooLongController extends FrontendController with AuthorisedAndE
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Ok(views.html.investment.TradingForTooLong()))
-  }
-
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.TaxpayerReferenceController.show()))
   }
 }

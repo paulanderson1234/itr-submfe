@@ -136,7 +136,6 @@ POST       /hub                                     controllers.ApplicationHubCo
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 
 GET        /trading-for-too-long                    controllers.TradingForTooLongController.show
-POST       /trading-for-too-long                    controllers.TradingForTooLongController.submit
 
 #Feedback routes
 GET         /feedback               controllers.feedback.FeedbackController.show
