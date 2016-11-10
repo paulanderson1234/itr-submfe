@@ -19,7 +19,7 @@ package models.submission
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 import utils.Validation
-
+import utils.Transformers._
 
 case class DesCostModel(
                       amount : String,
@@ -166,12 +166,17 @@ object DesSubmitAdvancedAssuranceModel {
     }
   }
 
-  implicit val costModelFormat = Json.format[CostModel]
+  implicit val costModelWrites = Json.writes[CostModel]
+  implicit val costsModelReads: Reads[CostModel] = (
+    (__ \ "amount").read[String].map(amount => poundToPence(Left(amount))) and
+      Reads.pure("GBP")
+    ) (CostModel.apply _)
+
   implicit val kiModelFormat = Json.format[KiModel]
 
   implicit val desModelWrites = Json.writes[DesCostModel]
   implicit val desModelReads: Reads[DesCostModel] = (
-    __.read[Int].map(_.toString) and
+    __.read[Int].map(amount => poundToPence(Right(amount))) and
       Reads.pure("GBP")
     ) (DesCostModel.apply _)
 
@@ -210,7 +215,7 @@ object DesSubmitAdvancedAssuranceModel {
 
   implicit val proposedAmountWrites = Json.writes[ProposedAmount]
   implicit val proposedAmountReads: Reads[ProposedAmount] = (
-    (__ \ "investmentAmount").read[Int].map(_.toString) and
+    (__ \ "investmentAmount").read[Int].map(amount=> poundToPence(Right(amount))) and
       ((__ \ "currency").read[String] or Reads.pure("GBP"))
     ) (ProposedAmount.apply _)
 
