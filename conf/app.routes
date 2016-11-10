@@ -112,6 +112,8 @@ GET        /hub                                     controllers.ApplicationHubCo
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 
+GET        /trading-for-too-long                    controllers.TradingForTooLongController.show
+
 #Feedback routes
 #####################################################################################################################
 GET         /feedback                               controllers.feedback.FeedbackController.show
