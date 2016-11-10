@@ -531,6 +531,14 @@ page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
 page.investment.AnnualTurnoverError.guidance=Link back to guidance
 
+#trading for too long error
+page.investment.TradingForTooLong.title=You don''t qualify for the scheme
+page.investment.TradingForTooLong.heading=You don''t qualify for the scheme
+page.investment.TradingForTooLong.reason=Your company:
+page.investment.TradingForTooLong.bullet.one=has been trading for too long to get tax relief on investment
+page.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
+page.investment.TradingForTooLong.link.schemeGuidance=Link back to guidance
+
 #signout page
 page.signout.SignedOut.title = You have successfully signed out
 page.signout.SignedOut.header = You''re signed out
