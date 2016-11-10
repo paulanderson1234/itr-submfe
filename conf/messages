@@ -236,7 +236,7 @@ page.knowledgeIntensive.IneligibleForKI.description.one = From the information y
 page.knowledgeIntensive.IneligibleForKI.description.two = You can still continue with your application as you might still be eligible for other tax relief schemes.
 
 #Operating Costs Page
-page.companyDetails.OperatingCosts.title = Operating costs
+page.companyDetails.OperatingCosts.title = What were the operating costs from your last 3 annual accounts?
 page.companyDetails.OperatingCosts.heading = What were the operating costs from your last 3 annual accounts?
 page.companyDetails.OperatingCosts.hint.one = Operating costs are all of the costs on your profit and loss account or income statement.
 page.companyDetails.OperatingCosts.hint.two = We also need the end-year values of your accounting periods. An accounting period is the time covered by your Company Tax Return.
@@ -255,7 +255,7 @@ page.companyDetails.OperatingCosts.error.field.five = Research and Development C
 page.companyDetails.OperatingCosts.error.field.six = Research and Development Costs 3rd Year must be up to 9 numbers.
 
 #Turnover Costs Page
-page.companyDetails.TurnoverCosts.title = Annual turnover
+page.companyDetails.TurnoverCosts.title = What was your company''s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.heading = What was your company''s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = Annual turnover is the amount of money your company makes in a year before tax.
 page.companyDetails.TurnoverCosts.hint.two = We also need the end-year values of your accounting periods. An accounting period is the time covered by your Company Tax Return.
@@ -328,11 +328,13 @@ page.investment.NewGeographicalMarket.hint=It''s sometimes called launching in a
 page.investment.NewGeographicalMarket.hint.link=new geographic market
 
 #ten year plan page
-page.knowledgeIntensive.TenYearPlan.title = Ten year plan
-page.knowledgeIntensive.TenYearPlan.heading = Do you have a 10-year plan to focus on new patents, or products like software that aren''t physical?
-page.knowledgeIntensive.TenYearPlan.question.hint.one = This is one of the conditions for knowledge intensive companies
-page.knowledgeIntensive.TenYearPlan.question.hint.two = Suggested limit: 200 words
-page.knowledgeIntensive.TenYearPlan.description.one = How will your company do that?
+page.knowledgeIntensive.TenYearPlan.title = Does your company plan to develop a product that you’ll own the rights to?
+page.knowledgeIntensive.TenYearPlan.heading = Does your company plan to develop a product that you’ll own the rights to?
+page.knowledgeIntensive.TenYearPlan.question.hint.one = This might be goods or a service that you''ve created in the past 3 years or that you will create in the future.
+page.knowledgeIntensive.TenYearPlan.question.hint.two = Your company could own the intellectual property rights by using copyright, a patent or a design.
+page.knowledgeIntensive.TenYearPlan.question.hint.three = Within 10 years of the investment, most of your company''s business activities must use, or make money from what you''ve developed.
+page.knowledgeIntensive.TenYearPlan.question.hint.four = Suggested limit: 200 words
+page.knowledgeIntensive.TenYearPlan.description.one = How does your company plan to do that?
 page.knowledgeIntensive.TenYearPlan.description.two = Based on the information you''ve given your company isn''t knowledge intensive
 validation.error.DescriptionEnteredForNoOption=If ''No'' is selected description should be removed from the ''Yes'' option.
 

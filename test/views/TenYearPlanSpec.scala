@@ -57,8 +57,9 @@ class TenYearPlanSpec extends ViewSpec {
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
-      document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
-      document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
+      document.getElementById("desc-two").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
+      document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.three")
+      document.getElementById("infoId-2").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.four")
       document.getElementById("labelTextId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.description.one")
       document.getElementById("labelTextId").hasClass("visuallyhidden")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
@@ -77,6 +78,7 @@ class TenYearPlanSpec extends ViewSpec {
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
+      document.getElementById("desc-two").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
@@ -93,12 +95,14 @@ class TenYearPlanSpec extends ViewSpec {
       document.title() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.heading")
       document.getElementById("desc-one").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.one")
+      document.getElementById("desc-two").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
       document.getElementById("hasTenYearPlan-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTenYearPlan-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.continue")
-      document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.two")
+      document.getElementById("infoId").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.three")
+      document.getElementById("infoId-2").text() shouldBe Messages("page.knowledgeIntensive.TenYearPlan.question.hint.four")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
