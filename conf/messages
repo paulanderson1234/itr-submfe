@@ -230,10 +230,13 @@ page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of 
 page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = to plan to develop, or have already developed, a product that you''ll own the rights to
 
 #Ineligible for Knowledge Intensive Page
-page.knowledgeIntensive.IneligibleForKI.title = Ineligible for knowledge intensive company
-page.knowledgeIntensive.IneligibleForKI.heading = You don''t qualify for the knowledge intensive scheme
-page.knowledgeIntensive.IneligibleForKI.description.one = From the information you have given us, you aren''t eligible to be a knowledge intensive company.
-page.knowledgeIntensive.IneligibleForKI.description.two = You can still continue with your application as you might still be eligible for other tax relief schemes.
+page.knowledgeIntensive.IneligibleForKI.title = Your company isn''t knowledge intensive
+page.knowledgeIntensive.IneligibleForKI.heading = Your company isn''t knowledge intensive
+page.knowledgeIntensive.IneligibleForKI.description.one = Your company:
+page.knowledgeIntensive.IneligibleForKI.description.two = You can still apply for advance assurance.
+page.knowledgeIntensive.IneligibleForKI.bullet.one = hasn''t spent enough on research and development, or,
+page.knowledgeIntensive.IneligibleForKI.bullet.two = hasn''t got enough qualified staff members, and,
+page.knowledgeIntensive.IneligibleForKI.bullet.three = doesn''t perform enough research and development.
 
 #Operating Costs Page
 page.companyDetails.OperatingCosts.title = What were the operating costs from your last 3 annual accounts?

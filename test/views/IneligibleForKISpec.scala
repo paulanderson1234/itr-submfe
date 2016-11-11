@@ -57,6 +57,9 @@ class IneligibleForKISpec extends ViewSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
       document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
       document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+      document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+      document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+      document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
       document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
     }
 
@@ -73,6 +76,9 @@ class IneligibleForKISpec extends ViewSpec {
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
         document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+        document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+        document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+        document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
         document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
       }
 
@@ -92,6 +98,9 @@ class IneligibleForKISpec extends ViewSpec {
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
         document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+        document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+        document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+        document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
         document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
       }
 
