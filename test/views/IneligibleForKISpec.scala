@@ -57,6 +57,9 @@ class IneligibleForKISpec extends ViewSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
       document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
       document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+      document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+      document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+      document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
       document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
     }
 
@@ -73,6 +76,9 @@ class IneligibleForKISpec extends ViewSpec {
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
         document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+        document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+        document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+        document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
         document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
       }
 
@@ -81,17 +87,20 @@ class IneligibleForKISpec extends ViewSpec {
     "The Ineligible for Knowledge Intensive page" should {
 
       "Verify that the Ineligible for Knowledge Intensive page contains the correct elements " +
-        "and sets backlink to any link returnd from keystorek" in new Setup {
+        "and sets backlink to any link returned from keystore" in new Setup {
         val document: Document = {
-          setupMocks(Some(routes.HowToApplyController.show().url))
+          setupMocks(Some(routes.ApplicationHubController.show().url))
           val result = TestController.show.apply(authorisedFakeRequest)
           Jsoup.parse(contentAsString(result))
         }
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.HowToApplyController.show().url
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.ApplicationHubController.show().url
         document.title shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.title")
         document.getElementById("main-heading").text() shouldBe Messages("page.knowledgeIntensive.IneligibleForKI.heading")
         document.getElementById("description-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.one")
         document.getElementById("description-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.description.two")
+        document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
+        document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
+        document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
         document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
       }
 

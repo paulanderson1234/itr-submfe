@@ -74,7 +74,7 @@ class TradingForTooLongControllerSpec extends ControllerSpec {
 
   "Sending an Unauthenticated request with a session to TradingForTooLongController" should {
     "return a 303" in {
-      status(WhatWeAskYouController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
+      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
     }
 
     s"should redirect to GG login" in {

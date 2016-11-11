@@ -128,7 +128,7 @@ class PreviousSchemeSpec extends ViewSpec {
 
     "Verify the previous scheeme page contains the error summary, button text and back link for invalid new submission" in new Setup {
       val document: Document = {
-        setupMocks(Some(previousSchemeVectorList), Some(routes.RegisteredAddressController.show().url))
+        setupMocks(Some(previousSchemeVectorList), Some(routes.ApplicationHubController.show().url))
         val result = TestController.submit().apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -137,7 +137,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("page.investment.PreviousScheme.button.add")
       // SHOULD BE ERROR SECTION AS NO Amount posted
       document.getElementById("error-summary-display").hasClass("error-summary--show")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.RegisteredAddressController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ApplicationHubController.show().url
     }
   }
 

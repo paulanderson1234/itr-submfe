@@ -6,7 +6,7 @@
 
 @main_template(Messages("page.companyDetails.CommercialSale.title")) {
 
-@backButtonWithProgress(controllers.routes.NatureOfBusinessController.show().toString, Messages("common.section.progress.company.details.one"))
+@backButtonWithProgress(controllers.routes.DateOfIncorporationController.show().url, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(commercialSaleForm, "commercial-sale", "commercialSaleDay")
 
