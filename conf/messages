@@ -85,7 +85,7 @@ session.timeout.startAgain=Start again
 
 #Welcome page
 page.start.welcome.title=Welcome
-page.start.welcome.heading=Get tax relief for your investors
+page.start.welcome.heading=Apply for Enterprise Investment Scheme
 page.start.welcome.description.one=If you have a small or medium-sized company the government can help it grow by offering tax relief to your investors.
 page.start.welcome.description.two=This service lets you:
 page.start.welcome.bullet.learn=learn about tax relief schemes
