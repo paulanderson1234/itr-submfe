@@ -5,7 +5,7 @@
 
 @(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], question: String, description: String)(implicit request: Request[_])
 
-@main_template(Messages("page.previousInvestment.previousBeforeDOFCS.title")) {
+@main_template(question) {
 
     @backButtonWithProgress(controllers.routes.UsedInvestmentReasonBeforeController.show().toString, Messages("common.section.progress.company.details.three"))
 
