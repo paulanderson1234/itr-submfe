@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.Constants
+import common.{KeystoreKeys, Constants}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
@@ -37,6 +37,24 @@ class NewProductControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val submissionConnector = mockSubmissionConnector
+  }
+
+  val newGeographicMarketYes = NewGeographicalMarketModel("Yes")
+  val newGeographicMarketNo = NewGeographicalMarketModel("No")
+
+  def setupSubmitMocksTrue(): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(newGeographicMarketYes)))
+    when(mockSubmissionConnector.checkMarketCriteria(Matchers.any(), Matchers.any())(Matchers.any())).
+      thenReturn(Future.successful(Some(true)))
+  }
+
+  def setupSubmitMocksFalse(): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(Some(newGeographicMarketNo)))
+    when(mockSubmissionConnector.checkMarketCriteria(Matchers.any(), Matchers.any())(Matchers.any())).
+      thenReturn(Future.successful(Some(false)))
   }
 
   "NewProductController" should {
@@ -123,17 +141,20 @@ class NewProductControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a valid 'Yes' form submit to the NewProductController when authenticated and enrolled" should {
+  "Sending a valid 'Yes' form submit to the NewProductController" when {
+    "NewGeograhic is 'No' or 'Yes' and the request is authenticated and enrolled" should {
 
-    "redirect to the annual turnover page" in {
-      mockEnrolledRequest()
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(TestController.submit,formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
-        }
-      )
+      "redirect to the annual turnover page" in {
+        mockEnrolledRequest()
+        setupSubmitMocksTrue()
+        val formInput = "isNewProduct" -> Constants.StandardRadioButtonYesValue
+        submitWithSessionAndAuth(TestController.submit, formInput)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
+          }
+        )
+      }
     }
   }
 
@@ -141,17 +162,56 @@ class NewProductControllerSpec extends ControllerSpec {
   // the No sections below will be much simplified later as they will just go to the required error page
   // (or in page javascript to make it red in which case not part of navigation at all and no controller test required)
   // The subsidiaries logic test is not required in the 3 tests below can be replaced by a single test  top the error page
-  "Sending a valid 'No' form submit to the NewProductController when authenticated and enrolled" should {
+  "Sending a valid 'No' form submit to the NewProductController" when {
+    "NewGeograhic is 'No' and the request is authenticated and enrolled" should {
 
-    "redirect to the annual turnover page" in {
-      mockEnrolledRequest()
-      val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
-        }
-      )
+      "redirect to the annual turnover page" in {
+        mockEnrolledRequest()
+        setupSubmitMocksFalse()
+        val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
+        submitWithSessionAndAuth(TestController.submit, formInput)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/trading-for-too-long")
+          }
+        )
+      }
+    }
+  }
+
+  "Sending a valid form submit to the NewProductController" when {
+    "NewGeograhic is empty and the request is authenticated and enrolled" should {
+
+      "output an INTERNAL_SERVER_ERROR" in {
+        mockEnrolledRequest()
+        when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(None))
+        val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
+        submitWithSessionAndAuth(TestController.submit, formInput)(
+          result => {
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+          }
+        )
+      }
+    }
+  }
+
+  "Sending a valid form submit to the NewProductController" when {
+    "the API response is empty and the request is authenticated and enrolled" should {
+
+      "output an INTERNAL_SERVER_ERROR" in {
+        mockEnrolledRequest()
+        when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(newGeographicMarketNo)))
+        when(mockSubmissionConnector.checkMarketCriteria(Matchers.any(), Matchers.any())(Matchers.any())).
+          thenReturn(Future.successful(None))
+        val formInput = "isNewProduct" -> Constants.StandardRadioButtonNoValue
+        submitWithSessionAndAuth(TestController.submit, formInput)(
+          result => {
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+          }
+        )
+      }
     }
   }
 
