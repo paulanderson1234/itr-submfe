@@ -84,8 +84,8 @@ session.timeout.message=Your session has ended
 session.timeout.startAgain=Start again
 
 #Welcome page
-page.start.welcome.title=Welcome
-page.start.welcome.heading=Apply for Enterprise Investment Scheme
+page.start.welcome.title=Get tax relief for your investors
+page.start.welcome.heading=Get tax relief for your investors
 page.start.welcome.description.one=If you have a small or medium-sized company the government can help it grow by offering tax relief to your investors.
 page.start.welcome.description.two=This service lets you:
 page.start.welcome.bullet.learn=learn about tax relief schemes
@@ -167,7 +167,7 @@ page.companyDetails.utr.help.text=You can usually find it in letters we''ve sent
 page.companyDetails.utr.help.link=Where can I find this?
 
 #Your company need page
-page.introduction.YourCompanyNeed.title=Your company need
+page.introduction.YourCompanyNeed.title=What does your company need?
 page.introduction.YourCompanyNeed.heading=What does your company need?
 page.introduction.YourCompanyNeed.advancedAssurance=A letter to show to potential investors
 page.introduction.YourCompanyNeed.complianceStatement=A reference number so investors can claim relief
@@ -238,6 +238,7 @@ page.knowledgeIntensive.IneligibleForKI.bullet.one = hasn''t spent enough on res
 page.knowledgeIntensive.IneligibleForKI.bullet.two = hasn''t got enough qualified staff members, and,
 page.knowledgeIntensive.IneligibleForKI.bullet.three = doesn''t perform enough research and development.
 
+
 #Operating Costs Page
 page.companyDetails.OperatingCosts.title = What were the operating costs from your last 3 annual accounts?
 page.companyDetails.OperatingCosts.heading = What were the operating costs from your last 3 annual accounts?
@@ -258,7 +259,7 @@ page.companyDetails.OperatingCosts.error.field.five = Enter fewer than 10 number
 page.companyDetails.OperatingCosts.error.field.six = Enter fewer than 10 numbers for your year 3 research and development costs
 
 #Turnover Costs Page
-page.companyDetails.TurnoverCosts.title = What was your company''s annual turnover in the past 5 years?
+page.companyDetails.TurnoverCosts.title =What was your company''s annual turnover over the past 5 accounting periods?
 page.companyDetails.TurnoverCosts.heading = What was your company''s annual turnover in the past 5 years?
 page.companyDetails.TurnoverCosts.hint.one = Annual turnover is the amount of money your company makes in a year before tax.
 page.companyDetails.TurnoverCosts.hint.two = We also need the end-year values of your accounting periods. An accounting period is the time covered by your Company Tax Return.
@@ -280,7 +281,7 @@ page.companyDetails.TurnoverCosts.help.text= It''s the amount of money your comp
 
 
 #Subsidiaries Page
-page.companyDetails.Subsidiaries.title = Subsidiaries
+page.companyDetails.Subsidiaries.title = Does your company own or control any other companies?
 page.companyDetails.Subsidiaries.heading = Does your company own or control any other companies?
 
 #Registered Address page
@@ -315,17 +316,17 @@ page.percentageStaffWithMasters.less = Less than 20%
 page.percentageStaffWithMasters.yes.hint=You''ll need to meet this condition when you get the investment and for 3 years afterwards.
 
 #used investment reason before page
-page.investment.UsedInvestmentReasonBefore.title=Used investment scheme before
-page.investment.UsedInvestmentReasonBefore.heading=Has your company used a tax relief investment scheme before?
+page.investment.UsedInvestmentReasonBefore.title=Has your company used a tax relief investment for the same purpose before?
+page.investment.UsedInvestmentReasonBefore.heading=Has your company used a tax relief investment for the same purpose before?
 
 #New product page
-page.investment.NewProduct.title=New product
+page.investment.NewProduct.title=Will you use this investment to enter a new product market?
 page.investment.NewProduct.heading=Will you use this investment to enter a new product market?
 page.investment.NewProduct.hint=Read more about
 page.investment.NewProduct.hint.link=new product markets
 
 #New Geographical market page
-page.investment.NewGeographicalMarket.title=New geographic market
+page.investment.NewGeographicalMarket.title=Will you use this investment to launch one of your products somewhere new?
 page.investment.NewGeographicalMarket.heading=Will you use this investment to launch one of your products somewhere new?
 page.investment.NewGeographicalMarket.hint=It''s sometimes called launching in a
 page.investment.NewGeographicalMarket.hint.link=new geographic market
@@ -346,11 +347,11 @@ page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relie
 page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
 
 #subsidiaries spending investment
-page.investment.SubsidiariesSpendingInvestment.title = Subsidiaries spending investment
+page.investment.SubsidiariesSpendingInvestment.title = Will another company that''s owned or controlled by [your company name] spend this investment?
 page.investment.SubsidiariesSpendingInvestment.heading = Will another company that''s owned or controlled by [your company name] spend this investment?
 
 #previous before dofcs
-page.previousInvestment.previousBeforeDOFCS.title = Previous before date of first commercial sale
+page.previousInvestment.previousBeforeDOFCS.title = Did your company get that investment between {0} and {1}?
 page.previousInvestment.previousBeforeDOFCS.heading = Did your company get that investment between {0} and {1}?
 page.previousInvestment.previousBeforeDOFCS.description = You must have got the investment within {0} years of your first commercial sale
 
@@ -363,7 +364,7 @@ page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you 
 
 #investment grow description page
 page.investment.InvestmentGrow.heading=How will this investment help your company grow?
-page.investment.InvestmentGrow.title=How plan to use investment
+page.investment.InvestmentGrow.title=How will this investment help your company grow?
 page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
 page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
@@ -497,8 +498,8 @@ page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your su
 page.checkAndSubmit.acknowledgement.button.confirm=Finish
 
 #lifetime allowance exceeded page
+page.investment.LifetimeAllowanceExceeded.title=You don''t qualify for the scheme
 page.investment.LifetimeAllowanceExceeded.heading=You don''t qualify for the scheme
-page.investment.LifetimeAllowanceExceeded.title=Lifetime allowance Exceeded
 page.investment.LifetimeAllowanceExceeded.reason=You''ve already raised more than £12 million from tax relief investment schemes.
 page.investment.LifetimeAllowanceExceeded.link=Back to investment schemes
 
@@ -517,7 +518,7 @@ page.previousInvestment.schemeType.other=Other
 page.previousInvestment.amountSpent.label=Investment amount spent
 
 #previous schmeme
-page.investment.PreviousScheme.heading=Which schemes has your company used?
+page.investment.PreviousScheme.heading=Which previous investment schemes has your company used? When and how much was the investment?
 page.investment.PreviousScheme.schemeType=Scheme
 page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
@@ -531,7 +532,7 @@ page.investment.PreviousScheme.investmentAmount=Investment amount raised
 
 
 #annual turnover error
-page.investment.AnnualTurnoverError.title=Annual turnover error
+page.investment.AnnualTurnoverError.title=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
 page.investment.AnnualTurnoverError.guidance=Link back to guidance
@@ -545,7 +546,7 @@ page.investment.TradingForTooLong.bullet.two=is not starting a new business acti
 page.investment.TradingForTooLong.link.schemeGuidance=Link back to guidance
 
 #signout page
-page.signout.SignedOut.title = You have successfully signed out
+page.signout.SignedOut.title = You''re signed out
 page.signout.SignedOut.header = You''re signed out
 page.signout.SignedOut.explore = Explore GOV.UK
 

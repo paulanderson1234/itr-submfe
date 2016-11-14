@@ -70,7 +70,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
+    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title","29 February 2004","28 February 2014")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
@@ -94,7 +94,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
+    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title", "29 February 2004","28 February 2011")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
@@ -118,7 +118,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
+    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title", "29 February 2004","28 February 2014")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
@@ -142,7 +142,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.UsedInvestmentReasonBeforeController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
+    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title", "29 February 2004","28 February 2011")
     document.getElementById("main-heading").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.select("#previousBeforeDOFCS-yes").size() shouldBe 1
@@ -166,7 +166,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
     }
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
-    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title")
+    document.title() shouldBe Messages("page.previousInvestment.previousBeforeDOFCS.title", "29 February 2004","28 February 2014")
 
   }
 }
