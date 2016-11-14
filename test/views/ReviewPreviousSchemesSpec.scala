@@ -88,7 +88,7 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
           Messages("common.base.remove")
       }
 
-      document.body.getElementById("next").text() shouldEqual Messages("common.button.continueThirdSection")
+      document.body.getElementById("next").text() shouldEqual Messages("common.button.continue")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
     }
   }
