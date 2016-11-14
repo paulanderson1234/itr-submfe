@@ -484,7 +484,7 @@ page.checkAndSubmit.acknowledgement.refNumberHeading=Make a note of your referen
 page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete
 page.checkAndSubmit.acknowledgement.toDoNext=What happens next
 page.checkAndSubmit.acknowledgement.remember=Remember to include your company''s:
-page.checkAndSubmit.acknowledgement.priorToReview=Before we can review your application, you’ll need to email or post documentation to us.
+page.checkAndSubmit.acknowledgement.priorToReview=Before we can review your application, you’ll need to email or post supporting documentation to us.
 page.checkAndSubmit.acknowledgement.emailTo=Put your company name and application reference number in the subject line and email your supporting documents to
 page.checkAndSubmit.acknowledgement.alternative=Or, you can post copies to:
 page.checkAndSubmit.acknowledgement.hmrc=Local Compliance
@@ -493,7 +493,7 @@ page.checkAndSubmit.acknowledgement.hmrc.address2=SO777
 page.checkAndSubmit.acknowledgement.hmrc.address3=Newcastle
 page.checkAndSubmit.acknowledgement.hmrc.postcode=NE98 1ZZ
 page.checkAndSubmit.acknowledgement.waitingTime=How long you’ll have to wait
-page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your application and supporting documents we’ll contact you within 8 weeks.
+page.checkAndSubmit.acknowledgement.courseOfAction=Once we’ve received your supporting documents we’ll contact you within 8 weeks.
 page.checkAndSubmit.acknowledgement.button.confirm=Finish
 
 #lifetime allowance exceeded page
