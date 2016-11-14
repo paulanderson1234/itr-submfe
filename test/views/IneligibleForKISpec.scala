@@ -60,7 +60,7 @@ class IneligibleForKISpec extends ViewSpec {
       document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
       document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
       document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
-      document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
+      document.getElementById("next").text() shouldEqual Messages("common.button.continue")
     }
 
     "The Ineligible for Knowledge Intensive page" should {
@@ -79,7 +79,7 @@ class IneligibleForKISpec extends ViewSpec {
         document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
         document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
         document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
-        document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
+        document.getElementById("next").text() shouldEqual Messages("common.button.continue")
       }
 
     }
@@ -101,7 +101,7 @@ class IneligibleForKISpec extends ViewSpec {
         document.getElementById("reason-one").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")
         document.getElementById("reason-two").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")
         document.getElementById("reason-three").text() shouldEqual Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")
-        document.getElementById("next").text() shouldEqual Messages("common.button.continueNextSection")
+        document.getElementById("next").text() shouldEqual Messages("common.button.continue")
       }
 
     }

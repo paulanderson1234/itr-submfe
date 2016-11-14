@@ -66,7 +66,7 @@ class SubsidiariesSpec extends ViewSpec {
 //      document.select("#subsidiaries-yes").size() shouldBe 1
 //      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
 //      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
 //      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
 //    }
 //
@@ -86,7 +86,7 @@ class SubsidiariesSpec extends ViewSpec {
 //      document.select("#subsidiaries-yes").size() shouldBe 1
 //      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
 //      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
 //      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
 //    }
 //
@@ -105,7 +105,7 @@ class SubsidiariesSpec extends ViewSpec {
 //      document.select("#subsidiaries-yes").size() shouldBe 1
 //      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
 //      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
 //      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
 //    }
 //
@@ -124,7 +124,7 @@ class SubsidiariesSpec extends ViewSpec {
 //      document.select("#subsidiaries-yes").size() shouldBe 1
 //      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
 //      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
 //      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
 //    }
 //
@@ -145,7 +145,7 @@ class SubsidiariesSpec extends ViewSpec {
 //      document.select("#subsidiaries-yes").size() shouldBe 1
 //      document.getElementById("subsidiaries-yesLabel").text() shouldBe Messages("common.radioYesLabel")
 //      document.getElementById("subsidiaries-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.getElementById("next").text() shouldBe Messages("common.button.continueNextSection")
+//      document.getElementById("next").text() shouldBe Messages("common.button.continue")
 //      document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
 //    }
 //
