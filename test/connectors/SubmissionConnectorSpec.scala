@@ -268,7 +268,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
     lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalNo,newProductNo)
 
-    "return true" in {
+    "return false" in {
       when(mockHttp.GET[Option[Boolean]](Matchers.eq(
         s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductNo"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(false))
