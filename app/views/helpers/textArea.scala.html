@@ -25,15 +25,15 @@
 
 @labelAfter = @{ elements.args.get('_labelAfter).getOrElse(false).asInstanceOf[Boolean] }
 
-<label for="@elements.field.name" class="@elements.args.get('_divClass) @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
+<div class="@elements.args.get('_divClass)  @if(elements.hasErrors || (parentElements.isDefined && parentElements.get.hasErrors)) {form-field--error}">
     @elements.errors.map { error => <span class="error-notification">@Messages(error)</span>}
     @if(parentElements.isDefined) {
     @parentElements.get.errors.map { error => <span class="error-notification">@Messages(error)</span>}
     }
 
-    @if(!labelAfter && elements.args.contains('_label)) { <span id="labelTextId" class="@if( elements.args.get('_labelTextClass) ){ @elements.args.get('_labelTextClass) }">@elements.label</span> }
-    @if( elements.args.get('_info) ) { <p id="infoId" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info)</p> }
-    @if( elements.args.get('_info2) ) { <p id="infoId-2" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info2)</p> }
+    @if(!labelAfter && elements.args.contains('_label)) { <label for="@elements.field.name" @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) } id="labelTextId" class="@if( elements.args.get('_labelTextClass) ){ @elements.args.get('_labelTextClass) }">@elements.label</label> }
+    @if( elements.args.get('_info) ) { <div id="infoId" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info)</div> }
+    @if( elements.args.get('_info2) ) { <div id="infoId-2" class="@if( elements.args.get('_infoTextClass) ){ @elements.args.get('_infoTextClass) }">@elements.args.get('_info2)</div> }
     <textarea
             @if( elements.args.get('_inputClass) ){ class="@elements.args.get('_inputClass)" }
             @if( elements.args.get('_rows) ){ rows="@elements.args.get('_rows)" }
@@ -41,7 +41,7 @@
             @if( elements.args.get('_maxLength) ){ maxLength="@elements.args.get('_maxLength)" }
     name="@elements.field.name"
     id="@elements.field.name">@field.value</textarea>
-    @if(labelAfter && elements.args.contains('_label)) { @elements.label }
+    @if(labelAfter && elements.args.contains('_label)) { <label for="@elements.field.name" @if( elements.args.get('_labelClass) ){ @elements.args.get('_labelClass) }>@elements.label</label> }
     @if(elements.args.contains('_help)) { <small>@elements.infos</small> }
 
-</label>
+</div>

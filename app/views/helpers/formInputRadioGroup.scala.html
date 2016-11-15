@@ -27,7 +27,7 @@
         @if(elements.args.get('_fieldsetAttributes).isDefined) {@elements.args.get('_fieldsetAttributes)}>
         @if(elements.args.get('_legend).isDefined) {
             <legend @if(elements.args.get('_legendClass).isDefined) {class="@elements.args.get('_legendClass)"}
-                    @if(elements.args.get('_legendID).isDefined) {id="@elements.args.get('_legendID)"}>
+                    @if(elements.args.get('_legendID).isDefined) {id="@elements.args.get('_legendID)-legend"}>
                 @elements.args.get('_legend)
             </legend>
         }
