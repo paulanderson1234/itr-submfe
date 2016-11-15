@@ -37,6 +37,7 @@ class NewProductSpec extends ViewSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val submissionConnector = mockSubmissionConnector
   }
 
   def setupMocks(newProductModel: Option[NewProductModel] = None): Unit =

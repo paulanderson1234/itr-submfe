@@ -17,19 +17,20 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{SubmissionConnector, EnrolmentConnector, S4LConnector}
 import forms.NewProductForm._
-import models.{NewProductModel, SubsidiariesModel}
+import models.{NewGeographicalMarketModel, NewProductModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-
+import utils.Transformers._
 import scala.concurrent.Future
 import views.html.investment.NewProduct
 
 object NewProductController extends NewProductController{
   val s4lConnector: S4LConnector = S4LConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,6 +39,7 @@ object NewProductController extends NewProductController{
 trait NewProductController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct).map {
@@ -53,7 +55,23 @@ trait NewProductController extends FrontendController with AuthorisedAndEnrolled
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
-        Future.successful(Redirect(routes.TurnoverCostsController.show()))
+
+        def routeRequest(continue: Option[Boolean]) = {
+          continue match {
+            case Some(bool) if bool => Future.successful(Redirect(routes.TurnoverCostsController.show()))
+            case Some(bool)  => Future.successful(Redirect(routes.TradingForTooLongController.show()))
+            case _ => Future.successful(InternalServerError(internalServerErrorTemplate))
+          }
+        }
+
+        (for{
+          newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+          continue <- submissionConnector.checkMarketCriteria(stringToBoolean(newGeographicalMarket.get.isNewGeographicalMarket),
+            stringToBoolean(validFormData.isNewProduct))
+          route <- routeRequest(continue)
+        } yield route).recover {
+          case _ => InternalServerError(internalServerErrorTemplate)
+        }
       }
     )
   }

@@ -61,6 +61,10 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   val addressModel = AddressModel("line1", "line2",countryCode = "NZ")
   val safeID = "XA000123456789"
+  val newGeographicalYes = true
+  val newGeographicalNo = false
+  val newProductYes = true
+  val newProductNo= false
 
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
@@ -217,6 +221,58 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
         s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/registration/registration-details/safeid/$safeID"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(registrationDetailsModel))
       await(result) shouldBe Some(registrationDetailsModel)
+    }
+
+  }
+
+  "Calling checkMarketCriteria with true and true" should {
+
+    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalYes,newProductYes)
+
+    "return true" in {
+      when(mockHttp.GET[Option[Boolean]](Matchers.eq(
+        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductYes"))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(true))
+      await(result) shouldBe Some(true)
+    }
+
+  }
+
+  "Calling checkMarketCriteria with false and true" should {
+
+    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalNo,newProductYes)
+
+    "return true" in {
+      when(mockHttp.GET[Option[Boolean]](Matchers.eq(
+        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductYes"))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(true))
+      await(result) shouldBe Some(true)
+    }
+
+  }
+
+  "Calling checkMarketCriteria with true and false" should {
+
+    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalYes,newProductNo)
+
+    "return true" in {
+      when(mockHttp.GET[Option[Boolean]](Matchers.eq(
+        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductNo"))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(true))
+      await(result) shouldBe Some(true)
+    }
+
+  }
+
+  "Calling checkMarketCriteria with false and false" should {
+
+    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalNo,newProductNo)
+
+    "return false" in {
+      when(mockHttp.GET[Option[Boolean]](Matchers.eq(
+        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductNo"))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(false))
+      await(result) shouldBe Some(false)
     }
 
   }

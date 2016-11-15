@@ -16,8 +16,6 @@
 
 package connectors
 import config.{FrontendAppConfig, WSHttp}
-import connectors.SubscriptionConnector._
-import models.registration.RegistrationDetailsModel
 import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
@@ -83,6 +81,10 @@ trait SubmissionConnector {
 
   def getRegistrationDetails(safeID: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief/registration/registration-details/safeid/$safeID")
+  }
+
+  def checkMarketCriteria(newGeographical: Boolean, newProduct: Boolean)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/market-criteria/new-geographical/$newGeographical/new-product/$newProduct")
   }
 
 }
