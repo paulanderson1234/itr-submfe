@@ -1,9 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.backButton
-@import views.html.helpers.summary.tableHeaderHelper
-@import views.html.helpers.summary.textRowHelperBasic
-@import views.html.helpers.summary.textRowHelperMultiLine
-@import views.html.helpers.summary.textSubSectionHelper
+@import views.html.helpers.summary._
 @import common.Constants
 @import utils.Transformers
 @import utils.CountriesHelper
@@ -70,10 +67,11 @@
                        @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.routes.PercentageStaffWithMastersController.show().toString))
                         <!--Ten Year Plan-->
                         @if(checkAnswersModel.tenYearPlanModel.isDefined && checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters == Messages("common.radioNoLabel")){
-                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.developmentPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
                             @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan == Messages("common.radioYesLabel")){
-                                <!--Ten Year Plan Desc-->
-                                @textRowHelperBasic("tenYearPlanDesc", Messages("summaryQuestion.developmentPlanDesc"),checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get, Some(controllers.routes.TenYearPlanController.show().toString))
+                            <!--Ten Year Plan Desc-->
+                            @textRowHelperMultiLineQuestion("tenYearPlan", Array(Messages("summaryQuestion.developmentPlan"),Messages("summaryQuestion.developmentPlanDesc")),Array(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan,checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get), Some(controllers.routes.TenYearPlanController.show().toString), Some(true))
+                            }else{
+                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.developmentPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.routes.TenYearPlanController.show().toString))
                             }
                         }
                     }

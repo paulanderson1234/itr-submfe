@@ -255,19 +255,11 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       //Has ten year plan
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-question").text() shouldBe
-        Messages("summaryQuestion.developmentPlan")
+        Messages("summaryQuestion.developmentPlan")++" "++Messages("summaryQuestion.developmentPlanDesc")
 
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-answer").text() shouldBe
-        tenYearPlanModelYes.hasTenYearPlan
+        tenYearPlanModelYes.hasTenYearPlan++" "++tenYearPlanModelYes.tenYearPlanDesc.get
       companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-link")
-        .attr("href") shouldEqual routes.TenYearPlanController.show().url
-      //Ten year plan description
-      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-question").text() shouldBe
-        Messages("summaryQuestion.developmentPlanDesc")
-
-      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-answer").text() shouldBe
-        tenYearPlanModelYes.tenYearPlanDesc.get
-      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlanDesc-link")
         .attr("href") shouldEqual routes.TenYearPlanController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
