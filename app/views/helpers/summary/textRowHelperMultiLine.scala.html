@@ -2,7 +2,7 @@
 
 <tr>
     <td id="@{rowId}-question" class="summaryQuestion">@question</td>
-    <td id="@{rowId}-answer" class="summaryAnswerMultiLine">
+    <td id="@{rowId}-answer" class="summaryMultiLine">
 
         @for((line, index) <- answerLines.zipWithIndex) {
             <span id="@{rowId}-Line@{index}">@line</span>
