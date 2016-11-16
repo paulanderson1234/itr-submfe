@@ -52,7 +52,7 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
     document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
     document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
     document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
@@ -75,7 +75,7 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
     }
     document.body.getElementById("back-link").attr("href") shouldEqual routes.CommercialSaleController.show().url
     document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
     document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
     document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
     document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
