@@ -14,7 +14,7 @@
 
     @form(action = controllers.routes.DateOfIncorporationController.submit()) {
 
-        @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some("page.companyDetails.DateOfIncorporation.heading"),
+        @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some(Messages("page.companyDetails.DateOfIncorporation.heading")),
           true, Some(Messages("date.hint.dateOfIncorporation")), None)
 
         <details>
