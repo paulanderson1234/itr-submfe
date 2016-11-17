@@ -30,7 +30,6 @@ import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import common.Constants._
 import scala.concurrent.Future
-import utils.Transformers._
 
 class LifetimeAllowanceExceededSpec extends ViewSpec {
 

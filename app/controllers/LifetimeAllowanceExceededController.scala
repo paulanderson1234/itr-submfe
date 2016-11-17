@@ -21,10 +21,8 @@ import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import forms.ProposedInvestmentForm._
-import models.{KiProcessingModel, ProposedInvestmentModel}
+import models.KiProcessingModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.investment.ProposedInvestment
 
 import scala.concurrent.Future
 

@@ -1,5 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.{backButton}
+@import common.Constants._
 
 @(kiModel : KiProcessingModel)(implicit request: Request[_])
 
@@ -18,9 +19,9 @@
         <div class="form-group">
             <span id="lifetimeExceedReason">@Messages("page.investment.LifetimeAllowanceExceeded.reason1")
                 @if(kiModel.isKi){
-                    £20
+                    @lifetimeLogicLimitKiToString
                 }else{
-                    £12
+                    @lifetimeLogicLimitNotKiToString
                 }
                 @Messages("page.investment.LifetimeAllowanceExceeded.reason2")</span>
         </div>
