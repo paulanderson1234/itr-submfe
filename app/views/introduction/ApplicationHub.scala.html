@@ -9,7 +9,7 @@
 @(applicationHubModel: ApplicationHubModel, partial: Html)(implicit request: Request[_])
 
 @sidebar = {
-    <h4 class="heading-small" id="organisation-name"> @applicationHubModel.organisationName</h4>
+    <h2 class="heading-small" id="organisation-name"> @applicationHubModel.organisationName</h2>
     <div class = "form-group">
         @multiLineHelper("address", Transformers.addressModelToFlattenedArray(applicationHubModel.registeredAddress.copy(countryCode = CountriesHelper.getSelectedCountry(applicationHubModel.registeredAddress.countryCode))))
     </div>
