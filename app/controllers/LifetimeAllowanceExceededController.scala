@@ -17,9 +17,14 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
+import common.KeystoreKeys
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import forms.ProposedInvestmentForm._
+import models.{KiProcessingModel, ProposedInvestmentModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.investment.ProposedInvestment
 
 import scala.concurrent.Future
 
@@ -35,7 +40,10 @@ trait LifetimeAllowanceExceededController extends FrontendController with Author
   val s4lConnector: S4LConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.investment.LifetimeAllowanceExceeded()))
+    s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+      case Some(data) => Ok(views.html.investment.LifetimeAllowanceExceeded(data))
+      case None => InternalServerError(internalServerErrorTemplate)
+    }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>

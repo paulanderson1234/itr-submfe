@@ -17,13 +17,20 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{LifetimeAllowanceExceededController, routes}
+import models.KiProcessingModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
+import common.Constants._
+import scala.concurrent.Future
+import utils.Transformers._
 
 class LifetimeAllowanceExceededSpec extends ViewSpec {
 
@@ -37,17 +44,41 @@ class LifetimeAllowanceExceededSpec extends ViewSpec {
 
   "The Lifetime Allowance Exceeded notification page" should {
 
-    "Verify that the Lifetime Allowance notification page contains the correct elements" in new Setup {
+    "Verify that the Lifetime Allowance notification page contains the correct elements and Display an error message for £20 million if knowledge intensive is true" in new Setup {
       val document: Document = {
+        when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel]
+          (Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+          .thenReturn(Future.successful(Some(kiProcessingModelIsKi)))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
-      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason")
+      document.getElementById("lifetimeExceedReason").text() shouldBe (Messages("page.investment.LifetimeAllowanceExceeded.reason1")+" " +lifetimeLogicLimitKiToString +" " +Messages("page.investment.LifetimeAllowanceExceeded.reason2"))
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+
+    }
+  }
+
+
+  "The Lifetime Allowance Exceeded notification page" should {
+
+    "Verify that the Lifetime Allowance notification page contains the correct elements and Display an error message for £12 million if knowledge intensive is false" in new Setup {
+      val document: Document = {
+        when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel]
+          (Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+          .thenReturn(Future.successful(Some(kiProcessingModelNotMet)))
+        val result = TestController.show.apply(authorisedFakeRequest)
+        Jsoup.parse(contentAsString(result))
+      }
+      document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
+      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason1") +" "+ lifetimeLogicLimitNotKiToString +" "+ Messages("page.investment.LifetimeAllowanceExceeded.reason2")
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
+      document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
+      document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
 
     }
   }
