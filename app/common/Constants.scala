@@ -36,8 +36,11 @@ trait Constants {
   val KI10Percent : Int = 10
   val KI15Percent : Int = 15
 
+
   val lifetimeLogicLimitKi : Int = 20000000
   val lifetimeLogicLimitNotKi : Int = 12000000
+  val lifetimeLogicLimitKiToString : String = "£20"
+  val lifetimeLogicLimitNotKiToString : String = "£12"
 
   val schemeTypeEis = "EIS"
   val schemeTypeSeis = "SEIS"

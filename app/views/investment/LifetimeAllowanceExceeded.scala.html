@@ -1,7 +1,8 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.{backButton}
+@import common.Constants._
 
-@()(implicit request: Request[_])
+@(kiModel : KiProcessingModel)(implicit request: Request[_])
 
 @import config.FrontendAppConfig
 
@@ -16,7 +17,14 @@
         </div>
 
         <div class="form-group">
-            <span id="lifetimeExceedReason">@Messages("page.investment.LifetimeAllowanceExceeded.reason")</span>
+            <span id="lifetimeExceedReason">
+                @if(kiModel.isKi){
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
+                }else{
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitNotKiToString)
+                }
+
+            </span>
         </div>
 
         <div>
@@ -25,3 +33,4 @@
     </div>
 </div>
 }
+

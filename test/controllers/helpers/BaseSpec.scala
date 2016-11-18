@@ -78,6 +78,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val kiProcessingModelMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
   val kiProcessingModelNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
 
+  val kiProcessingModelIsKi = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
+
   val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
   val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
   val isKiKIModel = KiProcessingModel(Some(false), Some(true), Some(true), Some(true), Some(true), Some(true))

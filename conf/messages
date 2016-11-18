@@ -520,7 +520,7 @@ page.checkAndSubmit.acknowledgement.button.confirm=Finish
 #lifetime allowance exceeded page
 page.investment.LifetimeAllowanceExceeded.title=You don''t qualify for the scheme
 page.investment.LifetimeAllowanceExceeded.heading=You don''t qualify for the scheme
-page.investment.LifetimeAllowanceExceeded.reason=You''ve already raised more than £12 million from tax relief investment schemes.
+page.investment.LifetimeAllowanceExceeded.reason=You''ve already raised more than {0} million from tax relief investment schemes.
 page.investment.LifetimeAllowanceExceeded.link=Back to investment schemes
 
 #review previous schemes

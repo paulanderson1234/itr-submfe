@@ -19,10 +19,16 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
+import models.KiProcessingModel
+import org.mockito.Matchers
+import org.mockito.Mockito._
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
 
@@ -48,6 +54,9 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "return a 200" in {
       mockEnrolledRequest()
+      when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel]
+        (Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(Future.successful(Some(kiProcessingModelNotMet)))
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
