@@ -24,7 +24,7 @@ object MockConfig extends AppConfig {
   override val reportAProblemPartialUrl: String = ""
   override val reportAProblemNonJSUrl: String = ""
   override val notAuthorisedRedirectUrl: String = "/investment-tax-relief/not-authorised"
-  override val contactFrontendPartialBaseUrl: String = ""
+  override val contactFrontendService: String = "/contact"
   override val contactFormServiceIdentifier: String = ""
   override val ggSignInUrl: String = "/gg/sign-in"
   override val introductionUrl: String = "http://localhost:9635/investment-tax-relief/hub"
