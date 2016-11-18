@@ -17,13 +17,14 @@
         </div>
 
         <div class="form-group">
-            <span id="lifetimeExceedReason">@Messages("page.investment.LifetimeAllowanceExceeded.reason1")
+            <span id="lifetimeExceedReason">
                 @if(kiModel.isKi){
-                    @lifetimeLogicLimitKiToString
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
                 }else{
-                    @lifetimeLogicLimitNotKiToString
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitNotKiToString)
                 }
-                @Messages("page.investment.LifetimeAllowanceExceeded.reason2")</span>
+
+            </span>
         </div>
 
         <div>

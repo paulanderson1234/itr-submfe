@@ -53,7 +53,7 @@ class LifetimeAllowanceExceededSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
-      document.getElementById("lifetimeExceedReason").text() shouldBe (Messages("page.investment.LifetimeAllowanceExceeded.reason1")+" " +lifetimeLogicLimitKiToString +" " +Messages("page.investment.LifetimeAllowanceExceeded.reason2"))
+      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
@@ -74,7 +74,7 @@ class LifetimeAllowanceExceededSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
-      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason1") +" "+ lifetimeLogicLimitNotKiToString +" "+ Messages("page.investment.LifetimeAllowanceExceeded.reason2")
+      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitNotKiToString)
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
