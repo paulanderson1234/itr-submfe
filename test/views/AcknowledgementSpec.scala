@@ -42,29 +42,30 @@ class AcknowledgementSpec extends ViewSpec {
       document.body.getElementById("ref-number").text() shouldBe submissionResponse.formBundleNumber
       //legal text
       document.body.getElementById("legal-not-complete").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.application.not.complete")
-      //'what to do next' section
-      document.body.getElementById("what-next").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.toDoNext")
-      document.body.getElementById("prior-to-review").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.priorToReview")
+
       //supporting docs
-      document.body.getElementById("remember-to-include").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.remember")
-      document.body.getElementById("business-plan").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
-      document.body.getElementById("company-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
-      document.body.getElementById("shareholder-agree").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
-      document.body.getElementById("memorandum-articles").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
-      document.body.getElementById("prospectus-docs").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
+      document.body.getElementById("supporting-docs").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.supporting.docs.heading")
+      document.body.getElementById("remember-to-include").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.review")
+      document.body.getElementById("business-plan").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.doc.one")
+      document.body.getElementById("company-accounts").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.doc.two")
+      document.body.getElementById("shareholder-agree").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.doc.three")
+      document.body.getElementById("memorandum-articles").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.doc.four")
+      document.body.getElementById("prospectus-docs").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.doc.five")
       //email to
-      document.body.getElementById("email-to").text() shouldBe getExternalEmailText(Messages("page.checkAndSubmit.acknowledgement.emailTo"))
+      document.body.getElementById("email-docs").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.email.docs.heading")
+      document.body.getElementById("email-to").getElementById("email-docs-to").text() shouldEqual (Messages("page.checkAndSubmit.acknowledgement.emailTo"))
       document.body.getElementById("email-to").getElementById("email-to-ref").attr("href") shouldEqual "mailto:enterprise.centre@hmrc.gsi.gov.uk"
+      //document.body.getElementById("email-docs-include").text() shouldBe getExternalEmailText(Messages("page.checkAndSubmit.acknowledgement.email.include"))
+      document.body.getElementById("email-name").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.email.one")
+      document.body.getElementById("email-utr").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.email.two")
+      document.body.getElementById("email-whitelister").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.email.three")
 
-
-      //hmrc address
-      document.body.getElementById("alternative").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.alternative")
-      document.body.getElementById("hmrc-address").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.hmrc") ++
-        " " ++ Messages("page.checkAndSubmit.acknowledgement.hmrc.address1") ++ " " ++ Messages("page.checkAndSubmit.acknowledgement.hmrc.address2") ++
-        " " ++ Messages("page.checkAndSubmit.acknowledgement.hmrc.address3") ++ " " ++ Messages("page.checkAndSubmit.acknowledgement.hmrc.postcode")
+      //post to
+      document.body.getElementById("post-docs").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.post.docs.heading")
+      document.body.getElementById("post-to").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.post.to")
 
       //waiting times
-      document.body.getElementById("waiting-time").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.waitingTime")
+      document.body.getElementById("waiting-time").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.waitingTime.heading")
       document.body.getElementById("course-of-action").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.courseOfAction")
 
       //get help
