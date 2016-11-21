@@ -30,7 +30,7 @@ trait AppConfig {
   val introductionUrl: String
   val subscriptionUrl: String
   val contactFormServiceIdentifier: String
-  val contactFrontendPartialBaseUrl: String
+  val contactFrontendService: String
   val signOutPageUrl: String
   val submissionUrl: String
 }
@@ -48,10 +48,9 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val subscriptionUrl: String = loadConfig("investment-tax-relief-subscription.url")
   override lazy val signOutPageUrl: String = configuration.getString(s"sign-out-page.url").getOrElse("")
 
-  private val contactFrontendService = baseUrl("contact-frontend")
+  override lazy val contactFrontendService = loadConfig("contact-frontend.url")
   override val contactFormServiceIdentifier = "TAVC"
-  override lazy val contactFrontendPartialBaseUrl = s"$contactFrontendService"
-  override lazy val reportAProblemPartialUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_ajax?service=$contactFormServiceIdentifier"
-  override lazy val reportAProblemNonJSUrl = s"$contactFrontendPartialBaseUrl/contact/problem_reports_nonjs?service=$contactFormServiceIdentifier"
+  override lazy val reportAProblemPartialUrl = s"$contactFrontendService/problem_reports_ajax?service=$contactFormServiceIdentifier"
+  override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
 }

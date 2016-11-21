@@ -68,12 +68,12 @@ trait FeedbackController extends FrontendController with Actions {
 
   private val TICKET_ID = "ticketId"
   private def feedbackFormPartialUrl(implicit request: Request[AnyContent]) =
-    s"${applicationConfig.contactFrontendPartialBaseUrl}/contact/beta-feedback/form/?submitUrl=${urlEncode(localSubmitUrl)}" +
+    s"${applicationConfig.contactFrontendService}/beta-feedback/form/?submitUrl=${urlEncode(localSubmitUrl)}" +
       s"&service=${urlEncode(applicationConfig.contactFormServiceIdentifier)}&referer=${urlEncode(contactFormReferer)}"
   private def feedbackHmrcSubmitPartialUrl(implicit request: Request[AnyContent]) =
-    s"${applicationConfig.contactFrontendPartialBaseUrl}/contact/beta-feedback/form?resubmitUrl=${urlEncode(localSubmitUrl)}"
+    s"${applicationConfig.contactFrontendService}/beta-feedback/form?resubmitUrl=${urlEncode(localSubmitUrl)}"
   private def feedbackThankYouPartialUrl(ticketId: String)(implicit request: Request[AnyContent]) =
-    s"${applicationConfig.contactFrontendPartialBaseUrl}/contact/beta-feedback/form/confirmation?ticketId=${urlEncode(ticketId)}"
+    s"${applicationConfig.contactFrontendService}/beta-feedback/form/confirmation?ticketId=${urlEncode(ticketId)}"
 
   def show: Action[AnyContent] = UnauthorisedAction {
     implicit request =>
