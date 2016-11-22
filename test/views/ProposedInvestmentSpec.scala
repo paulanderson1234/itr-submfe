@@ -65,7 +65,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TenYearPlanController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
@@ -83,7 +83,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
@@ -102,7 +102,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("label-amount-hint").text() shouldBe Messages("page.investment.amount.hint")
       document.getElementById("help").text() shouldBe Messages("page.investment.help.link")
       document.getElementById("help-text").text() shouldBe Messages("page.investment.help.link.text")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ReviewPreviousSchemesController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

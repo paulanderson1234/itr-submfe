@@ -61,7 +61,7 @@ class PercentageStaffWithMastersSpec extends ViewSpec {
     document.getElementById("staffWithMasters-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     document.getElementById("yes-hint").text() shouldBe Messages("page.percentageStaffWithMasters.yes.hint")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that PercentageStaffWithMasters page contains the correct elements when an empty model " +
@@ -80,7 +80,7 @@ class PercentageStaffWithMastersSpec extends ViewSpec {
     document.getElementById("staffWithMasters-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("staffWithMasters-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
 

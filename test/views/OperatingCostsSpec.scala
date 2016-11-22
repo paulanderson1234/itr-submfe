@@ -63,7 +63,7 @@ class OperatingCostsSpec extends ViewSpec {
     document.getElementById("row-heading-one").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.one")
     document.getElementById("row-heading-two").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.two")
     document.getElementById("row-heading-three").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
 
   }
 
@@ -86,7 +86,7 @@ class OperatingCostsSpec extends ViewSpec {
     document.getElementById("row-heading-one").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.one")
     document.getElementById("row-heading-two").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.two")
     document.getElementById("row-heading-three").text() shouldBe Messages("page.companyDetails.OperatingCosts.row.heading.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that IsKnowledgeIntensive page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {

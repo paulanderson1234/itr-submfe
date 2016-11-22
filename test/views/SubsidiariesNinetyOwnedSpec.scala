@@ -55,7 +55,7 @@ class SubsidiariesNinetyOwnedSpec extends ViewSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.heading")
       document.getElementById("text-one-id").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.error.one")
       document.getElementById("text-two-id").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.error.two")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
@@ -70,7 +70,7 @@ class SubsidiariesNinetyOwnedSpec extends ViewSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.heading")
       document.getElementById("text-one-id").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.error.one")
       document.getElementById("text-two-id").text() shouldBe Messages("page.investment.SubsidiariesNinetyOwned.error.two")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

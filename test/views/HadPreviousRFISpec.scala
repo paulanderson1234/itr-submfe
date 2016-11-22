@@ -66,7 +66,7 @@ class HadPreviousRFISpec extends ViewSpec {
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that hadPreviousRFI page contains the correct elements when an empty model " +
@@ -85,7 +85,7 @@ class HadPreviousRFISpec extends ViewSpec {
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {

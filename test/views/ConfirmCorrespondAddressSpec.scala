@@ -75,7 +75,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
       }
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual "backLink"
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")
@@ -103,7 +103,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
       }
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual "backLink"
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")
@@ -137,7 +137,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
       }
       document.title() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ConfirmCorrespondAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual "backLink"
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
       document.body.getElementById("contactAddressUse-yesLabel").text shouldBe  Messages("common.radioYesLabel")

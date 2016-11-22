@@ -64,7 +64,7 @@ class NewGeographicalMarketSpec extends ViewSpec {
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     document.body.getElementById("external-hint").text shouldBe
       s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "The NewGeographicalMarket Page" +
@@ -83,7 +83,7 @@ class NewGeographicalMarketSpec extends ViewSpec {
     document.getElementById("isNewGeographicalMarket-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("external-hint").text shouldBe
       s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "The NewGeographicalMarket Page" +
@@ -103,7 +103,7 @@ class NewGeographicalMarketSpec extends ViewSpec {
     document.body.getElementById("external-hint").text shouldBe
       s"${Messages("page.investment.NewGeographicalMarket.hint")} ${Messages("page.investment.NewGeographicalMarket.hint.link")} opens in a new window"
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that NewGeographicalMarket page contains error summary when no model is submitted" in new Setup {

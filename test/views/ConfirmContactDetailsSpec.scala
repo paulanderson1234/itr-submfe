@@ -60,7 +60,7 @@ class ConfirmContactDetailsSpec extends ViewSpec with WithFakeApplication{
     }
 
     "have a continue button" in {
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
     "have radio options" which {

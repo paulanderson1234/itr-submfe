@@ -63,7 +63,7 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isKnowledgeIntensive-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that isKnowledgeIntensive page contains the correct elements when an empty model " +
@@ -86,7 +86,7 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isKnowledgeIntensive-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that IsKnowledgeIntensive page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {

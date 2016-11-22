@@ -68,7 +68,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -89,7 +89,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.PreviousBeforeDOFCSController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -110,7 +110,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.NewProductController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -131,7 +131,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesSpendingInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -153,7 +153,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SubsidiariesNinetyOwnedController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -180,7 +180,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-product-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.productMarket")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -206,7 +206,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-geographical-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -232,7 +232,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-product-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.productMarket")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -255,7 +255,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -277,7 +277,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
@@ -298,7 +298,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-two").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.two")
       document.getElementById("bullet-three").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.three")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("investmentGrowDesc").hasClass("form-control")
