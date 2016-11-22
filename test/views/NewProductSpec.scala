@@ -60,7 +60,7 @@ class NewProductSpec extends ViewSpec {
     document.getElementById("isNewProduct-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("external-hint").text shouldBe
       s"${Messages("page.investment.NewProduct.hint")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that NewProduct page contains the correct elements when an empty model " +
@@ -79,7 +79,7 @@ class NewProductSpec extends ViewSpec {
     document.getElementById("isNewProduct-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("external-hint").text shouldBe
       s"${Messages("page.investment.NewProduct.hint")} ${Messages("page.investment.NewProduct.hint.link")} opens in a new window"
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that NewProduct page contains error summary when invalid model is submitted" in new Setup {

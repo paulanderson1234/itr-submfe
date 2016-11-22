@@ -58,7 +58,7 @@ class ContactDetailsSpec extends ViewSpec {
       document.getElementById("label-telephoneNumber").text() shouldBe Messages("page.contactInformation.contactDetails.phoneNumber.label")
       document.getElementById("label-mobileNumber").text() shouldBe Messages("page.contactInformation.contactDetails.mobileNumber.label")
       document.getElementById("label-email").text() shouldBe Messages("page.contactInformation.contactDetails.email.label")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmContactDetailsController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
     }
@@ -76,7 +76,7 @@ class ContactDetailsSpec extends ViewSpec {
       document.getElementById("label-telephoneNumber").text() contains Messages("page.contactInformation.contactDetails.phoneNumber.label")
       document.getElementById("label-mobileNumber").text() shouldBe Messages("page.contactInformation.contactDetails.mobileNumber.label")
       document.getElementById("label-email").text() contains Messages("page.contactInformation.contactDetails.email.label")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmContactDetailsController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

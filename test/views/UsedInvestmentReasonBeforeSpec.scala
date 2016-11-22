@@ -58,7 +58,7 @@ class UsedInvestmentReasonBeforeSpec extends ViewSpec {
     document.getElementById("usedInvestmentReasonBefore-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("usedInvestmentReasonBefore-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that UsedInvestmentReasonBefore page contains the correct elements when an empty model " +
@@ -76,7 +76,7 @@ class UsedInvestmentReasonBeforeSpec extends ViewSpec {
     document.getElementById("usedInvestmentReasonBefore-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("usedInvestmentReasonBefore-noLabel").text() shouldBe Messages("common.radioNoLabel")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that UsedInvestmentReasonBefore page contains error summary when invalid model is submitted" in new Setup {

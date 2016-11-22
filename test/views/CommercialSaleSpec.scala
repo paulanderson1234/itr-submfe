@@ -64,7 +64,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
 
@@ -84,7 +84,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
     "Verify that the commercial sale page contains the correct elements when an invalid CommercialSaleModel is passed" in new Setup {
@@ -103,7 +103,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
@@ -123,7 +123,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 

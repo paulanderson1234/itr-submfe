@@ -82,7 +82,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
     document.getElementById("previousBeforeDOFCS-legend").select(".visuallyhidden").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that the previousBeforeDOFCS page contains the correct elements " +
@@ -106,7 +106,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
     document.getElementById("previousBeforeDOFCS-legend").select(".visuallyhidden").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that previousBeforeDOFCS page contains the correct elements when an empty model " +
@@ -130,7 +130,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
     document.getElementById("previousBeforeDOFCS-legend").select(".visuallyhidden").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that previousBeforeDOFCS page contains the correct elements when an empty model " +
@@ -154,7 +154,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
     document.getElementById("previousBeforeDOFCS-legend").select(".visuallyhidden").text() shouldBe
       Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,secondDate(Constants.IsNotKnowledgeIntensiveYears))
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that PreviousBeforeDOFCS page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {

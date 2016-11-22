@@ -65,7 +65,7 @@ class ContactAddressSpec extends ViewSpec {
 
       document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("addressline1").`val`() shouldBe contactAddressModel.addressline1
@@ -86,7 +86,7 @@ class ContactAddressSpec extends ViewSpec {
 
       document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
@@ -104,7 +104,7 @@ class ContactAddressSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.contactInformation.ProvideContactAddress.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.ProvideContactAddress.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.four")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")

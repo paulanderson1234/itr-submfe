@@ -68,7 +68,7 @@ class TurnoverCostsSpec extends ViewSpec {
     document.getElementById("row-heading-three").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.three")
     document.getElementById("row-heading-four").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.four")
     document.getElementById("row-heading-five").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.five")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
 
   }
 
@@ -96,7 +96,7 @@ class TurnoverCostsSpec extends ViewSpec {
     document.getElementById("row-heading-three").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.three")
     document.getElementById("row-heading-four").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.four")
     document.getElementById("row-heading-five").text() shouldBe Messages("page.companyDetails.TurnoverCosts.row.heading.five")
-    document.getElementById("next").text() shouldBe Messages("common.button.continue")
+    document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
   "Verify that TurnoverCosts page contains show the error summary when an invalid model (no data) is submitted" in new Setup {
