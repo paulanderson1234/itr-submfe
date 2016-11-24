@@ -16,30 +16,26 @@
 
 package controllers.feedback
 
-import auth.MockConfig
-import config.AppConfig
+import auth.{MockAuthConnector, MockConfig}
+import controllers.helpers.ControllerSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import org.scalatest.mock.MockitoSugar
 import play.api.http.Status
 import play.api.mvc.{AnyContent, Request, RequestHeader}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
-import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.http.{HttpGet, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever, HtmlPartial}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 import scala.concurrent.Future
 
-class FeedbackControllerSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
-  val fakeRequest = FakeRequest("GET", "/")
+class FeedbackControllerSpec extends ControllerSpec {
 
   val mockHttp = mock[WSHttp]
 
-  val target = new FeedbackController {
+  object TestController extends FeedbackController {
     override implicit val cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever = new CachedStaticHtmlPartialRetriever {
       override def httpGet: HttpGet = ???
 
@@ -54,68 +50,69 @@ class FeedbackControllerSpec extends UnitSpec with MockitoSugar with WithFakeApp
       override def getPartialContent(url: String, templateParameters: Map[String, String], errorMessage: Html)(implicit request: RequestHeader): Html = Html("")
     }
 
-    protected def authConnector: AuthConnector = ???
-
     protected def loadPartial(url: String)(implicit request: RequestHeader): HtmlPartial = ???
-
     override def httpPost: HttpPost = mockHttp
-
     override def localSubmitUrl(implicit request: Request[AnyContent]): String = ""
-
     override def contactFormReferer(implicit request: Request[AnyContent]): String = request.headers.get(REFERER).getOrElse("")
 
-    override val applicationConfig = MockConfig
+    override lazy val applicationConfig = MockConfig
+    override lazy val authConnector = MockAuthConnector
+    override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+
+  def setupMocks(status: Int = Status.OK, response: Option[String] = None): Unit =
+    when(mockHttp.POSTForm[HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(HttpResponse(status, responseString = response)))
 
   "GET /feedback" should {
     "return feedback page" in {
-      val result = target.show(fakeRequest)
-      status(result) shouldBe Status.OK
-    }
-
-    "capture the referer in the session on initial session on the feedback load" in {
-      val result = target.show(fakeRequest.withHeaders("Referer" -> "Blah"))
-      status(result) shouldBe Status.OK
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
+        result => status(result) shouldBe Status.OK
+      )
     }
   }
 
   "POST /feedback" should {
-    val fakePostRequest = FakeRequest("POST", "/calculate-your-capital-gains/feedback").withFormUrlEncodedBody("test" -> "test")
     "return form with thank you for valid selections" in {
-      when(mockHttp.POSTForm[HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
-
-      val result = target.submit(fakePostRequest)
-      redirectLocation(result) shouldBe Some(routes.FeedbackController.thankyou().url)
+      setupMocks(response = Some("1234"))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
+        result => redirectLocation(result) shouldBe Some(routes.FeedbackController.thankyou().url)
+      )
     }
 
     "return form with errors for invalid selections" in {
-      when(mockHttp.POSTForm[HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.BAD_REQUEST, responseString = Some("<p>:^(</p>"))))
-      val result = target.submit(fakePostRequest)
-      status(result) shouldBe Status.BAD_REQUEST
+      setupMocks(Status.BAD_REQUEST, Some("<p>:^(</p>"))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
+        result => status(result) shouldBe Status.BAD_REQUEST
+      )
     }
 
     "return error for other http code back from contact-frontend" in {
-      when(mockHttp.POSTForm[HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(
-        Future.successful(HttpResponse(418))) // 418 - I'm a teapot
-      val result = target.submit(fakePostRequest)
-      status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      setupMocks(FORBIDDEN)
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
+        result => status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      )
     }
 
     "return internal server error when there is an empty form" in {
-      when(mockHttp.POSTForm[HttpResponse](Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(
-        Future.successful(HttpResponse(Status.OK, responseString = Some("1234"))))
-
-      val result = target.submit(fakeRequest)
-      status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      setupMocks(response = Some("1234"))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.submit)(
+        result => status(result) shouldBe Status.INTERNAL_SERVER_ERROR
+      )
     }
   }
 
   "GET /feedback/thankyou" should {
     "should return the thank you page" in {
-      val result = target.thankyou(fakeRequest)
-      status(result) shouldBe Status.OK
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.thankyou)(
+        result => status(result) shouldBe Status.OK
+      )
     }
   }
 }
