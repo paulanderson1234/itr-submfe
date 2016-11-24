@@ -201,11 +201,11 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonYesValue,
-        "contactDetails.forename" -> "Hank",
-        "contactDetails.surname" -> "The Tank",
-        "contactDetails.telephoneNumber" -> "01234 567890",
-        "contactDetails.mobileNumber" -> "01234 567890",
-        "contactDetails.email" -> "thisiavalidemail@valid.com")
+        "contactDetails.forename" -> "first",
+        "contactDetails.surname" -> "last",
+        "contactDetails.telephoneNumber" -> "07000 111222",
+        "contactDetails.mobileNumber" -> "07000 111222",
+        "contactDetails.email" -> "test@test.com")
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -220,11 +220,11 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonNoValue,
-        "contactDetails.forename" -> "Hank",
-        "contactDetails.surname" -> "The Tank",
-        "contactDetails.telephoneNumber" -> "01234 567890",
-        "contactDetails.mobileNumber" -> "01234 567890",
-        "contactDetails.email" -> "thisiavalidemail@valid.com")
+        "contactDetails.forename" -> "first",
+        "contactDetails.surname" -> "last",
+        "contactDetails.telephoneNumber" -> "07000 111222",
+        "contactDetails.mobileNumber" -> "07000 111222",
+        "contactDetails.email" -> "test@test.com")
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -240,11 +240,11 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val formInput = Seq(
         "contactDetailsUse" -> "",
-        "contactDetails.forename" -> "Hank",
-        "contactDetails.surname" -> "The Tank",
-        "contactDetails.telephoneNumber" -> "01234 567890",
-        "contactDetails.mobileNumber" -> "01234 567890",
-        "contactDetails.email" -> "thisiavalidemail@valid.com")
+        "contactDetails.forename" -> "first",
+        "contactDetails.surname" -> "last",
+        "contactDetails.telephoneNumber" -> "07000 111222",
+        "contactDetails.mobileNumber" -> "07000 111222",
+        "contactDetails.email" -> "test@test.com")
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST

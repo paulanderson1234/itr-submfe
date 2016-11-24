@@ -70,14 +70,14 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       |        "safeId": "XA0000000012345",
       |        "correspondenceDetails": {
       |            "contactName": {
-      |                "name1": "John",
-      |                "name2": "Brown"
+      |                "first": "first",
+      |                "last": "last"
       |            },
       |            "contactDetails": {
       |                "phoneNumber": "0000 10000",
       |                "mobileNumber": "0000 2000",
       |                "faxNumber": "0000 30000",
-      |                "emailAddress": "john.smith@noplace.atall.com"
+      |                "emailAddress": "test@test.com"
       |            },
       |            "contactAddress": {
       |                "addressLine1": "12 some street",

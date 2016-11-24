@@ -225,7 +225,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
         "address.addressline2" -> "Line 2",
         "address.addressline3" -> "Line 3",
         "address.addressline4" -> "line 4",
-        "address.postcode" -> "TF1 3NY",
+        "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB")
 
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
@@ -246,7 +246,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
         "address.addressline2" -> "Line 2",
         "address.addressline3" -> "Line 3",
         "address.addressline4" -> "line 4",
-        "address.postcode" -> "TF1 3NY",
+        "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB")
 
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
@@ -268,7 +268,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
         "address.addressline2" -> "Line 2",
         "address.addressline3" -> "Line 3",
         "address.addressline4" -> "line 4",
-        "address.postcode" -> "TF1 3NY",
+        "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB")
        submitWithSessionAndAuth(TestController.submit, formInput:_*)(
           result => {

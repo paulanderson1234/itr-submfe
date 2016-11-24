@@ -29,8 +29,8 @@ class ContactAddressSpec extends ViewSpec {
 
   val emptyAddressModel = new AddressModel("", "", countryCode = "")
 
-  lazy val form = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
-    "addressline2" -> "Mt. Akina",
+  lazy val form = contactAddressForm.bind(Map("addressline1" -> "ABC XYZ",
+    "addressline2" -> "1 ABCDE Street",
     "addressline3" -> "",
     "addressline4" -> "",
     "postcode" -> "",
@@ -43,8 +43,8 @@ class ContactAddressSpec extends ViewSpec {
     "postcode" -> "",
     "countryCode" -> ""))
 
-  lazy val errorForm = contactAddressForm.bind(Map("addressline1" -> "Akina Speed Stars",
-    "addressline2" -> "Mt. Akina",
+  lazy val errorForm = contactAddressForm.bind(Map("addressline1" -> "ABC XYZ",
+    "addressline2" -> "1 ABCDE Street",
     "addressline3" -> "",
     "addressline4" -> "",
     "postcode" -> "",

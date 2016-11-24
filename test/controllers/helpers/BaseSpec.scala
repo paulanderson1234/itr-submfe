@@ -41,10 +41,10 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     reset(mockSubmissionConnector)
   }
 
-  val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", Some("Telford Central"),Some("Shropshire"),
-    Some("tf4 2ls"),"GB"), ContactDetailsModel("Joe","Bloggs",Some("0123324234234"),Some("4567324234324"),"test@gmail.com"))
-  val applicationHubModelMin = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", None,None,None,"GB"),
-    ContactDetailsModel("Joe","Bloggs",None,None,"test@gmail.com"))
+  val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
+    Some("tf4 2ls"),"GB"), ContactDetailsModel("Firstname","Lastname",Some("0123324234234"),Some("4567324234324"),"test@test.com"))
+  val applicationHubModelMin = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", None,None,None,"GB"),
+    ContactDetailsModel("Firstname","Lastname",None,None,"test@test.com"))
 
   val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
   val subscriptionDetailsModel = SubscriptionDetailsModel("",contactDetailsModel,contactAddressModel)
@@ -53,7 +53,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val contactDetailsOneNumberModel = ContactDetailsModel("Test", "Name", None, Some("0872552488"), "test@test.com")
   val confirmContactDetailsModel = ConfirmContactDetailsModel(Constants.StandardRadioButtonYesValue, contactDetailsModel)
 
-  val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
+  val contactAddressModel = new AddressModel("ABC XYZ", "1 ABCDE Street", countryCode = "JP")
   
   val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
     "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
