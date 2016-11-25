@@ -118,8 +118,8 @@ val subsidiaryPerformingTradeWithAddress = SubsidiaryPerformingTradeModel(ninety
 
       // check some properties on the new structure that does not exist on the source to see if it mapped
       targetSubmissionModel.acknowledgementReference shouldBe Some("AARN1234567")
-      targetSubmissionModel.submissionType.correspondenceDetails.contactName.first shouldBe "Fred"
-      targetSubmissionModel.submissionType.correspondenceDetails.contactName.last shouldBe "Flinsstone"
+      targetSubmissionModel.submissionType.correspondenceDetails.contactName.name1 shouldBe "Fred"
+      targetSubmissionModel.submissionType.correspondenceDetails.contactName.name2 shouldBe "Flinsstone"
 
       // write as unapply
       val targetJson = Json.toJson(targetSubmissionModel)

@@ -32,8 +32,8 @@ case class ProposedAmount (
 )
 
 case class SubmitDesContactName(
-                              first: String,
-                              last: String
+                              name1: String,
+                              name2: String
                             )
 
 case class SubmitDesMarketInfo(
