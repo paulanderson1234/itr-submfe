@@ -27,8 +27,8 @@ import uk.gov.hmrc.play.test.WithFakeApplication
 
 class ConfirmContactDetailsSpec extends ViewSpec with WithFakeApplication{
 
-  val contactDetailsNoMobile =  ContactDetailsModel("Firstname","Lastname",Some("01234 555666"), None, "Firstname@Lastname-ltd.com")
-  val contactDetailsMobile =  ContactDetailsModel("Firstname","Lastname",Some("01234 555666"), Some("07777 123456"), "Firstname@Lastname-ltd.com")
+  val contactDetailsNoMobile =  ContactDetailsModel("Firstname","Lastname",Some("07000 111222"), None, "Firstname@Lastname-ltd.com")
+  val contactDetailsMobile =  ContactDetailsModel("Firstname","Lastname",Some("07000 111222"), Some("07000 222111"), "Firstname@Lastname-ltd.com")
 
   lazy val view = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsNoMobile)))(fakeRequest)
   lazy val viewWithMobile = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsMobile)))(fakeRequest)

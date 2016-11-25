@@ -47,7 +47,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       lazy val form = contactDetailsForm.bind(Map(
         "forename" -> "",
         "surname" -> "lastname",
-        "telephoneNumber" -> "02738 774893",
+        "telephoneNumber" -> "07000 111222",
         "email" -> "test@test.com")
       )
       "raise form error" in {
@@ -68,7 +68,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       lazy val form = contactDetailsForm.bind(Map(
         "forename" -> "firstname",
         "surname" -> "",
-        "telephoneNumber" -> "02738 774893",
+        "telephoneNumber" -> "07000 111222",
         "email" -> "test@test.com")
       )
       "raise form error" in {
@@ -89,7 +89,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       lazy val form = contactDetailsForm.bind(Map(
         "forename" -> "firstname",
         "surname" -> "lastname",
-        "telephoneNumber" -> "08746 716283",
+        "telephoneNumber" -> "07000 111222",
         "email" -> "")
       )
       "raise form error" in {
