@@ -57,8 +57,8 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
     )
   }
 
-  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
-  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes","address":{"addressline1":"Line 1","addressline2":"Line 2","addressline3":"Line 3","addressline4":"Line 4","postcode":"TF1 5NY","countryCode":"GB"}}"""
+  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AA1 1AA"), "GB")
+  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes","address":{"addressline1":"Line 1","addressline2":"Line 2","addressline3":"Line 3","addressline4":"Line 4","postcode":"AA1 1AA","countryCode":"GB"}}"""
   val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
 
   "The Confirm Correspondence Address Form" should {
@@ -69,7 +69,7 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
         "address.addressline2" -> "Line 2",
         "address.addressline3" -> "Line 3",
         "address.addressline4" -> "line 4",
-        "address.postcode" -> "TF1 3NY",
+        "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB"
       )
       bindWithError(request) match {
@@ -93,7 +93,7 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       "address.addressline2" -> "Line 2",
       "address.addressline3" -> "Line 3",
       "address.addressline4" -> "line 4",
-      "address.postcode" -> "TF1 3NY",
+      "address.postcode" -> "AA1 1AA",
       "address.countryCode" -> "GB"
       )
       bindWithError(request) match {

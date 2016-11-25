@@ -131,7 +131,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
           "addressline2" -> "Line 2",
           "addressline3" -> "Line 3",
           "addressline4" -> "line 4",
-          "postcode" -> "TF1 3NY",
+          "postcode" -> "AA1 1AA",
           "countryCode" -> "GB")
 
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
@@ -147,7 +147,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
     "redirect to itself" in {
       mockEnrolledRequest()
       val formInput = Seq("addressLine1" -> "", "addressLine1" -> "", "addressLine3" -> "Line3",
-        "addressLine4" -> "Line4", "postCode" -> "LE5 5NN", "countryCode" -> "GB")
+        "addressLine4" -> "Line4", "postCode" -> "AA1 1AA", "countryCode" -> "GB")
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -160,7 +160,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
       val formInput = Seq("addressline1" -> "Line1", "addressline2" -> "Line2", "addressline3" -> "Line3",
-        "addressline4" -> "Line4", "postCode" -> "LE5 5NN", "countryCode" -> "GB")
+        "addressline4" -> "Line4", "postCode" -> "AA1 1AA", "countryCode" -> "GB")
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER

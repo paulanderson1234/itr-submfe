@@ -133,10 +133,10 @@ class ContactDetailsControllerSpec extends ControllerSpec {
     "redirect to the Confirm Correspondence Address Controller page" in {
       mockEnrolledRequest()
       val formInput = Seq(
-        "forename" -> "Hank",
-        "surname" -> "The Tank",
+        "forename" -> "first",
+        "surname" -> "last",
         "telephoneNumber" -> "01385 236846",
-        "email" -> "thisiavalidemail@valid.com"
+        "email" -> "test@test.com"
       )
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
@@ -151,11 +151,11 @@ class ContactDetailsControllerSpec extends ControllerSpec {
     "redirect with a bad request" in {
       mockEnrolledRequest()
       val formInput = Seq(
-        "forename" -> "Hank",
+        "forename" -> "first",
         "surname" -> "",
         "telephoneNumber" -> "",
         "mobileNumber" -> "",
-        "email" -> "thisiavalidemail@valid.com")
+        "email" -> "test@test.com")
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -168,10 +168,10 @@ class ContactDetailsControllerSpec extends ControllerSpec {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
       val formInput = Seq(
-        "forename" -> "Hank",
-        "surname" -> "The Tank",
+        "forename" -> "first",
+        "surname" -> "last",
         "telephoneNumber" -> "01385 236846",
-        "email" -> "thisiavalidemail@valid.com"
+        "email" -> "test@test.com"
       )
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {

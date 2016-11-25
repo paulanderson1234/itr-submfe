@@ -32,11 +32,11 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "Creating a form using a valid model" should {
     "return a form with the data specified in the model" in {
-      val model = AddressModel("Akina Speed Stars","Mt. Akina",None,None,None,"JP")
+      val model = AddressModel("line1","line2",None,None,None,"JP")
       val form = contactAddressForm.fill(model)
 
-      form.data("addressline1") shouldBe "Akina Speed Stars"
-      form.data("addressline2") shouldBe "Mt. Akina"
+      form.data("addressline1") shouldBe "line1"
+      form.data("addressline2") shouldBe "line2"
       form.data("countryCode") shouldBe "JP"
       form.errors.length shouldBe 0
       form.data.size shouldBe 3
@@ -47,7 +47,7 @@ class ContactAddressFormSpec extends UnitSpec {
     "supplied with no data for addressline1" should {
       lazy val form = contactAddressForm.bind(Map(
         "addressline1" -> "",
-        "addressline2" -> "Mt. Akina",
+        "addressline2" -> "line2",
         "addressline3" -> "",
         "addressline4" -> "",
         "postcode" -> "",
@@ -71,7 +71,7 @@ class ContactAddressFormSpec extends UnitSpec {
   "Creating a form using an invalid post" when {
     "supplied with no data for addressline2" should {
       lazy val form = contactAddressForm.bind(Map(
-        "addressline1" -> "Akina Speed Stars",
+        "addressline1" -> "line1",
         "addressline2" -> "",
         "addressline3" -> "",
         "addressline4" -> "",
@@ -94,8 +94,8 @@ class ContactAddressFormSpec extends UnitSpec {
   "Creating a form using an invalid post" when {
     "supplied with no data for country" should {
       lazy val form = contactAddressForm.bind(Map(
-        "addressline1" -> "Akina Speed Stars",
-        "addressline2" -> "Mt. Akina",
+        "addressline1" -> "line1",
+        "addressline2" -> "line2",
         "addressline3" -> "",
         "addressline4" -> "",
         "postcode" -> "",
@@ -142,7 +142,7 @@ class ContactAddressFormSpec extends UnitSpec {
   "Creating a form using an invalid post" when {
     "supplied with no data for addressline2 and country" should {
       lazy val form = contactAddressForm.bind(Map(
-        "addressline1" -> "Akina Speed Stars",
+        "addressline1" -> "line1",
         "addressline2" -> "",
         "addressline3" -> "",
         "addressline4" -> "",
@@ -194,7 +194,7 @@ class ContactAddressFormSpec extends UnitSpec {
   "supplied with empty space for addressline1" should {
     lazy val form = contactAddressForm.bind(Map(
       "addressline1" -> "   ",
-      "addressline2" -> "Mt. Akina",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -214,7 +214,7 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with empty space for addressline2" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
+      "addressline1" -> "line1",
       "addressline2" -> "   ",
       "addressline3" -> "",
       "addressline4" -> "",
@@ -235,8 +235,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with empty space for addressline3" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "   ",
       "addressline4" -> "",
       "postcode" -> "",
@@ -256,8 +256,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with empty space for addressline4" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "   ",
       "postcode" -> "",
@@ -277,8 +277,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with empty space for country" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -297,8 +297,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with empty space for postcode" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "   ",
@@ -317,8 +317,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with numeric input for addressline1" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars 86",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1 86",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -334,8 +334,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with numeric input for addressline2" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina 86",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2 86",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -351,8 +351,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with numeric input for addressline3" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "86",
       "addressline4" -> "",
       "postcode" -> "",
@@ -368,8 +368,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with numeric input for addressline4" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "86",
       "postcode" -> "",
@@ -385,8 +385,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with numeric input for postcode" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "86",
@@ -406,8 +406,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "supplied with alphanumeric input for country" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -430,7 +430,7 @@ class ContactAddressFormSpec extends UnitSpec {
   "addressline1 value supplied with the minimum allowed" should {
     lazy val form = contactAddressForm.bind(Map(
       "addressline1" -> "A",
-      "addressline2" -> "Mt. Akina",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -446,7 +446,7 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline2 value supplied with the minimum allowed" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
+      "addressline1" -> "line1",
       "addressline2" -> "M",
       "addressline3" -> "",
       "addressline4" -> "",
@@ -463,8 +463,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline3 value supplied with the minimum allowed" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "A",
       "addressline4" -> "",
       "postcode" -> "",
@@ -480,8 +480,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline4 value supplied with the minimum allowed" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "A",
       "postcode" -> "",
@@ -497,8 +497,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with the minimum allowed" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -514,8 +514,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline1 value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars          ",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1          ",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -531,8 +531,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline2 value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina                  ",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2                  ",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -548,8 +548,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline3 value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "A                          ",
       "addressline4" -> "",
       "postcode" -> "",
@@ -565,8 +565,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline4 value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "A                 ",
       "postcode" -> "",
@@ -582,8 +582,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS98 1TL",
@@ -599,8 +599,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with the maximum allowed (on the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -616,8 +616,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -637,8 +637,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline1 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars           ",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1                       ",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -658,8 +658,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline2 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina                   ",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2                          ",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -679,8 +679,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline3 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "A                           ",
       "addressline4" -> "",
       "postcode" -> "",
@@ -700,8 +700,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline4 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "A                  ",
       "postcode" -> "",
@@ -721,8 +721,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied over the maximum allowed (over the boundary) incluses whitespace in the count" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS98 1TL ",
@@ -742,8 +742,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied over the maximum allowed (over the boundary) includes whitespace in the count" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -765,8 +765,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with multiple white space" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS98  1TL",
@@ -786,8 +786,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with brackets" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS98 (1TL)",
@@ -807,8 +807,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with /" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS98/9 1TL",
@@ -828,8 +828,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with lowercase" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "bs98 1tl",
@@ -845,8 +845,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "postcode value supplied with no spaces" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "BS981TL",
@@ -866,8 +866,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with '" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -887,8 +887,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with -" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -908,8 +908,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with ." should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -929,8 +929,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with a trailing space" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -946,8 +946,8 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "country value supplied with #" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "Akina Speed Stars",
-      "addressline2" -> "Mt. Akina",
+      "addressline1" -> "line1",
+      "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",

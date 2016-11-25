@@ -45,8 +45,8 @@ object EtmpSubscriptionDetailsModel {
   implicit val cawrites = Json.writes[AddressModel]
 
   implicit val cdreads: Reads[ContactDetailsModel] = (
-      (__ \\ "contactName" \\ "name1").read[String] and
-      (__ \\ "contactName" \\ "name2").read[String] and
+      (__ \\ "contactName" \\ "first").read[String] and
+      (__ \\ "contactName" \\ "last").read[String] and
       (__ \\ "contactDetails" \\ "phoneNumber").readNullable[String] and
       (__ \\ "contactDetails" \\ "mobileNumber").readNullable[String] and
       (__ \\ "contactDetails" \\ "emailAddress").read[String]

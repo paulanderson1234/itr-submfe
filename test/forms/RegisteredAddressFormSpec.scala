@@ -46,7 +46,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if lower case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tf1 3ny"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")
@@ -58,7 +58,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if in mixed case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tF1 3Ny"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")
@@ -70,7 +70,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if mixed case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tF1 3nY"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")
