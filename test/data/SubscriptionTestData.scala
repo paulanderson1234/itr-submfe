@@ -32,8 +32,8 @@ object SubscriptionTestData {
       |        "safeId": "$expectedSafeID",
       |        "correspondenceDetails": {
       |            "contactName": {
-      |                "first": "first",
-      |                "last": "last"
+      |                "name1": "first",
+      |                "name2": "last"
       |            },
       |            "contactDetails": {
       |                "phoneNumber": "0000 00000",
@@ -63,8 +63,8 @@ object SubscriptionTestData {
        |        "safeId": "$expectedSafeID",
        |        "correspondenceDetails": {
        |            "contactName": {
-       |                "first": "first",
-       |                "last": "last"
+       |                "name1": "first",
+       |                "name2": "last"
        |            },
        |            "contactDetails": {
        |                "faxNumber": "0000 00000",

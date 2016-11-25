@@ -56,7 +56,7 @@ case class AdvancedAssuranceSubmissionType(
 
                                             // mandatory types either statically generated or hard-coded until captured
                                             organisationType: String = "Limited", // always limited for AA submission
-                                            // required for contactName (first only mandatory) and and contactDetails.
+                                            // required for contactName (name1 only mandatory) and and contactDetails.
                                             // if mobileNumber and/or faxNumber are added to this model later they will
                                             // be automatically read by target model
                                             correspondenceAddress: AddressModel,
