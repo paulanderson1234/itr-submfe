@@ -398,7 +398,7 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include your company''s:
+page.supportingDocuments.SupportingDocuments.text.one=Once you''ve sent your answers, you''ll need to separately email your company''s:
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
@@ -583,7 +583,7 @@ page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
-page.introduction.hub.new.heading=You have no applications in progress
+page.introduction.hub.new.heading=You have no unsubmitted applications
 
 
 ## Feedback ##
