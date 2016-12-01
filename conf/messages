@@ -414,7 +414,7 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
-page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
+page.checkAndSubmit.checkAnswers.description=You''re applying for an advance assurance for the Enterprise Investment Scheme.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
