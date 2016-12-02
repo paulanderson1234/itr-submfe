@@ -398,7 +398,7 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=When you send your application you''ll need to include your company''s:
+page.supportingDocuments.SupportingDocuments.text.one=Once you''ve sent your answers, you''ll need to separately email your company''s:
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
@@ -414,7 +414,7 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
-page.checkAndSubmit.checkAnswers.description=You are applying for an assurance letter for the Enterprise Investment Scheme
+page.checkAndSubmit.checkAnswers.description=You''re applying for an advance assurance for the Enterprise Investment Scheme.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
@@ -500,7 +500,7 @@ page.summaryQuestion.supportingDocsSection=Section 5: Supporting documents
 
 #acknowledgement
 page.checkAndSubmit.acknowledgement.title=You''ve submitted your answers
-page.checkAndSubmit.acknowledgement.submissionConfirmation=You''ve sent your answers
+page.checkAndSubmit.acknowledgement.submissionConfirmation=Your application details have been submitted
 page.checkAndSubmit.acknowledgement.refNumberHeading=Make a note of your reference number:
 page.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete
 page.checkAndSubmit.acknowledgement.supporting.docs.heading=Supporting documentation
@@ -583,7 +583,7 @@ page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
-page.introduction.hub.new.heading=You have no applications in progress
+page.introduction.hub.new.heading=You have no unsubmitted applications
 
 
 ## Feedback ##
