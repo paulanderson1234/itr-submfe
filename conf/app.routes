@@ -114,6 +114,11 @@ POST       /hub-delete                              controllers.ApplicationHubCo
 
 GET        /trading-for-too-long                    controllers.TradingForTooLongController.show
 
+GET        /file-upload                             controllers.FileUploadController.show
+POST       /file-upload                             controllers.FileUploadController.submit
+POST       /upload-file                             controllers.FileUploadController.upload
+
+
 #Feedback routes
 #####################################################################################################################
 GET         /feedback                               controllers.feedback.FeedbackController.show
