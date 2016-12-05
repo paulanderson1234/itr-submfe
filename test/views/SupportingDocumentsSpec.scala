@@ -67,7 +67,6 @@ class SupportingDocumentsSpec extends ViewSpec {
       document .select("tr").get(4).getElementById("supportingDocs-prospectus").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
       document.getElementById("description-two").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.two")
-      document.getElementById("description-three").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.three")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
     }
