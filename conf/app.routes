@@ -99,7 +99,6 @@ POST       /review-previous-schemes-remove/:Id      controllers.ReviewPreviousSc
 
 GET        /acknowledgement                         controllers.AcknowledgementController.show
 
-
 GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.show
 POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit
 
@@ -120,3 +119,11 @@ GET         /feedback                               controllers.feedback.Feedbac
 POST        /feedback                               controllers.feedback.FeedbackController.submit
 GET         /thankyou                               controllers.feedback.FeedbackController.thankyou
 #####################################################################################################################
+
+
+GET        /j-login                                 controllers.JLoginController.show
+GET        /j-login                                 controllers.JLoginController.submit
+
+GET        /j-option                                controllers.JOptionController.show
+GET        /j-option                                controllers.JOptionController.show
+

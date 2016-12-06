@@ -74,7 +74,7 @@ class AcknowledgementSpec extends ViewSpec {
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
 
       //finish button
-      document.body.getElementById("submit").attr("href") shouldEqual "https://www-dev.tax.service.gov.uk/investment-tax-relief/feedback"
+      document.body.getElementById("submit").attr("href") shouldEqual "/investment-tax-relief/feedback"
       document.body.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.acknowledgement.button.confirm")
     }
   }
