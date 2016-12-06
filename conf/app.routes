@@ -119,11 +119,3 @@ GET         /feedback                               controllers.feedback.Feedbac
 POST        /feedback                               controllers.feedback.FeedbackController.submit
 GET         /thankyou                               controllers.feedback.FeedbackController.thankyou
 #####################################################################################################################
-
-
-GET        /j-login                                 controllers.JLoginController.show
-GET        /j-login                                 controllers.JLoginController.submit
-
-GET        /j-option                                controllers.JOptionController.show
-GET        /j-option                                controllers.JOptionController.show
-
