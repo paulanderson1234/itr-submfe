@@ -99,7 +99,6 @@ POST       /review-previous-schemes-remove/:Id      controllers.ReviewPreviousSc
 
 GET        /acknowledgement                         controllers.AcknowledgementController.show
 
-
 GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.show
 POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit
 

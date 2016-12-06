@@ -180,6 +180,7 @@ class InvestmentGrowSpec extends ViewSpec {
       document.getElementById("bullet-product-market").text() shouldBe Messages("page.investment.InvestmentGrow.bullet.productMarket")
       document.getElementById("description-three").text() shouldBe Messages("page.investment.InvestmentGrow.description.three")
       document.getElementById("labelTextId").text() shouldBe Messages("page.investment.InvestmentGrow.heading")
+
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")

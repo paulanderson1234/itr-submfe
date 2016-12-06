@@ -515,6 +515,7 @@ page.checkAndSubmit.acknowledgement.email.include=The subject line must include:
 page.checkAndSubmit.acknowledgement.email.one=your company name
 page.checkAndSubmit.acknowledgement.email.two=your company''s Unique Taxpayer Reference Number (UTR)
 page.checkAndSubmit.acknowledgement.email.three=the word ‘WHITELISTER’
+page.checkAndSubmit.acknowledgement.email.size=We can''t accept emails that are larger than 10MB.
 page.checkAndSubmit.acknowledgement.post.docs.heading=Send by post
 page.checkAndSubmit.acknowledgement.post.to=If you need to send by post, call the Small Companies Enterprise Centre (SCEC) on 0300 123 1083.
 page.checkAndSubmit.acknowledgement.waitingTime.heading=How long you''ll have to wait
@@ -590,3 +591,4 @@ feedback.title = Feedback
 
 ## Feedback Thank You ##
 feedback.thankyou.title = Feedback received
+

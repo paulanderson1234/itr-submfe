@@ -29,7 +29,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import services.RegistrationDetailsService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
-
+import controllers.feedback.FeedbackController
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
@@ -50,7 +50,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     for {
-     // minimum required fields to continue
+    // minimum required fields to continue
       kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
       contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
@@ -58,7 +58,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
-      tavcRef  <- getTavCReferenceNumber()
+      tavcRef <- getTavCReferenceNumber()
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
       // potentially optional or required
@@ -74,7 +74,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
         investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts,registrationDetailsModel)
+        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
     } yield result
   }
 
@@ -83,28 +83,28 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   //TODO:
   // 1) subsidiary performing trade name/adress is required if subsidiary and needs retrieving (post MVP)
   private def createSubmissionDetailsModel(
-                                       //required
-                                       kiProcModel: Option[KiProcessingModel],
-                                       natOfBusiness: Option[NatureOfBusinessModel],
-                                       contactDetails: Option[ContactDetailsModel],
-                                       proposedInvestment: Option[ProposedInvestmentModel],
-                                       investmentGrowModel: Option[InvestmentGrowModel],
-                                       dateOfIncorporation: Option[DateOfIncorporationModel],
-                                       contactAddress: Option[AddressModel],
-                                       tavcReferenceNumber:String,
+                                            //required
+                                            kiProcModel: Option[KiProcessingModel],
+                                            natOfBusiness: Option[NatureOfBusinessModel],
+                                            contactDetails: Option[ContactDetailsModel],
+                                            proposedInvestment: Option[ProposedInvestmentModel],
+                                            investmentGrowModel: Option[InvestmentGrowModel],
+                                            dateOfIncorporation: Option[DateOfIncorporationModel],
+                                            contactAddress: Option[AddressModel],
+                                            tavcReferenceNumber: String,
 
-                                       // potentially optional or potentially required
-                                       subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
-                                       subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
-                                       previousSchemes: List[PreviousSchemeModel],
-                                       commercialSale: Option[CommercialSaleModel],
-                                       newGeographicalMarket: Option[NewGeographicalMarketModel],
-                                       newProduct: Option[NewProductModel],
-                                       tenYearPlan: Option[TenYearPlanModel],
-                                       operatingCosts: Option[OperatingCostsModel],
-                                       turnoverCosts: Option[AnnualTurnoverCostsModel],
-                                       registrationDetailsModel: Option[RegistrationDetailsModel])
-                                             (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
+                                            // potentially optional or potentially required
+                                            subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
+                                            subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
+                                            previousSchemes: List[PreviousSchemeModel],
+                                            commercialSale: Option[CommercialSaleModel],
+                                            newGeographicalMarket: Option[NewGeographicalMarketModel],
+                                            newProduct: Option[NewProductModel],
+                                            tenYearPlan: Option[TenYearPlanModel],
+                                            operatingCosts: Option[OperatingCostsModel],
+                                            turnoverCosts: Option[AnnualTurnoverCostsModel],
+                                            registrationDetailsModel: Option[RegistrationDetailsModel])
+                                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
 
     val tempAddress = None
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
@@ -122,14 +122,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           schemeTypes = SchemeTypesModel(eis = true),
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           annualCosts = if (operatingCosts.nonEmpty)
-            Some(Converters.operatingCostsToList(operatingCosts.get)) else None,
+            Some(Converters.operatingCostsToList(operatingCosts.get))
+          else None,
           annualTurnover = if (turnoverCosts.nonEmpty)
-            Some(Converters.turnoverCostsToList(turnoverCosts.get)) else None,
+            Some(Converters.turnoverCostsToList(turnoverCosts.get))
+          else None,
           knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
             subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempAddress),
           organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, regDetail.organisationName
-            ,regDetail.addressModel, previousSchemes)
+            , regDetail.addressModel, previousSchemes)
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
@@ -147,50 +149,54 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _,_,_) => {
-          Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
-          Future.successful(Redirect(routes.ApplicationHubController.show()))
-        }
+      case (_, _, _, _, _, _, _, _) => {
+        Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
+        Future.successful(Redirect(routes.ApplicationHubController.show()))
+      }
     }
   }
 
-  private def buildKnowledgeIntensive(ki: KiProcessingModel, tenYearPlan: Option[TenYearPlanModel]):Option[KiModel] = {
+  private def buildKnowledgeIntensive(ki: KiProcessingModel, tenYearPlan: Option[TenYearPlanModel]): Option[KiModel] = {
     if (ki.companyAssertsIsKi.getOrElse(false))
       Some(KiModel(skilledEmployeesConditionMet = ki.hasPercentageWithMasters.getOrElse(false),
         innovationConditionMet = if (tenYearPlan.nonEmpty) tenYearPlan.get.tenYearPlanDesc else None,
-        kiConditionMet = ki.isKi)) else None
+        kiConditionMet = ki.isKi))
+    else None
   }
 
   private def buildMarketInformation(ki: KiProcessingModel, newGeographicalMarket: Option[NewGeographicalMarketModel],
-  newProduct: Option[NewProductModel]):Option[SubmitMarketInfoModel] = {
+                                     newProduct: Option[NewProductModel]): Option[SubmitMarketInfoModel] = {
 
     if (newGeographicalMarket.nonEmpty || newProduct.nonEmpty) Some(SubmitMarketInfoModel(
-      newGeographicalMarketModel = newGeographicalMarket.get, newProductModel = newProduct.get)) else None
+      newGeographicalMarketModel = newGeographicalMarket.get, newProductModel = newProduct.get))
+    else None
   }
 
   private def buildSubsidiaryPerformingTrade(subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
-                                                  subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
-                                                  tradeName: String,
-                                                  tradeAddress: Option[AddressModel]):Option[SubsidiaryPerformingTradeModel] = {
+                                             subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
+                                             tradeName: String,
+                                             tradeAddress: Option[AddressModel]): Option[SubsidiaryPerformingTradeModel] = {
 
     if (subsidiariesSpendInvest.fold("")(_.subSpendingInvestment) == Constants.StandardRadioButtonYesValue)
       Some(SubsidiaryPerformingTradeModel(ninetyOwnedModel = subsidiariesNinetyOwned.get,
         organisationName = tradeName, companyAddress = tradeAddress,
-        ctUtr = None, crn = None)) else None
+        ctUtr = None, crn = None))
+    else None
   }
 
   private def buildOrganisationDetails(commercialSale: Option[CommercialSaleModel],
                                        dateOfIncorporation: DateOfIncorporationModel,
                                        companyName: String,
                                        companyAddress: AddressModel,
-                                       previousSchemes: List[PreviousSchemeModel]):OrganisationDetailsModel = {
+                                       previousSchemes: List[PreviousSchemeModel]): OrganisationDetailsModel = {
 
     OrganisationDetailsModel(utr = None, organisationName = companyName, chrn = None, startDate = dateOfIncorporation,
-      firstDateOfCommercialSale = if (commercialSale.fold("")(_.hasCommercialSale) == Constants.StandardRadioButtonYesValue){
+      firstDateOfCommercialSale = if (commercialSale.fold("")(_.hasCommercialSale) == Constants.StandardRadioButtonYesValue) {
         val date = commercialSale.get
         Some(Validation.dateToDesFormat(date.commercialSaleDay.get, date.commercialSaleMonth.get, date.commercialSaleYear.get))
       } else None,
       ctUtr = None, crn = None, companyAddress = Some(companyAddress),
-      previousRFIs = if(previousSchemes.nonEmpty) Some(previousSchemes) else None)
+      previousRFIs = if (previousSchemes.nonEmpty) Some(previousSchemes) else None)
   }
+
 }
