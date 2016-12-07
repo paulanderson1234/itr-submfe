@@ -75,8 +75,8 @@
     </div>
 </div>
 
-    <div class="form-group">
-        <a class="btn button" type="submit" id="submit" onClick= a href="/investment-tax-relief/feedback"> @Messages("page.checkAndSubmit.acknowledgement.button.confirm")</a></button></a>
-    </div>
+@form(action = controllers.routes.AcknowledgementController.submit()) {
+    <button class="button" type="submit" id="submit">@Messages("page.checkAndSubmit.acknowledgement.button.confirm")</button>
+}
 
 }

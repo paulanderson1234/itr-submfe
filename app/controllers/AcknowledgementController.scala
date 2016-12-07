@@ -25,11 +25,12 @@ import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
 import play.Logger
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.RegistrationDetailsService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 import controllers.feedback.FeedbackController
+
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
@@ -76,6 +77,10 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
     } yield result
+  }
+
+  def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+    Redirect(feedback.routes.FeedbackController.show().url)
   }
 
 
