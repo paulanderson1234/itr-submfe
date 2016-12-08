@@ -64,15 +64,15 @@ trait FileUploadService {
     }
   }
 
-  def checkEnvelopeStatus(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
+  def checkEnvelopeStatus(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Option[Envelope]] = {
     for {
       envelopeID <- getEnvelopeID()
       result <- fileUploadConnector.getEnvelopeStatus(envelopeID)
     } yield result.status match {
       case OK =>
-        result
+        result.json.asOpt[Envelope]
       case _ => Logger.warn(s"[FileUploadConnector][checkEnvelopeStatus] Error ${result.status} received.")
-        result
+        None
     }
   }
 
@@ -104,10 +104,8 @@ trait FileUploadService {
 
   def getEnvelopeFiles(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Seq[EnvelopeFile]] = {
     checkEnvelopeStatus.map {
-      result => result.status match {
-        case OK => result.json.as[Envelope].files.getOrElse(Seq())
-        case _ => Seq()
-      }
+      case Some(envelope)=> envelope.files.getOrElse(Seq())
+      case _ => Seq()
     }
   }
 
