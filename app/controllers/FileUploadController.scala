@@ -45,12 +45,10 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
 
   val fileUploadService: FileUploadService
 
-  val files = Array(FileModel("test-file-1"), FileModel("test-file-2"))
-
   val lessThanFiveMegabytes: Long => Boolean = bytes => bytes <= Constants.fileSizeLimit
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(FileUpload(files)))
+    fileUploadService.getEnvelopeFiles.map(files => Ok(FileUpload(files)))
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
