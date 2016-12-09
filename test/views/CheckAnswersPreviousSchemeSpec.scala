@@ -90,7 +90,6 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
           previousSchemesValid(2).year.get)}"
       document.getElementById("previousScheme-2-link").attr("href") shouldBe routes.ReviewPreviousSchemesController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
     }
 
     "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
@@ -117,7 +116,6 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.getElementById("noPreviousScheme-answer").text shouldBe Messages("page.summaryQuestion.none.answer")
       document.getElementById("noPreviousScheme-link").attr("href") shouldBe routes.HadPreviousRFIController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
     }
   }
 }
