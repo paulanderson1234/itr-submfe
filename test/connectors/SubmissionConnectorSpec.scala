@@ -66,7 +66,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val newProductYes = true
   val newProductNo= false
 
-  object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
+  object TestConnector extends SubmissionConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
     override val http = mockHttp
   }
@@ -74,6 +74,8 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val validResponse = true
   val trueResponse = true
   val falseResponse = false
+
+  val envelopeID = "00000000-0000-0000-0000-000000000000"
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
@@ -86,7 +88,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val operatingCostData: Int = 1000
       val rAndDCostData: Int = 100
 
-      val result = TargetSubmissionConnector.validateKiCostConditions(operatingCostData,operatingCostData,
+      val result = TestConnector.validateKiCostConditions(operatingCostData,operatingCostData,
         operatingCostData,rAndDCostData,rAndDCostData,rAndDCostData)
       await(result) shouldBe Some(trueResponse)
     }
@@ -101,7 +103,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val hasPercentageWithMasters: Boolean = true
       val hasTenYearPlan: Boolean = true
 
-      val result = TargetSubmissionConnector.validateSecondaryKiConditions(hasPercentageWithMasters,hasTenYearPlan)
+      val result = TestConnector.validateSecondaryKiConditions(hasPercentageWithMasters,hasTenYearPlan)
       await(result) shouldBe Some(trueResponse)
     }
   }
@@ -117,7 +119,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val previousInvestmentSchemesTotal= 1000
       val proposedAmount = 1000
 
-      val result = TargetSubmissionConnector.checkLifetimeAllowanceExceeded(hadPrevRFI, isKi, previousInvestmentSchemesTotal, proposedAmount)
+      val result = TestConnector.checkLifetimeAllowanceExceeded(hadPrevRFI, isKi, previousInvestmentSchemesTotal, proposedAmount)
       await(result) shouldBe Some(validResponse)
     }
   }
@@ -132,7 +134,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val proposedInvestment = ProposedInvestmentModel(50)
       val annualTurnoverCosts = AnnualTurnoverCostsModel("100","100","100","100","100","2005","2006","2007","2008","2009")
 
-      val result = TargetSubmissionConnector.checkAveragedAnnualTurnover(proposedInvestment,annualTurnoverCosts)
+      val result = TestConnector.checkAveragedAnnualTurnover(proposedInvestment,annualTurnoverCosts)
       await(result) shouldBe Some(validResponse)
     }
   }
@@ -144,7 +146,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val validRequest = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(validRequest, tavcReferenceId)
+      val result = TestConnector.submitAdvancedAssurance(validRequest, tavcReferenceId)
       await(result).status shouldBe OK
     }
   }
@@ -157,7 +159,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(OK)))
 
-      val exception = the[IllegalArgumentException] thrownBy TargetSubmissionConnector.submitAdvancedAssurance(fullSubmissionSourceData, "")
+      val exception = the[IllegalArgumentException] thrownBy TestConnector.submitAdvancedAssurance(fullSubmissionSourceData, "")
       exception.getMessage shouldBe "requirement failed: [SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed"
     }
   }
@@ -169,7 +171,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(BAD_REQUEST)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
+      val result = TestConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe BAD_REQUEST
     }
   }
@@ -182,7 +184,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(FORBIDDEN)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
+      val result = TestConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe FORBIDDEN
     }
   }
@@ -195,7 +197,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(SERVICE_UNAVAILABLE)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
+      val result = TestConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe SERVICE_UNAVAILABLE
     }
   }
@@ -207,18 +209,18 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       val request = fullSubmissionSourceData
       when(mockHttp.POST[JsValue, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-      val result = TargetSubmissionConnector.submitAdvancedAssurance(request, tavcReferenceId)
+      val result = TestConnector.submitAdvancedAssurance(request, tavcReferenceId)
       await(result).status shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
   "Calling getRegistrationDetails with a safeID" should {
 
-    lazy val result = TargetSubmissionConnector.getRegistrationDetails(safeID)
+    lazy val result = TestConnector.getRegistrationDetails(safeID)
 
     "return a RegistrationDetailsModel" in {
       when(mockHttp.GET[Option[RegistrationDetailsModel]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/registration/registration-details/safeid/$safeID"))
+        s"${TestConnector.serviceUrl}/investment-tax-relief/registration/registration-details/safeid/$safeID"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(registrationDetailsModel))
       await(result) shouldBe Some(registrationDetailsModel)
     }
@@ -227,11 +229,11 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   "Calling checkMarketCriteria with true and true" should {
 
-    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalYes,newProductYes)
+    lazy val result = TestConnector.checkMarketCriteria(newGeographicalYes,newProductYes)
 
     "return true" in {
       when(mockHttp.GET[Option[Boolean]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductYes"))
+        s"${TestConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductYes"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(true))
       await(result) shouldBe Some(true)
     }
@@ -240,11 +242,11 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   "Calling checkMarketCriteria with false and true" should {
 
-    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalNo,newProductYes)
+    lazy val result = TestConnector.checkMarketCriteria(newGeographicalNo,newProductYes)
 
     "return true" in {
       when(mockHttp.GET[Option[Boolean]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductYes"))
+        s"${TestConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductYes"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(true))
       await(result) shouldBe Some(true)
     }
@@ -253,11 +255,11 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   "Calling checkMarketCriteria with true and false" should {
 
-    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalYes,newProductNo)
+    lazy val result = TestConnector.checkMarketCriteria(newGeographicalYes,newProductNo)
 
     "return true" in {
       when(mockHttp.GET[Option[Boolean]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductNo"))
+        s"${TestConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalYes/new-product/$newProductNo"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(true))
       await(result) shouldBe Some(true)
     }
@@ -266,13 +268,49 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
 
   "Calling checkMarketCriteria with false and false" should {
 
-    lazy val result = TargetSubmissionConnector.checkMarketCriteria(newGeographicalNo,newProductNo)
+    lazy val result = TestConnector.checkMarketCriteria(newGeographicalNo,newProductNo)
 
     "return false" in {
       when(mockHttp.GET[Option[Boolean]](Matchers.eq(
-        s"${TargetSubmissionConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductNo"))
+        s"${TestConnector.serviceUrl}/investment-tax-relief/market-criteria/new-geographical/$newGeographicalNo/new-product/$newProductNo"))
         (Matchers.any(),Matchers.any())).thenReturn(Some(false))
       await(result) shouldBe Some(false)
+    }
+
+  }
+
+  "Calling createEnvelope" should {
+
+    lazy val result = TestConnector.createEnvelope()
+
+    "return the response from the http call" in {
+      when(mockHttp.POSTEmpty[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/create-envelope"))
+        (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+      await(result).status shouldBe OK
+    }
+
+  }
+
+  "Calling getEnvelopeStatus" should {
+
+    lazy val result = TestConnector.getEnvelopeStatus(envelopeID)
+
+    "return the response from the http call" in {
+      when(mockHttp.GET[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/envelope/$envelopeID/get-envelope-status"))
+        (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+      await(result).status shouldBe OK
+    }
+
+  }
+
+  "Calling closeEnvelope" should {
+
+    lazy val result = TestConnector.closeEnvelope(envelopeID)
+
+    "return the response from the http call" in {
+      when(mockHttp.POSTEmpty[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/envelope/$envelopeID/close-envelope"))
+        (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+      await(result).status shouldBe OK
     }
 
   }
