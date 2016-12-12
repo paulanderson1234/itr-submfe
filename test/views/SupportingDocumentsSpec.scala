@@ -53,21 +53,17 @@ class SupportingDocumentsSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.checkAnswers")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
+      document.getElementById("supportingDocs-business-plan").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
+      document.getElementById("supportingDocs-shareholder-agreements").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
+      document.getElementById("supportingDocs-memorandum-articles").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
+      document.getElementById("supportingDocs-prospectus").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
+      document.getElementById("supportingDocs-annual-accounts").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
       document.getElementById("description-one").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.one")
-      document .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
-      document .select("tr").get(1).getElementById("supportingDocs-company-accounts").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
-      document .select("tr").get(2).getElementById("shareholder-agree").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
-      document .select("tr").get(3).getElementById("memorandum-docs").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
-      document .select("tr").get(4).getElementById("supportingDocs-prospectus").text() shouldBe
-        Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
+      document.getElementById("legal-not-complete").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.application.not.complete")
       document.getElementById("description-two").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.two")
-      document.getElementById("description-three").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.three")
+      document.getElementById("continueWithoutUploading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.link")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
     }

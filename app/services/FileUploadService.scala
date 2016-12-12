@@ -21,7 +21,7 @@ import java.io.File
 import auth.TAVCUser
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import connectors.{FileUploadConnector, S4LConnector}
+import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
 import models.upload.{Envelope, EnvelopeFile}
 import play.api.Logger
 import play.api.libs.ws.WSResponse
@@ -35,8 +35,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object FileUploadService extends FileUploadService {
   override lazy val fileUploadConnector = FileUploadConnector
-  override lazy val serviceURL = FrontendAppConfig.fileUploadUrl
   override lazy val s4lConnector = S4LConnector
+  override lazy val submissionConnector = SubmissionConnector
 }
 
 trait FileUploadService {
@@ -46,15 +46,15 @@ trait FileUploadService {
 
   val fileUploadConnector: FileUploadConnector
   val s4lConnector: S4LConnector
-  val serviceURL: String
+  val submissionConnector: SubmissionConnector
 
   def getEnvelopeID(createNewID: Boolean = true)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[String] = {
     s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeID).flatMap {
       case Some(envelopeID) if envelopeID.nonEmpty => Future.successful(envelopeID)
       case _ => if (createNewID) {
-        fileUploadConnector.createEnvelope().map {
+        submissionConnector.createEnvelope().map {
           result =>
-            val envelopeID = result.header("Location").get.replaceAll("""[:.\-a-z].+\/file-upload\/envelopes\/""", "")
+            val envelopeID = result.json.\("envelopeID").as[String]
             s4lConnector.saveFormData(KeystoreKeys.envelopeID, envelopeID)
             envelopeID
         }
@@ -67,7 +67,7 @@ trait FileUploadService {
   def checkEnvelopeStatus(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Option[Envelope]] = {
     for {
       envelopeID <- getEnvelopeID()
-      result <- fileUploadConnector.getEnvelopeStatus(envelopeID)
+      result <- submissionConnector.getEnvelopeStatus(envelopeID)
     } yield result.status match {
       case OK =>
         result.json.asOpt[Envelope]
@@ -76,29 +76,17 @@ trait FileUploadService {
     }
   }
 
-  def generateFileID(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Int] = {
-    fileUploadConnector.getEnvelopeStatus(envelopeID).map {
-      result =>
-        val envelope = result.json.as[Envelope]
-        if(envelope.files.isDefined) {
-          envelope.files.get.last.id.toInt + 1
-        } else {
-          1
-        }
-    }
-  }
-
-  def uploadFile(file: File)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[WSResponse] = {
+  def uploadFile(file: File)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
     for {
       envelopeID <- getEnvelopeID()
       fileID <- generateFileID(envelopeID)
       result <- fileUploadConnector.addFileContent(envelopeID, fileID, file, PDF)
     } yield result.status match {
       case OK =>
-        result
+        HttpResponse(result.status)
       case _ =>
         Logger.warn(s"[FileUploadConnector][uploadFile] Error ${result.status} received.")
-        result
+        HttpResponse(result.status)
     }
   }
 
@@ -109,26 +97,34 @@ trait FileUploadService {
     }
   }
 
+  //TODO: Determine whether additional files are required
   def closeEnvelope(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
     getEnvelopeID(createNewID = false).flatMap {
       envelopeID => if(envelopeID.nonEmpty) {
-        generateAdditionalFiles(envelopeID).flatMap[HttpResponse] {
-          case true => fileUploadConnector.closeEnvelope(envelopeID).map {
-            result => result.status match {
-              case CREATED =>
-                //delete envelope from session
-                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-                result
-              case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
-                // delete envelope from session
-                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-                result
-            }
+//        generateAdditionalFiles(envelopeID).flatMap[HttpResponse] {
+//          case true => submissionConnector.closeEnvelope(envelopeID).map {
+//            result => result.status match {
+//              case OK =>
+//                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+//                result
+//              case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
+//                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+//                result
+//            }
+//          }
+//          case false => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error false false received.")
+//            s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+//            Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
+//        }
+        submissionConnector.closeEnvelope(envelopeID).map {
+          result => result.status match {
+            case OK =>
+              s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+              result
+            case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
+              s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+              result
           }
-          case false => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error false false received.")
-            //delete envelope from session
-            s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-            Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
         }
       } else {
         Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
@@ -136,12 +132,24 @@ trait FileUploadService {
 
     }.recover {
       case e: Exception => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${e.getMessage} received.")
-        //delete envelope from session
         s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
         HttpResponse(INTERNAL_SERVER_ERROR)
     }
   }
 
+  private def generateFileID(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Int] = {
+    submissionConnector.getEnvelopeStatus(envelopeID).map {
+      result =>
+        val envelope = result.json.as[Envelope]
+        if(envelope.files.isDefined) {
+          envelope.files.get.last.id.toInt + 1
+        } else {
+          1
+        }
+    }
+  }
+
+  //TODO: Determine whether control files are required
   private def addControlFiles(envelopeID: String, files: Seq[EnvelopeFile])
                              (implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
 
@@ -161,6 +169,7 @@ trait FileUploadService {
     }
   }
 
+  //TODO: Determine whether manifest files are required
   private def addManifestFile(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
 
     val manifestFile = File.createTempFile("hello", ".xml")
@@ -174,6 +183,7 @@ trait FileUploadService {
     }
   }
 
+  //TODO: Determine whether this step is required
   private def generateAdditionalFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
     for {
       envelopeFiles <- getEnvelopeFiles

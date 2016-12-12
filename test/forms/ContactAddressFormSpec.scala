@@ -637,7 +637,7 @@ class ContactAddressFormSpec extends UnitSpec {
 
   "addressline1 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
-      "addressline1" -> "line1                       ",
+      "addressline1" -> "1234567890123456789012345678901234567890",
       "addressline2" -> "line2",
       "addressline3" -> "",
       "addressline4" -> "",
@@ -659,7 +659,7 @@ class ContactAddressFormSpec extends UnitSpec {
   "addressline2 value supplied over the maximum allowed (over the boundary)" should {
     lazy val form = contactAddressForm.bind(Map(
       "addressline1" -> "line1",
-      "addressline2" -> "line2                          ",
+      "addressline2" -> "1234567890123456789012345678901234567890",
       "addressline3" -> "",
       "addressline4" -> "",
       "postcode" -> "",
@@ -681,7 +681,7 @@ class ContactAddressFormSpec extends UnitSpec {
     lazy val form = contactAddressForm.bind(Map(
       "addressline1" -> "line1",
       "addressline2" -> "line2",
-      "addressline3" -> "A                           ",
+      "addressline3" -> "1234567890123456789012345678901234567890",
       "addressline4" -> "",
       "postcode" -> "",
       "countryCode" -> "JP")
@@ -703,7 +703,7 @@ class ContactAddressFormSpec extends UnitSpec {
       "addressline1" -> "line1",
       "addressline2" -> "line2",
       "addressline3" -> "",
-      "addressline4" -> "A                  ",
+      "addressline4" -> "1234567890123456789012345678901234567890",
       "postcode" -> "",
       "countryCode" -> "JP")
     )

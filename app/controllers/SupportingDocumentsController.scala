@@ -45,7 +45,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
       case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
     }
   }
-
+  //TODO: update route to new File Upload page
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.CheckAnswersController.show()))
   }

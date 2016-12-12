@@ -286,4 +286,65 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
     }
   }
+
+  "Sending a POST request to the Acknowledgement controller when authenticated and enrolled" should {
+    "redirect to the feedback page" in {
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(feedback.routes.FeedbackController.show().url)
+        }
+      )
+    }
+  }
+
+  "Sending a POST request to the Acknowledgement controller when not authenticated" should {
+
+    "redirect to the GG login page when having a session but not authenticated" in {
+      submitWithSessionWithoutAuth(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+
+    "redirect to the GG login page with no session" in {
+      submitWithoutSession(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+        }
+      )
+    }
+  }
+
+  "Sending a POST request to the Acknowledgement controller when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
+
+  "Sending a POST request to the Acknowledgement controller when NOT enrolled" should {
+    "redirect to the Subscription Service" in {
+      mockNotEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
+
 }

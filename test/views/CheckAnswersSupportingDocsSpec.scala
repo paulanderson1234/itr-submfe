@@ -77,18 +77,17 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
       document.getElementById("supportingDocs-sub-text").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")
       supportingDocsTableBody .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.one")
-      supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-company-accounts").text() shouldBe
+      supportingDocsTableBody .select("tr").get(1).getElementById("supportingDocs-shareholder-agreements").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.two")
-      supportingDocsTableBody .select("tr").get(2).getElementById("shareholder-agree").text() shouldBe
+      supportingDocsTableBody .select("tr").get(2).getElementById("supportingDocs-memorandum-articles").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.three")
-      supportingDocsTableBody .select("tr").get(3).getElementById("memorandum-docs").text() shouldBe
+      supportingDocsTableBody .select("tr").get(3).getElementById("supportingDocs-prospectus").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.four")
-      supportingDocsTableBody .select("tr").get(4).getElementById("supportingDocs-prospectus").text() shouldBe
+      supportingDocsTableBody .select("tr").get(4).getElementById("supportingDocs-annual-accounts").text() shouldBe
         Messages("page.supportingDocuments.SupportingDocuments.bullet.five")
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
     }
   }
 }

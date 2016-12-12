@@ -98,7 +98,7 @@ GET        /review-previous-schemes-change/:Id      controllers.ReviewPreviousSc
 POST       /review-previous-schemes-remove/:Id      controllers.ReviewPreviousSchemesController.remove(Id: Int)
 
 GET        /acknowledgement                         controllers.AcknowledgementController.show
-
+POST       /acknowledgement                         controllers.AcknowledgementController.submit
 
 GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.show
 POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit

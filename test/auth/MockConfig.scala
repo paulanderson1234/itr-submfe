@@ -32,4 +32,5 @@ object MockConfig extends AppConfig {
   override val ggSignOutUrl: String = "/gg/sign-out"
   override val signOutPageUrl: String = "/investment-tax-relief/signed-out"
   override val submissionUrl: String = "localhost"
+  override val fileUploadUrl: String = "file-upload"
 }
