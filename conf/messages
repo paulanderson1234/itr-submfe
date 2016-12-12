@@ -398,13 +398,18 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=Once you''ve submitted your details, you''ll need to email the company documents below. Further details are at the end of the application.
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
 page.supportingDocuments.SupportingDocuments.bullet.four=prospectuses and other documents for attracting investment
 page.supportingDocuments.SupportingDocuments.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
-page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocuments.SupportingDocuments.text.one=If your documents aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocuments.SupportingDocuments.text.two=You can either upload your documents now, or after you have checked and submitted your application.
+page.supportingDocuments.SupportingDocuments.application.not.complete=Your application will not be complete until you send us these files
+page.supportingDocuments.SupportingDocuments.review=To support your application you''ll need to send us your company''s:
+page.supportingDocuments.SupportingDocuments.link=Continue without uploading
+
+
 
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
