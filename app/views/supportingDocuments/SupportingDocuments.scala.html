@@ -15,51 +15,42 @@
                 <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.supportingDocuments.SupportingDocuments.heading")</h1>
          </div>
 
+        <div class="form-group">
+
+            <p id="remember-to-include">@Messages("page.supportingDocuments.SupportingDocuments.review")</p>
+
+            <ul class="list list-bullet">
+                <li id="supportingDocs-business-plan">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</li>
+                <li id="supportingDocs-shareholder-agreements">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</li>
+                <li id="supportingDocs-memorandum-articles">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</li>
+                <li id="supportingDocs-prospectus">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</li>
+                <li id="supportingDocs-annual-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</li>
+            </ul>
+        </div>
+
         <p id="description-one">@Messages("page.supportingDocuments.SupportingDocuments.text.one")</p>
 
-        <table id="supporting-docs-table">
-            <tbody>
-            <tr>
-                <td id="supportingDocs-business-plan">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</td>
-                <td></td>
-                <td></td>
-            </tr>
+        <br>
 
-            <tr>
-                <td id="supportingDocs-company-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>
-                <td></td>
-                <td></td>
-            </tr>
-
-            <tr>
-                <td id="shareholder-agree">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</td>
-                <td></td>
-                <td></td>
-            </tr>
-
-            <tr>
-                <td id="memorandum-docs">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</td>
-                <td></td>
-                <td></td>
-            </tr>
-
-            <tr>
-                <td id="supportingDocs-prospectus">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</td>
-                <td></td>
-                <td></td>
-            </tr>
-            </tbody>
-        </table>
+        <div class="form-group">
+            <strong id ="legal-not-complete" class="bold-medium">
+                <span class="exclamation"></span>
+                @Messages("page.supportingDocuments.SupportingDocuments.application.not.complete")
+            </strong>
+        </div>
 
         <p id="description-two">@Messages("page.supportingDocuments.SupportingDocuments.text.two")</p>
-
 
         <br>
 
         <div class="form-group">
             @form(action = controllers.routes.SupportingDocumentsController.submit()) {
-                <button class="btn button" id="next" type="submit">@Messages("common.button.checkAnswers")</button>
+                <button class="btn button" id="next" type="submit">@Messages("common.button.continue")</button>
             }
+        </div>
+
+        <div>
+            <a class="link-style" id="continueWithoutUploading" href="@routes.CheckAnswersController.show()">@Messages("page.supportingDocuments.SupportingDocuments.link")</a>
         </div>
     </div>
 </div>
