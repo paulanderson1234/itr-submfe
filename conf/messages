@@ -409,8 +409,6 @@ page.supportingDocuments.SupportingDocuments.application.not.complete=Your appli
 page.supportingDocuments.SupportingDocuments.review=To support your application you''ll need to send us your company''s:
 page.supportingDocuments.SupportingDocuments.link=Continue without uploading
 
-
-
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
 page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondence address you want us to use for this application?
