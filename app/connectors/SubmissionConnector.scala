@@ -88,15 +88,15 @@ trait SubmissionConnector {
   }
 
   def createEnvelope()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.POSTEmpty[HttpResponse](s"$serviceUrl/file-upload/create-envelope")
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/file-upload/create-envelope")
   }
 
   def getEnvelopeStatus(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.GET[HttpResponse](s"$serviceUrl/file-upload/envelope/$envelopeId/get-envelope-status")
+    http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief/file-upload/envelope/$envelopeId/get-envelope-status")
   }
 
   def closeEnvelope(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    http.POSTEmpty[HttpResponse](s"$serviceUrl/file-upload/envelope/$envelopeId/close-envelope")
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/file-upload/envelope/$envelopeId/close-envelope")
   }
 
 }
