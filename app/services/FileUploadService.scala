@@ -127,7 +127,7 @@ trait FileUploadService {
           }
         }
       } else {
-        Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
+        Future.successful(HttpResponse(OK))
       }
 
     }.recover {

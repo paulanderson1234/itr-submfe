@@ -27,8 +27,10 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
+
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
 import models.submission.SubmissionResponse
+import services.FileUploadService
 
 import scala.concurrent.Future
 
@@ -40,6 +42,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   val submissionRequestValid = SubmissionRequest(contactValid, yourCompanyNeed)
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17", "FBUND09889765")
+  val mockFileUploadService = mock[FileUploadService]
 
   object TestController extends AcknowledgementController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -48,6 +51,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val registrationDetailsService = mockRegistrationDetailsService
+    override lazy val fileUploadService = mockFileUploadService
   }
 
   class SetupPageFull() {
@@ -83,8 +87,10 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 and delete the current application when a valid submission data is submitted" in new SetupPageFull {
+    "return a 200 and delete the current application when a valid submission data is submitted " +
+      "and closeEnvelope returns OK" in new SetupPageFull {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -93,8 +99,22 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+    "return a 500 and delete the current application when a valid submission data is submitted " +
+      "and closeEnvelope returns a non OK response" in new SetupPageFull {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+      setupMocks()
+      mockEnrolledRequest()
+      val result = TestController.show.apply(authorisedFakeRequest)
+      status(result) shouldBe INTERNAL_SERVER_ERROR
+    }
+  }
+
+  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+    "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data " +
+      "and closeEnvelope returns OK" in new SetupPageMinimum {
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -214,8 +234,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 if KI is set to false" in {
+    "return a 200 if KI is set to false and createEnvelope returns OK" in {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)

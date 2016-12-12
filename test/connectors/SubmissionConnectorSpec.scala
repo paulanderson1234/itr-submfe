@@ -284,7 +284,8 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     lazy val result = TestConnector.createEnvelope()
 
     "return the response from the http call" in {
-      when(mockHttp.POSTEmpty[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/create-envelope"))
+      when(mockHttp.POSTEmpty[HttpResponse]
+        (Matchers.eq(s"${TestConnector.serviceUrl}/investment-tax-relief/file-upload/create-envelope"))
         (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       await(result).status shouldBe OK
     }
@@ -296,7 +297,8 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     lazy val result = TestConnector.getEnvelopeStatus(envelopeID)
 
     "return the response from the http call" in {
-      when(mockHttp.GET[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/envelope/$envelopeID/get-envelope-status"))
+      when(mockHttp.GET[HttpResponse]
+        (Matchers.eq(s"${TestConnector.serviceUrl}/investment-tax-relief/file-upload/envelope/$envelopeID/get-envelope-status"))
         (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       await(result).status shouldBe OK
     }
@@ -308,7 +310,8 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     lazy val result = TestConnector.closeEnvelope(envelopeID)
 
     "return the response from the http call" in {
-      when(mockHttp.POSTEmpty[HttpResponse](Matchers.eq(s"${TestConnector.serviceUrl}/file-upload/envelope/$envelopeID/close-envelope"))
+      when(mockHttp.POSTEmpty[HttpResponse]
+        (Matchers.eq(s"${TestConnector.serviceUrl}/investment-tax-relief/file-upload/envelope/$envelopeID/close-envelope"))
         (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       await(result).status shouldBe OK
     }
