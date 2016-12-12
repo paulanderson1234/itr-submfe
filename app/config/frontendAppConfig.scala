@@ -33,6 +33,7 @@ trait AppConfig {
   val contactFrontendService: String
   val signOutPageUrl: String
   val submissionUrl: String
+  val fileUploadUrl: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -53,4 +54,5 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemPartialUrl = s"$contactFrontendService/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
+  override lazy val fileUploadUrl: String = loadConfig("file-upload.url")
 }

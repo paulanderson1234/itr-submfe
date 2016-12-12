@@ -57,4 +57,6 @@ trait Constants {
   val enrolmentOrgKey = "HMRC-TAVC-ORG"
   val enrolmentTavcRefKey = "TAVCRef"
 
+  val fileSizeLimit = 5242880
+
 }

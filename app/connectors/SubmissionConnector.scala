@@ -87,4 +87,16 @@ trait SubmissionConnector {
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/market-criteria/new-geographical/$newGeographical/new-product/$newProduct")
   }
 
+  def createEnvelope()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/file-upload/create-envelope")
+  }
+
+  def getEnvelopeStatus(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$serviceUrl/file-upload/envelope/$envelopeId/get-envelope-status")
+  }
+
+  def closeEnvelope(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/file-upload/envelope/$envelopeId/close-envelope")
+  }
+
 }

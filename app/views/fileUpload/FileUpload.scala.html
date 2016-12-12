@@ -1,0 +1,59 @@
+    @import uk.gov.hmrc.play.views.html.helpers.{form}
+    @import views.html.helpers.backButtonWithProgress
+    @(files: Array[FileModel])(implicit request: Request[_])
+
+    @main_template(Messages("page.fileUpload.title")) {
+
+        @backButtonWithProgress(controllers.routes.SupportingDocumentsController.show().url, Messages("common.section.progress.company.details.five"))
+
+        <div class="form-group">
+
+            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.fileUpload.heading")</h1>
+
+            <div class="form-group">
+                <p id="file-upload-desc">@Messages("page.fileUpload.desc")</p>
+            </div>
+
+            <p id="file-upload-restrictions">@Messages("page.fileUpload.restrictions")</p>
+            <ul class="list list-bullet">
+                <li id="file-restriction-one">@Messages("page.fileUpload.restrictions.one")</li>
+                <li id="file-restriction-two">@Messages("page.fileUpload.restrictions.two")</li>
+                <li id="file-restriction-three">@Messages("page.fileUpload.restrictions.three")</li>
+                <li id="file-restriction-four">@Messages("page.fileUpload.restrictions.four")</li>
+            </ul>
+
+            <table id="files-table">
+                <thead>
+                <tr>
+                    <td id="table-heading"><h2 class="heading-small">@Messages("page.fileUpload.table.heading")</h2></td>
+                    <td></td>
+                </tr>
+                </thead>
+                <tbody>
+                    @for((files, index) <- files.zipWithIndex) {
+                        <tr>
+                            <td id="file-@{index}">@files.name</td>
+                            <td></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+
+            @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+
+                <div class="form-group">
+                    <input type="file" name="supporting-docs" accept="application/pdf">
+                </div>
+
+                <div class="form-group">
+                    <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload")</button>
+                </div>
+            }
+
+            @form(action = routes.FileUploadController.submit()) {
+                <button class="button--link-style font-xsmall removeLink" type="submit" id="continue-link"> @Messages("page.fileUpload.continue")</button>
+            }
+
+        </div>
+    }
