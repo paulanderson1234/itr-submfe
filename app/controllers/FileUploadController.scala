@@ -22,9 +22,11 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
+import play.api.data.{Form, FormError}
 import services.FileUploadService
+import services.FileUploadService._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-
+import utils.Transformers._
 import views.html.fileUpload.FileUpload
 
 import scala.concurrent.Future
@@ -53,6 +55,10 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
 
   val upload = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val tempFile = request.body.asMultipartFormData.get.file("supporting-docs").get
+    val validation = (lessThanFiveMegabytes(tempFile.ref.file), isPDF(tempFile.contentType))
+    validation match {
+      case (false,_) => Future.successful(Ok)
+      case (true, false) => Future.successful(Ok)
     tempFile.ref.moveTo(new File(s"/tmp/${tempFile.filename}"))
     val file = new File(s"/tmp/${tempFile.filename}")
     fileUploadService.uploadFile(file).map {
@@ -64,5 +70,4 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
         Redirect(routes.FileUploadController.show())
     }
   }
-
 }

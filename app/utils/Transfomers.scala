@@ -21,6 +21,7 @@ import java.text.NumberFormat
 
 import akka.actor.Address
 import models.{AddressModel, ContactDetailsModel}
+import play.api.data.FormError
 
 import scala.util.{Failure, Success, Try}
 
@@ -66,6 +67,13 @@ object Transformers {
     pounds match {
       case Left(pounds) => pounds ++ "00"
       case Right(pounds) => (pounds * 100).toString
+    }
+  }
+
+
+  def errorBuilder(errors: Seq[(String,String)]): Seq[FormError] = {
+    errors.map{
+      case (key, message) => FormError(key,message)
     }
   }
 }

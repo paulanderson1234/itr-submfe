@@ -47,6 +47,7 @@ trait FileUploadService {
   val submissionConnector: SubmissionConnector
 
   val lessThanFiveMegabytes: File => Boolean = file => file.length() <= Constants.fileSizeLimit
+  val isPDF: Option[String] => Boolean = contentType => contentType.getOrElse("").equals("application/pdf")
 
   def getEnvelopeID(createNewID: Boolean = true)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[String] = {
     s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeID).flatMap {

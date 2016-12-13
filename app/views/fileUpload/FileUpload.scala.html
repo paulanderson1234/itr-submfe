@@ -2,7 +2,7 @@
 @import views.html.helpers.backButtonWithProgress
 @import models.fileUpload.EnvelopeFile
 
-@(files: Seq[EnvelopeFile])(implicit request: Request[_])
+@(files: Seq[EnvelopeFile], fileErrors: Seq[FormError] = Seq())(implicit request: Request[_])
 
 @sidebar = {
     <h2 class="heading-small" id="supporting-docs-heading"> @Messages("page.supportingDocuments.SupportingDocuments.heading")</h2>
@@ -22,6 +22,8 @@
     @backButtonWithProgress(controllers.routes.SupportingDocumentsController.show().url, Messages("common.section.progress.company.details.five"))
 
     <div class="form-group">
+
+        @errorSummaryFileUpload(fileErrors, "", "")
 
         <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.fileUpload.heading")</h1>
 
