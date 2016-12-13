@@ -83,7 +83,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+        redirectLocation(result) shouldBe Some(routes.FileUploadController.show.url)
       }
     }
   }
