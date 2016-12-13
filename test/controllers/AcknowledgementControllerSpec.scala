@@ -42,7 +42,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   val submissionRequestValid = SubmissionRequest(contactValid, yourCompanyNeed)
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17", "FBUND09889765")
-  val mockFileUploadService = mock[FileUploadService]
+
 
   object TestController extends AcknowledgementController {
     override lazy val applicationConfig = FrontendAppConfig

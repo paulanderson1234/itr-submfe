@@ -19,12 +19,10 @@ package services
 import java.io.File
 
 import auth.TAVCUser
-import common.KeystoreKeys
-import config.FrontendAppConfig
-import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
-import models.upload.{Envelope, EnvelopeFile}
+import common.{Constants, KeystoreKeys}
+import connectors.{SubmissionConnector, FileUploadConnector, S4LConnector}
+import models.fileUpload.{Envelope, EnvelopeFile}
 import play.api.Logger
-import play.api.libs.ws.WSResponse
 
 import scala.util.control.Breaks._
 import play.mvc.Http.Status._
@@ -47,6 +45,8 @@ trait FileUploadService {
   val fileUploadConnector: FileUploadConnector
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
+
+  val lessThanFiveMegabytes: File => Boolean = file => file.length() <= Constants.fileSizeLimit
 
   def getEnvelopeID(createNewID: Boolean = true)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[String] = {
     s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeID).flatMap {

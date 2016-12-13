@@ -22,14 +22,12 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import models.FileModel
-import play.api.mvc.Action
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
-import scala.concurrent.Future
 import views.html.fileUpload.FileUpload
 
+import scala.concurrent.Future
 
 
 object FileUploadController extends FileUploadController{
@@ -45,19 +43,12 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
 
   val fileUploadService: FileUploadService
 
-  val lessThanFiveMegabytes: Long => Boolean = bytes => bytes <= Constants.fileSizeLimit
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     fileUploadService.getEnvelopeFiles.map(files => Ok(FileUpload(files)))
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    fileUploadService.closeEnvelope.map {
-      result => result.status match {
-        case CREATED => Ok("ENVELOPE CLOSED")
-        case _ => Ok("UH OH")
-      }
-    }
+    Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 
   val upload = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -68,18 +59,10 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
       response =>
         fileUploadService.checkEnvelopeStatus.map {
           result =>
-            file.delete()//bye
-            println(result.toString)
+            file.delete()
         }
-        Ok(response.status.toString)
+        Redirect(routes.FileUploadController.show())
     }
-//    request.body.file("supporting-docs").map { document =>
-//      if(lessThanFiveMegabytes(document.ref.file.length())) {
-//        Ok("File uploaded")
-//      } else BadRequest("Too large")
-//    }.getOrElse {
-//      InternalServerError
-//    }
   }
 
 }

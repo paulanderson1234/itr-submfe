@@ -19,12 +19,13 @@ package controllers.helpers
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
+import models.fileUpload.{EnvelopeFile, Metadata}
 import models.registration.RegistrationDetailsModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
@@ -34,6 +35,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
+  val mockFileUploadService = mock[FileUploadService]
+
 
   override def beforeEach() {
     reset(mockS4lConnector)
@@ -137,5 +140,10 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val usedInvestmentReasonBeforeModelNo = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonNoValue)
 
   val yourCompanyNeedModel = YourCompanyNeedModel("AA")
+
+  val metaData = Metadata(None)
+  val fileOne = EnvelopeFile("1","status","testOne.pdf","pdf","dateCreated",metaData,"href")
+  val fileTwo = EnvelopeFile("2","status","testTwo.pdf","pdf","dateCreated",metaData,"href")
+  val files = Seq(fileOne,fileTwo)
 
 }
