@@ -16,21 +16,20 @@
 
 package controllers
 
-import java.io.File
-
+import utils.MultipartFormDataParser._
+import config.FrontendGlobal.internalServerErrorTemplate
 import auth.AuthorisedAndEnrolledForTAVC
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
 import models.FileModel
-import play.api.mvc.Action
+import play.api.mvc.{Action, MultipartFormData}
+import play.api.mvc.BodyParsers.parse._
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 import views.html.fileUpload.FileUpload
-
-
 
 object FileUploadController extends FileUploadController{
   override lazy val applicationConfig = FrontendAppConfig
@@ -50,7 +49,12 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
   val lessThanFiveMegabytes: Long => Boolean = bytes => bytes <= Constants.fileSizeLimit
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(FileUpload(files)))
+    fileUploadService.getEnvelopeID().map {
+      case envelopeID if envelopeID.nonEmpty => {
+        Ok(FileUpload(files, envelopeID))
+      }
+      case _ => InternalServerError(internalServerErrorTemplate)
+    }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -62,26 +66,18 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
     }
   }
 
-  val upload = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    val tempFile = request.body.asMultipartFormData.get.file("supporting-docs").get
-    tempFile.ref.moveTo(new File(s"/tmp/${tempFile.filename}"))
-    val file = new File(s"/tmp/${tempFile.filename}")
-    fileUploadService.uploadFile(file).map {
-      response =>
-        fileUploadService.checkEnvelopeStatus.map {
-          result =>
-            file.delete()//bye
-            println(result.toString)
-        }
-        Ok(response.status.toString)
-    }
-//    request.body.file("supporting-docs").map { document =>
-//      if(lessThanFiveMegabytes(document.ref.file.length())) {
-//        Ok("File uploaded")
-//      } else BadRequest("Too large")
-//    }.getOrElse {
-//      InternalServerError
-//    }
+  def upload: Action[MultipartFormData[Array[Byte]]] = Action.async(multipartFormData(multipartFormDataParser)) {
+    implicit request =>
+      val envelopeID = request.body.dataParts("envelope-id").head
+      if(request.body.file("supporting-docs").isDefined) {
+        val file = request.body.file("supporting-docs").get
+          fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
+            case response if response.status == OK => Ok(response.status.toString)
+            case _ => InternalServerError(internalServerErrorTemplate)
+          }
+      } else {
+        Future.successful(InternalServerError(internalServerErrorTemplate))
+      }
   }
 
 }

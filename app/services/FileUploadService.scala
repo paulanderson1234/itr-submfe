@@ -76,18 +76,15 @@ trait FileUploadService {
     }
   }
 
-  def uploadFile(file: File)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
+  def uploadFile(file: Array[Byte], fileName: String, envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[HttpResponse] = {
     for {
-      envelopeID <- getEnvelopeID()
       fileID <- generateFileID(envelopeID)
-      result <- fileUploadConnector.addFileContent(envelopeID, fileID, file, PDF)
+      result <- fileUploadConnector.addFileContent(envelopeID, fileID, fileName, file, PDF)
     } yield result.status match {
       case OK =>
-        file.delete()
         HttpResponse(result.status)
       case _ =>
         Logger.warn(s"[FileUploadConnector][uploadFile] Error ${result.status} received.")
-        file.delete()
         HttpResponse(result.status)
     }
   }
@@ -139,7 +136,7 @@ trait FileUploadService {
     }
   }
 
-  private def generateFileID(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Int] = {
+  private def generateFileID(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Int] = {
     submissionConnector.getEnvelopeStatus(envelopeID).map {
       result =>
         val envelope = result.json.as[Envelope]
@@ -152,49 +149,49 @@ trait FileUploadService {
   }
 
   //TODO: Determine whether control files are required
-  private def addControlFiles(envelopeID: String, files: Seq[EnvelopeFile])
-                             (implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-
-    def generateControlFile: Future[File] = Future.successful(File.createTempFile("hello", ".xml"))
-
-    tryBreakable {
-      for (file <- files) {
-        for {
-          fileID <- generateFileID(envelopeID)
-          controlFile <- generateControlFile
-          result <- fileUploadConnector.addFileContent(envelopeID, fileID, controlFile, XML)
-        } yield if(result.status != OK) break
-      }
-      Future.successful(true)
-    } catchBreak {
-      Future.successful(false)
-    }
-  }
+//  private def addControlFiles(envelopeID: String, files: Seq[EnvelopeFile])
+//                             (implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
+//
+//    def generateControlFile: Future[File] = Future.successful(File.createTempFile("hello", ".xml"))
+//
+//    tryBreakable {
+//      for (file <- files) {
+//        for {
+//          fileID <- generateFileID(envelopeID)
+//          controlFile <- generateControlFile
+//          result <- fileUploadConnector.addFileContent(envelopeID, fileID, controlFile, XML)
+//        } yield if(result.status != OK) break
+//      }
+//      Future.successful(true)
+//    } catchBreak {
+//      Future.successful(false)
+//    }
+//  }
 
   //TODO: Determine whether manifest files are required
-  private def addManifestFile(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-
-    val manifestFile = File.createTempFile("hello", ".xml")
-
-    fileUploadConnector.addFileContent(envelopeID, OK, manifestFile, XML).map {
-      result => result.status match {
-        case OK => true
-        case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
-          false
-      }
-    }
-  }
+//  private def addManifestFile(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
+//
+//    val manifestFile = File.createTempFile("hello", ".xml")
+//
+//    fileUploadConnector.addFileContent(envelopeID, OK, manifestFile, XML).map {
+//      result => result.status match {
+//        case OK => true
+//        case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
+//          false
+//      }
+//    }
+//  }
 
   //TODO: Determine whether this step is required
-  private def generateAdditionalFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-    for {
-      envelopeFiles <- getEnvelopeFiles
-      controlFilesUploaded <- addControlFiles(envelopeID,envelopeFiles)
-      manifestFileUploaded <- addManifestFile(envelopeID)
-    } yield (controlFilesUploaded, manifestFileUploaded) match {
-      case (true, true) => true
-      case (_,_) => false
-    }
-  }
+//  private def generateAdditionalFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
+//    for {
+//      envelopeFiles <- getEnvelopeFiles
+//      controlFilesUploaded <- addControlFiles(envelopeID,envelopeFiles)
+//      manifestFileUploaded <- addManifestFile(envelopeID)
+//    } yield (controlFilesUploaded, manifestFileUploaded) match {
+//      case (true, true) => true
+//      case (_,_) => false
+//    }
+//  }
 
 }

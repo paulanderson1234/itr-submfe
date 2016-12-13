@@ -16,10 +16,10 @@
 
 package utils
 
-import java.io.{ByteArrayOutputStream, File}
+import java.io.ByteArrayOutputStream
 
 import com.ning.http.client.FluentCaseInsensitiveStringsMap
-import com.ning.http.multipart.{FilePart, MultipartRequestEntity, StringPart}
+import com.ning.http.multipart.{ByteArrayPartSource, FilePart, MultipartRequestEntity, StringPart}
 import play.api.http.HeaderNames._
 import play.api.http.{ContentTypeOf, Writeable}
 import play.api.mvc.{Codec, MultipartFormData}
@@ -30,15 +30,15 @@ object MultipartFormDataWriteable {
     ContentTypeOf[MultipartFormData[A]](Some("multipart/form-data; boundary=__X_PROCESS_STREET_BOUNDARY__"))
   }
 
-  implicit def writeable(implicit contentType: ContentTypeOf[MultipartFormData[File]]): Writeable[MultipartFormData[File]] = {
-    Writeable[MultipartFormData[File]]((formData: MultipartFormData[File]) => {
+  implicit def writeable(implicit contentType: ContentTypeOf[MultipartFormData[Array[Byte]]]): Writeable[MultipartFormData[Array[Byte]]] = {
+    Writeable[MultipartFormData[Array[Byte]]]((formData: MultipartFormData[Array[Byte]]) => {
 
       val stringParts = formData.dataParts flatMap {
         case (key, values) => values map (new StringPart(key, _))
       }
 
       val fileParts = formData.files map { filePart =>
-        new FilePart(filePart.key, filePart.ref, filePart.contentType getOrElse "application/octet-stream",null)
+        new FilePart(filePart.key, new ByteArrayPartSource(filePart.filename, filePart.ref),filePart.contentType.get, null)
       }
 
       val parts = stringParts ++ fileParts

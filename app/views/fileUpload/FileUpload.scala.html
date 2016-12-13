@@ -1,6 +1,6 @@
     @import uk.gov.hmrc.play.views.html.helpers.{form}
     @import views.html.helpers.backButtonWithProgress
-    @(files: Array[FileModel])(implicit request: Request[_])
+    @(files: Array[FileModel], envelopeID: String)(implicit request: Request[_])
 
     @main_template(Messages("page.fileUpload.title")) {
 
@@ -41,6 +41,10 @@
 
 
             @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+
+                <div class="form-group">
+                    <input type="hidden" name="envelope-id" value="@envelopeID">
+                </div>
 
                 <div class="form-group">
                     <input type="file" name="supporting-docs" accept="application/pdf">
