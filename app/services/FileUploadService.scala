@@ -83,9 +83,11 @@ trait FileUploadService {
       result <- fileUploadConnector.addFileContent(envelopeID, fileID, file, PDF)
     } yield result.status match {
       case OK =>
+        file.delete()
         HttpResponse(result.status)
       case _ =>
         Logger.warn(s"[FileUploadConnector][uploadFile] Error ${result.status} received.")
+        file.delete()
         HttpResponse(result.status)
     }
   }
