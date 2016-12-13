@@ -25,11 +25,13 @@ import views.html.fileUpload.FileUpload
 
 class FileUploadSpec extends ViewSpec {
 
+  val envelopeID = "00000000-0000-0000-0000-000000000000"
+
   "The FileUpload page" should {
 
     "contain the correct elements when loaded with no files" in {
 
-      lazy val page = FileUpload(Seq())(fakeRequest)
+      lazy val page = FileUpload(Seq(), envelopeID)(fakeRequest)
       lazy val document = Jsoup.parse(contentAsString(page))
 
       //title and heading
@@ -72,7 +74,7 @@ class FileUploadSpec extends ViewSpec {
 
     "contain the correct elements when loaded with one or more files" in {
 
-      lazy val page = FileUpload(files)(fakeRequest)
+      lazy val page = FileUpload(files, envelopeID)(fakeRequest)
       lazy val document = Jsoup.parse(contentAsString(page))
 
       //title and heading

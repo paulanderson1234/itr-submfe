@@ -606,6 +606,9 @@ page.fileUpload.status.placeholder=uploaded
 page.fileUpload.upload=Upload a Document
 page.fileUpload.upload.another=Upload another Document
 page.fileUpload.continue=Continue
+page.fileUpload.validation.size=Your PDF is over 5 megabytes in size
+page.fileUpload.validation.type=TEST TYPE
+page.fileUpload.validation.amount=TEST AMOUNT
 
 ## Feedback ##
 feedback.title = Feedback

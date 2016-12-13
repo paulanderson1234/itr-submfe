@@ -16,29 +16,20 @@
 
 package controllers
 
-import java.io.File
 import java.net.URLEncoder
-import java.nio.file.{Files, Paths}
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import connectors.EnrolmentConnector
 import helpers.ControllerSpec
-import models._
 import models.fileUpload.{Metadata, EnvelopeFile}
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.libs.Files.TemporaryFile
-import play.api.mvc.MultipartFormData
-import play.api.mvc.MultipartFormData.FilePart
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.FileUploadService
-
-import scala.concurrent.Future
 
 class FileUploadControllerSpec extends ControllerSpec {
+
+  val envelopeID = "00000000-0000-0000-0000-000000000000"
 
   object TestController extends FileUploadController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -48,6 +39,8 @@ class FileUploadControllerSpec extends ControllerSpec {
   }
 
   def setupMocks(): Unit = {
+    when(mockFileUploadService.getEnvelopeID(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(envelopeID)
     when(mockFileUploadService.getEnvelopeFiles(Matchers.any(),Matchers.any(), Matchers.any()))
       .thenReturn(files)
   }

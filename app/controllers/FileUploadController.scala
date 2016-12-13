@@ -16,21 +16,17 @@
 
 package controllers
 
-import java.io.File
-
+import utils.MultipartFormDataParser._
+import config.FrontendGlobal.internalServerErrorTemplate
 import auth.AuthorisedAndEnrolledForTAVC
-import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import play.api.data.{Form, FormError}
+import play.api.mvc.{Action, MultipartFormData}
+import play.api.mvc.BodyParsers.parse._
 import services.FileUploadService
-import services.FileUploadService._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import utils.Transformers._
 import views.html.fileUpload.FileUpload
-
 import scala.concurrent.Future
-
 
 object FileUploadController extends FileUploadController{
   override lazy val applicationConfig = FrontendAppConfig
@@ -39,35 +35,37 @@ object FileUploadController extends FileUploadController{
   override lazy val fileUploadService = FileUploadService
 }
 
-
-
-trait FileUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait FileUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    fileUploadService.getEnvelopeFiles.map(files => Ok(FileUpload(files)))
+    for {
+      envelopeID <- fileUploadService.getEnvelopeID()
+      files <- fileUploadService.getEnvelopeFiles
+    } yield (envelopeID, files) match {
+      case (_,_) if envelopeID.nonEmpty => Ok(FileUpload(files, envelopeID))
+      case (_,_) => InternalServerError(internalServerErrorTemplate)
+    }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 
-  val upload = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    val tempFile = request.body.asMultipartFormData.get.file("supporting-docs").get
-    val validation = (lessThanFiveMegabytes(tempFile.ref.file), isPDF(tempFile.contentType))
-    validation match {
-      case (false,_) => Future.successful(Ok)
-      case (true, false) => Future.successful(Ok)
-    tempFile.ref.moveTo(new File(s"/tmp/${tempFile.filename}"))
-    val file = new File(s"/tmp/${tempFile.filename}")
-    fileUploadService.uploadFile(file).map {
-      response =>
-        fileUploadService.checkEnvelopeStatus.map {
-          result =>
-            file.delete()
+  def upload: Action[MultipartFormData[Array[Byte]]] = Action.async(multipartFormData(multipartFormDataParser)) {
+    implicit request =>
+      val envelopeID = request.body.dataParts("envelope-id").head
+      if(request.body.file("supporting-docs").isDefined) {
+        val file = request.body.file("supporting-docs").get
+        fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
+          case response if response.status == OK => Redirect(routes.FileUploadController.show())
+          case _ => InternalServerError(internalServerErrorTemplate)
         }
-        Redirect(routes.FileUploadController.show())
-    }
+      } else {
+        Future.successful(InternalServerError(internalServerErrorTemplate))
+      }
   }
+
+
 }

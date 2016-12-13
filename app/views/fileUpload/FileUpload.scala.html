@@ -1,8 +1,9 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import views.html.helpers.backButtonWithProgress
+@import views.html.helpers.errorSummaryFileUpload
 @import models.fileUpload.EnvelopeFile
 
-@(files: Seq[EnvelopeFile], fileErrors: Seq[FormError] = Seq())(implicit request: Request[_])
+@(files: Seq[EnvelopeFile], envelopeID: String, fileErrors: Seq[FormError] = Seq())(implicit request: Request[_])
 
 @sidebar = {
     <h2 class="heading-small" id="supporting-docs-heading"> @Messages("page.supportingDocuments.SupportingDocuments.heading")</h2>
@@ -23,7 +24,11 @@
 
     <div class="form-group">
 
-        @errorSummaryFileUpload(fileErrors, "", "")
+        @if(files.size == 0){
+            @errorSummaryFileUpload(fileErrors, "file-upload", "upload-button")
+        }else{
+            @errorSummaryFileUpload(fileErrors, "file-upload", "upload-button-another")
+        }
 
         <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.fileUpload.heading")</h1>
 
@@ -76,6 +81,10 @@
 
         <div class="form-group">
             @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+
+                <div class="form-group">
+                    <input type="hidden" name="envelope-id" value="@envelopeID">
+                </div>
 
                 <div class="form-group">
                     <input id="file-input" type="file" name="supporting-docs" accept="application/pdf">

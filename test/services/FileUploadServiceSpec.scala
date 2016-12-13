@@ -43,6 +43,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
   val envelopeID = "00000000-0000-0000-0000-000000000000"
   val fileID = 1
   val envelopeStatus = "OPEN"
+  val fileName = "test"
   implicit val hc = HeaderCarrier()
   implicit val user = TAVCUser(ggUser.allowedAuthContext)
 
@@ -202,20 +203,19 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
   "uploadFile" when {
 
-    val testFile = Files.createTempFile("test","pdf").toFile
-    testFile.deleteOnExit()
+    val testFile = Array("1".toByte)
 
     "The envelope has no files and the file is uploaded successfully" should {
 
-      lazy val result = TestService.uploadFile(testFile)
+      lazy val result = TestService.uploadFile(testFile, fileName, envelopeID)
 
       "Return OK" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(envelopeID)))
         when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusResponse))))
-        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(1), Matchers.eq(testFile), Matchers.eq(TestService.PDF))
-        (Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(1), Matchers.eq(fileName),
+          Matchers.eq(testFile), Matchers.eq(TestService.PDF))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
         await(result).status shouldBe OK
       }
 
@@ -223,15 +223,15 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "The envelope has a file and the file is uploaded successfully" should {
 
-      lazy val result = TestService.uploadFile(testFile)
+      lazy val result = TestService.uploadFile(testFile, fileName, envelopeID)
 
       "Return OK" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(envelopeID)))
         when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusWithFileResponse))))
-        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(2), Matchers.eq(testFile), Matchers.eq(TestService.PDF))
-        (Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(2), Matchers.eq(fileName),
+          Matchers.eq(testFile), Matchers.eq(TestService.PDF))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
         await(result).status shouldBe OK
       }
 
@@ -239,15 +239,15 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "The file is not uploaded successfully" should {
 
-      lazy val result = TestService.uploadFile(testFile)
+      lazy val result = TestService.uploadFile(testFile, fileName, envelopeID)
 
       "Return OK" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(envelopeID)))
         when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusWithFileResponse))))
-        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(2), Matchers.eq(testFile), Matchers.eq(TestService.PDF))
-        (Matchers.any())).thenReturn(Future.successful(FakeWSResponse(INTERNAL_SERVER_ERROR)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.eq(2), Matchers.eq(fileName),
+          Matchers.eq(testFile), Matchers.eq(TestService.PDF))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(INTERNAL_SERVER_ERROR)))
         await(result).status shouldBe INTERNAL_SERVER_ERROR
       }
 
