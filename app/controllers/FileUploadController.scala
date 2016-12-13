@@ -71,7 +71,7 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
         fileUploadService.checkEnvelopeStatus.map {
           result =>
             file.delete()//bye
-            println(result.json.toString())
+            println(result.toString)
         }
         Ok(response.status.toString)
     }
