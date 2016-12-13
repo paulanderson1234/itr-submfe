@@ -21,7 +21,7 @@ import java.nio.file.Files
 import auth.{TAVCUser, ggUser}
 import common.KeystoreKeys
 import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
-import models.upload.{Envelope, EnvelopeFile, Metadata}
+import models.fileUpload.{Envelope, EnvelopeFile, Metadata}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfter

@@ -19,17 +19,14 @@ package controllers
 import utils.MultipartFormDataParser._
 import config.FrontendGlobal.internalServerErrorTemplate
 import auth.AuthorisedAndEnrolledForTAVC
-import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import models.FileModel
 import play.api.mvc.{Action, MultipartFormData}
 import play.api.mvc.BodyParsers.parse._
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-
-import scala.concurrent.Future
 import views.html.fileUpload.FileUpload
+import scala.concurrent.Future
 
 object FileUploadController extends FileUploadController{
   override lazy val applicationConfig = FrontendAppConfig
@@ -38,32 +35,22 @@ object FileUploadController extends FileUploadController{
   override lazy val fileUploadService = FileUploadService
 }
 
-
-
-trait FileUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait FileUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val fileUploadService: FileUploadService
 
-  val files = Array(FileModel("test-file-1"), FileModel("test-file-2"))
-
-  val lessThanFiveMegabytes: Long => Boolean = bytes => bytes <= Constants.fileSizeLimit
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    fileUploadService.getEnvelopeID().map {
-      case envelopeID if envelopeID.nonEmpty => {
-        Ok(FileUpload(files, envelopeID))
-      }
-      case _ => InternalServerError(internalServerErrorTemplate)
+    for {
+      envelopeID <- fileUploadService.getEnvelopeID()
+      files <- fileUploadService.getEnvelopeFiles
+    } yield (envelopeID, files) match {
+      case (_,_) if envelopeID.nonEmpty => Ok(FileUpload(files, envelopeID))
+      case (_,_) => InternalServerError(internalServerErrorTemplate)
     }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    fileUploadService.closeEnvelope.map {
-      result => result.status match {
-        case CREATED => Ok("ENVELOPE CLOSED")
-        case _ => Ok("UH OH")
-      }
-    }
+    Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 
   def upload: Action[MultipartFormData[Array[Byte]]] = Action.async(multipartFormData(multipartFormDataParser)) {
@@ -72,7 +59,7 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
       if(request.body.file("supporting-docs").isDefined) {
         val file = request.body.file("supporting-docs").get
           fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
-            case response if response.status == OK => Ok(response.status.toString)
+            case response if response.status == OK => Redirect(routes.FileUploadController.show())
             case _ => InternalServerError(internalServerErrorTemplate)
           }
       } else {

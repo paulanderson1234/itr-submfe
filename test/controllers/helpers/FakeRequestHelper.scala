@@ -16,12 +16,17 @@
 
 package controllers.helpers
 
+import java.io.File
+import java.nio.file.{Paths, Files}
 import java.util.UUID
 
 import auth._
 import builders.SessionBuilder
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Action, AnyContent, Result}
-import play.api.test.FakeRequest
+import play.api.libs.Files.TemporaryFile
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc._
+import play.api.test.{FakeHeaders, FakeRequest}
+import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.SessionKeys
 
 import scala.concurrent.Future
@@ -32,6 +37,16 @@ trait FakeRequestHelper{
   lazy val fakeRequestWithSession = fakeRequest.withSession(SessionKeys.sessionId -> s"session-$sessionId")
   lazy val authorisedFakeRequest = authenticatedFakeRequest()
   lazy val timedOutFakeRequest = timeoutFakeRequest()
+
+  lazy val multipartFileData = {
+    val tempFile = TemporaryFile(new java.io.File("/tmp/test.file"))
+    val part = FilePart[TemporaryFile](key = "supporting-docs", filename = "test.file", contentType = Some(".pdf"), ref = tempFile)
+    MultipartFormData(
+      dataParts = Map(),
+      files = Seq(part),
+      badParts = Seq(),
+      missingFileParts = Seq())
+  }
 
   def fakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
     fakeRequest.withFormUrlEncodedBody(input: _*)
@@ -87,6 +102,11 @@ trait FakeRequestHelper{
 
   def submitWithTimeout(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
     val result = action.apply(timeoutFakeRequestToPOST(input: _*))
+    test(result)
+  }
+
+  def submitWithSessionAndAuthAndMultiPartFileData(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
+    val result = action.apply(authorisedFakeRequestToPOST(input: _*).withMultipartFormDataBody(multipartFileData))
     test(result)
   }
 
