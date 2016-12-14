@@ -1,0 +1,20 @@
+@import models.fileUpload.EnvelopeFile
+@(files: Seq[EnvelopeFile], envelopeID: String)(implicit request: Request[_])
+
+<div class="form-group">
+        <input type="hidden" id="envelope-id" name="envelope-id" value="@envelopeID">
+</div>
+
+<div class="form-group">
+    <input id="file-input" type="file" name="supporting-docs" accept="application/pdf">
+</div>
+
+@if(files.size == 0){
+<div class="form-group">
+    <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload")</button>
+</div>
+}else{
+<div class="form-group">
+    <button class="btn button" type="submit" id="upload-button-another">@Messages("page.fileUpload.upload.another")</button>
+</div>
+}

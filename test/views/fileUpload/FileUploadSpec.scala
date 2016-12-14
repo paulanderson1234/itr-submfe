@@ -108,10 +108,6 @@ class FileUploadSpec extends ViewSpec {
       filesTable.select("tr").get(1).getElementById("file-1").text() shouldBe "testTwo.pdf"
       filesTable.select("tr").get(1).getElementById("status-1").text() shouldBe Messages("page.fileUpload.status.placeholder")
 
-
-      //Dynamic button
-      document.body.getElementById("upload-button-another").text() shouldBe Messages("page.fileUpload.upload.another")
-
       document.body.getElementById("continue-link").text() shouldBe Messages("page.fileUpload.continue")
 
       document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url

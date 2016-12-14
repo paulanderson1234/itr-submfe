@@ -4,6 +4,12 @@ $("#ninetyPercentErrorSection").hide();
 
 $(document).ready($(function() {
 
+   var $javascriptEnabled = $('#javascript-enabled')
+   var $javascriptDisabled = $('#javascript-disabled')
+
+   $javascriptEnabled.style.display = 'block';
+   $javascriptDisabled.style.display = 'none';
+
   $(".removeLink").each(function()  {
 
       $( this ).on( 'focus', function() {
