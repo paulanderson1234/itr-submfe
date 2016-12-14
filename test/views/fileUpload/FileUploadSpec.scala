@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.fileUpload
 
 import controllers.routes
 import org.jsoup.Jsoup
