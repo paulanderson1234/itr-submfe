@@ -46,10 +46,8 @@ trait FileUploadService {
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-
-
   val lessThanFiveMegabytes: Int => Boolean = length => length <= Constants.fileSizeLimit
-  val isPDF: Option[String] => Boolean = contentType => contentType.getOrElse("").equals("application/pdf")
+  val isPDF: String => Boolean = fileName => fileName.matches("""([\w]\S*?\.[pP][dD][fF])""")
 //  val exceedsFileNumberLimit: Future[Boolean] = getEnvelopeFiles.map {
 //    files => files.size == Constants.numberOfFilesLimit
 //  }
@@ -71,15 +69,14 @@ trait FileUploadService {
     }
   }
 
-  def checkEnvelopeStatus(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Option[Envelope]] = {
-    for {
-      envelopeID <- getEnvelopeID()
-      result <- submissionConnector.getEnvelopeStatus(envelopeID)
-    } yield result.status match {
-      case OK =>
-        result.json.asOpt[Envelope]
-      case _ => Logger.warn(s"[FileUploadConnector][checkEnvelopeStatus] Error ${result.status} received.")
-        None
+  def checkEnvelopeStatus(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Option[Envelope]] = {
+      submissionConnector.getEnvelopeStatus(envelopeID).map {
+      result => result.status match {
+        case OK =>
+          result.json.asOpt[Envelope]
+        case _ => Logger.warn(s"[FileUploadConnector][checkEnvelopeStatus] Error ${result.status} received.")
+          None
+      }
     }
   }
 
@@ -96,8 +93,8 @@ trait FileUploadService {
     }
   }
 
-  def getEnvelopeFiles(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Seq[EnvelopeFile]] = {
-    checkEnvelopeStatus.map {
+  def getEnvelopeFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Seq[EnvelopeFile]] = {
+    checkEnvelopeStatus(envelopeID).map {
       case Some(envelope)=> envelope.files.getOrElse(Seq())
       case _ => Seq()
     }

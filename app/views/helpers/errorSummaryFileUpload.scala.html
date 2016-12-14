@@ -20,10 +20,10 @@
             </a>
         </li>
         } else {
-        <li role="tooltip" data-journey="@page:error:@error.key">
-            <a href="#@error.key"
+        <li role="tooltip" data-journey="@page:error:@errorKey">
+            <a href="#@errorKey"
                id="@{error.key}-error-summary"
-               data-focuses="@error.key">
+               data-focuses="@errorKey">
                 @Messages(error.message, error.args: _*)
             </a>
         </li>
