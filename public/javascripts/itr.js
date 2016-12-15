@@ -4,11 +4,10 @@ $("#ninetyPercentErrorSection").hide();
 
 $(document).ready($(function() {
 
-   var $javascriptEnabled = $('#javascript-enabled')
-   var $javascriptDisabled = $('#javascript-disabled')
 
-   $javascriptEnabled.style.display = 'block';
-   $javascriptDisabled.style.display = 'none';
+   // File upload button to upload
+   document.getElementById("javascript-enabled").style.display = "block";
+   document.getElementById("javascript-disabled").style.display = "none";
 
   $(".removeLink").each(function()  {
 
