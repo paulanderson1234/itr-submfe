@@ -110,7 +110,7 @@ class FileUploadSpec extends ViewSpec {
 
 
       //Dynamic button
-      document.body.getElementById("upload-button-another").text() shouldBe Messages("page.fileUpload.upload.another")
+      document.body.getElementById("upload-button").text() shouldBe Messages("page.fileUpload.upload.another")
 
       document.body.getElementById("continue-link").text() shouldBe Messages("page.fileUpload.continue")
 

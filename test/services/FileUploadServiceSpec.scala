@@ -16,11 +16,10 @@
 
 package services
 
-import java.nio.file.Files
-
 import auth.{TAVCUser, ggUser}
 import common.KeystoreKeys
 import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
+import fixtures.SubmissionFixture
 import models.fileUpload.{Envelope, EnvelopeFile, Metadata}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -35,7 +34,7 @@ import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeApplication with BeforeAndAfter {
+class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeApplication with BeforeAndAfter with SubmissionFixture {
 
   val mockFileUploadConnector = mock[FileUploadConnector]
   val mockS4LConnector = mock[S4LConnector]
@@ -173,7 +172,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "getEnvelopeID returns a non empty string and getEnvelopeStatus returns OK" should {
 
-      lazy val result = TestService.checkEnvelopeStatus
+      lazy val result = TestService.checkEnvelopeStatus(envelopeID)
 
       "Return the envelope" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -187,7 +186,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "getEnvelopeID returns a non empty string and getEnvelopeStatus returns non OK" should {
 
-      lazy val result = TestService.checkEnvelopeStatus
+      lazy val result = TestService.checkEnvelopeStatus(envelopeID)
 
       "Return None" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -259,7 +258,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "checkEnvelopeStatus returns an envelope with a file" should {
 
-      lazy val result = TestService.getEnvelopeFiles
+      lazy val result = TestService.getEnvelopeFiles(envelopeID)
 
       "return a sequence with envelope files in it" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -273,7 +272,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "checkEnvelopeStatus returns an envelope with no files" should {
 
-      lazy val result = TestService.getEnvelopeFiles
+      lazy val result = TestService.getEnvelopeFiles(envelopeID)
 
       "return an empty Seq" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -289,13 +288,15 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
   "closeEnvelope" when {
 
-    "getEnvelopeID returns a non-empty envelope ID, and closeEnvelope returns OK" should {
+    "getEnvelopeID returns a non-empty envelope ID, addMetadataFile returns OK and closeEnvelope returns OK" should {
 
-      lazy val result = TestService.closeEnvelope
+      lazy val result = TestService.closeEnvelope(tavcReferenceId)
 
       "return the http response" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(envelopeID)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.any(), Matchers.eq(s"$envelopeID.xml"), Matchers.any(),
+          Matchers.eq(TestService.XML))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
         when(mockSubmissionConnector.closeEnvelope(Matchers.eq(envelopeID))(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(OK)))
         await(result).status shouldBe OK
@@ -303,13 +304,15 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     }
 
-    "getEnvelopeID returns a non-empty envelope ID, and closeEnvelope returns non OK" should {
+    "getEnvelopeID returns a non-empty envelope ID, addMetadataFile returns OK and closeEnvelope returns non OK" should {
 
-      lazy val result = TestService.closeEnvelope
+      lazy val result = TestService.closeEnvelope(tavcReferenceId)
 
       "return the http response" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.successful(Some(envelopeID)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.any(), Matchers.eq(s"$envelopeID.xml"), Matchers.any(),
+          Matchers.eq(TestService.XML))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(OK)))
         when(mockSubmissionConnector.closeEnvelope(Matchers.eq(envelopeID))(Matchers.any()))
           .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
         await(result).status shouldBe INTERNAL_SERVER_ERROR
@@ -317,9 +320,23 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     }
 
+    "getEnvelopeID returns a non-empty envelope ID, addMetadataFile returns non OK" should {
+
+      lazy val result = TestService.closeEnvelope(tavcReferenceId)
+
+      "return the http response" in {
+        when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(envelopeID)))
+        when(mockFileUploadConnector.addFileContent(Matchers.eq(envelopeID), Matchers.any(), Matchers.eq(s"$envelopeID.xml"), Matchers.any(),
+          Matchers.eq(TestService.XML))(Matchers.any())).thenReturn(Future.successful(FakeWSResponse(INTERNAL_SERVER_ERROR)))
+        await(result).status shouldBe INTERNAL_SERVER_ERROR
+      }
+
+    }
+
     "getEnvelopeID returns an empty envelope ID" should {
 
-      lazy val result = TestService.closeEnvelope
+      lazy val result = TestService.closeEnvelope(tavcReferenceId)
 
       "return an INTERNAL_SERVER_ERROR" in {
         when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))

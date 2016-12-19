@@ -20,8 +20,8 @@ import java.io.File
 
 import auth.TAVCUser
 import common.{Constants, KeystoreKeys}
-import connectors.{SubmissionConnector, FileUploadConnector, S4LConnector}
-import models.fileUpload.{Envelope, EnvelopeFile}
+import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
+import models.fileUpload.{Envelope, EnvelopeFile, MetadataModel}
 import play.api.Logger
 
 import scala.util.control.Breaks._
@@ -100,34 +100,23 @@ trait FileUploadService {
     }
   }
 
-  //TODO: Determine whether additional files are required
-  def closeEnvelope(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
+  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
     getEnvelopeID(createNewID = false).flatMap {
       envelopeID => if(envelopeID.nonEmpty) {
-//        generateAdditionalFiles(envelopeID).flatMap[HttpResponse] {
-//          case true => submissionConnector.closeEnvelope(envelopeID).map {
-//            result => result.status match {
-//              case OK =>
-//                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-//                result
-//              case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
-//                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-//                result
-//            }
-//          }
-//          case false => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error false false received.")
-//            s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-//            Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
-//        }
-        submissionConnector.closeEnvelope(envelopeID).map {
-          result => result.status match {
-            case OK =>
-              s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-              result
-            case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
-              s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
-              result
+        addMetadataFile(envelopeID, tavcRef).flatMap[HttpResponse] {
+          case true => submissionConnector.closeEnvelope(envelopeID).map {
+            result => result.status match {
+              case OK =>
+                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+                result
+              case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
+                s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+                result
+            }
           }
+          case false => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error false false received.")
+            s4lConnector.saveFormData(KeystoreKeys.envelopeID, "")
+            Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
         }
       } else {
         Future.successful(HttpResponse(OK))
@@ -152,50 +141,17 @@ trait FileUploadService {
     }
   }
 
-  //TODO: Determine whether control files are required
-//  private def addControlFiles(envelopeID: String, files: Seq[EnvelopeFile])
-//                             (implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-//
-//    def generateControlFile: Future[File] = Future.successful(File.createTempFile("hello", ".xml"))
-//
-//    tryBreakable {
-//      for (file <- files) {
-//        for {
-//          fileID <- generateFileID(envelopeID)
-//          controlFile <- generateControlFile
-//          result <- fileUploadConnector.addFileContent(envelopeID, fileID, controlFile, XML)
-//        } yield if(result.status != OK) break
-//      }
-//      Future.successful(true)
-//    } catchBreak {
-//      Future.successful(false)
-//    }
-//  }
-
-  //TODO: Determine whether manifest files are required
-//  private def addManifestFile(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-//
-//    val manifestFile = File.createTempFile("hello", ".xml")
-//
-//    fileUploadConnector.addFileContent(envelopeID, OK, manifestFile, XML).map {
-//      result => result.status match {
-//        case OK => true
-//        case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
-//          false
-//      }
-//    }
-//  }
-
-  //TODO: Determine whether this step is required
-//  private def generateAdditionalFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[Boolean] = {
-//    for {
-//      envelopeFiles <- getEnvelopeFiles
-//      controlFilesUploaded <- addControlFiles(envelopeID,envelopeFiles)
-//      manifestFileUploaded <- addManifestFile(envelopeID)
-//    } yield (controlFilesUploaded, manifestFileUploaded) match {
-//      case (true, true) => true
-//      case (_,_) => false
-//    }
-//  }
+  private def addMetadataFile(envelopeID: String, tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Boolean] = {
+    generateFileID(envelopeID).flatMap {
+      fileID =>
+        fileUploadConnector.addFileContent(envelopeID, fileID, s"$envelopeID.xml", MetadataModel(envelopeID, tavcRef).getControlFile, XML).map {
+        result => result.status match {
+          case OK => true
+          case _ => Logger.warn(s"[FileUploadConnector][closeEnvelope] Error ${result.status} received.")
+            false
+        }
+      }
+    }
+  }
 
 }

@@ -85,25 +85,14 @@
                 <div class="form-group">
                     <input id="file-input" type="file" name="supporting-docs" accept="application/pdf">
                 </div>
-            @if(fileErrors.length > 0){
-            <div class="form-group form-field--error">
-                    @for(error <- fileErrors) {
-                    <span class="error-notification" role="tooltip" data-journey="search-page:error:upload-button">
-                    @Messages(error.message)
-                    </span>
-                    }
-                } else {
+
                 <div class="form-group">
-                }
                 @if(files.size == 0){
-                    <div class="form-group">
                         <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload")</button>
-                    </div>
                 }else{
-                    <div class="form-group">
                         <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload.another")</button>
-                    </div>
                 }
+                </div>
             }
         </div>
 

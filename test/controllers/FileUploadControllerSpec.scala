@@ -41,7 +41,7 @@ class FileUploadControllerSpec extends ControllerSpec {
   def setupMocks(): Unit = {
     when(mockFileUploadService.getEnvelopeID(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(envelopeID)
-    when(mockFileUploadService.getEnvelopeFiles(Matchers.any(),Matchers.any(), Matchers.any()))
+    when(mockFileUploadService.getEnvelopeFiles(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
       .thenReturn(files)
   }
 
