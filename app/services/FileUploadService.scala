@@ -16,15 +16,12 @@
 
 package services
 
-import java.io.File
-
 import auth.TAVCUser
 import common.{Constants, KeystoreKeys}
 import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
 import models.fileUpload.{Envelope, EnvelopeFile, MetadataModel}
 import play.api.Logger
 
-import scala.util.control.Breaks._
 import play.mvc.Http.Status._
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
@@ -46,8 +43,34 @@ trait FileUploadService {
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-  val lessThanFiveMegabytes: Int => Boolean = length => length <= Constants.fileSizeLimit
-  val isPDF: String => Boolean = fileName => fileName.matches("""([\w]\S*?\.[pP][dD][fF])""")
+  def validateFile(envelopeID: String, fileName: String, fileSize: Int)
+                  (implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Seq[Boolean]] = {
+
+    val lessThanFiveMegabytes: Int => Boolean = length => length <= Constants.fileSizeLimit
+    val isPDF: String => Boolean = fileName => fileName.matches("""([\w]\S*?\.[pP][dD][fF])""")
+
+    def fileNameUnique(envelopeID: String, fileName: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Boolean] = {
+
+      def compareFilenames(files: Seq[EnvelopeFile], index: Int = 0): Boolean = {
+        if(files(index).name.equalsIgnoreCase(fileName)) false
+        else if(index < files.length - 1) compareFilenames(files, index + 1)
+        else true
+      }
+
+      getEnvelopeFiles(envelopeID).map {
+        case files if files.nonEmpty => {
+          compareFilenames(files)
+        }
+        case _ => true
+      }
+    }
+
+    fileNameUnique(envelopeID, fileName).map {
+      nameUnique => Seq(nameUnique, lessThanFiveMegabytes(fileSize), isPDF(fileName))
+    }
+
+  }
+
 //  val exceedsFileNumberLimit: Future[Boolean] = getEnvelopeFiles.map {
 //    files => files.size == Constants.numberOfFilesLimit
 //  }

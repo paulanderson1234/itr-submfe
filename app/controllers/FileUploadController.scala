@@ -62,31 +62,43 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
       val envelopeID = request.body.dataParts("envelope-id").head
       if(request.body.file("supporting-docs").isDefined) {
         val file = request.body.file("supporting-docs").get
-        (fileUploadService.lessThanFiveMegabytes(file.ref.length), fileUploadService.isPDF(file.filename)) match {
-          case (true, true) => fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
-            case response if response.status == OK => Redirect(routes.FileUploadController.show())
-            case _ => InternalServerError(internalServerErrorTemplate)
-          }
-          case (lessThanFiveMegabytes, isPDF) =>
+        fileUploadService.validateFile(envelopeID, file.filename, file.ref.length).flatMap {
+          case Seq(true, true, true) =>
+            fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
+                case response if response.status == OK => Redirect(routes.FileUploadController.show())
+                case _ => InternalServerError(internalServerErrorTemplate)
+            }
+          case errors =>
             fileUploadService.getEnvelopeFiles(envelopeID).map {
-              files => BadRequest(FileUpload(files, envelopeID, generateFormErrors(lessThanFiveMegabytes, isPDF)))
+              files => BadRequest(FileUpload(files, envelopeID, generateFormErrors(errors)))
             }
         }
       } else {
-        Future.successful(Redirect(routes.FileUploadController.show().url))
+        Future.successful(Redirect(routes.FileUploadController.show()))
       }
   }
 
-  def generateFormErrors(lessThanFiveMegabytes: Boolean, isPDF: Boolean): Seq[FormError] = {
-    (lessThanFiveMegabytes, isPDF) match {
-      case (true, false) => Transformers.errorBuilder(Seq(
-        "invalid-format" -> Messages("page.fileUpload.limit.type")))
-      case (false, true) => Transformers.errorBuilder(Seq(
-        "over-size-limit" -> Messages("page.fileUpload.limit.size")))
-      case (false, false) => Transformers.errorBuilder(Seq(
-        "over-size-limit" -> Messages("page.fileUpload.limit.size"),
-        "invalid-format" -> Messages("page.fileUpload.limit.type")))
+  private def generateFormErrors(errors: Seq[Boolean]): Seq[FormError] = {
+    val messages = Seq(
+      "duplicate-name" -> Messages("page.fileUpload.limit.name"),
+      "over-size-limit" -> Messages("page.fileUpload.limit.size"),
+      "invalid-format" -> Messages("page.fileUpload.limit.type")
+    )
+    def createSequence(index: Int = 0, output: Seq[(String, String)] = Seq()): Seq[(String, String)] = {
+      if(!errors(index)) {
+        if(index < errors.length - 1) {
+          createSequence(index + 1, output :+ messages(index))
+        }
+        else {
+          output :+ messages(index)
+        }
+      }
+      else {
+        if(index < errors.length - 1) createSequence(index + 1, output)
+        else output
+      }
     }
+    Transformers.errorBuilder(createSequence())
   }
 
 

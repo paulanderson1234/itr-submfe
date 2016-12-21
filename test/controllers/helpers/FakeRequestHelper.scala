@@ -16,17 +16,11 @@
 
 package controllers.helpers
 
-import java.io.File
-import java.nio.file.{Paths, Files}
 import java.util.UUID
 
 import auth._
-import builders.SessionBuilder
-import play.api.libs.Files.TemporaryFile
-import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc._
-import play.api.test.{FakeHeaders, FakeRequest}
-import play.api.test.Helpers._
+import play.api.test.FakeRequest
 import uk.gov.hmrc.play.http.SessionKeys
 
 import scala.concurrent.Future
@@ -37,16 +31,6 @@ trait FakeRequestHelper{
   lazy val fakeRequestWithSession = fakeRequest.withSession(SessionKeys.sessionId -> s"session-$sessionId")
   lazy val authorisedFakeRequest = authenticatedFakeRequest()
   lazy val timedOutFakeRequest = timeoutFakeRequest()
-
-  lazy val multipartFileData = {
-    val tempFile = TemporaryFile(new java.io.File("/tmp/test.file"))
-    val part = FilePart[TemporaryFile](key = "supporting-docs", filename = "test.file", contentType = Some(".pdf"), ref = tempFile)
-    MultipartFormData(
-      dataParts = Map(),
-      files = Seq(part),
-      badParts = Seq(),
-      missingFileParts = Seq())
-  }
 
   def fakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
     fakeRequest.withFormUrlEncodedBody(input: _*)
@@ -62,6 +46,10 @@ trait FakeRequestHelper{
 
   def timeoutFakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {
     timedOutFakeRequest.withFormUrlEncodedBody(input: _*)
+  }
+
+  def fakeRequestWithMultipartFormData (input: MultipartFormData[Array[Byte]]): FakeRequest[MultipartFormData[Array[Byte]]] = {
+    fakeRequest.withBody(input)
   }
 
 
@@ -105,8 +93,9 @@ trait FakeRequestHelper{
     test(result)
   }
 
-  def submitWithSessionAndAuthAndMultiPartFileData(action: Action[AnyContent],input: (String, String)*)(test: Future[Result] => Any) {
-    val result = action.apply(authorisedFakeRequestToPOST(input: _*).withMultipartFormDataBody(multipartFileData))
+  def submitWithMultipartFormData(action: Action[MultipartFormData[Array[Byte]]], multipartFormData: MultipartFormData[Array[Byte]])
+                                 (test: Future[Result] => Any) {
+    val result = action.apply(fakeRequestWithMultipartFormData(multipartFormData))
     test(result)
   }
 

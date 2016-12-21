@@ -17,7 +17,7 @@
 package services
 
 import auth.{TAVCUser, ggUser}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.{FileUploadConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
 import models.fileUpload.{Envelope, EnvelopeFile, Metadata}
@@ -42,7 +42,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
   val envelopeID = "00000000-0000-0000-0000-000000000000"
   val fileID = 1
   val envelopeStatus = "OPEN"
-  val fileName = "test"
+  val fileName = "test.pdf"
   implicit val hc = HeaderCarrier()
   implicit val user = TAVCUser(ggUser.allowedAuthContext)
 
@@ -108,6 +108,54 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     "Use the correct FileUploadConnector" in {
       FileUploadService.fileUploadConnector shouldBe FileUploadConnector
+    }
+
+    "Use the correct S4LConnector" in {
+      FileUploadService.s4lConnector shouldBe S4LConnector
+    }
+
+    "Use the correct SubmissionConnector" in {
+      FileUploadService.submissionConnector shouldBe SubmissionConnector
+    }
+
+  }
+
+  "validateFile" when {
+
+    "the file name is unique, the file size is 5MB and the file type is PDF" should {
+
+      lazy val result = TestService.validateFile(envelopeID, "test2.pdf", Constants.fileSizeLimit)
+
+      "return Seq(true,true,true)" in {
+        when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusWithFileResponse))))
+        await(result) shouldBe Seq(true, true, true)
+      }
+
+    }
+
+    "the file name is unique, the file size is over 5MB and the file type is not PDF" should {
+
+      lazy val result = TestService.validateFile(envelopeID, "test.xml", Constants.fileSizeLimit + 1)
+
+      "return Seq(true,false,false)" in {
+        when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusWithFileResponse))))
+        await(result) shouldBe Seq(true, false, false)
+      }
+
+    }
+
+    "the file name is not unique, the file size is over 5MB and the file type is PDF " should {
+
+      lazy val result = TestService.validateFile(envelopeID, fileName, Constants.fileSizeLimit + 1)
+
+      "return Seq(false,false,true)" in {
+        when(mockSubmissionConnector.getEnvelopeStatus(Matchers.eq(envelopeID))(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK,Some(envelopeStatusWithFileResponse))))
+        await(result) shouldBe Seq(false, false, true)
+      }
+
     }
 
   }

@@ -22,14 +22,39 @@ import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
 import helpers.ControllerSpec
-import models.fileUpload.{Metadata, EnvelopeFile}
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.mvc.MultipartFormData
+import play.api.mvc.MultipartFormData.FilePart
 import play.api.test.Helpers._
+import services.FileUploadService
+import uk.gov.hmrc.play.http.HttpResponse
+
+import scala.concurrent.Future
 
 class FileUploadControllerSpec extends ControllerSpec {
 
   val envelopeID = "00000000-0000-0000-0000-000000000000"
+  val fileName = "test.pdf"
+  val tempFile = Array("1".toByte)
+
+  lazy val multipartFormData = {
+    val part = FilePart(key = "supporting-docs", filename = fileName, contentType = Some(".pdf"), ref = tempFile)
+    MultipartFormData(
+      dataParts = Map("envelope-id" -> Seq(envelopeID)),
+      files = Seq(part),
+      badParts = Seq(),
+      missingFileParts = Seq())
+  }
+
+  lazy val multipartFormDataNoFile = {
+    val part = FilePart(key = "invalid", filename = fileName, contentType = Some(".pdf"), ref = tempFile)
+    MultipartFormData(
+      dataParts = Map("envelope-id" -> Seq(envelopeID)),
+      files = Seq(part),
+      badParts = Seq(),
+      missingFileParts = Seq())
+  }
 
   object TestController extends FileUploadController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -52,7 +77,9 @@ class FileUploadControllerSpec extends ControllerSpec {
     "use the correct enrolment connector" in {
       FileUploadController.enrolmentConnector shouldBe EnrolmentConnector
     }
-
+    "use the correct file upload service" in {
+      FileUploadController.fileUploadService shouldBe FileUploadService
+    }
   }
 
 
@@ -174,5 +201,65 @@ class FileUploadControllerSpec extends ControllerSpec {
         }
       )
     }
+  }
+
+  "Uploading a file to the FileUploadController" when {
+
+    "the file passes validation and uploads successfully" should {
+
+      "redirect to the file upload page" in {
+        when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(true, true, true)))
+        when(mockFileUploadService.uploadFile(Matchers.eq(tempFile), Matchers.eq(fileName), Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK)))
+        submitWithMultipartFormData(TestController.upload, multipartFormData)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(routes.FileUploadController.show().url)
+          }
+        )
+      }
+    }
+
+    "the file doesn't pass validation" should {
+
+      "return a BAD_REQUEST" in {
+        when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(false, false, true)))
+        submitWithMultipartFormData(TestController.upload, multipartFormData)(
+          result => {
+            status(result) shouldBe BAD_REQUEST
+          }
+        )
+      }
+    }
+
+    "the file passes validation and doesn't upload successfully" should {
+
+      "return an INTERNAL_SERVER_ERROR" in {
+        when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
+        (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(true, true, true)))
+        when(mockFileUploadService.uploadFile(Matchers.eq(tempFile), Matchers.eq(fileName), Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+        submitWithMultipartFormData(TestController.upload, multipartFormData)(
+          result => {
+            status(result) shouldBe INTERNAL_SERVER_ERROR
+          }
+        )
+      }
+    }
+
+    "no file is added to the form body under supporting-docs" should {
+
+      "redirect to the file upload page" in {
+        submitWithMultipartFormData(TestController.upload, multipartFormDataNoFile)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(routes.FileUploadController.show().url)
+          }
+        )
+      }
+    }
+
   }
 }
