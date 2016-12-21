@@ -75,24 +75,16 @@
             </div>
         }
 
-        <div class="form-group">
+
+        <div id="javascript-disabled" class="form-group">
             @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+                @NoJavascriptUploadForm(files,envelopeID)
+            }
+        </div>
 
-                <div class="form-group">
-                    <input type="hidden" name="envelope-id" value="@envelopeID">
-                </div>
-
-                <div class="form-group">
-                    <input id="file-input" type="file" name="supporting-docs" accept="application/pdf">
-                </div>
-
-                <div class="form-group">
-                @if(files.size == 0){
-                        <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload")</button>
-                }else{
-                        <button class="btn button" type="submit" id="upload-button">@Messages("page.fileUpload.upload.another")</button>
-                }
-                </div>
+        <div id="javascript-enabled" class="form-group" style = "display:none">
+            @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+                @JavascriptUploadForm(files, envelopeID)
             }
         </div>
 

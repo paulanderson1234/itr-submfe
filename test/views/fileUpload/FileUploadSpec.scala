@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views
+package views.fileUpload
 
 import controllers.routes
 import org.jsoup.Jsoup
@@ -107,10 +107,6 @@ class FileUploadSpec extends ViewSpec {
       filesTable.select("tr").get(0).getElementById("status-0").text() shouldBe Messages("page.fileUpload.status.placeholder")
       filesTable.select("tr").get(1).getElementById("file-1").text() shouldBe "testTwo.pdf"
       filesTable.select("tr").get(1).getElementById("status-1").text() shouldBe Messages("page.fileUpload.status.placeholder")
-
-
-      //Dynamic button
-      document.body.getElementById("upload-button").text() shouldBe Messages("page.fileUpload.upload.another")
 
       document.body.getElementById("continue-link").text() shouldBe Messages("page.fileUpload.continue")
 

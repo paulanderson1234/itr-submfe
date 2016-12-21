@@ -4,6 +4,11 @@ $("#ninetyPercentErrorSection").hide();
 
 $(document).ready($(function() {
 
+
+   // File upload button to upload
+   document.getElementById("javascript-enabled").style.display = "block";
+   document.getElementById("javascript-disabled").style.display = "none";
+
   $(".removeLink").each(function()  {
 
       $( this ).on( 'focus', function() {
