@@ -71,9 +71,11 @@ trait FileUploadService {
 
   }
 
-//  val exceedsFileNumberLimit: Future[Boolean] = getEnvelopeFiles.map {
-//    files => files.size == Constants.numberOfFilesLimit
-//  }
+  def belowFileNumberLimit(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Boolean] = {
+    getEnvelopeFiles(envelopeID).map {
+      files => files.size < Constants.numberOfFilesLimit
+    }
+  }
 
 
   def getEnvelopeID(createNewID: Boolean = true)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[String] = {

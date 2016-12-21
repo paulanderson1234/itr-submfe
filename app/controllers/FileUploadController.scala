@@ -60,21 +60,25 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
   def upload: Action[MultipartFormData[Array[Byte]]] = Action.async(multipartFormData(multipartFormDataParser)) {
     implicit request =>
       val envelopeID = request.body.dataParts("envelope-id").head
-      if(request.body.file("supporting-docs").isDefined) {
-        val file = request.body.file("supporting-docs").get
-        fileUploadService.validateFile(envelopeID, file.filename, file.ref.length).flatMap {
-          case Seq(true, true, true) =>
-            fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
-                case response if response.status == OK => Redirect(routes.FileUploadController.show())
-                case _ => InternalServerError(internalServerErrorTemplate)
+      fileUploadService.belowFileNumberLimit(envelopeID).flatMap {
+        case true =>
+          if (request.body.file("supporting-docs").isDefined) {
+            val file = request.body.file("supporting-docs").get
+            fileUploadService.validateFile(envelopeID, file.filename, file.ref.length).flatMap {
+              case Seq(true, true, true) =>
+                fileUploadService.uploadFile(file.ref, file.filename, envelopeID).map {
+                  case response if response.status == OK => Redirect(routes.FileUploadController.show())
+                  case _ => InternalServerError(internalServerErrorTemplate)
+                }
+              case errors =>
+                fileUploadService.getEnvelopeFiles(envelopeID).map {
+                  files => BadRequest(FileUpload(files, envelopeID, generateFormErrors(errors)))
+                }
             }
-          case errors =>
-            fileUploadService.getEnvelopeFiles(envelopeID).map {
-              files => BadRequest(FileUpload(files, envelopeID, generateFormErrors(errors)))
-            }
-        }
-      } else {
-        Future.successful(Redirect(routes.FileUploadController.show()))
+          } else {
+            Future.successful(Redirect(routes.FileUploadController.show()))
+          }
+        case false => Future.successful(Redirect(routes.FileUploadController.show()))
       }
   }
 
