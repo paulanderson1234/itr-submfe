@@ -205,9 +205,11 @@ class FileUploadControllerSpec extends ControllerSpec {
 
   "Uploading a file to the FileUploadController" when {
 
-    "the file passes validation and uploads successfully" should {
+    "the file limit has not been succeeded, the file passes validation and uploads successfully" should {
 
       "redirect to the file upload page" in {
+        when(mockFileUploadService.belowFileNumberLimit(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(true))
         when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(true, true, true)))
         when(mockFileUploadService.uploadFile(Matchers.eq(tempFile), Matchers.eq(fileName), Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
@@ -221,9 +223,11 @@ class FileUploadControllerSpec extends ControllerSpec {
       }
     }
 
-    "the file doesn't pass validation" should {
+    "the file limit has not been succeeded and the file doesn't pass validation" should {
 
       "return a BAD_REQUEST" in {
+        when(mockFileUploadService.belowFileNumberLimit(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(true))
         when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(false, false, true)))
         submitWithMultipartFormData(TestController.upload, multipartFormData)(
@@ -234,9 +238,11 @@ class FileUploadControllerSpec extends ControllerSpec {
       }
     }
 
-    "the file passes validation and doesn't upload successfully" should {
+    "the file limit has not been succeeded, the file passes validation and doesn't upload successfully" should {
 
       "return an INTERNAL_SERVER_ERROR" in {
+        when(mockFileUploadService.belowFileNumberLimit(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(true))
         when(mockFileUploadService.validateFile(Matchers.eq(envelopeID), Matchers.eq(fileName), Matchers.eq(tempFile.length))
         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Seq(true, true, true)))
         when(mockFileUploadService.uploadFile(Matchers.eq(tempFile), Matchers.eq(fileName), Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
@@ -249,9 +255,25 @@ class FileUploadControllerSpec extends ControllerSpec {
       }
     }
 
+    "the file limit has been succeeded" should {
+
+      "redirect to the file upload page" in {
+        when(mockFileUploadService.belowFileNumberLimit(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(false))
+        submitWithMultipartFormData(TestController.upload, multipartFormData)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(routes.FileUploadController.show().url)
+          }
+        )
+      }
+    }
+
     "no file is added to the form body under supporting-docs" should {
 
       "redirect to the file upload page" in {
+        when(mockFileUploadService.belowFileNumberLimit(Matchers.eq(envelopeID))(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(true))
         submitWithMultipartFormData(TestController.upload, multipartFormDataNoFile)(
           result => {
             status(result) shouldBe SEE_OTHER
