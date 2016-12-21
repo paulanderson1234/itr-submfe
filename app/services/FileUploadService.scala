@@ -47,7 +47,7 @@ trait FileUploadService {
                   (implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Seq[Boolean]] = {
 
     val lessThanFiveMegabytes: Int => Boolean = length => length <= Constants.fileSizeLimit
-    val isPDF: String => Boolean = fileName => fileName.matches("""([\w]\S*?\.[pP][dD][fF])""")
+    val isPDF: String => Boolean = fileName => fileName.matches("""(.*\.[pP][dD][fF])""")
 
     def fileNameUnique(envelopeID: String, fileName: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Boolean] = {
 
