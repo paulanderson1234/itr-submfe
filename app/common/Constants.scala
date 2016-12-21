@@ -58,5 +58,6 @@ trait Constants {
   val enrolmentTavcRefKey = "TAVCRef"
 
   val fileSizeLimit = 5242880
+  val numberOfFilesLimit = 5
 
 }

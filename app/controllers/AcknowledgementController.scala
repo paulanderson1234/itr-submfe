@@ -145,13 +145,15 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         submissionResponseModel.flatMap { submissionResponse =>
           submissionResponse.status match {
             case OK =>
-              fileUploadService.closeEnvelope.map {
-                result => result.status match {
-                  case OK =>
-                    s4lConnector.clearCache()
-                    Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-                  case _ => s4lConnector.clearCache()
-                    InternalServerError
+              getTavCReferenceNumber().flatMap {
+                tavcRef => fileUploadService.closeEnvelope(tavcRef).map {
+                  result => result.status match {
+                    case OK =>
+                      s4lConnector.clearCache()
+                      Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                    case _ => s4lConnector.clearCache()
+                      InternalServerError
+                  }
                 }
               }
             case _ => {

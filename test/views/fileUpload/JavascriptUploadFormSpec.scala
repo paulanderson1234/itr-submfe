@@ -46,7 +46,7 @@ class JavascriptUploadFormSpec extends ViewSpec{
 
       //File upload should be invisible
       document.body.getElementsByAttributeValue("style", "display: none;").size() shouldBe 1
-      document.body.getElementById("upload-button-another").text() shouldBe Messages("page.fileUpload.upload.another")
+      document.body.getElementById("upload-button").text() shouldBe Messages("page.fileUpload.upload.another")
     }
 
   }
