@@ -32,7 +32,7 @@ import views.html.fileUpload.FileUpload
 
 import scala.concurrent.Future
 
-object FileUploadController extends FileUploadController{
+object FileUploadController extends FileUploadController {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -48,8 +48,8 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
       envelopeID <- fileUploadService.getEnvelopeID()
       files <- fileUploadService.getEnvelopeFiles(envelopeID)
     } yield (envelopeID, files) match {
-      case (_,_) if envelopeID.nonEmpty => Ok(FileUpload(files, envelopeID))
-      case (_,_) => InternalServerError(internalServerErrorTemplate)
+      case (_, _) if envelopeID.nonEmpty => Ok(FileUpload(files, envelopeID))
+      case (_, _) => InternalServerError(internalServerErrorTemplate)
     }
   }
 
@@ -75,9 +75,8 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
                   files => BadRequest(FileUpload(files, envelopeID, generateFormErrors(errors)))
                 }
             }
-          } else {
-            Future.successful(Redirect(routes.FileUploadController.show()))
           }
+          else Future.successful(Redirect(routes.FileUploadController.show()))
         case false => Future.successful(Redirect(routes.FileUploadController.show()))
       }
   }
@@ -89,18 +88,11 @@ trait FileUploadController extends FrontendController with AuthorisedAndEnrolled
       "invalid-format" -> Messages("page.fileUpload.limit.type")
     )
     def createSequence(index: Int = 0, output: Seq[(String, String)] = Seq()): Seq[(String, String)] = {
-      if(!errors(index)) {
-        if(index < errors.length - 1) {
-          createSequence(index + 1, output :+ messages(index))
-        }
-        else {
-          output :+ messages(index)
-        }
-      }
-      else {
-        if(index < errors.length - 1) createSequence(index + 1, output)
-        else output
-      }
+      if (!errors(index))
+        if (index < errors.length - 1) createSequence(index + 1, output :+ messages(index))
+        else output :+ messages(index)
+      else if (index < errors.length - 1) createSequence(index + 1, output)
+      else output
     }
     Transformers.errorBuilder(createSequence())
   }
