@@ -41,6 +41,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
   val mockSubmissionConnector = mock[SubmissionConnector]
   val envelopeID = "00000000-0000-0000-0000-000000000000"
   val fileID = 1
+  val stringFileID = "1"
   val envelopeStatus = "OPEN"
   val fileName = "test.pdf"
   implicit val hc = HeaderCarrier()
@@ -394,6 +395,49 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with WithFakeAppl
 
     }
 
+  }
+
+  "deleteFile" when {
+
+    "getEnvelopeID returns a non-empty envelope ID, deleteFile returns OK" should {
+
+      lazy val result = TestService.deleteFile(stringFileID)
+
+      "return the http response" in {
+        when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(envelopeID)))
+        when(mockSubmissionConnector.deleteFile(Matchers.eq(envelopeID), Matchers.eq(stringFileID))(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(OK)))
+        await(result).status shouldBe OK
+      }
+
+    }
+
+    "getEnvelopeID returns a non-empty envelope ID, deleteFile returns non-OK" should {
+
+      lazy val result = TestService.deleteFile(stringFileID)
+
+      "return the http response" in {
+        when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some(envelopeID)))
+        when(mockSubmissionConnector.deleteFile(Matchers.eq(envelopeID), Matchers.eq(stringFileID))(Matchers.any()))
+          .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
+        await(result).status shouldBe INTERNAL_SERVER_ERROR
+      }
+
+    }
+
+    "getEnvelopeID returns an empty envelope ID" should {
+
+      lazy val result = TestService.deleteFile(stringFileID)
+
+      "return INTERNAL_SERVER_ERROR" in {
+        when(mockS4LConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeID))(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(Some("")))
+        await(result).status shouldBe INTERNAL_SERVER_ERROR
+      }
+
+    }
   }
 
 }

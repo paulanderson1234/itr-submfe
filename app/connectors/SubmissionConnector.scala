@@ -32,7 +32,7 @@ object SubmissionConnector extends SubmissionConnector with ServicesConfig {
 
 trait SubmissionConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpGet with HttpPost with HttpPut with HttpDelete
 
   def validateKiCostConditions(operatingCostYear1: Int, operatingCostYear2: Int, operatingCostYear3: Int,
                                rAndDCostsYear1: Int, rAndDCostsYear2: Int, rAndDCostsYear3: Int)
@@ -97,6 +97,10 @@ trait SubmissionConnector {
 
   def closeEnvelope(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/file-upload/envelope/$envelopeId/close-envelope")
+  }
+
+  def deleteFile(envelopeId: String, fileID: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.DELETE[HttpResponse](s"$serviceUrl/investment-tax-relief/file-upload/envelope/$envelopeId/file/$fileID/delete-file")
   }
 
 }

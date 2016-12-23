@@ -118,6 +118,9 @@ GET        /file-upload                             controllers.FileUploadContro
 POST       /file-upload                             controllers.FileUploadController.upload
 POST       /upload-file                             controllers.FileUploadController.submit
 
+GET        /delete-file/:fileID                     controllers.FileDeleteController.show(fileID: String)
+POST       /delete-file                             controllers.FileDeleteController.submit
+
 
 #Feedback routes
 #####################################################################################################################

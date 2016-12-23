@@ -104,9 +104,9 @@ class FileUploadSpec extends ViewSpec {
       //file table
       lazy val filesTable = document.getElementById("files-table").select("tbody")
       filesTable.select("tr").get(0).getElementById("file-0").text() shouldBe "testOne.pdf"
-      filesTable.select("tr").get(0).getElementById("status-0").text() shouldBe Messages("page.fileUpload.status.placeholder")
+      filesTable.select("tr").get(0).getElementById("remove-0").text() shouldBe Messages("page.fileUpload.remove")
       filesTable.select("tr").get(1).getElementById("file-1").text() shouldBe "testTwo.pdf"
-      filesTable.select("tr").get(1).getElementById("status-1").text() shouldBe Messages("page.fileUpload.status.placeholder")
+      filesTable.select("tr").get(1).getElementById("remove-1").text() shouldBe Messages("page.fileUpload.remove")
 
       document.body.getElementById("continue-link").text() shouldBe Messages("page.fileUpload.continue")
 

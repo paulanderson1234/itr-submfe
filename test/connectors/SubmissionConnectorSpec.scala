@@ -76,6 +76,7 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val falseResponse = false
 
   val envelopeID = "00000000-0000-0000-0000-000000000000"
+  val fileID = "1"
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
@@ -312,6 +313,19 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     "return the response from the http call" in {
       when(mockHttp.POSTEmpty[HttpResponse]
         (Matchers.eq(s"${TestConnector.serviceUrl}/investment-tax-relief/file-upload/envelope/$envelopeID/close-envelope"))
+        (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+      await(result).status shouldBe OK
+    }
+
+  }
+
+  "Calling deleteFile" should {
+
+    lazy val result = TestConnector.deleteFile(envelopeID, fileID)
+
+    "return the response from the http call" in {
+      when(mockHttp.DELETE[HttpResponse]
+        (Matchers.eq(s"${TestConnector.serviceUrl}/investment-tax-relief/file-upload/envelope/$envelopeID/file/$fileID/delete-file"))
         (Matchers.any(),Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
       await(result).status shouldBe OK
     }

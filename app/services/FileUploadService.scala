@@ -138,11 +138,26 @@ trait FileUploadService {
     }
   }
 
+  def deleteFile(fileID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] =
+    getEnvelopeID(createNewID = false).flatMap {
+      case envelopeID if envelopeID.nonEmpty =>
+        submissionConnector.deleteFile(envelopeID, fileID).map {
+          result => result.status match {
+            case OK => result
+            case _ =>  Logger.warn(s"[FileUploadConnector][deleteFile] Error deleting file. Status ${result.status} received.")
+              result
+          }
+        }
+      case _ => Future.successful(HttpResponse(INTERNAL_SERVER_ERROR))
+    }
+
   private def generateFileID(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Int] = {
     submissionConnector.getEnvelopeStatus(envelopeID).map {
       result =>
         val envelope = result.json.as[Envelope]
-        if (envelope.files.isDefined) envelope.files.get.last.id.toInt + 1
+        if (envelope.files.isDefined)
+          if(envelope.files.get.nonEmpty) envelope.files.get.last.id.toInt + 1
+          else 1
         else 1
     }
   }
