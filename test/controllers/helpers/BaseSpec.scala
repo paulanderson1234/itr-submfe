@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,6 +144,10 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val metaData = Metadata(None)
   val fileOne = EnvelopeFile("1","status","testOne.pdf","pdf","dateCreated",metaData,"href")
   val fileTwo = EnvelopeFile("2","status","testTwo.pdf","pdf","dateCreated",metaData,"href")
+  val fileThree = EnvelopeFile("3","status","testThree.pdf","pdf","dateCreated",metaData,"href")
+  val fileFour = EnvelopeFile("4","status","testFour.pdf","pdf","dateCreated",metaData,"href")
+  val fileFive = EnvelopeFile("5","status","testFive.pdf","pdf","dateCreated",metaData,"href")
   val files = Seq(fileOne,fileTwo)
+  val maxFiles = Seq(fileOne,fileTwo,fileThree,fileFour,fileFive)
 
 }

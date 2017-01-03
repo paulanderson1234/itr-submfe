@@ -610,6 +610,7 @@ page.fileUpload.validation.size=Your PDF is over 5 megabytes in size
 page.fileUpload.validation.type=TEST TYPE
 page.fileUpload.validation.amount=TEST AMOUNT
 page.fileUpload.remove=Remove
+page.fileUpload.fileLimitReached=You''ve added 5 documents which is the limit.
 
 #file delete
 page.fileDelete.title=Confirm that you want to remove this document

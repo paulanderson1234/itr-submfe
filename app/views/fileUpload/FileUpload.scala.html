@@ -75,21 +75,29 @@
             </div>
         }
 
+        @if(files.size < 5){
+            <div id="javascript-disabled" class="form-group">
+                @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+                    @NoJavascriptUploadForm(files,envelopeID)
+                }
+            </div>
 
-        <div id="javascript-disabled" class="form-group">
-            @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
-                @NoJavascriptUploadForm(files,envelopeID)
+            <div id="javascript-enabled" class="form-group" style = "display:none">
+                @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
+                    @JavascriptUploadForm(files, envelopeID)
+                }
+            </div>
+
+            @form(action = routes.FileUploadController.submit()) {
+                <button class="button--link-style removeLink" type="submit" id="continue-link"> @Messages("page.fileUpload.continue")</button>
             }
-        </div>
-
-        <div id="javascript-enabled" class="form-group" style = "display:none">
-            @form(action = routes.FileUploadController.upload(), 'enctype -> "multipart/form-data") {
-                @JavascriptUploadForm(files, envelopeID)
+        } else {
+            <div class="form-group">
+                <p id="file-limit-reached">@Messages("page.fileUpload.fileLimitReached")</p>
+            </div>
+            @form(action = routes.FileUploadController.submit()) {
+                <button class="button" type="submit" id="continue-link"> @Messages("page.fileUpload.continue")</button>
             }
-        </div>
-
-        @form(action = routes.FileUploadController.submit()) {
-            <button class="button--link-style removeLink" type="submit" id="continue-link"> @Messages("page.fileUpload.continue")</button>
         }
 
     </div>
