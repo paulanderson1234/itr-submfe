@@ -5,9 +5,8 @@ $("#ninetyPercentErrorSection").hide();
 $(document).ready($(function() {
 
 
-   // File upload button to upload
-   document.getElementById("javascript-enabled").style.display = "block";
-   document.getElementById("javascript-disabled").style.display = "none";
+  $("#javascript-enabled").show()
+  $("#javascript-disabled").hide()
 
   $(".removeLink").each(function()  {
 
