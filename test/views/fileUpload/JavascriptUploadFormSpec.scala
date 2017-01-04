@@ -35,8 +35,8 @@ class JavascriptUploadFormSpec extends ViewSpec{
 
       document.body.getElementById("envelope-id").`val`() shouldBe envelopeID
       //Dynamic button
-      //TODO: currently visible until javascript is fixed
-      //document.body.getElementsByAttributeValue("style", "display: none;").size() shouldBe 1
+
+      document.body.getElementsByAttributeValue("style", "display: none;").size() shouldBe 1
       document.body.getElementById("upload-button").text() shouldBe Messages("page.fileUpload.upload")
     }
 
@@ -46,8 +46,7 @@ class JavascriptUploadFormSpec extends ViewSpec{
       lazy val document = Jsoup.parse(contentAsString(page))
 
       //File upload should be invisible
-      //TODO: currently visible until javascript is fixed
-      //document.body.getElementsByAttributeValue("style", "display: none;").size() shouldBe 1
+      document.body.getElementsByAttributeValue("style", "display: none;").size() shouldBe 1
       document.body.getElementById("upload-button").text() shouldBe Messages("page.fileUpload.upload.another")
     }
 
