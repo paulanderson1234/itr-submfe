@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,6 @@ trait AuthBuilder {
   }
 
   private[builders] def createUserAuthority(userId: String, accounts: Accounts = Accounts()): Authority = {
-    Authority(userId, accounts, None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, None,None)
+    Authority(userId, accounts, None, None, CredentialStrength.Weak, ConfidenceLevel.L50, None, None,None, "")
   }
 }
