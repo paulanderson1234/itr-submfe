@@ -41,6 +41,8 @@ import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

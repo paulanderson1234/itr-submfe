@@ -25,6 +25,8 @@ import models.{KiProcessingModel, TenYearPlanModel}
 import common._
 import forms.TenYearPlanForm._
 import views.html.knowledgeIntensive.TenYearPlan
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

@@ -3,7 +3,7 @@
 @import common.Constants
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, formHiddenYesNoRadioNoError, formHint}
 
-@(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_])
+@(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")) {
 

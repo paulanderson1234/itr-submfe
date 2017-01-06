@@ -23,6 +23,8 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html.previousInvestment.PreviousScheme

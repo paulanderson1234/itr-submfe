@@ -4,7 +4,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress, hiddenField}
 
-@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], backLink: String)(implicit request: Request[_])
+@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], backLink: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.contactInformation.ConfirmCorrespondAddress.title")){
 

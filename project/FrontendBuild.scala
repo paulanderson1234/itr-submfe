@@ -1,36 +1,34 @@
 import sbt._
-import uk.gov.hmrc.SbtAutoBuildPlugin
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin
-import uk.gov.hmrc.versioning.SbtGitVersioning
 
 
 object FrontendBuild extends Build with MicroService {
 
  val appName = "investment-tax-relief-submission-frontend"
 
-  override lazy val plugins: Seq[Plugins] = Seq(
-    SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin
-  )
 
   override lazy val appDependencies: Seq[ModuleID] = AppDependencies()
 }
 
 private object AppDependencies {
-  import play.PlayImport._
+  import play.sbt.PlayImport._
   import play.core.PlayVersion
 
-  private val playHealthVersion = "1.1.0"
-  private val playJsonLoggerVersion = "2.1.1"
-  private val frontendBootstrapVersion = "6.7.0"
-  private val govukTemplateVersion = "4.0.0"
-  private val playUiVersion = "4.17.2"
-  private val playPartialsVersion = "4.6.0"
-  private val playAuthorisedFrontendVersion = "5.8.0"
-  private val playConfigVersion = "2.1.0"
-  private val hmrcTestVersion = "1.9.0"
-  private val cachingClientVersion = "5.6.0"
+  private val playHealthVersion = "2.0.0"
+  private val logbackJsonLoggerVersion = "3.1.0"
+  private val frontendBootstrapVersion = "7.10.0"
+  private val govukTemplateVersion = "5.0.0"
+  private val playUiVersion = "5.2.0"
+  private val playPartialsVersion = "5.2.0"
+  private val playAuthorisedFrontendVersion = "6.2.0"
+  private val playConfigVersion = "3.0.0"
+  private val hmrcTestVersion = "2.2.0"
+  private val cachingClientVersion = "6.1.0"
   private val mongoCachingVersion = "3.2.0"
   private val playConditionalMappingVersion = "0.2.0"
+  private val scalaTestVersion = "2.2.6"
+  private val scalaTestPlusVersion = "1.5.1"
+  private val pegDownVersion = "1.6.0"
+  private val jSoupVersion = "1.8.3"
 
   val compile = Seq(
     ws,
@@ -38,7 +36,7 @@ private object AppDependencies {
     "uk.gov.hmrc" %% "play-partials" % playPartialsVersion,
     "uk.gov.hmrc" %% "play-authorised-frontend" % playAuthorisedFrontendVersion,
     "uk.gov.hmrc" %% "play-config" % playConfigVersion,
-    "uk.gov.hmrc" %% "play-json-logger" % playJsonLoggerVersion,
+    "uk.gov.hmrc" %% "logback-json-logger" % logbackJsonLoggerVersion,
     "uk.gov.hmrc" %% "govuk-template" % govukTemplateVersion,
     "uk.gov.hmrc" %% "play-health" % playHealthVersion,
     "uk.gov.hmrc" %% "play-ui" % playUiVersion,
@@ -55,10 +53,10 @@ private object AppDependencies {
     def apply(): Seq[ModuleID] = new TestDependencies {
       override lazy val test = Seq(
         "uk.gov.hmrc" %% "hmrctest" % hmrcTestVersion % scope,
-        "org.scalatest" %% "scalatest" % "2.2.6" % scope,
-        "org.scalatestplus" %% "play" % "1.2.0" % scope,
-        "org.pegdown" % "pegdown" % "1.6.0" % scope,
-        "org.jsoup" % "jsoup" % "1.8.3" % scope,
+        "org.scalatest" %% "scalatest" % scalaTestVersion % scope,
+        "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusVersion % scope,
+        "org.pegdown" % "pegdown" % pegDownVersion % scope,
+        "org.jsoup" % "jsoup" % jSoupVersion % scope,
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test

@@ -25,6 +25,8 @@ import forms.PreviousSchemeForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.previousInvestment.{PreviousScheme, ReviewPreviousSchemes}
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

@@ -3,7 +3,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formHiddenYesNoRadioNoError, formTextInput, backButtonWithProgress, formSpanMessage, textArea}
 
-@(tenYearPlanForm: Form[TenYearPlanModel])(implicit request: Request[_])
+@(tenYearPlanForm: Form[TenYearPlanModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.knowledgeIntensive.TenYearPlan.title")) {
 

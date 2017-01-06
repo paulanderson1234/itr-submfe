@@ -23,6 +23,8 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html._
