@@ -24,6 +24,8 @@ import forms.ConfirmContactDetailsForm._
 import views.html.contactInformation._
 import controllers.routes
 import uk.gov.hmrc.play.test.WithFakeApplication
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class ConfirmContactDetailsSpec extends ViewSpec with WithFakeApplication{
 

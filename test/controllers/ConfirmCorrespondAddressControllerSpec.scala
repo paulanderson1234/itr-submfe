@@ -30,10 +30,15 @@ import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.SubscriptionService
 import data.SubscriptionTestData._
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 
 import scala.concurrent.Future
 
 class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
+
+  implicit lazy val actorSystem = ActorSystem()
+  implicit lazy val mat = ActorMaterializer()
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]

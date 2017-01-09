@@ -22,6 +22,8 @@ import utils.CountriesHelper
 import views.helpers.ViewSpec
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 import views.html.introduction.ApplicationHub
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class ApplicationHubSpec extends ViewSpec {
 

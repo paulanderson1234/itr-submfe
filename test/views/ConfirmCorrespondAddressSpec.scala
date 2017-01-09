@@ -31,6 +31,8 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import views.helpers.ViewSpec
 import data.SubscriptionTestData._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

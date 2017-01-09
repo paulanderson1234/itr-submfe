@@ -24,6 +24,8 @@ import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class NewGeographicalMarketFormSpec extends UnitSpec {
 

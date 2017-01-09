@@ -20,6 +20,8 @@ import forms.ContactAddressForm._
 import models.AddressModel
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class ContactAddressFormSpec extends UnitSpec {
 

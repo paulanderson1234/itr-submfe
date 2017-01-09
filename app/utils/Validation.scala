@@ -30,6 +30,9 @@ import org.joda.time.DateTime
 
 import scala.util.{Failure, Success, Try}
 
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
+
 object Validation {
 
   // use new Date() to get the date now

@@ -1,4 +1,4 @@
-@(rowId: String, questionLines: Array[String], answerLines: Array[String], link: Option[String] = None, addExtraLineBreaks: Option[Boolean] = None)
+@(rowId: String, questionLines: Array[String], answerLines: Array[String], link: Option[String] = None, addExtraLineBreaks: Option[Boolean] = None)(implicit messages: Messages)
 
 <tr>
     <td id="@{rowId}-question" class="summaryQuestion">

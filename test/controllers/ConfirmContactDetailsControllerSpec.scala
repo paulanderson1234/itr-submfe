@@ -30,8 +30,13 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import data.SubscriptionTestData._
 import org.jsoup.Jsoup
+import akka.actor.ActorSystem
+import akka.stream.ActorMaterializer
 
 class ConfirmContactDetailsControllerSpec extends ControllerSpec {
+
+  implicit lazy val actorSystem = ActorSystem()
+  implicit lazy val mat = ActorMaterializer()
 
   object TestController extends ConfirmContactDetailsController {
     override lazy val subscriptionService = mock[SubscriptionService]

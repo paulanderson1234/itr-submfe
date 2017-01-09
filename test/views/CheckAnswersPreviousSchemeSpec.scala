@@ -30,6 +30,8 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
 

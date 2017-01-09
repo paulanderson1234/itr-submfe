@@ -21,6 +21,8 @@ import forms.TenYearPlanForm._
 import models.TenYearPlanModel
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 class TenYearPlanFormSpec extends UnitSpec {
 

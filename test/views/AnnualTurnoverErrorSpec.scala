@@ -21,6 +21,8 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import views.html.investment.AnnualTurnoverError
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 
 class AnnualTurnoverErrorSpec extends ViewSpec {
