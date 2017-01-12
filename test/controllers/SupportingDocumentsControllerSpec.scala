@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
+    override lazy val uploadFeature = false
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
   }
 
   def setupMocks(backLink: Option[String] = None): Unit = {

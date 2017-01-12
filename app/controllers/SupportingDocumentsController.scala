@@ -29,6 +29,7 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
+  val uploadFeature: Boolean = Features.UploadCondition
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,11 +39,12 @@ object SupportingDocumentsController extends SupportingDocumentsController
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val uploadFeature: Boolean
   val attachmentsFrontEndUrl : String
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    if(Features.UploadCondition) {
+    if(uploadFeature) {
       Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
     }
     else {
