@@ -16,22 +16,14 @@
 
 package forms
 
-import models.{AddressModel, ConfirmCorrespondAddressModel}
+import models.SupportingDocumentsUploadModel
 import play.api.data.Form
 import play.api.data.Forms._
 
-object ConfirmCorrespondAddressForm {
-  val confirmCorrespondAddressForm = Form(
+object SupportingDocumentsUploadForm {
+  val supportingDocumentsUploadForm = Form(
     mapping(
-      "contactAddressUse" -> nonEmptyText,
-      "address" -> mapping(
-        "addressline1" -> nonEmptyText,
-        "addressline2" -> nonEmptyText,
-        "addressline3" -> optional(text),
-        "addressline4" -> optional(text),
-        "postcode" -> optional(text),
-        "countryCode" -> text
-      )(AddressModel.apply)(AddressModel.unapply)
-    )(ConfirmCorrespondAddressModel.apply)(ConfirmCorrespondAddressModel.unapply)
+      "doUpload" -> nonEmptyText
+    )(SupportingDocumentsUploadModel.apply)(SupportingDocumentsUploadModel.unapply)
   )
 }
