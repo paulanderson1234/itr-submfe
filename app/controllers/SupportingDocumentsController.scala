@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{Features, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
@@ -32,21 +32,31 @@ object SupportingDocumentsController extends SupportingDocumentsController
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  override lazy val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
 }
 
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val attachmentsFrontEndUrl : String
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-      case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
-      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+    if(Features.UploadCondition) {
+      Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+    }
+    else {
+      ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
+        case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
+        case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+      }
     }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.CheckAnswersController.show()))
+      Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
+
 }
+
+
