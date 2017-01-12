@@ -17,7 +17,7 @@
 package config
 
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching}
+import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching => HMRCShortLivedHttpCaching}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
@@ -38,7 +38,7 @@ object FrontendAuthConnector extends AuthConnector with ServicesConfig {
 }
 
 
-object ShortLivedHttpCaching extends ShortLivedHttpCaching with AppName with ServicesConfig {
+object ShortLivedHttpCaching extends HMRCShortLivedHttpCaching with AppName with ServicesConfig {
   override lazy val http = WSHttp
   override lazy val defaultSource = appName
   override lazy val baseUri = baseUrl("cachable.short-lived-cache")
