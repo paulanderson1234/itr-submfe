@@ -407,7 +407,7 @@ page.supportingDocuments.SupportingDocuments.bullet.five=last annual accounts or
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 
 #supporting docs upload
-page.supportingDocumentsUpload.heading=To support your application you'll need to send us your company''s:
+page.supportingDocumentsUpload.heading=To support your application you''ll need to send us your company''s:
 page.supportingDocumentsUpload.bullet.one=business plan
 page.supportingDocumentsUpload.bullet.two=shareholder agreements or drafts
 page.supportingDocumentsUpload.bullet.three=memorandum and articles of association
