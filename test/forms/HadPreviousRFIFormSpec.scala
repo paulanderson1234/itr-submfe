@@ -18,6 +18,7 @@ package forms
 
 import common.Constants
 import models.HadPreviousRFIModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -25,9 +26,8 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-class HadPreviousRFIFormSpec extends UnitSpec {
+class HadPreviousRFIFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     HadPreviousRFIForm.hadPreviousRFIForm.bindFromRequest()(request).fold(
@@ -55,7 +55,7 @@ class HadPreviousRFIFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "hadPreviousRFI"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {

@@ -17,6 +17,7 @@
 package forms
 
 import models.AnnualTurnoverCostsModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -24,9 +25,8 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-class TurnoverCostsFormSpec extends UnitSpec {
+class TurnoverCostsFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     TurnoverCostsForm.turnoverCostsForm.bindFromRequest()(request).fold(

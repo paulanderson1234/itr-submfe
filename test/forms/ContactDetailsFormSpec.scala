@@ -18,12 +18,12 @@ package forms
 
 import forms.ContactDetailsForm._
 import models.ContactDetailsModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-class ContactDetailsFormSpec extends UnitSpec {
+class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
 
   "Creating a form using an empty model" should {
     lazy val form = contactDetailsForm
@@ -60,7 +60,7 @@ class ContactDetailsFormSpec extends UnitSpec {
         form.errors.head.key shouldBe "forename"
       }
       "associate the correct error message to the error" in {
-        form.error("forename").get.message shouldBe Messages("error.required")
+        Messages(form.error("forename").get.message) shouldBe Messages("error.required")
       }
     }
   }
@@ -81,7 +81,7 @@ class ContactDetailsFormSpec extends UnitSpec {
         form.errors.head.key shouldBe "surname"
       }
       "associate the correct error message to the error" in {
-        form.error("surname").get.message shouldBe Messages("error.required")
+        Messages(form.error("surname").get.message) shouldBe Messages("error.required")
       }
     }
   }
@@ -102,7 +102,7 @@ class ContactDetailsFormSpec extends UnitSpec {
         form.errors.head.key shouldBe "email"
       }
       "associate the correct error message to the error" in {
-        form.error("email").get.message shouldBe Messages("validation.error.email")
+        Messages(form.error("email").get.message) shouldBe Messages("validation.error.email")
       }
     }
   }
@@ -124,8 +124,8 @@ class ContactDetailsFormSpec extends UnitSpec {
         form.errors(1).key shouldBe "surname"
       }
       "associate the correct error message to the error" in {
-        form.error("forename").get.message shouldBe Messages("error.required")
-        form.error("surname").get.message shouldBe Messages("error.required")
+        Messages(form.error("forename").get.message) shouldBe Messages("error.required")
+        Messages(form.error("surname").get.message) shouldBe Messages("error.required")
       }
     }
   }
@@ -168,8 +168,8 @@ class ContactDetailsFormSpec extends UnitSpec {
         form.errors(1).key shouldBe "surname"
       }
       "associate the correct error message to the error" in {
-        form.error("forename").get.message shouldBe Messages("error.required")
-        form.error("surname").get.message shouldBe Messages("error.required")
+        Messages(form.error("forename").get.message) shouldBe Messages("error.required")
+        Messages(form.error("surname").get.message) shouldBe Messages("error.required")
       }
     }
   }
@@ -189,7 +189,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       form.errors.head.key shouldBe "forename"
     }
     "associate the correct error message to the error " in {
-      form.error("forename").get.message shouldBe Messages("error.required")
+      Messages(form.error("forename").get.message) shouldBe Messages("error.required")
     }
   }
 
@@ -208,7 +208,7 @@ class ContactDetailsFormSpec extends UnitSpec {
       form.errors.head.key shouldBe "surname"
     }
     "associate the correct error message to the error " in {
-      form.error("surname").get.message shouldBe Messages("error.required")
+      Messages(form.error("surname").get.message) shouldBe Messages("error.required")
     }
   }
 

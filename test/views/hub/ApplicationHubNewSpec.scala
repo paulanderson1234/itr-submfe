@@ -27,7 +27,7 @@ class ApplicationHubNewSpec extends ViewSpec{
 
   "The Application Hub 'New' patial" should {
     "load the correct elements for when there are no applications in progress" in {
-      lazy val view = ApplicationHubNew()(fakeRequest)
+      lazy val view = ApplicationHubNew()(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.getElementById("hub-application-heading").text() shouldBe Messages("page.introduction.hub.new.heading")
       document.getElementById("create-new-application").text() shouldBe Messages("page.introduction.hub.button")

@@ -34,7 +34,7 @@ class AcknowledgementSpec extends ViewSpec {
 
     "contain the correct elements when loaded" in {
 
-      lazy val page = Acknowledgement(submissionResponse)(fakeRequest)
+      lazy val page = Acknowledgement(submissionResponse)(fakeRequest,applicationMessages)
       lazy val document = Jsoup.parse(contentAsString(page))
       //title
       document.title() shouldBe Messages("page.checkAndSubmit.acknowledgement.title")

@@ -29,7 +29,7 @@ class AnnualTurnoverErrorSpec extends ViewSpec {
 
   "The Annual turnover error page" should {
 
-      lazy val page = AnnualTurnoverError()(fakeRequest)
+      lazy val page = AnnualTurnoverError()(fakeRequest,applicationMessages)
       lazy val document = Jsoup.parse(contentAsString(page))
 
       "have the title '' " in {

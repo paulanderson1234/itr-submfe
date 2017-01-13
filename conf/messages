@@ -31,7 +31,6 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 common.base.remove = Remove
-error.required=This field is required
 common.pound = £
 common.notAvailable=None
 common.address.postcode=Postcode

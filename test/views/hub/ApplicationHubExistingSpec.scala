@@ -28,7 +28,7 @@ class ApplicationHubExistingSpec extends ViewSpec{
 
   "The Application Hub 'Existing' partial" should {
     "load the correct elements for when there is an applications in progress" in {
-      lazy val view = ApplicationHubExisting()(fakeRequest)
+      lazy val view = ApplicationHubExisting()(fakeRequest,applicationMessages)
       val document = Jsoup.parse(view.body)
       document.getElementById("hub-application-heading").text() shouldBe Messages("page.introduction.hub.existing.heading")
       document.getElementById("hub-application-in-progress").text() shouldBe Messages("page.introduction.hub.existing.table.heading")

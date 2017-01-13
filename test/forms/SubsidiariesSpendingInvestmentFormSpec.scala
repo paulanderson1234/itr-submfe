@@ -34,6 +34,7 @@ package forms
 
 import common.Constants
 import models.{SubsidiariesSpendingInvestmentModel, NewProductModel}
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -41,9 +42,8 @@ import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
-class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
+class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     SubsidiariesSpendingInvestmentForm.subsidiariesSpendingInvestmentForm.bindFromRequest()(request).fold(
@@ -70,7 +70,7 @@ class SubsidiariesSpendingInvestmentFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "subSpendingInvestment"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {
