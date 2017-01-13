@@ -5,7 +5,7 @@
 
 @(supportingDocumentsForm: Form[SupportingDocumentsUploadModel], backlinkUrl: String)(implicit request: Request[_])
 
-@main_template(Messages("page.title")) {
+@main_template(title = Messages("page.supportingDocuments.SupportingDocuments.title"), bodyClasses = None) {
 
 @backButtonWithProgress(controllers.routes.OperatingCostsController.show().toString, Messages("common.section.progress.company.details.five"))
 
