@@ -41,6 +41,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17", "FBUND09889765")
 
+
   object TestController extends AcknowledgementController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
@@ -48,6 +49,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val registrationDetailsService = mockRegistrationDetailsService
+    override lazy val fileUploadService = mockFileUploadService
+    //TODO: ADD TESTS FOR THIS SET TO TRUE
+    override lazy val uploadFeatureEnabled = false
   }
 
   class SetupPageFull() {

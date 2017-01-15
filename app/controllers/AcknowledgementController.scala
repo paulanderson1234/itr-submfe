@@ -26,10 +26,9 @@ import models.submission._
 import models._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.RegistrationDetailsService
+import services.{FileUploadService, RegistrationDetailsService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
-
 
 import scala.concurrent.Future
 
@@ -40,6 +39,8 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
+  override lazy val fileUploadService = FileUploadService
+  override lazy val uploadFeatureEnabled = Features.UploadCondition
 }
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
@@ -47,6 +48,9 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
+  val fileUploadService: FileUploadService
+  val uploadFeatureEnabled: Boolean
+
 
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -154,31 +158,30 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           }
         }
 
-//        def ProcessResultUpload: Future[Result] = {
-//          submissionResponseModel.flatMap { submissionResponse =>
-//            submissionResponse.status match {
-//              case OK =>
-//                getTavCReferenceNumber().flatMap {
-//                  tavcRef => fileUploadService.closeEnvelope(tavcRef).map {
-//                    result => result.status match {
-//                      case OK =>
-//                        s4lConnector.clearCache()
-//                        Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-//                      case _ => s4lConnector.clearCache()
-//                        InternalServerError
-//                    }
-//                  }
-//                }
-//              case _ => {
-//                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
-//                Future.successful(InternalServerError)
-//              }
-//            }
-//          }
-//        }
+        def ProcessResultUpload: Future[Result] = {
+          submissionResponseModel.flatMap { submissionResponse =>
+            submissionResponse.status match {
+              case OK =>
+                getTavCReferenceNumber().flatMap {
+                  tavcRef => fileUploadService.closeEnvelope(tavcRef).map {
+                    result => result.status match {
+                      case OK =>
+                        s4lConnector.clearCache()
+                        Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                      case _ => s4lConnector.clearCache()
+                        InternalServerError
+                    }
+                  }
+                }
+              case _ => {
+                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+                Future.successful(InternalServerError)
+              }
+            }
+          }
+        }
 
-        //TODO: Fix uncommneted code above to call service and close the envelope and then call ProcessResultUpload below (before else clause)
-        if (Features.UploadCondition) ProcessResult else ProcessResult
+        if (uploadFeatureEnabled) ProcessResultUpload else ProcessResult
       }
 
       // inconsistent state send to start

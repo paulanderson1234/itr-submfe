@@ -75,4 +75,7 @@ trait KeystoreKeys {
   //application in progress key
   val applicationInProgress: String = "applicationInProgress"
 
+  //file upload keys
+  val envelopeID: String = "fileUpload:envelopeID"
+
 }

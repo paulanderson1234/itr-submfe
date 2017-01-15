@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{Features, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
@@ -35,9 +35,10 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
-    override lazy val uploadFeature = false
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    //TODO: ADD TESTS FOR THIS SET TO TRUE
+    override lazy val uploadFeatureEnabled = false
   }
 
   def setupMocks(backLink: Option[String] = None): Unit = {
