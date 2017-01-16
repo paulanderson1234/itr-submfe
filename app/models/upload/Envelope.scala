@@ -14,13 +14,24 @@
  * limitations under the License.
  */
 
-package services
+package models.fileUpload
 
-import config.FrontendAppConfig
+import play.api.libs.json.Json
 
-trait UploadService {
-  def getUploadFeatureEnabled: Boolean
+case class Metadata(stuff: Option[String])
+
+object Metadata {
+  implicit val formats = Json.format[Metadata]
 }
-object UploadService extends UploadService{
-  override def getUploadFeatureEnabled: Boolean = FrontendAppConfig.uploadFeatureEnabled
+
+case class EnvelopeFile(id: String, status: String, name: String, contentType: String, created: String, metadata: Metadata, href: String)
+
+object EnvelopeFile {
+  implicit val formats = Json.format[EnvelopeFile]
+}
+
+case class Envelope(id: String, status: String, files: Option[Seq[EnvelopeFile]])
+
+object Envelope {
+  implicit val formats = Json.format[Envelope]
 }

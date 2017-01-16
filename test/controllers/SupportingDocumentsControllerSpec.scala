@@ -19,14 +19,14 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
-import services.UploadService
+import services.FileUploadService
 
 import scala.concurrent.Future
 
@@ -36,16 +36,17 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
-    override val uploadService = mockUploadService
+    override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
     override lazy val enrolmentConnector = mockEnrolmentConnector
+
   }
 
 
   def setupMocks(backLink: Option[String] = None, uploadFeatureEnabled: Boolean = false): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
-      when(mockUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
+      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
   }
 
   "SupportingDocumentsController" should {
@@ -59,7 +60,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       SupportingDocumentsController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "use the correct upload service" in {
-      SupportingDocumentsController.uploadService shouldBe UploadService
+      SupportingDocumentsController.fileUploadService shouldBe FileUploadService
     }
   }
 

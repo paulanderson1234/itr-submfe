@@ -36,15 +36,16 @@ class SupportingDocumentsSpec extends ViewSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
-    override val uploadService = mockUploadService
+    override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   def setupMocks(backLink: Option[String] = None, uploadFeatureEnabled: Boolean = false): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
-    when(mockUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
+    when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
   }
 
   "The Supporting documents page" should {

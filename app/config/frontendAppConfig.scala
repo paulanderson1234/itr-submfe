@@ -34,6 +34,7 @@ trait AppConfig {
   val signOutPageUrl: String
   val submissionUrl: String
   val attachmentFileUploadUrl: String
+  val attachmentsFrontEndServiceBaseUrl: String
   val uploadFeatureEnabled: Boolean
 }
 
@@ -60,6 +61,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
   override lazy val attachmentFileUploadUrl = s"$attachmentsServiceUrl/investment-tax-relief-attachments-frontend/file-upload?continueUrl=$serviceUrl/investment-tax-relief/check-your-answers"
+  override lazy val attachmentsFrontEndServiceBaseUrl = s"$attachmentsServiceUrl/investment-tax-relief-attachments-frontend"
   override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
 
 }

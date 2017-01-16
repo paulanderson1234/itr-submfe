@@ -23,7 +23,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.SupportingDocumentsUploadForm.supportingDocumentsUploadForm
 import models.SupportingDocumentsUploadModel
-import services.UploadService
+import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocumentsUpload
 import config.FrontendGlobal.notFoundTemplate
@@ -35,7 +35,7 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
 {
   val s4lConnector: S4LConnector = S4LConnector
   val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
-  val uploadService: UploadService = UploadService
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -45,13 +45,13 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
 
   val s4lConnector: S4LConnector
   val attachmentsFrontEndUrl: String
-  val uploadService: UploadService
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
 
       //TODO: this enforces the feature lock but would be good to make this a predicate (see controller predicates folder)
-      if (!uploadService.getUploadFeatureEnabled) {
+      if (!fileUploadService.getUploadFeatureEnabled) {
         Future.successful(NotFound(notFoundTemplate))
       }
       else {

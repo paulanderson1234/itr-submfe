@@ -21,7 +21,7 @@ import common.{KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
-import services.{UploadService}
+import services.{FileUploadService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocuments
 
@@ -31,7 +31,7 @@ object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
   val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
-  val uploadService: UploadService = UploadService
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -41,11 +41,10 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
 
   val s4lConnector: S4LConnector
   val attachmentsFrontEndUrl : String
-  val uploadService: UploadService
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-    if(uploadService.getUploadFeatureEnabled) {
+    if(fileUploadService.getUploadFeatureEnabled) {
       Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
     }
     else {

@@ -25,7 +25,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import services.UploadService
+import services.{FileUploadService}
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
@@ -42,6 +42,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17", "FBUND09889765")
 
+
   object TestController extends AcknowledgementController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
@@ -49,7 +50,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     override val registrationDetailsService = mockRegistrationDetailsService
     override val s4lConnector = mockS4lConnector
     override val submissionConnector = mockSubmissionConnector
-    override val uploadService: UploadService = mockUploadService
+    override lazy val fileUploadService = mockFileUploadService
   }
 
   class SetupPageFull() {
