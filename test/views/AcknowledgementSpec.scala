@@ -24,7 +24,6 @@ import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import views.html.checkAndSubmit.Acknowledgement
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class AcknowledgementSpec extends ViewSpec {
 

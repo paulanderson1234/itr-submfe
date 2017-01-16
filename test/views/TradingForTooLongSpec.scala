@@ -25,7 +25,6 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class TradingForTooLongSpec extends ViewSpec {
 

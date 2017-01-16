@@ -31,7 +31,6 @@ import views.helpers.ViewSpec
 import common.Constants._
 import scala.concurrent.Future
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class LifetimeAllowanceExceededSpec extends ViewSpec {
 

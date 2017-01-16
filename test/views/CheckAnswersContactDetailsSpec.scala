@@ -26,7 +26,6 @@ import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 import utils.CountriesHelper
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
 

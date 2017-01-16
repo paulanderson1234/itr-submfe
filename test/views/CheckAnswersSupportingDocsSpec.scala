@@ -42,7 +42,6 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 

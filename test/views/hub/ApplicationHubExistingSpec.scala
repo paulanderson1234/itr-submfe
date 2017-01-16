@@ -22,7 +22,6 @@ import play.api.i18n.Messages
 import views.helpers.ViewSpec
 import views.html.hubPartials.ApplicationHubExisting
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class ApplicationHubExistingSpec extends ViewSpec{
 

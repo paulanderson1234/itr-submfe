@@ -26,7 +26,6 @@ import play.api.i18n.Messages
 import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
 import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
   
