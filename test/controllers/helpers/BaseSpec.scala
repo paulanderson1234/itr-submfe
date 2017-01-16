@@ -24,7 +24,7 @@ import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.{UploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
@@ -33,6 +33,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val mockEnrolmentConnector = mock[EnrolmentConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
+  val mockUploadService = mock[UploadService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
 
   override def beforeEach() {

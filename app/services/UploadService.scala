@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package common
+package services
 
 import config.FrontendAppConfig
 
-object Features  {
-  lazy val UploadCondition = FrontendAppConfig.uploadFeatureEnabled
+trait UploadService {
+  def getUploadFeatureEnabled: Boolean
+}
+object UploadService extends UploadService{
+  override def getUploadFeatureEnabled: Boolean = FrontendAppConfig.uploadFeatureEnabled
 }

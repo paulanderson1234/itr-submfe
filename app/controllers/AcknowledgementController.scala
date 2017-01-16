@@ -18,7 +18,7 @@ package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import common.{Constants, Features, KeystoreKeys}
+import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models.registration.RegistrationDetailsModel
@@ -26,7 +26,7 @@ import models.submission._
 import models._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.RegistrationDetailsService
+import services.{UploadService, RegistrationDetailsService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 
@@ -35,6 +35,7 @@ import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
   override lazy val s4lConnector = S4LConnector
+  val uploadService: UploadService = UploadService
   override lazy val submissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -45,6 +46,7 @@ object AcknowledgementController extends AcknowledgementController{
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val uploadService: UploadService
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
 
@@ -178,7 +180,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 //        }
 
         //TODO: Fix uncommneted code above to call service and close the envelope and then call ProcessResultUpload below (before else clause)
-        if (Features.UploadCondition) ProcessResult else ProcessResult
+        if (uploadService.getUploadFeatureEnabled) ProcessResult else ProcessResult
       }
 
       // inconsistent state send to start
