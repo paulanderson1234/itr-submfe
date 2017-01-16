@@ -16,6 +16,7 @@
 
 package services
 
+import auth.TAVCUser
 import connectors.AttachmentsFrontEndConnector
 import play.Logger
 import play.mvc.Http.Status._
@@ -31,7 +32,7 @@ trait FileUploadService {
 
   val attachmentsFrontEndConnector: AttachmentsFrontEndConnector
 
-  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[HttpResponse] = {
+  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
     attachmentsFrontEndConnector.closeEnvelope(tavcRef).map {
       result => result.status match {
         case CREATED =>

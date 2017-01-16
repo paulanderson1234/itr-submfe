@@ -25,6 +25,11 @@ import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
+object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with ServicesConfig {
+  val attachmentsFrontEndUrl = FrontendAppConfig.attachmentsFrontEndServiceBaseUrl
+  val http = WSHttp
+}
+
 trait AttachmentsFrontEndConnector {
 
   val attachmentsFrontEndUrl: String
@@ -36,12 +41,7 @@ trait AttachmentsFrontEndConnector {
     http.GET[Option[String]](s"$attachmentsFrontEndUrl/envelopeId")
   }
 
-  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
     http.POSTEmpty[HttpResponse](s"${attachmentsFrontEndUrl}/$tavcRef/close-envelope")
   }
-}
-
-object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector {
-  val attachmentsFrontEndUrl = FrontendAppConfig.attachmentsFrontEndServiceBaseUrl
-  val http = WSHttp
 }
