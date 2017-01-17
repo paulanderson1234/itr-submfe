@@ -17,10 +17,11 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.{Features, KeystoreKeys}
+import common.{KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
+import services.{FileUploadService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocuments
 
@@ -29,22 +30,21 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
-  val uploadFeature: Boolean = Features.UploadCondition
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
 }
 
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
-  val uploadFeature: Boolean
   val attachmentsFrontEndUrl : String
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-    if(uploadFeature) {
+    if(fileUploadService.getUploadFeatureEnabled) {
       Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
     }
     else {

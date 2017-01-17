@@ -118,7 +118,6 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       implicit val formats = Json.format[ConfirmCorrespondAddressModel]
       val confirmCorrespondAddressForm = ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.fill(confirmCorrespondAddressModel)
       val formJson = Json.toJson(confirmCorrespondAddressForm.get).toString()
-      println(formJson)
       formJson shouldBe confirmCorrespondAddressJson
     }
   }

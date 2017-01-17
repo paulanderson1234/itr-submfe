@@ -17,12 +17,13 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.{Constants, Features, KeystoreKeys}
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.SupportingDocumentsUploadForm.supportingDocumentsUploadForm
 import models.SupportingDocumentsUploadModel
+import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocumentsUpload
 import config.FrontendGlobal.notFoundTemplate
@@ -33,22 +34,24 @@ import scala.concurrent.Future
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
   val s4lConnector: S4LConnector = S4LConnector
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
 }
 
-trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC{
 
   val s4lConnector: S4LConnector
   val attachmentsFrontEndUrl: String
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
 
       //TODO: this enforces the feature lock but would be good to make this a predicate (see controller predicates folder)
-      if (!Features.UploadCondition) {
+      if (!fileUploadService.getUploadFeatureEnabled) {
         Future.successful(NotFound(notFoundTemplate))
       }
       else {
@@ -88,5 +91,4 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
       }
     )
   }
-
 }

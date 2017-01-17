@@ -33,5 +33,6 @@ object MockConfig extends AppConfig {
   override val signOutPageUrl: String = "/investment-tax-relief/signed-out"
   override val submissionUrl: String = "localhost"
   override val attachmentFileUploadUrl: String = "http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/investment-tax-relief/check-your-answers"
-  override val uploadFeatureEnabled: Boolean = true
+  override lazy val attachmentsFrontEndServiceBaseUrl = "http://localhost:9643/investment-tax-relief-attachments-frontend"
+  override val uploadFeatureEnabled: Boolean = false
 }
