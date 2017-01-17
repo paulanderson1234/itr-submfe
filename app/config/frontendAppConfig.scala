@@ -52,7 +52,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val introductionUrl: String = configuration.getString(s"introduction.url").getOrElse("")
 
   override lazy val attachmentsFrontEndServiceBaseUrl: String = loadConfig(s"investment-tax-relief-attachments-frontend.url")
-  override lazy val submissionFrontendServiceBaseUrl: String = loadConfig(s"investment-tax-relief-submission.url")
+  override lazy val submissionFrontendServiceBaseUrl: String = loadConfig(s"investment-tax-relief-submission-frontend.url")
 
   override lazy val subscriptionUrl: String = loadConfig("investment-tax-relief-subscription.url")
   override lazy val signOutPageUrl: String = configuration.getString(s"sign-out-page.url").getOrElse("")
