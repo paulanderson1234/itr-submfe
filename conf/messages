@@ -406,6 +406,19 @@ page.supportingDocuments.SupportingDocuments.bullet.four=prospectuses and other 
 page.supportingDocuments.SupportingDocuments.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 
+#supporting docs upload
+page.supportingDocumentsUpload.heading=To support your application you''ll need to send us your company''s:
+page.supportingDocumentsUpload.bullet.one=business plan
+page.supportingDocumentsUpload.bullet.two=shareholder agreements or drafts
+page.supportingDocumentsUpload.bullet.three=memorandum and articles of association
+page.supportingDocumentsUpload.bullet.four= prospectuses and other documents for attracting investment
+page.supportingDocumentsUpload.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
+page.supportingDocumentsUpload.docs.current=If your documents aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocumentsUpload.upload.instruction=You can either upload your documents now, or after you have checked and submitted your application.
+page.supportingDocumentsUpload.send.confirm=Send your documents now?
+page.supportingDocumentsUpload.Note=Your application will not be complete until you send us these files
+
+
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
 page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondence address you want us to use for this application?

@@ -75,6 +75,9 @@ POST       /contact-details                         controllers.ContactDetailsCo
 GET        /supporting-documents                    controllers.SupportingDocumentsController.show
 POST       /supporting-documents                    controllers.SupportingDocumentsController.submit
 
+GET        /supporting-documents-upload             controllers.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.SupportingDocumentsUploadController.submit
+
 GET        /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.show
 POST       /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.submit
 

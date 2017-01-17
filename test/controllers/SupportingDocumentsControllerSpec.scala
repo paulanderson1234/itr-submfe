@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,14 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
+import services.FileUploadService
 
 import scala.concurrent.Future
 
@@ -34,13 +35,18 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
   object TestController extends SupportingDocumentsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override lazy val s4lConnector = mockS4lConnector
+    override val s4lConnector = mockS4lConnector
+    override val fileUploadService = mockFileUploadService
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
     override lazy val enrolmentConnector = mockEnrolmentConnector
+
   }
 
-  def setupMocks(backLink: Option[String] = None): Unit = {
+
+  def setupMocks(backLink: Option[String] = None, uploadFeatureEnabled: Boolean = false): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
+      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
   }
 
   "SupportingDocumentsController" should {
@@ -53,19 +59,22 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     "use the correct enrolment connector" in {
       SupportingDocumentsController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct upload service" in {
+      SupportingDocumentsController.fileUploadService shouldBe FileUploadService
+    }
   }
 
-  "Sending a GET request to SupportingDocumentsController" should {
+  "Sending a GET request to SupportingDocumentsController with upload feature disabled" should {
     "return a 200 OK" in {
       mockEnrolledRequest()
-      setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url))
+      setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), false)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "sending a Get requests to the SupportingDocumentsController when authenticated and enrolled" should {
+  "sending a Get requests to the SupportingDocumentsController when authenticated and enrolled with upload feature disabled" should {
     "redirect to the confirm correspondence address page if no saved back link was found" in {
       mockEnrolledRequest()
       setupMocks()
@@ -75,6 +84,18 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
           redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
         }
       )
+    }
+  }
+
+
+  "Sending a GET request to SupportingDocumentsController with upload feature enabled" should {
+    "redirect to the upload file supporting documents page" in {
+      mockEnrolledRequest()
+      setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), true)
+      showWithSessionAndAuth(TestController.show) {
+          result => status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents-upload")
+      }
     }
   }
 

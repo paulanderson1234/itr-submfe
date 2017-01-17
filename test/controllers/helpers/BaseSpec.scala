@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@ package controllers.helpers
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
-import models.registration.RegistrationDetailsModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
 
 trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
@@ -34,12 +33,14 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
+  val mockFileUploadService = mock[FileUploadService]
 
   override def beforeEach() {
     reset(mockS4lConnector)
     reset(mockEnrolmentConnector)
     reset(mockSubmissionConnector)
   }
+
 
   val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
     Some("tf4 2ls"),"GB"), ContactDetailsModel("Firstname","Lastname",Some("0123324234234"),Some("4567324234324"),"test@test.com"))

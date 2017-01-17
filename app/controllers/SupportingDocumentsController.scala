@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,11 @@
 package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
+import services.{FileUploadService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocuments
 
@@ -29,6 +30,8 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -37,16 +40,25 @@ object SupportingDocumentsController extends SupportingDocumentsController
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val attachmentsFrontEndUrl : String
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-    ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-      case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
-      case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+    if(fileUploadService.getUploadFeatureEnabled) {
+      Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+    }
+    else {
+      ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
+        case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
+        case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+      }
     }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.CheckAnswersController.show()))
+      Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
+
 }
+
+

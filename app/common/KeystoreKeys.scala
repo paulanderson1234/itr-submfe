@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ trait KeystoreKeys {
   val confirmContactDetails: String = "contactInformation:confirmContactDetails"
   val contactAddress: String = "contactInformation:contactAddress"
   val previousSchemes: String = "previousInvestmentScheme:previousInvestmentSchemes"
+  val supportingDocumentsUpload: String = "attachments:supportingDocumentsUpload"
 
   // processing Keys
   val kiProcessingModel: String = "processing:kiProcessingModel"
@@ -73,5 +74,8 @@ trait KeystoreKeys {
 
   //application in progress key
   val applicationInProgress: String = "applicationInProgress"
+
+  //file upload keys
+  val envelopeID: String = "fileUpload:envelopeID"
 
 }
