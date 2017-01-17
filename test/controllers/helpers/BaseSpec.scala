@@ -24,9 +24,10 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.{UnitSpec}
 import play.api.i18n.Messages.Implicits._
+
 
 trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
 
@@ -35,12 +36,14 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
+  val mockFileUploadService = mock[FileUploadService]
 
   override def beforeEach() {
     reset(mockS4lConnector)
     reset(mockEnrolmentConnector)
     reset(mockSubmissionConnector)
   }
+
 
   val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
     Some("tf4 2ls"),"GB"), ContactDetailsModel("Firstname","Lastname",Some("0123324234234"),Some("4567324234324"),"test@test.com"))

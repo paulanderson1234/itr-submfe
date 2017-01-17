@@ -33,11 +33,18 @@ trait AppConfig {
   val contactFrontendService: String
   val signOutPageUrl: String
   val submissionUrl: String
+  val attachmentFileUploadUrl: String
+  val attachmentsFrontEndServiceBaseUrl: String
+  val uploadFeatureEnabled: Boolean
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
 
   private def loadConfig(key: String) = configuration.getString(key).getOrElse(throw new Exception(s"Missing configuration key: $key"))
+  private def getFeature(key: String) = configuration.getBoolean(key).getOrElse(false)
+
+  lazy val attachmentsServiceUrl = baseUrl("investment-tax-relief-attachments-frontend")
+  lazy val serviceUrl = baseUrl("investment-tax-relief-submission-frontend")
 
   override lazy val analyticsToken = loadConfig(s"google-analytics.token")
   override lazy val analyticsHost = loadConfig(s"google-analytics.host")
@@ -53,4 +60,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemPartialUrl = s"$contactFrontendService/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
+  override lazy val attachmentFileUploadUrl = s"$attachmentsServiceUrl/investment-tax-relief-attachments-frontend/file-upload?continueUrl=$serviceUrl/investment-tax-relief/check-your-answers"
+  override lazy val attachmentsFrontEndServiceBaseUrl = s"$attachmentsServiceUrl/investment-tax-relief-attachments-frontend"
+  override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
+
 }
