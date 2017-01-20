@@ -29,6 +29,8 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.introduction._
 import views.html.hubPartials._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

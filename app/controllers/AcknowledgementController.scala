@@ -29,6 +29,9 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{FileUploadService, RegistrationDetailsService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
+
 
 import scala.concurrent.Future
 
@@ -84,6 +87,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
     Redirect(feedback.routes.FeedbackController.show().url)
   }
+
+
 
 
   //noinspection ScalaStyle

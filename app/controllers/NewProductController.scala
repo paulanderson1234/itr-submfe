@@ -27,6 +27,8 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.Transformers._
 import scala.concurrent.Future
 import views.html.investment.NewProduct
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 object NewProductController extends NewProductController{
   val s4lConnector: S4LConnector = S4LConnector

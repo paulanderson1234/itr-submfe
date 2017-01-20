@@ -28,6 +28,8 @@ import common.Constants._
 import forms.ProposedInvestmentForm._
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html.investment.ProposedInvestment
@@ -77,7 +79,9 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
         // check previous answers present
         case Some(dataWithPreviousValid) => {
           // all good - TODO:Save the lifetime exceeded flag? - decide how to handle. For now I put it in keystore..
-          s4lConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded)
+          if(isLifeTimeAllowanceExceeded.nonEmpty){
+            s4lConnector.saveFormData(KeystoreKeys.lifeTimeAllowanceExceeded, isLifeTimeAllowanceExceeded.getOrElse(false))
+          }
 
           isLifeTimeAllowanceExceeded match {
             case Some(data) =>

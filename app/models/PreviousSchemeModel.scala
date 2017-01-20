@@ -20,6 +20,8 @@ import play.api.i18n.Messages
 import play.api.libs.json.Json
 import utils.{CostFormatter, DateFormatter}
 import common.Constants
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 case class PreviousSchemeModel (schemeTypeDesc : String,
                                 investmentAmount : Int,

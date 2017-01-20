@@ -25,6 +25,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import views.helpers.CheckAnswersSpec
 import play.api.test.Helpers._
+import play.api.i18n.Messages.Implicits._
 
 class CheckAnswersInvestmentSpec extends CheckAnswersSpec {
   

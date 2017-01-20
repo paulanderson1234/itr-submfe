@@ -18,12 +18,14 @@ package forms
 
 import models.{DateOfIncorporationModel}
 import forms.DateOfIncorporationForm._
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
+import play.api.i18n.Messages.Implicits._
 
 
-class DateOfIncorporationFormSpec extends UnitSpec {
+class DateOfIncorporationFormSpec extends UnitSpec with OneAppPerSuite{
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date();

@@ -28,6 +28,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import common.{Constants, KeystoreKeys}
 import views.helpers.ViewSpec
+import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
 

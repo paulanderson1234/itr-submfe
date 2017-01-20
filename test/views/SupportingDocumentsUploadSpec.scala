@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import forms.SupportingDocumentsUploadForm._
 import views.html.supportingDocuments.SupportingDocumentsUpload
-
+import play.api.i18n.Messages.Implicits._
 
 class SupportingDocumentsUploadSpec extends ViewSpec {
 
@@ -32,8 +32,8 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
 
     lazy val form = supportingDocumentsUploadForm.bind(Map("doUpload" -> Constants.StandardRadioButtonYesValue))
     lazy val emptyForm = supportingDocumentsUploadForm.bind(Map("doUpload" -> ""))
-    lazy val page = SupportingDocumentsUpload(form, routes.ConfirmCorrespondAddressController.show().url)(fakeRequest)
-    lazy val emptyPage = SupportingDocumentsUpload(emptyForm, routes.ConfirmCorrespondAddressController.show().url)(fakeRequest)
+    lazy val page = SupportingDocumentsUpload(form, routes.ConfirmCorrespondAddressController.show().url)(fakeRequest, applicationMessages)
+    lazy val emptyPage = SupportingDocumentsUpload(emptyForm, routes.ConfirmCorrespondAddressController.show().url)(fakeRequest, applicationMessages)
     lazy val document = Jsoup.parse(contentAsString(page))
     lazy val documentEmpty = Jsoup.parse(contentAsString(emptyPage))
 

@@ -31,7 +31,6 @@ common.month=Month
 common.year=Year
 common.base.change = Change
 common.base.remove = Remove
-error.required=This field is required
 common.pound = £
 common.notAvailable=None
 common.address.postcode=Postcode
@@ -597,7 +596,6 @@ page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
 page.introduction.hub.new.heading=You have no unsubmitted applications
-
 
 ## Feedback ##
 feedback.title = Feedback

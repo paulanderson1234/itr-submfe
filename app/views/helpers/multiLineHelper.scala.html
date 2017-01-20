@@ -1,4 +1,4 @@
-@(id: String, lines: Array[String])
+@(id: String, lines: Array[String])(implicit messages: Messages)
 
 @for((line, index) <- lines.zipWithIndex) {
 <span class="font-xsmall" id="@{id}-line@{index}">@line</span>

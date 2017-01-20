@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package Forms
+package forms
 
 import forms.NatureOfBusinessForm
 import models.NatureOfBusinessModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class NatureOfBusinessFormSpec extends UnitSpec {
+class NatureOfBusinessFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     NatureOfBusinessForm.natureOfBusinessForm.bindFromRequest()(request).fold(
@@ -52,7 +54,7 @@ class NatureOfBusinessFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "natureofbusiness"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {

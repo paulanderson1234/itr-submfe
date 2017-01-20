@@ -25,6 +25,8 @@ import models.{CommercialSaleModel, KiProcessingModel}
 import common._
 import forms.CommercialSaleForm._
 import views.html.companyDetails.CommercialSale
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

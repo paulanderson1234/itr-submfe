@@ -1,6 +1,6 @@
 @import models.PreviousSchemeModel
 @import config.FrontendAppConfig
-@(previousSchemes: Vector[PreviousSchemeModel], backUrl: String)(implicit request: Request[_])
+@(previousSchemes: Vector[PreviousSchemeModel], backUrl: String)(implicit request: Request[_], messages: Messages)
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField}
 

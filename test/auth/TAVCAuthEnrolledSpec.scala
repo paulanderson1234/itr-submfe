@@ -19,10 +19,11 @@ package auth
 import java.net.URLEncoder
 
 import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.test.FakeRequest
 import play.api.http.Status
 import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.{UnitSpec}
 import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,7 +31,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.Future
 
 
-class TAVCAuthEnrolledSpec extends UnitSpec with WithFakeApplication with MockitoSugar {
+class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSugar {
 
   "Government Gateway Provider" should {
     "have an account type additional parameter set to organisation" in {

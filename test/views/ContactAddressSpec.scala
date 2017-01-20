@@ -24,6 +24,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import views.html.contactInformation.ContactAddress
+import play.api.i18n.Messages.Implicits._
 
 class ContactAddressSpec extends ViewSpec {
 
@@ -51,9 +52,9 @@ class ContactAddressSpec extends ViewSpec {
     "countryCode" -> ""))
 
   val countriesList: List[(String, String)] = List(("JP", "Japan"), ("GB", "United Kingdom"))
-  lazy val page = ContactAddress(form, countriesList)(authorisedFakeRequest)
-  lazy val emptyPage = ContactAddress(emptyForm, countriesList)(authorisedFakeRequest)
-  lazy val errorPage = ContactAddress(errorForm, countriesList)(authorisedFakeRequest)
+  lazy val page = ContactAddress(form, countriesList)(authorisedFakeRequest,applicationMessages)
+  lazy val emptyPage = ContactAddress(emptyForm, countriesList)(authorisedFakeRequest, applicationMessages)
+  lazy val errorPage = ContactAddress(errorForm, countriesList)(authorisedFakeRequest, applicationMessages)
 
   "The Provide Correspondence Address page" should {
 

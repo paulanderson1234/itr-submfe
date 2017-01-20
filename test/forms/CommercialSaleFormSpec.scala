@@ -18,14 +18,15 @@ package forms
 
 import models.CommercialSaleModel
 import forms.CommercialSaleForm._
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
-
 import common.Constants
+import play.api.i18n.Messages.Implicits._
 
 
-class CommercialSaleFormSpec extends UnitSpec {
+class CommercialSaleFormSpec extends UnitSpec with OneAppPerSuite {
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date();

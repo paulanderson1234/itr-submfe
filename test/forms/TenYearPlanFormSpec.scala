@@ -19,10 +19,12 @@ package forms
 import common.Constants
 import forms.TenYearPlanForm._
 import models.TenYearPlanModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class TenYearPlanFormSpec extends UnitSpec {
+class TenYearPlanFormSpec extends UnitSpec with OneAppPerSuite{
 
   "Creating the form for the Ten Year Plan" should {
     "return a populated yes form using .fill" in {
@@ -61,7 +63,7 @@ class TenYearPlanFormSpec extends UnitSpec {
         form.errors.head.key shouldBe "hasTenYearPlan"
       }
       "associate the correct error message to the error" in {
-        form.error("hasTenYearPlan").get.message shouldBe Messages("error.required")
+        Messages(form.error("hasTenYearPlan").get.message) shouldBe Messages("error.required")
       }
     }
 

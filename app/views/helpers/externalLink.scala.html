@@ -13,7 +13,7 @@
 * See the License for the specific language governing permissions and
 * limitations under the License.
 *@
-@(linkText: String, href: String, id: Option[String] = None)
+@(linkText: String, href: String, id: Option[String] = None)(implicit messages: Messages)
 
 <a id="@if(Some(id)){@id}" class="external-link" rel="external" href="@href" target="_blank">
     @linkText

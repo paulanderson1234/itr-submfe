@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{externalLink, backButtonWithProgress, errorSummary, formInlineDateInput}
 
-@(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_])
+@(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.companyDetails.DateOfIncorporation.title")) {
 

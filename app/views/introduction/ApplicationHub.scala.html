@@ -6,7 +6,7 @@
 @import utils.Transformers
 @import utils.CountriesHelper
 
-@(applicationHubModel: ApplicationHubModel, partial: Html)(implicit request: Request[_])
+@(applicationHubModel: ApplicationHubModel, partial: Html)(implicit request: Request[_], messages: Messages)
 
 @sidebar = {
     <h2 class="heading-small" id="organisation-name"> @applicationHubModel.organisationName</h2>

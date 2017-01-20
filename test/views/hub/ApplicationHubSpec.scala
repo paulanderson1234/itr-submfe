@@ -22,6 +22,7 @@ import utils.CountriesHelper
 import views.helpers.ViewSpec
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 import views.html.introduction.ApplicationHub
+import play.api.i18n.Messages.Implicits._
 
 class ApplicationHubSpec extends ViewSpec {
 
@@ -29,7 +30,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
       "the model used contains the max fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest,applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -51,7 +52,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the max amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -73,7 +74,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -90,7 +91,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting()(fakeRequest))(fakeRequest)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")

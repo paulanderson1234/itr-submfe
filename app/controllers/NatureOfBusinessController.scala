@@ -24,6 +24,8 @@ import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html.companyDetails.NatureOfBusiness

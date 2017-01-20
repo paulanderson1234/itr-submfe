@@ -1,4 +1,4 @@
-@(fieldName: String, questionText:String, content:Html, helpText:Option[String] = None)(implicit lang: play.api.i18n.Lang)
+@(fieldName: String, questionText:String, content:Html, helpText:Option[String] = None)(implicit messages: Messages)
 
 <fieldset class="form-group" data-hidden='hidden'>
     <legend>@questionText</legend>

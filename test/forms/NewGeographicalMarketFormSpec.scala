@@ -18,14 +18,16 @@ package forms
 
 import common.Constants
 import models.NewGeographicalMarketModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class NewGeographicalMarketFormSpec extends UnitSpec {
+class NewGeographicalMarketFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     NewGeographicalMarketForm.newGeographicalMarketForm.bindFromRequest()(request).fold(
@@ -52,7 +54,7 @@ class NewGeographicalMarketFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "isNewGeographicalMarket"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {

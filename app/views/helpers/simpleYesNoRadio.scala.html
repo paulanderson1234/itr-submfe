@@ -1,6 +1,6 @@
 @import uk.gov.hmrc.play.views.html.{helpers => govHelpers}
 
-@(fieldName: String, questionText: String, helpText: Option[String] = None)(implicit lang: play.api.i18n.Lang)
+@(fieldName: String, questionText: String, helpText: Option[String] = None)(implicit messages: Messages)
 
 @yesId = @{fieldName + "Yes"}
 @noId = @{fieldName + "No"}

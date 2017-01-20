@@ -3,7 +3,7 @@
 @import common.Constants
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
 
-@(usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel])(implicit request: Request[_])
+@(usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.investment.UsedInvestmentReasonBefore.title")) {
 

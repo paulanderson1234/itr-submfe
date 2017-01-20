@@ -18,20 +18,26 @@ package views
 
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.Messages
+import play.api.test.FakeRequest
+import uk.gov.hmrc.play.test.UnitSpec
 import views.helpers.ViewSpec
 import forms.ConfirmContactDetailsForm._
 import views.html.contactInformation._
 import controllers.routes
-import uk.gov.hmrc.play.test.WithFakeApplication
+import play.api.i18n.Messages.Implicits._
 
-class ConfirmContactDetailsSpec extends ViewSpec with WithFakeApplication{
+
+class ConfirmContactDetailsSpec extends UnitSpec with OneAppPerSuite{
 
   val contactDetailsNoMobile =  ContactDetailsModel("Firstname","Lastname",Some("07000 111222"), None, "Firstname@Lastname-ltd.com")
   val contactDetailsMobile =  ContactDetailsModel("Firstname","Lastname",Some("07000 111222"), Some("07000 222111"), "Firstname@Lastname-ltd.com")
 
-  lazy val view = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsNoMobile)))(fakeRequest)
-  lazy val viewWithMobile = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsMobile)))(fakeRequest)
+
+
+  lazy val view = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsNoMobile)))(FakeRequest(), applicationMessages)
+  lazy val viewWithMobile = ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("",contactDetailsMobile)))(FakeRequest(), applicationMessages)
   lazy val document = Jsoup.parse(view.body)
   lazy val documentWithMobile = Jsoup.parse(viewWithMobile.body)
 
