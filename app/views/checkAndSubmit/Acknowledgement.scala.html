@@ -3,7 +3,7 @@
 @import helpers.backButton
 @import config.FrontendAppConfig
 
-@(submissionResponseModel: SubmissionResponse)(implicit request: Request[_])
+@(submissionResponseModel: SubmissionResponse)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.checkAndSubmit.acknowledgement.title"), bodyClasses = None) {
 

@@ -24,6 +24,8 @@ import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html.investment.UsedInvestmentReasonBefore

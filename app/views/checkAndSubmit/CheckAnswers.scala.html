@@ -5,7 +5,7 @@
 @import utils.Transformers
 @import utils.CountriesHelper
 
-@(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_])
+@(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 

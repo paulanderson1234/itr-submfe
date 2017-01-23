@@ -3,7 +3,7 @@
 @import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, externalLink}
 @import common.Constants
 
-@(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_])
+@(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.investment.NewGeographicalMarket.title")) {
 

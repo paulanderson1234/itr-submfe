@@ -55,7 +55,8 @@ package object auth {
       confidenceLevel = ConfidenceLevel.L50,
       userDetailsLink = None,
       enrolments = None,
-      ids = None
+      ids = None,
+      legacyOid = ""
     )
 
     val allowedAuthContext = AuthContext(

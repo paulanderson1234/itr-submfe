@@ -21,13 +21,13 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import views.html.investment.AnnualTurnoverError
-
+import play.api.i18n.Messages.Implicits._
 
 class AnnualTurnoverErrorSpec extends ViewSpec {
 
   "The Annual turnover error page" should {
 
-      lazy val page = AnnualTurnoverError()(fakeRequest)
+      lazy val page = AnnualTurnoverError()(fakeRequest,applicationMessages)
       lazy val document = Jsoup.parse(contentAsString(page))
 
       "have the title '' " in {

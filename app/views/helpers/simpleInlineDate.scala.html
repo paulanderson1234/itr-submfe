@@ -1,4 +1,4 @@
-@(fieldName: String, questionText: String)(implicit lang: play.api.i18n.Lang)
+@(fieldName: String, questionText: String)(implicit messages: Messages)
 
 @dayElemId = @{fieldName + ".day"}
 @monthElemId = @{fieldName + ".month"}

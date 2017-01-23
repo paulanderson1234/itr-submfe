@@ -3,7 +3,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress}
 
-@(subsidiariesNinetyOwnedForm: Form[SubsidiariesNinetyOwnedModel])(implicit request: Request[_])
+@(subsidiariesNinetyOwnedForm: Form[SubsidiariesNinetyOwnedModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.investment.SubsidiariesNinetyOwned.title")){
 

@@ -24,6 +24,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
+import play.api.i18n.Messages.Implicits._
 
 class TradingForTooLongSpec extends ViewSpec {
 

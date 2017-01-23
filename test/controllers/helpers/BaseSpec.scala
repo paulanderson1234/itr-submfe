@@ -23,10 +23,13 @@ import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
+import org.scalatestplus.play.OneAppPerSuite
 import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.{UnitSpec}
+import play.api.i18n.Messages.Implicits._
 
-trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
+
+trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
 
   val mockS4lConnector = mock[S4LConnector]
   val mockEnrolmentConnector = mock[EnrolmentConnector]

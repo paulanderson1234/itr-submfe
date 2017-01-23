@@ -125,6 +125,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
         }
       }
     }
+
     "Posting to the SupportingDocumentsUploadController when authenticated and enrolled and with upload feature disabled" should {
       "redirect to Check your answers page" in {
         mockEnrolledRequest()

@@ -3,7 +3,7 @@
 @import common.Constants
 @import views.html.helpers.{backButtonWithProgress, errorSummary, formInputRadioGroup}
 
-@(subsidiariesForm: Form[SubsidiariesModel], backlinkUrl: String)(implicit request: Request[_])
+@(subsidiariesForm: Form[SubsidiariesModel], backlinkUrl: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.companyDetails.Subsidiaries.title")) {
 

@@ -18,10 +18,12 @@ package forms
 
 import forms.ContactAddressForm._
 import models.AddressModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.i18n.Messages
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class ContactAddressFormSpec extends UnitSpec {
+class ContactAddressFormSpec extends UnitSpec with OneAppPerSuite{
 
   "Creating a form using an empty model" should {
     lazy val form = contactAddressForm

@@ -2,7 +2,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import views.html.helpers.{backButtonWithProgress, input, errorSummary}
 
-@(contactDetailsForm: Form[ContactDetailsModel])(implicit request: Request[_])
+@(contactDetailsForm: Form[ContactDetailsModel])(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.contactInformation.contactDetails.title")) {
 

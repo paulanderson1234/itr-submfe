@@ -3,7 +3,7 @@
 @import views.html.helpers._
 @import common.Constants
 
-@(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], question: String, description: String)(implicit request: Request[_])
+@(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], question: String, description: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(question) {
 

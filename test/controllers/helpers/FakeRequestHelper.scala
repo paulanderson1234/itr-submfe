@@ -22,6 +22,7 @@ import auth._
 import builders.SessionBuilder
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Action, AnyContent, Result}
 import play.api.test.FakeRequest
+import play.api.test.FakeHeaders
 import uk.gov.hmrc.play.http.SessionKeys
 
 import scala.concurrent.Future

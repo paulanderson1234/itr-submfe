@@ -8,7 +8,7 @@ scriptElem: Option[Html] = None,
 articleLayout: Boolean = true,
 backLink: Option[String] = None,
 sectionProgress: Option[String] = None,
-userLoggedIn: Boolean = true)(mainContent: Html)(implicit request : Request[_])
+userLoggedIn: Boolean = true)(mainContent: Html)(implicit request : Request[_], messages: Messages)
 
 
 @import uk.gov.hmrc.play.views.html.layouts

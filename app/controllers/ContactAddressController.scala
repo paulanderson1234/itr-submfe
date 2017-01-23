@@ -27,6 +27,8 @@ import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.CountriesHelper
 import views.html.contactInformation.ContactAddress
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 

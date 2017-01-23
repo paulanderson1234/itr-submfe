@@ -41,6 +41,7 @@ import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
+import play.api.i18n.Messages.Implicits._
 
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 

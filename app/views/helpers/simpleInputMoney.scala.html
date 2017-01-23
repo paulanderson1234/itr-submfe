@@ -1,4 +1,4 @@
-@(fieldName: String, questionText: String, helpText: Option[String] = None)(implicit lang: play.api.i18n.Lang)
+@(fieldName: String, questionText: String, helpText: Option[String] = None)(implicit messages: Messages)
 
 <div class="form-group">
     <label for="@fieldName">@questionText</label>
