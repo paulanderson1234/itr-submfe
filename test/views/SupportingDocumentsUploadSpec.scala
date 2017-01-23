@@ -37,8 +37,6 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
     lazy val document = Jsoup.parse(contentAsString(page))
     lazy val documentEmpty = Jsoup.parse(contentAsString(emptyPage))
 
-    lazy val supportingDocsTable = document.getElementById("supporting-docs-table").select("tbody")
-
     "contain the correct elements when a valid form is submitted" in new Setup {
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
@@ -49,7 +47,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
       document.getElementById("bullet-four").text() shouldBe Messages("page.supportingDocumentsUpload.bullet.four")
       document.getElementById("bullet-five").text() shouldBe Messages("page.supportingDocumentsUpload.bullet.five")
       document.getElementById("docs-current").text() shouldBe Messages("page.supportingDocumentsUpload.docs.current")
-      supportingDocsTable.select("tr").get(0).getElementsByClass("h2-heading").text() shouldBe Messages("page.supportingDocumentsUpload.Note")
+      document.getElementById("noticeMessage").text() shouldBe Messages("page.supportingDocumentsUpload.Note")
       document.getElementById("send-instruction").text() shouldBe Messages("page.supportingDocumentsUpload.upload.instruction")
       document.getElementById("doUpload-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("doUpload-noLabel").text() shouldBe Messages("common.radioNoLabel")
@@ -68,7 +66,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
       documentEmpty.getElementById("bullet-four").text() shouldBe Messages("page.supportingDocumentsUpload.bullet.four")
       documentEmpty.getElementById("bullet-five").text() shouldBe Messages("page.supportingDocumentsUpload.bullet.five")
       documentEmpty.getElementById("docs-current").text() shouldBe Messages("page.supportingDocumentsUpload.docs.current")
-      documentEmpty.select("tr").get(0).getElementsByClass("h2-heading").text() shouldBe Messages("page.supportingDocumentsUpload.Note")
+      documentEmpty.getElementById("noticeMessage").text() shouldBe Messages("page.supportingDocumentsUpload.Note")
       documentEmpty.getElementById("send-instruction").text() shouldBe Messages("page.supportingDocumentsUpload.upload.instruction")
       documentEmpty.getElementById("doUpload-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       documentEmpty.getElementById("doUpload-noLabel").text() shouldBe Messages("common.radioNoLabel")
