@@ -936,6 +936,15 @@
 
     <h2>Confirm Contact Details</h2>
     <div class="form-group">
+
+        <div id="storedContactDetailsDiv" class="form-group">
+            <input id="contactDetails.forename" name="contactDetails.forename" type="text" class="form-group" value="testName1"/>
+            <input id="contactDetails.surname" name="contactDetails.surname" type="text" class="form-group" value="testName2"/>
+            <input id="contactDetails.telephoneNumber" name="contactDetails.telephoneNumber" type="text" class="form-group" value="000000000000"/>
+            <input id="contactDetails.mobileNumber" name="contactDetails.mobileNumber" type="text" class="form-group" value="000000000001"/>
+            <input id="contactDetails.email" name="contactDetails.email" type="text" class="form-group" value="test&commat;test.com"/>
+        </div>
+
         @formInputRadioGroup(
         field = confirmContactDetailsForm("contactDetailsUse"),
         Seq(
@@ -1006,6 +1015,16 @@
 
     <h2>Confirm Contact Address</h2>
     <div class="form-group">
+
+        <div id="storedAddressDiv" class="form-group">
+            <input id="address.addressline1" name="address.addressline1" type="text" class="form-group" value="testLine1"/>
+            <input id="address.addressline2" name="address.addressline2" type="text" class="form-group" value="testLine2"/>
+            <input id="address.addressline3" name="address.addressline3" type="text" class="form-group" value="testLine3"/>
+            <input id="address.addressline4" name="address.addressline4" type="text" class="form-group" value="testLine4"/>
+            <input id="address.postcode" name="address.postcode" type="text" class="form-group" value="AA1 1AA"/>
+            <input id="address.countryCode" name="address.countryCode" type="text" class="form-group" value="GB"/>
+        </div>
+
         @formInputRadioGroup(
         field = confirmCorrespondAddressForm("contactAddressUse"),
         Seq(
@@ -1089,7 +1108,7 @@
 
     <div class="form-group">
         <button class="btn button" type="submit" id="next">
-           Messages("page.test.submit-form.button")
+           @Messages("page.test.submit-form.button")
         </button>
 
         <a class="btn button" id="clear-cache" href="@testOnly.controllers.routes.ClearCacheController.clearCache()">

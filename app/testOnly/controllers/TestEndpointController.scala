@@ -29,6 +29,7 @@ import play.api.mvc.{AnyContent, Request}
 import testOnly.models._
 import testOnly.forms._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.CountriesHelper
 
 import scala.concurrent.Future
@@ -56,9 +57,9 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
       turnoverCostsForm <- fillForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
       investmentGrowForm <- fillForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
       confirmContactDetailsForm <- fillForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
-      contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.contactDetails, ContactDetailsForm.contactDetailsForm)
+      contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
       confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
-      contactAddressForm <- fillForm[AddressModel](KeystoreKeys.contactAddress, ContactAddressForm.contactAddressForm)
+      contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
 
     } yield Ok(testOnly.views.html.testEndpoint(previousSchemesForm, natureOfBusinessForm,
       dateOfIncorporationForm, commercialSaleForm,
@@ -82,9 +83,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val usedInvestmentReasonBefore = bindForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore, UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
-    // HERE
     val testPreviousSchemes = bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)
-    //
     val proposedInvestment = bindForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
     val previousBeforeDoFCS = bindForm[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS, PreviousBeforeDOFCSForm.previousBeforeDOFCSForm)
     val newGeographicalMarket = bindForm[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, NewGeographicalMarketForm.newGeographicalMarketForm)
@@ -92,15 +91,16 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val testTurnoverCosts = bindForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
     val investmentGrow = bindForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
     val confirmContactDetails = bindForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
-    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.contactDetails, ContactDetailsForm.contactDetailsForm)
+    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
     val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
-    val contactAddress = bindForm[AddressModel](KeystoreKeys.contactAddress, ContactAddressForm.contactAddressForm)
+    val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
+    s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
     Future.successful(Ok(testOnly.views.html.testEndpoint(testPreviousSchemes, natureOfBusiness, dateOfIncorporation, commercialSale, isKnowledgeIntensive, testOperatingCosts, percentageStaffWithMasters, tenYearPlan,
       usedInvestmentReasonBefore, hadPreviousRFI,proposedInvestment, previousBeforeDoFCS, newGeographicalMarket, newProduct, testTurnoverCosts, investmentGrow, confirmContactDetails, contactDetails,
       confirmCorrespondAddress, contactAddress, CountriesHelper.getIsoCodeTupleList)))
   }
 
-  def fillForm[A](s4lKey: String, form: Form[A])(implicit request: Request[AnyContent], user: TAVCUser, format: Format[A]): Future[Form[A]] = {
+  def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
     s4lConnector.fetchAndGetFormData[A](s4lKey).map {
       case Some(data) =>
         form.fill(data)
@@ -108,11 +108,10 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     }
   }
 
-  def fillPreviousSchemesForm(implicit request: Request[AnyContent], user: TAVCUser): Future[Form[TestPreviousSchemesModel]] = {
+  def fillPreviousSchemesForm(implicit hc: HeaderCarrier, user: TAVCUser): Future[Form[TestPreviousSchemesModel]] = {
     PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).map {
       data =>
         if(data.nonEmpty) {
-          println(data)
           TestPreviousSchemesForm.testPreviousSchemesForm.fill(TestPreviousSchemesModel(Some(data)))
         } else {
           TestPreviousSchemesForm.testPreviousSchemesForm.fill(TestPreviousSchemesModel(None))
@@ -138,9 +137,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
         formWithErrors
       },
       validFormData => {
-        println(validFormData)
         for(previousScheme <- validFormData.previousSchemes.getOrElse(Seq())) {
-          println(previousScheme)
           PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, previousScheme)
         }
         form.fill(validFormData)
