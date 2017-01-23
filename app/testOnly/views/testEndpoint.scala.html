@@ -2,6 +2,7 @@
 @import testOnly.models.TestPreviousSchemesModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
+@import utils.CountriesHelper
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
 @(testPreviousSchemesForm: Form[TestPreviousSchemesModel], natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], commercialSaleForm: Form[CommercialSaleModel],
@@ -9,7 +10,7 @@
   tenYearPlanForm: Form[TenYearPlanModel], usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel], hadPreviousRFIForm: Form[HadPreviousRFIModel],
   proposedInvestmentForm: Form[ProposedInvestmentModel], previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], newGeographicalMarketForm: Form[NewGeographicalMarketModel],
   newProductForm: Form[NewProductModel], testTurnoverCostsForm: Form[AnnualTurnoverCostsModel], investmentGrowForm: Form[InvestmentGrowModel], confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
-  confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel], listOfIsoCode: List[(String, String)])(implicit request: Request[_])
+  confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.contactInformation.contactDetails.title")) {
 <div class="grid-row">
 
@@ -1096,7 +1097,7 @@
     </div>
     <div class="form-group">
         @dropdown(contactAddressForm("countryCode"),
-        elementOptions = listOfIsoCode,
+        elementOptions = CountriesHelper.getIsoCodeTupleList,
         displayEmptyValue = true,
         '_emptyValueText -> Messages("page.address.country.select"),
         '_labelId -> "label-country",

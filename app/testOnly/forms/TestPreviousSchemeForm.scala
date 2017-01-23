@@ -16,14 +16,14 @@
 
 package testOnly.forms
 
-import common.Constants
 import utils.Transformers._
 import models.PreviousSchemeModel
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import uk.gov.voa.play.form.ConditionalMappings._
 import play.api.data.Form
 import utils.Validation._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 object TestPreviousSchemeForm {
 

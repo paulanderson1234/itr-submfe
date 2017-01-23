@@ -30,7 +30,8 @@ import testOnly.models._
 import testOnly.forms._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
-import utils.CountriesHelper
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -70,7 +71,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
       newGeographicalMarketForm, newProductForm, turnoverCostsForm,
       investmentGrowForm, confirmContactDetailsForm,
       contactDetailsForm, confirmCorrespondAddressForm,
-      contactAddressForm, CountriesHelper.getIsoCodeTupleList))
+      contactAddressForm))
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -97,7 +98,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
     Future.successful(Ok(testOnly.views.html.testEndpoint(testPreviousSchemes, natureOfBusiness, dateOfIncorporation, commercialSale, isKnowledgeIntensive, testOperatingCosts, percentageStaffWithMasters, tenYearPlan,
       usedInvestmentReasonBefore, hadPreviousRFI,proposedInvestment, previousBeforeDoFCS, newGeographicalMarket, newProduct, testTurnoverCosts, investmentGrow, confirmContactDetails, contactDetails,
-      confirmCorrespondAddress, contactAddress, CountriesHelper.getIsoCodeTupleList)))
+      confirmCorrespondAddress, contactAddress)))
   }
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
