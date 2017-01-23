@@ -62,7 +62,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemPartialUrl = s"$contactFrontendService/problem_reports_ajax?service=$contactFormServiceIdentifier"
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
-  override lazy val attachmentFileUploadUrl = s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl/check-your-answers"
+  override lazy val attachmentFileUploadUrl = s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
+    s"/check-your-answers&backUrl=${submissionFrontendServiceBaseUrl}/supporting-documents-upload"
   override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
 
 }
