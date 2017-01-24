@@ -96,6 +96,17 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
     val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointController.show().url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointController.show().url)
+
     Future.successful(Ok(testOnly.views.html.testEndpoint(testPreviousSchemes, natureOfBusiness, dateOfIncorporation, commercialSale, isKnowledgeIntensive, testOperatingCosts, percentageStaffWithMasters, tenYearPlan,
       usedInvestmentReasonBefore, hadPreviousRFI,proposedInvestment, previousBeforeDoFCS, newGeographicalMarket, newProduct, testTurnoverCosts, investmentGrow, confirmContactDetails, contactDetails,
       confirmCorrespondAddress, contactAddress)))
