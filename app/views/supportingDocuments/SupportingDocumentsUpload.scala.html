@@ -7,7 +7,7 @@
 
 @main_template(title = Messages("page.supportingDocuments.SupportingDocuments.title"), bodyClasses = None) {
 
-@backButtonWithProgress(controllers.routes.OperatingCostsController.show().toString, Messages("common.section.progress.company.details.five"))
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.five"))
 
 @errorSummary(supportingDocumentsForm, "percentage-of-staff-with-masters", "doUpload")
 

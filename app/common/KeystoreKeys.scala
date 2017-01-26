@@ -53,6 +53,7 @@ trait KeystoreKeys {
   // processing Keys
   val kiProcessingModel: String = "processing:kiProcessingModel"
   val lifeTimeAllowanceExceeded: String = "processing:lifeTimeAllowanceExceeded"
+  val envelopeId: String = "processing:envelopeId"
 
   // registration keys
   val registrationDetails: String = "registration:registrationDetails"

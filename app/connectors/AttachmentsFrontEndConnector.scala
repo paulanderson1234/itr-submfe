@@ -26,22 +26,16 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with ServicesConfig {
-  val attachmentsFrontEndUrl = FrontendAppConfig.attachmentsFrontEndServiceBaseUrl
+  val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl
   val http = WSHttp
 }
 
 trait AttachmentsFrontEndConnector {
 
-  val attachmentsFrontEndUrl: String
+  val internalAttachmentsUrl: String
   val http: HttpGet with HttpPost
 
-  // Note: Unlike keystore, S4L is encrypted with a service specific encryption key so we can't interrogate another service s4l
-  // directly like  we can with Keystore. We will therefore need to call the service (front-end) that encrypted it to send it back.
-  def getEnvelopeId(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    http.GET[Option[String]](s"$attachmentsFrontEndUrl/envelopeId")
-  }
-
-  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
-    http.POSTEmpty[HttpResponse](s"${attachmentsFrontEndUrl}/$tavcRef/close-envelope")
+  def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
+    http.POSTEmpty[HttpResponse](s"${internalAttachmentsUrl}/internal/$tavcRef/$envelopeId/${user.authContext.user.oid}/close-envelope")
   }
 }
