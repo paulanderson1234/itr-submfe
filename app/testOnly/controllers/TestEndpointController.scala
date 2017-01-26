@@ -39,6 +39,9 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
 
   val s4lConnector: S4LConnector
 
+  val kiProcessingModelYes = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
+  val kiProcessingModelNo = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), Some(false), Some(false))
+
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     for {
       natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
@@ -78,7 +81,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
     val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
-    val isKnowledgeIntensive = bindForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
+    val isKnowledgeIntensive = bindKIForm(KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
     val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
     val percentageStaffWithMasters = bindForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
@@ -142,6 +145,26 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
       }
     )
   }
+
+  def bindKIForm(s4lKey: String, form: Form[IsKnowledgeIntensiveModel])(implicit request: Request[AnyContent],
+                                                                        user: TAVCUser, format: Format[IsKnowledgeIntensiveModel]): Form[IsKnowledgeIntensiveModel] = {
+    form.bindFromRequest().fold(
+      formWithErrors => {
+        formWithErrors
+      },
+      validFormData => {
+        if(validFormData.isKnowledgeIntensive == "Yes")  {
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelYes)
+          s4lConnector.saveFormData(s4lKey, validFormData)(hc,format,user)
+        }else {
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelNo)
+          s4lConnector.saveFormData(s4lKey, validFormData)(hc, format, user)
+        }
+        form.fill(validFormData)
+      }
+    )
+  }
+
 
   def bindPreviousSchemesForm(form: Form[TestPreviousSchemesModel])(implicit request: Request[AnyContent], user: TAVCUser): Form[TestPreviousSchemesModel] = {
     form.bindFromRequest().fold(
