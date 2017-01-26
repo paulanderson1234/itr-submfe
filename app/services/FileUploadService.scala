@@ -36,8 +36,8 @@ trait FileUploadService {
 
   def getUploadFeatureEnabled: Boolean
 
-  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
-    attachmentsFrontEndConnector.closeEnvelope(tavcRef).map {
+  def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
+    attachmentsFrontEndConnector.closeEnvelope(tavcRef, envelopeId).map {
       result => result.status match {
         case CREATED =>
           result
