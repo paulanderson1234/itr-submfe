@@ -11,8 +11,11 @@
 
 GET        /investment-tax-relief/test-only/clear-cache                                 testOnly.controllers.ClearCacheController.clearCache
 
-GET        /investment-tax-relief/test-only/test-endpoint                               testOnly.controllers.TestEndpointController.show
-POST       /investment-tax-relief/test-only/test-endpoint                               testOnly.controllers.TestEndpointController.submit
+GET        /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.submitPageOne
+
+GET        /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.submitPageTwo
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes

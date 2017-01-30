@@ -25,7 +25,7 @@ import models._
 import forms._
 import play.api.data.Form
 import play.api.libs.json.Format
-import play.api.mvc.{AnyContent, Request}
+import play.api.mvc.{Action, AnyContent, Request}
 import testOnly.models._
 import testOnly.forms._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,23 +38,45 @@ import scala.concurrent.Future
 trait TestEndpointController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
+  val defaultPreviousSchemesSize = 5
 
   val kiProcessingModelYes = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
   val kiProcessingModelNo = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), Some(false), Some(false))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def showPageOne(schemes: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async {
+    implicit user => implicit request =>
     for {
       natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
       dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
       commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
       isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
       operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
-      percentageStaffWithMastersForm <- fillForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
+      percentageStaffWithMastersForm <- fillForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
+        PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
       tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
       hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
-      usedInvestmentReasonBeforeForm <- fillForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore, UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
       previousSchemesForm <- fillPreviousSchemesForm
+    } yield Ok(
+      testOnly.views.html.testEndpointPageOne(
+        natureOfBusinessForm,
+        dateOfIncorporationForm,
+        commercialSaleForm,
+        isKnowledgeIntensiveForm,
+        operatingCostsForm,
+        percentageStaffWithMastersForm,
+        tenYearPlanForm,
+        hadPreviousRFIForm,
+        previousSchemesForm,
+        schemes.getOrElse(defaultPreviousSchemesSize)
+      )
+    )
+  }
+
+  def showPageTwo: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    for {
       proposedInvestmentForm <- fillForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
+      usedInvestmentReasonBeforeForm <- fillForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore,
+        UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
       previousBeforeDoFCSForm <- fillForm[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS, PreviousBeforeDOFCSForm.previousBeforeDOFCSForm)
       newGeographicalMarketForm <- fillForm[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, NewGeographicalMarketForm.newGeographicalMarketForm)
       newProductForm <- fillForm[NewProductModel](KeystoreKeys.newProduct, NewProductForm.newProductForm)
@@ -62,57 +84,97 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
       investmentGrowForm <- fillForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
       confirmContactDetailsForm <- fillForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
       contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
-      confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
+      confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress,
+        ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
       contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
-
-    } yield Ok(testOnly.views.html.testEndpoint(previousSchemesForm, natureOfBusinessForm,
-      dateOfIncorporationForm, commercialSaleForm,
-      isKnowledgeIntensiveForm, operatingCostsForm,
-      percentageStaffWithMastersForm, tenYearPlanForm,
-      usedInvestmentReasonBeforeForm, hadPreviousRFIForm,
-      proposedInvestmentForm, previousBeforeDoFCSForm,
-      newGeographicalMarketForm, newProductForm, turnoverCostsForm,
-      investmentGrowForm, confirmContactDetailsForm,
-      contactDetailsForm, confirmCorrespondAddressForm,
-      contactAddressForm))
+    } yield Ok(
+      testOnly.views.html.testEndpointPageTwo(
+        proposedInvestmentForm,
+        usedInvestmentReasonBeforeForm,
+        previousBeforeDoFCSForm,
+        newGeographicalMarketForm,
+        newProductForm,
+        turnoverCostsForm,
+        investmentGrowForm,
+        confirmContactDetailsForm,
+        contactDetailsForm,
+        confirmCorrespondAddressForm,
+        contactAddressForm
+      )
+    )
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def submitPageOne: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
     val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
     val isKnowledgeIntensive = bindKIForm(KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
     val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
-    val percentageStaffWithMasters = bindForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
+    val percentageStaffWithMasters = bindForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
+      PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
-    val usedInvestmentReasonBefore = bindForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore, UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
     val testPreviousSchemes = bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)
+    Future.successful(Ok(
+      testOnly.views.html.testEndpointPageOne(
+        natureOfBusiness,
+        dateOfIncorporation,
+        commercialSale,
+        isKnowledgeIntensive,
+        testOperatingCosts,
+        percentageStaffWithMasters,
+        tenYearPlan,
+        hadPreviousRFI,
+        testPreviousSchemes,
+        4
+      )
+    ))
+  }
+
+  def submitPageTwo: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val proposedInvestment = bindForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
+    val usedInvestmentReasonBefore = bindForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore,
+      UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
     val previousBeforeDoFCS = bindForm[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS, PreviousBeforeDOFCSForm.previousBeforeDOFCSForm)
     val newGeographicalMarket = bindForm[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, NewGeographicalMarketForm.newGeographicalMarketForm)
     val newProduct = bindForm[NewProductModel](KeystoreKeys.newProduct, NewProductForm.newProductForm)
     val testTurnoverCosts = bindForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
     val investmentGrow = bindForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
     val confirmContactDetails = bindForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
-    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
-    val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
-    val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
-    s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointController.show().url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointController.show().url)
+    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.contactDetails, ContactDetailsForm.contactDetailsForm)
+    val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress,
+      ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
+    val contactAddress = bindForm[AddressModel](KeystoreKeys.contactAddress, ContactAddressForm.contactAddressForm)
+    saveBackLinks()
+    Future.successful(Ok(
+      testOnly.views.html.testEndpointPageTwo(
+      proposedInvestment,
+        usedInvestmentReasonBefore,
+        previousBeforeDoFCS,
+        newGeographicalMarket,
+        newProduct,
+        testTurnoverCosts,
+        investmentGrow,
+        confirmContactDetails,
+        contactDetails,
+        confirmCorrespondAddress,
+        contactAddress
+      )
+    ))
+  }
 
-    Future.successful(Ok(testOnly.views.html.testEndpoint(testPreviousSchemes, natureOfBusiness, dateOfIncorporation, commercialSale, isKnowledgeIntensive, testOperatingCosts, percentageStaffWithMasters, tenYearPlan,
-      usedInvestmentReasonBefore, hadPreviousRFI,proposedInvestment, previousBeforeDoFCS, newGeographicalMarket, newProduct, testTurnoverCosts, investmentGrow, confirmContactDetails, contactDetails,
-      confirmCorrespondAddress, contactAddress)))
+  private def saveBackLinks()(implicit hc: HeaderCarrier, user: TAVCUser) = {
+    s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointController.showPageOne(None).url)
   }
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
@@ -172,10 +234,11 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
         formWithErrors
       },
       validFormData => {
-        for(previousScheme <- validFormData.previousSchemes.getOrElse(Seq())) {
-          PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, previousScheme)
+        validFormData.previousSchemes.fold(form.fill(validFormData)){
+          previousSchemes =>
+            s4lConnector.saveFormData(KeystoreKeys.previousSchemes, previousSchemes.toVector)
+            form.fill(validFormData)
         }
-        form.fill(validFormData)
       }
     )
   }
