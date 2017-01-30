@@ -84,7 +84,7 @@ POST       /confirm-correspondence-address          controllers.ConfirmCorrespon
 GET        /confirm-contact-details                 controllers.ConfirmContactDetailsController.show
 POST       /confirm-contact-details                 controllers.ConfirmContactDetailsController.submit
 
-GET        /check-your-answers                      controllers.CheckAnswersController.show
+GET        /check-your-answers                      controllers.CheckAnswersController.show(envelopeId: Option[String]?=None)
 POST       /check-your-answers                      controllers.CheckAnswersController.submit
 
 GET        /previous-investment                     controllers.PreviousSchemeController.show(id: Option[Int]?=None)

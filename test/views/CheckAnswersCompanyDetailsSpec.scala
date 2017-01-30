@@ -49,7 +49,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
       
@@ -148,7 +148,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         contactAddressSetup()
         investmentSetup()
         companyDetailsSetup()
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
@@ -181,7 +181,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelNo), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
@@ -280,7 +280,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelNo), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
@@ -334,7 +334,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         companyDetailsSetup(Some(yourCompanyNeedModel), Some(taxpayerReferenceModel), Some(registeredAddressModel), Some(dateOfIncorporationModel),
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelNo), Some(tenYearPlanModelNo), Some(subsidiariesModelYes))
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
