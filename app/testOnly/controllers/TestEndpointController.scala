@@ -115,6 +115,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)
+    saveBackLinks()
     Future.successful(Ok(
       testOnly.views.html.testEndpointPageOne(
         natureOfBusiness,
