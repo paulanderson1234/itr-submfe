@@ -36,6 +36,8 @@ trait AttachmentsFrontEndConnector {
   val http: HttpGet with HttpPost
 
   def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
-    http.POSTEmpty[HttpResponse](s"${internalAttachmentsUrl}/internal/$tavcRef/$envelopeId/${user.authContext.user.oid}/close-envelope")
+    val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
+    http.POSTEmpty[HttpResponse](s"$internalAttachmentsUrl/internal/$tavcRef/$envelopeId/${user.authContext.user.oid}/close-envelope")(
+      HttpReads.readRaw,headerCarrier)
   }
 }
