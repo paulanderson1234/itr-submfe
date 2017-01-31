@@ -142,10 +142,10 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val testTurnoverCosts = bindForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
     val investmentGrow = bindForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
     val confirmContactDetails = bindForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
-    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.contactDetails, ContactDetailsForm.contactDetailsForm)
+    val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
     val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress,
       ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
-    val contactAddress = bindForm[AddressModel](KeystoreKeys.contactAddress, ContactAddressForm.contactAddressForm)
+    val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     saveBackLinks()
     Future.successful(Ok(
       testOnly.views.html.testEndpointPageTwo(

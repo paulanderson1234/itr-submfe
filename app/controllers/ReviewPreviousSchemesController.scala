@@ -44,15 +44,9 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
-        println("**************************")
-        println(backUrl)
-        println("**************************")
         PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap{
           previousSchemes =>
             if(previousSchemes.nonEmpty) {
-              println("############################")
-              println(previousSchemes)
-              println("############################")
               Future.successful(Ok(ReviewPreviousSchemes(previousSchemes,backUrl.get)))
             }
             else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
