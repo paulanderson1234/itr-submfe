@@ -142,4 +142,6 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   val yourCompanyNeedModel = YourCompanyNeedModel("AA")
 
+  val envelopeId: Option[String] = Some("00000000000000000000000000000000")
+
 }
