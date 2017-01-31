@@ -9,7 +9,13 @@
 # !!!WARNING!!! Every route defined in this file MUST be prefixed with "/test-only/". This is because NGINX is blocking every uri containing the string "test-only" in production.
 # Failing to follow this rule may result in test routes deployed in production.
 
-GET        /investment-tax-relief/test-only/clear-cache  testOnly.controllers.ClearCacheController.clearCache
+GET        /investment-tax-relief/test-only/clear-cache                                 testOnly.controllers.ClearCacheController.clearCache
+
+GET        /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.submitPageOne
+
+GET        /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.submitPageTwo
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes

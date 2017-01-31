@@ -46,7 +46,9 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
       if (backUrl.isDefined) {
         PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap{
           previousSchemes =>
-            if(previousSchemes.nonEmpty) Future.successful(Ok(ReviewPreviousSchemes(previousSchemes,backUrl.get)))
+            if(previousSchemes.nonEmpty) {
+              Future.successful(Ok(ReviewPreviousSchemes(previousSchemes,backUrl.get)))
+            }
             else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
       } else {
