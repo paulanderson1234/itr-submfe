@@ -141,10 +141,9 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val newProduct = bindForm[NewProductModel](KeystoreKeys.newProduct, NewProductForm.newProductForm)
     val testTurnoverCosts = bindForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
     val investmentGrow = bindForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
-    val confirmContactDetails = bindForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
+    val confirmContactDetails = bindConfirmContactDetails()
     val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
-    val confirmCorrespondAddress = bindForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress,
-      ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
+    val confirmCorrespondAddress = bindConfirmContactAddress()
     val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     saveBackLinks()
     Future.successful(Ok(
@@ -205,6 +204,62 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
       validFormData => {
         s4lConnector.saveFormData(s4lKey, validFormData)(hc,format,user)
         form.fill(validFormData)
+      }
+    )
+  }
+
+  def bindConfirmContactDetails()(implicit request: Request[AnyContent], user: TAVCUser): Form[ConfirmContactDetailsModel] = {
+
+    def bindContactDetails(useDetails: Boolean)(implicit request: Request[AnyContent], user: TAVCUser) = {
+      ContactDetailsForm.contactDetailsForm.bindFromRequest().fold(
+        formWithErrors => {
+          formWithErrors
+        },
+        validFormData => {
+          if(useDetails) s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
+        }
+      )
+    }
+
+    ConfirmContactDetailsForm.confirmContactDetailsForm.bindFromRequest().fold(
+      formWithErrors => {
+        formWithErrors
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, validFormData)
+        if(validFormData.contactDetailsUse == Constants.StandardRadioButtonYesValue) {
+          s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData.contactDetails)
+          bindContactDetails(useDetails = false)
+        } else bindContactDetails(useDetails = true)
+        ConfirmContactDetailsForm.confirmContactDetailsForm.fill(validFormData)
+      }
+    )
+  }
+
+  def bindConfirmContactAddress()(implicit request: Request[AnyContent], user: TAVCUser): Form[ConfirmCorrespondAddressModel] = {
+
+    def bindContactAddress(useAddress: Boolean)(implicit request: Request[AnyContent], user: TAVCUser) = {
+      ContactAddressForm.contactAddressForm.bindFromRequest().fold(
+        formWithErrors => {
+          formWithErrors
+        },
+        validFormData => {
+          if(useAddress) s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
+        }
+      )
+    }
+
+    ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.bindFromRequest().fold(
+      formWithErrors => {
+        formWithErrors
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.confirmContactAddress, validFormData)
+        if(validFormData.contactAddressUse == Constants.StandardRadioButtonYesValue) {
+          s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
+          bindContactAddress(useAddress = false)
+        } else bindContactAddress(useAddress = true)
+        ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.fill(validFormData)
       }
     )
   }
