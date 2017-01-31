@@ -62,14 +62,15 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
         contactDetailsSetup()
         companyDetailsSetup()
         contactAddressSetup()
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
-      document.getElementById("description").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
 
       lazy val supportingDocsTableBody = document.getElementById("supporting-docs-table").select("tbody")
 

@@ -7,7 +7,7 @@
 
 @main_template(title = Messages("page.supportingDocuments.SupportingDocuments.title"), bodyClasses = None) {
 
-@backButtonWithProgress(controllers.routes.OperatingCostsController.show().toString, Messages("common.section.progress.company.details.five"))
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.five"))
 
 @errorSummary(supportingDocumentsForm, "percentage-of-staff-with-masters", "doUpload")
 
@@ -30,16 +30,11 @@
 </div>
 
 
-<table id="supporting-docs-table">
-    <tbody>
-    <tr>
-        <td id="supportingDocs-business-plan"><span class="exclamation"></span></td>
-        <td class="h2-heading">@Messages("page.supportingDocumentsUpload.Note")</td>
-    </tr>
-    </tbody>
-</table>
-
-
+<div id="supportingDocs-business-plan" class="form-group">
+    <h2 id="noticeMessage" class="important-notice">
+        @Messages("page.supportingDocumentsUpload.Note")
+    </h2>
+</div>
 
 @form(action = controllers.routes.SupportingDocumentsUploadController.submit()) {
 

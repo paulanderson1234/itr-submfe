@@ -27,6 +27,7 @@ import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.checkAndSubmit.CheckAnswers
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.mvc.{Action, AnyContent}
 
 import scala.concurrent.Future
 
@@ -72,7 +73,11 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     subsidiariesNinetyOwned,contactDetails,contactAddress,investmentGrowModel)
 
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def show (envelopeId: Option[String]) : Action[AnyContent]= AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    if(envelopeId.fold("")(_.toString).length > 0) {
+        s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
+      }
+
     checkAnswersModel.flatMap(checkAnswer => Future.successful(Ok(CheckAnswers(checkAnswer))))
   }
 

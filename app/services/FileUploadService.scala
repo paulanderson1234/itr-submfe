@@ -36,17 +36,22 @@ trait FileUploadService {
 
   def getUploadFeatureEnabled: Boolean
 
-  def closeEnvelope(tavcRef: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
-    attachmentsFrontEndConnector.closeEnvelope(tavcRef).map {
-      result => result.status match {
-        case CREATED =>
-          result
-        case _ => Logger.warn(s"[FileUploadService][closeEnvelope] Error ${result.status} received.")
-          result
+  def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, ex: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
+    if (envelopeId.nonEmpty) {
+      attachmentsFrontEndConnector.closeEnvelope(tavcRef, envelopeId).map {
+        result => result.status match {
+          case CREATED =>
+            result
+          case _ => Logger.warn(s"[FileUploadService][closeEnvelope] Error ${result.status} received.")
+            result
+        }
+      }.recover {
+        case e: Exception => Logger.warn(s"[FileUploadService][closeEnvelope] Error ${e.getMessage} received.")
+          HttpResponse(INTERNAL_SERVER_ERROR)
       }
-    }.recover {
-      case e: Exception => Logger.warn(s"[FileUploadService][closeEnvelope] Error ${e.getMessage} received.")
-        HttpResponse(INTERNAL_SERVER_ERROR)
+    }
+    else {
+      Future(HttpResponse(OK))
     }
   }
 }

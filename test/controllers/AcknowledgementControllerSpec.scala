@@ -17,6 +17,7 @@
 package controllers
 
 import auth._
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import helpers.ControllerSpec
@@ -83,10 +84,29 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     "use the correct enrolment connector" in {
       AcknowledgementController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct file upload service" in {
+      AcknowledgementController.fileUploadService shouldBe FileUploadService
+    }
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 and delete the current application when a valid submission data is submitted" in new SetupPageFull {
+      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
+      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      setupMocks()
+      mockEnrolledRequest()
+      val result = TestController.show.apply(authorisedFakeRequest)
+      status(result) shouldBe OK
+    }
+  }
+
+  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
+    "return a 200, close the file upload envelope and " +
+      "delete the current application when a valid submission data is submitted with the file upload flag enabled" in new SetupPageFull {
+      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(true)
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()
@@ -97,6 +117,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()

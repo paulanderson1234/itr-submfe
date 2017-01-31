@@ -35,6 +35,7 @@ object MockConfig extends AppConfig {
   override val attachmentFileUploadUrl: String =
     "http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/investment-tax-relief/check-your-answers"
   override val attachmentsFrontEndServiceBaseUrl = "http://localhost:9643/investment-tax-relief-attachments-frontend"
+  override val internalAttachmentsUrl = "localhost"
   override val submissionFrontendServiceBaseUrl = "http://localhost:9635/investment-tax-relief-submission"
   override val uploadFeatureEnabled: Boolean = false
 }

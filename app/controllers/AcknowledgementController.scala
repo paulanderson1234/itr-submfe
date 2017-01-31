@@ -165,8 +165,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           submissionResponseModel.flatMap { submissionResponse =>
             submissionResponse.status match {
               case OK =>
-                getTavCReferenceNumber().flatMap {
-                  tavcRef => fileUploadService.closeEnvelope(tavcRef).map {
+                s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
+                  envelopeId => fileUploadService.closeEnvelope(tavcReferenceNumber, envelopeId.fold("")(_.toString)).map {
                     result => result.status match {
                       case OK =>
                         s4lConnector.clearCache()

@@ -46,7 +46,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
         contactDetailsSetup(Some(contactDetailsModel))
         contactAddressSetup(Some(contactAddressModel))
         companyDetailsSetup()
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
@@ -95,7 +95,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
         contactDetailsSetup()
         companyDetailsSetup()
         contactAddressSetup()
-        val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody())
+        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
 
