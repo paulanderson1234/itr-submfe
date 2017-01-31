@@ -128,7 +128,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get)
         } yield route) recover {
-          case e : NoSuchElementException => Redirect(routes.ApplicationHubController.show())
+          case e : NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
         }
       }
     )

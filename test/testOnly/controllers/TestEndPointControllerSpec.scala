@@ -85,26 +85,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.manualContactAddress))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkConfirmCorrespondence))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkIneligibleForKI))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkNewGeoMarket))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkPreviousScheme))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkProposedInvestment))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkSubSpendingInvestment))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
   }
 
@@ -133,14 +114,14 @@ class TestEndPointControllerSpec extends ControllerSpec {
     }
   }
 
-  "TestEndpointController.show" when {
+  "TestEndpointController.showPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
       "Return OK" in {
         mockEnrolledRequest()
         setupShowMocks()
-        showWithSessionAndAuth(TestController.show())(
+        showWithSessionAndAuth(TestController.showPageOne(None))(
           result => status(result) shouldBe OK
         )
       }
@@ -149,13 +130,44 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.submit" when {
+  "TestEndpointController.submitPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
       "Return OK" in {
         mockEnrolledRequest()
-        submitWithSessionAndAuth(TestController.submit())(
+        submitWithSessionAndAuth(TestController.submitPageOne())(
+          result => status(result) shouldBe OK
+        )
+      }
+
+    }
+
+  }
+
+  "TestEndpointController.showPageTwo" when {
+
+    "Called as an authorised and enrolled user" should {
+
+      "Return OK" in {
+        mockEnrolledRequest()
+        setupShowMocks()
+        showWithSessionAndAuth(TestController.showPageTwo())(
+          result => status(result) shouldBe OK
+        )
+      }
+
+    }
+
+  }
+
+  "TestEndpointController.submitPageTwo" when {
+
+    "Called as an authorised and enrolled user" should {
+
+      "Return OK" in {
+        mockEnrolledRequest()
+        submitWithSessionAndAuth(TestController.submitPageTwo())(
           result => status(result) shouldBe OK
         )
       }
@@ -237,13 +249,45 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
+  "TestEndpointController.bindKIForm" when {
+
+    "Sent a valid form with Yes" should {
+
+      "Return the valid form" in {
+        val result = TestController.bindKIForm()(fakeRequest.withFormUrlEncodedBody("isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue),user)
+        await(result).get shouldBe IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+      }
+
+    }
+
+    "Sent a valid form with No" should {
+
+      "Return the valid form" in {
+        val result = TestController.bindKIForm()(fakeRequest.withFormUrlEncodedBody("isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue),user)
+        await(result).get shouldBe IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+      }
+
+    }
+
+    "Sent an invalid form" should {
+
+      "Return the invalid form with errors" in {
+
+        val result = TestController.bindKIForm()(fakeRequest,user)
+        await(result).hasErrors shouldBe true
+      }
+
+    }
+
+  }
+
   "TestEndpointController.bindPreviousSchemesForm" when {
 
     "Sent a valid form with a previous scheme" should {
 
       "Return the valid form" in {
         setupFillPreviousSchemesFormMocks(None)
-        val result = TestController.bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)(fakeRequest.withFormUrlEncodedBody(
+        val result = TestController.bindPreviousSchemesForm()(fakeRequest.withFormUrlEncodedBody(
           "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeEis,
           "testPreviousSchemes[0].previousSchemeInvestmentAmount" -> "3",
           "testPreviousSchemes[0].previousSchemeInvestmentSpent" -> "",
@@ -262,7 +306,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
     "Sent an empty form" should {
 
       "Return the empty form" in {
-        val result = TestController.bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)(fakeRequest, user)
+        val result = TestController.bindPreviousSchemesForm()(fakeRequest, user)
         result.get shouldBe TestPreviousSchemesModel(None)
       }
 
@@ -272,7 +316,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
       "Return the invalid form with errors" in {
         setupFillPreviousSchemesFormMocks(None)
-        val result = TestController.bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)(fakeRequest.withFormUrlEncodedBody(
+        val result = TestController.bindPreviousSchemesForm()(fakeRequest.withFormUrlEncodedBody(
           "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeEis
         ), user)
         result.hasErrors shouldBe true

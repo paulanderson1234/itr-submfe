@@ -333,10 +333,7 @@
             false, Some(Messages("common.date.hint.example")), Some("heading-small"))
 
             <div>
-                @hiddenField(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeProcessingId"),
-                'id -> "previousSchemeProcessingId"
-                )
+                <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
             </div>
         </div>
     }

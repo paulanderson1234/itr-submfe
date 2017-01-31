@@ -17,7 +17,7 @@
 package testOnly.controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
@@ -108,13 +108,13 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
     val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
-    val isKnowledgeIntensive = bindKIForm(KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
+    val isKnowledgeIntensive = bindKIForm()
     val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
     val percentageStaffWithMasters = bindForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
       PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
-    val testPreviousSchemes = bindPreviousSchemesForm(TestPreviousSchemesForm.testPreviousSchemesForm)
+    val testPreviousSchemes = bindPreviousSchemesForm()
     saveBackLinks()
     Future.successful(Ok(
       testOnly.views.html.testEndpointPageOne(
@@ -127,7 +127,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
         tenYearPlan,
         hadPreviousRFI,
         testPreviousSchemes,
-        4
+        defaultPreviousSchemesSize
       )
     ))
   }
@@ -209,36 +209,35 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     )
   }
 
-  def bindKIForm(s4lKey: String, form: Form[IsKnowledgeIntensiveModel])(implicit request: Request[AnyContent],
-                                                                        user: TAVCUser, format: Format[IsKnowledgeIntensiveModel]): Form[IsKnowledgeIntensiveModel] = {
-    form.bindFromRequest().fold(
+  def bindKIForm()(implicit request: Request[AnyContent], user: TAVCUser): Form[IsKnowledgeIntensiveModel] = {
+    IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm.bindFromRequest().fold(
       formWithErrors => {
         formWithErrors
       },
       validFormData => {
-        if(validFormData.isKnowledgeIntensive == "Yes")  {
+        if(validFormData.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue)  {
           s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelYes)
-          s4lConnector.saveFormData(s4lKey, validFormData)(hc,format,user)
-        }else {
+          s4lConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
+        } else {
           s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelNo)
-          s4lConnector.saveFormData(s4lKey, validFormData)(hc, format, user)
+          s4lConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
         }
-        form.fill(validFormData)
+        IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm.fill(validFormData)
       }
     )
   }
 
 
-  def bindPreviousSchemesForm(form: Form[TestPreviousSchemesModel])(implicit request: Request[AnyContent], user: TAVCUser): Form[TestPreviousSchemesModel] = {
-    form.bindFromRequest().fold(
+  def bindPreviousSchemesForm()(implicit request: Request[AnyContent], user: TAVCUser): Form[TestPreviousSchemesModel] = {
+    TestPreviousSchemesForm.testPreviousSchemesForm.bindFromRequest().fold(
       formWithErrors => {
         formWithErrors
       },
       validFormData => {
-        validFormData.previousSchemes.fold(form.fill(validFormData)){
+        validFormData.previousSchemes.fold(TestPreviousSchemesForm.testPreviousSchemesForm.fill(validFormData)){
           previousSchemes =>
             s4lConnector.saveFormData(KeystoreKeys.previousSchemes, previousSchemes.toVector)
-            form.fill(validFormData)
+            TestPreviousSchemesForm.testPreviousSchemesForm.fill(validFormData)
         }
       }
     )
