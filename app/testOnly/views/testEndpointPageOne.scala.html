@@ -7,7 +7,7 @@
 @(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], commercialSaleForm: Form[CommercialSaleModel],
   isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
   tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int)(implicit request: Request[_], messages: Messages)
-@main_template(Messages("page.contactInformation.contactDetails.title")) {
+@main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
     @form(action = testOnly.controllers.routes.TestEndpointController.submitPageOne()) {
@@ -36,18 +36,23 @@
 
     <h2>First Commercial Sale</h2>
     <div class="form-group">
-        @formHiddenYesNoRadioNoError(
-        commercialSaleForm,
-        "hasCommercialSale",
-        Messages("page.companyDetails.CommercialSale.question.hint"),
-        formInlineDateInput(commercialSaleForm,"commercialSale",Some(Messages("page.companyDetails.CommercialSale.question.hint")),
-        false, Some(Messages("common.date.hint.example")), None),
-        None,
-        Some("visuallyhidden")
+        @formInputRadioGroup(
+        field = commercialSaleForm("hasCommercialSale"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
         )
+
+        @formInlineDateInput(commercialSaleForm, "commercialSale", Some(Messages("page.companyDetails.CommercialSale.question.hint")),
+        true, Some(Messages("page.companyDetails.CommercialSale.question.hint")), None)
     </div>
 
-    <h2>IS your company KI?</h2>
+    <h2>Is your company KI?</h2>
     <div class="form-group">
         @formInputRadioGroup(
         field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
@@ -344,6 +349,10 @@
 
         <a class="btn button" id="clear-cache" href="@testOnly.controllers.routes.ClearCacheController.clearCache()">
             @Messages("page.test.clear-cache.button")
+        </a>
+
+        <a class="btn button" id="page-two" href="@testOnly.controllers.routes.TestEndpointController.showPageTwo()">
+            @Messages("page.test.page-two.button")
         </a>
 
     </div>

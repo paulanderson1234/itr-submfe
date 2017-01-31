@@ -9,7 +9,7 @@
 @(proposedInvestmentForm: Form[ProposedInvestmentModel], usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel], previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], newGeographicalMarketForm: Form[NewGeographicalMarketModel],
 newProductForm: Form[NewProductModel], testTurnoverCostsForm: Form[AnnualTurnoverCostsModel], investmentGrowForm: Form[InvestmentGrowModel], confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
 confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
-@main_template(Messages("page.contactInformation.contactDetails.title")) {
+@main_template(Messages("page.test.page-two.title")) {
 <div class="grid-row">
 
     @form(action = testOnly.controllers.routes.TestEndpointController.submitPageTwo()) {
@@ -453,6 +453,10 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
 
         <a class="btn button" id="clear-cache" href="@testOnly.controllers.routes.ClearCacheController.clearCache()">
             @Messages("page.test.clear-cache.button")
+        </a>
+
+        <a class="btn button" id="page-one" href="@testOnly.controllers.routes.TestEndpointController.showPageOne(None)">
+            @Messages("page.test.page-one.button")
         </a>
 
     </div>
