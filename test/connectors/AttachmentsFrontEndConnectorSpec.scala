@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-
 package connectors
 
 import auth.{ggUser, TAVCUser}
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
@@ -39,11 +39,12 @@ import scala.concurrent.Future
 class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
   object TargetAttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with FrontendController with FakeRequestHelper with ServicesConfig {
-    override val attachmentsFrontEndUrl = FrontendAppConfig.attachmentsFrontEndServiceBaseUrl
+    override val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl
     override val http = mock[WSHttp]
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
+
   implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
   
   val validTavcReference = "XATAVC000123456"
@@ -52,34 +53,17 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
 
   val failedResponse = HttpResponse(Status.BAD_REQUEST)
 
-  val envelopeId: Option[String] = Some("abcdefghijklmnopqrstuvwxyz")
+  val envelopeId: Option[String] = Some("000000000000000000000000")
 
-
-  "Calling getEnvelopeId" when {
-
-    "expecting a successful response" should {
-      lazy val result = TargetAttachmentsFrontEndConnector.getEnvelopeId(hc)
-      "return a Status OK (200) response" in {
-       when(TargetAttachmentsFrontEndConnector.http.GET[Option[String]](
-         Matchers.eq(s"${TargetAttachmentsFrontEndConnector.attachmentsFrontEndUrl}/envelopeId"))
-         (Matchers.any(), Matchers.any())).thenReturn(Future.successful(envelopeId))
-        await(result) match {
-          case Some(response) => response shouldBe envelopeId.get
-          case _ => fail("No response was received, when one was expected")
-        }
-      }
-
-    }
-  }
 
   "Calling closeEnvelope" when {
 
     "expecting a successful response" should {
-      lazy val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference)
       "return a Status OK (200) response" in {
-        when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](
-          Matchers.eq(s"${TargetAttachmentsFrontEndConnector.attachmentsFrontEndUrl}/$validTavcReference/close-envelope"))
-          (Matchers.any(), Matchers.any())).thenReturn(successResponse)
+        when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
+          s"/internal/$validTavcReference/${envelopeId.get}/${user.authContext.user.oid}/close-envelope"))
+          (Matchers.any(),Matchers.any())).thenReturn(successResponse)
+        val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe successResponse
           case _ => fail("No response was received, when one was expected")
@@ -89,11 +73,11 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
     }
 
     "expecting a non-successful response" should {
-      lazy val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference)
       "return a Status BAD_REQUEST (400) response" in {
-        when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](
-          Matchers.eq(s"${TargetAttachmentsFrontEndConnector.attachmentsFrontEndUrl}/$validTavcReference/close-envelope"))
-          (Matchers.any(), Matchers.any())).thenReturn(failedResponse)
+        when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
+          s"/internal/$validTavcReference/${envelopeId.get}/${user.authContext.user.oid}/close-envelope"))
+          (Matchers.any(),Matchers.any())).thenReturn(failedResponse)
+        val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe failedResponse
           case _ => fail("No response was received, when one was expected")

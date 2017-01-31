@@ -17,6 +17,7 @@
 package controllers
 
 import auth._
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import helpers.ControllerSpec
@@ -103,7 +104,9 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     "return a 200, close the file upload envelope and " +
       "delete the current application when a valid submission data is submitted with the file upload flag enabled" in new SetupPageFull {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(true)
-      when(mockFileUploadService.closeEnvelope(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
+      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest()

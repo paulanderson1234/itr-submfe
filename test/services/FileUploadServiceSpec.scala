@@ -44,14 +44,16 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTes
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
   implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
 
+  val envelopeId: Option[String] = Some("000000000000000000000000")
+
 
   "Calling closeEnvelope" when {
 
-    lazy val result = TargetFileUploadService.closeEnvelope(validTavcReference)
+    lazy val result = TargetFileUploadService.closeEnvelope(envelopeId.get, validTavcReference)
     lazy val response = await(result)
 
      "return the response code if any response code is received" in {
-       when(TargetFileUploadService.attachmentsFrontEndConnector.closeEnvelope(Matchers.any())(Matchers.any(),Matchers.any())).
+       when(TargetFileUploadService.attachmentsFrontEndConnector.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any())).
          thenReturn(Future(HttpResponse(CREATED)))
         response.status shouldBe CREATED
       }
