@@ -36,7 +36,7 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-trait TestEndpointController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait TestEndpointSEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
   val defaultPreviousSchemesSize = 5
@@ -46,31 +46,31 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
 
   def showPageOne(schemes: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async {
     implicit user => implicit request =>
-    for {
-      natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
-      dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
-      commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
-      isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
-      operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
-      percentageStaffWithMastersForm <- fillForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
-        PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
-      tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
-      hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
-      previousSchemesForm <- fillPreviousSchemesForm
-    } yield Ok(
-      testOnly.views.html.testEndpointPageOne(
-        natureOfBusinessForm,
-        dateOfIncorporationForm,
-        commercialSaleForm,
-        isKnowledgeIntensiveForm,
-        operatingCostsForm,
-        percentageStaffWithMastersForm,
-        tenYearPlanForm,
-        hadPreviousRFIForm,
-        previousSchemesForm,
-        schemes.getOrElse(defaultPreviousSchemesSize)
+      for {
+        natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
+        dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
+        commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
+        isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
+        operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
+        percentageStaffWithMastersForm <- fillForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
+          PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
+        tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
+        hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
+        previousSchemesForm <- fillPreviousSchemesForm
+      } yield Ok(
+          testOnly.views.html.seis.testEndpointSEISPageOne(
+          natureOfBusinessForm,
+          dateOfIncorporationForm,
+          commercialSaleForm,
+          isKnowledgeIntensiveForm,
+          operatingCostsForm,
+          percentageStaffWithMastersForm,
+          tenYearPlanForm,
+          hadPreviousRFIForm,
+          previousSchemesForm,
+          schemes.getOrElse(defaultPreviousSchemesSize)
+        )
       )
-    )
   }
 
   def showPageTwo: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -89,7 +89,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
         ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
       contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     } yield Ok(
-      testOnly.views.html.testEndpointPageTwo(
+        testOnly.views.html.seis.testEndpointSEISPageTwo(
         proposedInvestmentForm,
         usedInvestmentReasonBeforeForm,
         previousBeforeDoFCSForm,
@@ -118,7 +118,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val testPreviousSchemes = bindPreviousSchemesForm()
     saveBackLinks()
     Future.successful(Ok(
-      testOnly.views.html.testEndpointPageOne(
+        testOnly.views.html.seis.testEndpointSEISPageOne(
         natureOfBusiness,
         dateOfIncorporation,
         commercialSale,
@@ -149,8 +149,8 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
-      testOnly.views.html.testEndpointPageTwo(
-      proposedInvestment,
+        testOnly.views.html.seis.testEndpointSEISPageTwo(
+        proposedInvestment,
         usedInvestmentReasonBefore,
         previousBeforeDoFCS,
         newGeographicalMarket,
@@ -167,19 +167,21 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
 
   private def saveBackLinks()(implicit hc: HeaderCarrier, user: TAVCUser) = {
     s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointSEISController.showPageOne(None).url)
   }
 
-  private def saveSchemeType() = s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.schemeTypes, SchemeTypesModel(eis = true))
+  private def saveSchemeType()(implicit hc: HeaderCarrier, user: TAVCUser) = {
+    s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.schemeTypes, SchemeTypesModel(seis = true))
+  }
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
     s4lConnector.fetchAndGetFormData[A](s4lKey).map {
@@ -304,7 +306,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
 
 }
 
-object TestEndpointController extends TestEndpointController
+object TestEndpointSEISController extends TestEndpointSEISController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector

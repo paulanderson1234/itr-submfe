@@ -11,11 +11,19 @@
 
 GET        /investment-tax-relief/test-only/clear-cache                                 testOnly.controllers.ClearCacheController.clearCache
 
-GET        /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.showPageOne(schemes: Option[Int])
-POST       /investment-tax-relief/test-only/test-endpoint/page-1                        testOnly.controllers.TestEndpointController.submitPageOne
+#eis
+GET        /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.TestEndpointEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.TestEndpointEISController.submitPageOne
 
-GET        /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.showPageTwo
-POST       /investment-tax-relief/test-only/test-endpoint/page-2                        testOnly.controllers.TestEndpointController.submitPageTwo
+GET        /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.TestEndpointEISController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.TestEndpointEISController.submitPageTwo
+
+#seis
+GET        /investment-tax-relief/test-only/test-endpoint/seis/page-1                        testOnly.controllers.TestEndpointSEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/seis/page-1                        testOnly.controllers.TestEndpointSEISController.submitPageOne
+
+GET        /investment-tax-relief/test-only/test-endpoint/seis/page-2                        testOnly.controllers.TestEndpointSEISController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/seis/page-2                        testOnly.controllers.TestEndpointSEISController.submitPageTwo
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes

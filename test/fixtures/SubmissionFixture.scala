@@ -51,7 +51,8 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
-
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.schemeTypes))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(Option(schemeTypes)))
 
     // potentially mandatory
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -97,6 +98,8 @@ trait SubmissionFixture {
       .thenReturn(Future.successful(Option(dateOfIncorporationValid)))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(Option(fullCorrespondenceAddress)))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.schemeTypes))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(Option(schemeTypes)))
 
     // can be empty to pass
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -127,6 +130,7 @@ trait SubmissionFixture {
                                           investGrow: Option[InvestmentGrowModel],
                                           dateIncorp: Option[DateOfIncorporationModel],
                                           contactAddress: Option[AddressModel],
+                                          schemeTypes: Option[SchemeTypesModel],
                                           returnRegistrationDetails: Boolean
                                          )
   {
@@ -146,6 +150,8 @@ trait SubmissionFixture {
       .thenReturn( if(dateIncorp.nonEmpty) Future.successful(Option(dateIncorp.get)) else Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.contactAddress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn( if(contactAddress.nonEmpty) Future.successful(Option(contactAddress.get)) else Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.schemeTypes))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn( if (schemeTypes.nonEmpty) Future.successful(Option(schemeTypes.get)) else Future.successful(None))
 
       when(mockRegistrationService.getRegistrationDetails(Matchers.eq(tavcReferenceId))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(if(returnRegistrationDetails) Future.successful(Option(registrationDetailsModel)) else Future.successful(None))

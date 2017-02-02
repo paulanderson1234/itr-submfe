@@ -130,7 +130,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     "return a 303 redirect if mandatory KiProcessingModel is missing from keystore" in {
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, kiModel = None,
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -144,7 +144,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -158,7 +158,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -172,7 +172,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -186,7 +186,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -200,7 +200,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -214,7 +214,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, Some(schemeTypes), true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -228,7 +228,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), false)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  false)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -242,7 +242,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), Some(schemeTypes),  true)
       setupMocks()
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
