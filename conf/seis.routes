@@ -16,3 +16,6 @@ POST       /confirm-contact-details                 controllers.seis.ConfirmCont
 GET        /contact-details                         controllers.seis.ContactDetailsController.show
 POST       /contact-details                         controllers.seis.ContactDetailsController.submit
 
+GET       /date-of-incorporation   controllers.seis.DateOfIncorporationController.show
+POST      /date-of-incorporation   controllers.seis.DateOfIncorporationController.submit
+
