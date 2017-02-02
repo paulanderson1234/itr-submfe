@@ -1,4 +1,5 @@
 # microservice specific routes
+->         /investment-tax-relief/seis          seis.Routes
 
 GET         /assets/*file            controllers.Assets.at(path="/public", file)
 
