@@ -1,0 +1,5 @@
+# microservice specific routes
+
+
+GET       /nature-of-business      controllers.seis.NatureOfBusinessController.show
+POST      /nature-of-business      controllers.seis.NatureOfBusinessController.submit
