@@ -180,7 +180,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
   }
 
   private def saveSchemeType()(implicit hc: HeaderCarrier, user: TAVCUser) = {
-    s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.schemeTypes, SchemeTypesModel(seis = true))
+    s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes, SchemeTypesModel(seis = true))
   }
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
