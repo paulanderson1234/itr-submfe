@@ -3,3 +3,6 @@
 
 GET       /nature-of-business      controllers.seis.NatureOfBusinessController.show
 POST      /nature-of-business      controllers.seis.NatureOfBusinessController.submit
+
+GET       /date-of-incorporation   controllers.seis.DateOfIncorporationController.show
+POST      /date-of-incorporation   controllers.seis.DateOfIncorporationController.submit
