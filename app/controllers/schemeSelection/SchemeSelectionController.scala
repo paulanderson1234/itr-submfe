@@ -63,7 +63,7 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
       //EIS Flow
       case SchemeTypesModel(true,false,false,false) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
       //SEIS Flow
-      case SchemeTypesModel(false,true,false,false) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(false,true,false,false) => Redirect(controllers.seis.routes.NatureOfBusinessController.show().url)
       //VCT Flow
       case SchemeTypesModel(false,false,false,true) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
       //EIS SEIS Flow
