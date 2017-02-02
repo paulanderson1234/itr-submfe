@@ -597,6 +597,12 @@ page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
 page.introduction.hub.new.heading=You have no unsubmitted applications
 
+#trade start date
+page.seis.companyDetails.tradeStartDate.title=Has your company started trading?
+page.seis.companyDetails.tradeStartDate.heading=Has your company started trading?
+page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
+page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+
 #test
 page.test.clear-cache.button=Clear cache
 page.test.submit-form.button=Submit
