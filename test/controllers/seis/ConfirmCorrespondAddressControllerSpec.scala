@@ -208,16 +208,16 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
     }
   }
 
-//  "Sending a timed-out request to ConfirmCorrespondAddressController" should {
-//    "return a 302 and redirect to the timeout page" in {
-//      showWithTimeout(TestController.show())(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+  "Sending a timed-out request to ConfirmCorrespondAddressController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(TestController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
 
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
@@ -315,19 +315,19 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
     }
   }
 
-//  "Submitting a form to ConfirmCorrespondAddressController with a timeout" should {
-//
-//    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-//    "return a 303 and redirect to the timeout page" in {
-//      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-//      submitWithTimeout(TestController.submit, formInput)(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+  "Submitting a form to ConfirmCorrespondAddressController with a timeout" should {
+
+    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
+    "return a 303 and redirect to the timeout page" in {
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
+      submitWithTimeout(TestController.submit, formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
   "Submitting a form to ConfirmCorrespondAddressController when NOT enrolled" should {
     "return a 303 and redirect to the Subscription Service" in {

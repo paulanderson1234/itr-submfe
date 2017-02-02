@@ -111,16 +111,16 @@ class ContactDetailsControllerSpec extends ControllerSpec {
     }
   }
 
-//  "Sending a timed-out request to ContactDetailsController" should {
-//    "return a 302 and redirect to the timeout page" in {
-//      showWithTimeout(ContactDetailsControllerTest.show())(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+  "Sending a timed-out request to ContactDetailsController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(ContactDetailsControllerTest.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
   "Sending a valid form submit to the ContactDetailsController when authenticated and enrolled" should {
     "redirect to the Confirm Correspondence Address Controller page" in {
@@ -200,15 +200,15 @@ class ContactDetailsControllerSpec extends ControllerSpec {
     }
   }
 
-//  "Sending a submission to the ContactDetailsController when a timeout has occurred" should {
-//    "redirect to the Timeout page when session has timed out" in {
-//      submitWithTimeout(ContactDetailsControllerTest.submit)(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+  "Sending a submission to the ContactDetailsController when a timeout has occurred" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(ContactDetailsControllerTest.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
 }
