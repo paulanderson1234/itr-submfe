@@ -111,16 +111,16 @@ class ContactAddressControllerSpec extends ControllerSpec {
     }
   }
 
-//  "Sending a timed-out request to ContactAddressController" should {
-//    "return a 302 and redirect to the timeout page" in {
-//      showWithTimeout(TestController.show())(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+  "Sending a timed-out request to ContactAddressController" should {
+    "return a 302 and redirect to the timeout page" in {
+      showWithTimeout(TestController.show())(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
 
   "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
@@ -196,16 +196,16 @@ class ContactAddressControllerSpec extends ControllerSpec {
       )
     }
   }
-//
-//  "Sending a submission to the ContactAddressController when a timeout has occured" should {
-//    "redirect to the Timeout page when session has timed out" in {
-//      submitWithTimeout(TestController.submit)(
-//        result => {
-//          status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-//        }
-//      )
-//    }
-//  }
+
+  "Sending a submission to the ContactAddressController when a timeout has occured" should {
+    "redirect to the Timeout page when session has timed out" in {
+      submitWithTimeout(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
+        }
+      )
+    }
+  }
 
 }
