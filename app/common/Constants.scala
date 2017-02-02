@@ -42,7 +42,7 @@ trait Constants {
   val lifetimeLogicLimitKiToString : String = "£20"
   val lifetimeLogicLimitNotKiToString : String = "£12"
 
-    val schemeTypeEis = "EIS"
+  val schemeTypeEis = "EIS"
   val schemeTypeSeis = "SEIS"
   val schemeTypeSitr = "SITR"
   val schemeTypeVct = "VCT"

@@ -65,7 +65,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef <- getTavCReferenceNumber()
-      schemeTypes <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.schemeTypes)
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
       // potentially optional or required
@@ -80,7 +79,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
-        investmentGrow, dateOfIncorporation, contactAddress, schemeTypes, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
     } yield result
   }
@@ -104,7 +103,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                             investmentGrowModel: Option[InvestmentGrowModel],
                                             dateOfIncorporation: Option[DateOfIncorporationModel],
                                             contactAddress: Option[AddressModel],
-                                            schemeTypes: Option[SchemeTypesModel],
                                             tavcReferenceNumber: String,
 
                                             // potentially optional or potentially required
@@ -124,16 +122,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
-      contactAddress, schemeTypes, registrationDetailsModel) match {
+      contactAddress, registrationDetailsModel) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(schemeTypes), Some(regDetail)) => {
+      Some(cntAddress), Some(regDetail)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
-          schemeTypes = schemeTypes,
+          schemeTypes = SchemeTypesModel(eis = true),
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           annualCosts = if (operatingCosts.nonEmpty)
             Some(Converters.operatingCostsToList(operatingCosts.get))
@@ -149,7 +147,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
-
         def ProcessResult: Future[Result] = {
           submissionResponseModel.map { submissionResponse =>
             submissionResponse.status match {
@@ -191,7 +188,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _, _, _, _) => {
+      case (_, _, _, _, _, _, _, _) => {
         Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
         Future.successful(Redirect(routes.ApplicationHubController.show()))
       }
