@@ -157,6 +157,19 @@ page.examples.DoSubmission.helptext=You can download your application and email 
 page.examples.Confirmation.title=Confirmation
 page.examples.Confirmation.heading=Confirmation
 
+#Scheme selection page
+validation.error.schemeSelection=Please select at least one scheme.
+page.schemeSelection.SchemeSelection.title=Which Advanced Assurance scheme are you applying for?
+page.schemeSelection.SchemeSelection.heading=Which Advanced Assurance scheme are you applying for?
+page.schemeSelection.SchemeSelection.checkbox.seis=Seed Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.checkbox.eis=Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.checkbox.vct=Venture Capital Trust
+page.schemeSelection.SchemeSelection.help.seis.link=What is the Seed Enterprise Investment Scheme?
+page.schemeSelection.SchemeSelection.help.seis.text=Content TBD
+page.schemeSelection.SchemeSelection.help.eis.link=What is the Enterprise Investment Scheme?
+page.schemeSelection.SchemeSelection.help.eis.text=Content TBD
+page.schemeSelection.SchemeSelection.help.vct.link=What is the Venture Capital Trust Scheme?
+page.schemeSelection.SchemeSelection.help.vct.text=Content TBD
 
 #Utr page
 page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?

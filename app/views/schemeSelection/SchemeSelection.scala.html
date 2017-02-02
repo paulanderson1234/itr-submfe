@@ -1,0 +1,65 @@
+@import models.submission.SchemeTypesModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButton,singleCheckbox,errorSummary}
+
+@(schemeTypesForm: Form[SchemeTypesModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.schemeSelection.SchemeSelection.title")) {
+
+    @backButton(controllers.routes.ApplicationHubController.show.url)
+
+    @errorSummary(schemeTypesForm, "SEIS", "SEIS")
+
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.schemeSelection.SchemeSelection.heading")</h1>
+
+    @form(action = controllers.schemeSelection.routes.SchemeSelectionController.submit()) {
+
+        <div class="form-group">
+            @singleCheckbox(
+                schemeTypesForm("SEIS"),
+                '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.seis"),
+                '_labelTextClass -> "visuallyhidden",
+                'id -> "SEIS"
+            )
+
+            <details>
+                <summary><span id="SEIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.seis.link")</span></summary>
+                <div class="panel panel-indent panel-border-narrow">
+                    <p id="SEIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.seis.text")</p>
+                </div>
+            </details>
+
+            @singleCheckbox(
+                schemeTypesForm("EIS"),
+                '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.eis"),
+                '_labelTextClass -> "visuallyhidden",
+                'id -> "EIS"
+            )
+
+            <details>
+                <summary><span id="EIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.eis.link")</span></summary>
+                <div class="panel panel-indent panel-border-narrow">
+                    <p id="EIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.eis.text")</p>
+                </div>
+            </details>
+
+            @singleCheckbox(
+                schemeTypesForm("VCT"),
+                '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.vct"),
+                '_labelTextClass -> "visuallyhidden",
+                'id -> "VCT"
+            )
+
+            <details>
+                <summary><span id="VCT-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.vct.link")</span></summary>
+                <div class="panel panel-indent panel-border-narrow">
+                    <p id="VCT-help-text">@Messages("page.schemeSelection.SchemeSelection.help.vct.text")</p>
+                </div>
+            </details>
+
+        </div>
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}
