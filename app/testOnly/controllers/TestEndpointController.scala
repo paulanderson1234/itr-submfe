@@ -23,6 +23,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models._
 import forms._
+import models.submission.SchemeTypesModel
 import play.api.data.Form
 import play.api.libs.json.Format
 import play.api.mvc.{Action, AnyContent, Request}
@@ -146,6 +147,7 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     val confirmCorrespondAddress = bindConfirmContactAddress()
     val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     saveBackLinks()
+    saveSchemeType()
     Future.successful(Ok(
       testOnly.views.html.testEndpointPageTwo(
       proposedInvestment,
@@ -176,6 +178,8 @@ trait TestEndpointController extends FrontendController with AuthorisedAndEnroll
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointController.showPageOne(None).url)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointController.showPageOne(None).url)
   }
+
+  private def saveSchemeType() = s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.schemeTypes, SchemeTypesModel(eis = true))
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
     s4lConnector.fetchAndGetFormData[A](s4lKey).map {
