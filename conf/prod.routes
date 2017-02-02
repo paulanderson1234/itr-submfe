@@ -1,5 +1,6 @@
 # Add all the application routes to the app.routes file
 ->         /investment-tax-relief              app.Routes
+->         /investment-tax-relief/seis              seis.Routes
 ->         /                          health.Routes
 ->     	   /template                  template.Routes
 

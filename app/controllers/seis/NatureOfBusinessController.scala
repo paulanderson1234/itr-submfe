@@ -28,7 +28,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html.companyDetails.NatureOfBusiness
+import views.html.seis.companyDetails.NatureOfBusiness
 
 object NatureOfBusinessController extends NatureOfBusinessController
 {
