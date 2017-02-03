@@ -55,7 +55,7 @@ object HadPreviousRFIController extends HadPreviousRFIController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
+trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch with PreviousSchemesHelper {
 
   val s4lConnector: S4LConnector
 //
@@ -88,7 +88,7 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
                 }
                 else {
                   s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
-//                  Future.successful(Redirect(routes.PreviousSchemeController.show()))
+//                  TODO: Future.successful(Redirect(routes.PreviousSchemeController.show()))
                   Future.successful(Redirect(routes.HadPreviousRFIController.show()))
                 }
             }
