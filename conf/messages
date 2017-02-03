@@ -375,8 +375,8 @@ page.knowledgeIntensive.TenYearPlan.description.two = Based on the information y
 validation.error.DescriptionEnteredForNoOption=If ''No'' is selected description should be removed from the ''Yes'' option.
 
 #had previous RFI
-page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
-page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme before?
 
 #subsidiaries spending investment
 page.investment.SubsidiariesSpendingInvestment.title = Will another company that''s owned or controlled by [your company name] spend this investment?
@@ -610,6 +610,15 @@ page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
 page.introduction.hub.new.heading=You have no unsubmitted applications
+
+# SEIS Proposed Investment page
+page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.help.link=What happens if I don''t raise this amount?
+page.seis.investment.proposedInvestment.help.link.text=You can raise more or less than this, but only £150,000 of the investments you've received over the past 3 years qualifies for relief. These investments can include:
+page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
+page.seis.investment.proposedInvestment.help.bullet.two=any previous SEIS investments
+page.seis.investment.proposedInvestment.help.bullet.three=any State aid you've received under the de minimis regulation
 
 #test
 page.test.clear-cache.button=Clear cache

@@ -25,3 +25,8 @@ POST       /supporting-documents                    controllers.seis.SupportingD
 GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
 POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
 
+GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
+POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
+
+GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
+POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
