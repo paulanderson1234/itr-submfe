@@ -19,6 +19,12 @@ POST       /contact-details                         controllers.seis.ContactDeta
 GET       /date-of-incorporation                    controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation                    controllers.seis.DateOfIncorporationController.submit
 
+GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
+
+GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
+
 GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
 POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
 
