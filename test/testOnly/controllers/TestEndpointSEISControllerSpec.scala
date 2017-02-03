@@ -33,9 +33,9 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class TestEndPointControllerSpec extends ControllerSpec {
+class TestEndpointSEISControllerSpec extends ControllerSpec {
 
-  object TestController extends TestEndpointController {
+  object TestController extends TestEndpointEISController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
@@ -99,22 +99,22 @@ class TestEndPointControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemes))
   }
 
-  "TestEndpointController" should {
+  "TestEndpointEISController" should {
     "Use the correct s4l connector" in {
-      TestEndpointController.s4lConnector shouldBe S4LConnector
+      TestEndpointEISController.s4lConnector shouldBe S4LConnector
     }
     "Use the correct auth connector" in {
-      TestEndpointController.authConnector shouldBe FrontendAuthConnector
+      TestEndpointEISController.authConnector shouldBe FrontendAuthConnector
     }
     "Use the correct enrolment connector" in {
-      TestEndpointController.enrolmentConnector shouldBe EnrolmentConnector
+      TestEndpointEISController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "Use the correct app config" in {
-      TestEndpointController.applicationConfig shouldBe FrontendAppConfig
+      TestEndpointEISController.applicationConfig shouldBe FrontendAppConfig
     }
   }
 
-  "TestEndpointController.showPageOne" when {
+  "TestEndpointEISController.showPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -130,7 +130,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.submitPageOne" when {
+  "TestEndpointEISController.submitPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -145,7 +145,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.showPageTwo" when {
+  "TestEndpointEISController.showPageTwo" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -161,7 +161,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.submitPageTwo" when {
+  "TestEndpointEISController.submitPageTwo" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -176,7 +176,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.fillForm" when {
+  "TestEndpointEISController.fillForm" when {
 
     "s4lConnector returns data" should {
 
@@ -200,7 +200,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.fillPreviousSchemesForm" when {
+  "TestEndpointEISController.fillPreviousSchemesForm" when {
 
     "s4lConnector returns data" should {
 
@@ -224,7 +224,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.bindForm" when {
+  "TestEndpointEISController.bindForm" when {
 
     "Sent a valid form" should {
 
@@ -249,7 +249,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.bindKIForm" when {
+  "TestEndpointEISController.bindKIForm" when {
 
     "Sent a valid form with Yes" should {
 
@@ -281,7 +281,7 @@ class TestEndPointControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointController.bindPreviousSchemesForm" when {
+  "TestEndpointEISController.bindPreviousSchemesForm" when {
 
     "Sent a valid form with a previous scheme" should {
 

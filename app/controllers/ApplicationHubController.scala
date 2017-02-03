@@ -85,7 +85,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
-    Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+    Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
   }
 
   val delete = AuthorisedAndEnrolled.async { implicit user => implicit request =>
