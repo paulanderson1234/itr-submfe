@@ -19,3 +19,6 @@ POST       /contact-details                         controllers.seis.ContactDeta
 GET       /date-of-incorporation   controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation   controllers.seis.DateOfIncorporationController.submit
 
+GET       /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.show
+POST      /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.submit
+
