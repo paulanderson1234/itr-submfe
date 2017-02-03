@@ -1,8 +1,8 @@
 # microservice specific routes
 
 
-GET       /nature-of-business      controllers.seis.NatureOfBusinessController.show
-POST      /nature-of-business      controllers.seis.NatureOfBusinessController.submit
+GET       /nature-of-business                       controllers.seis.NatureOfBusinessController.show
+POST      /nature-of-business                       controllers.seis.NatureOfBusinessController.submit
 
 GET        /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.show
 POST       /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.submit
@@ -16,9 +16,11 @@ POST       /confirm-contact-details                 controllers.seis.ConfirmCont
 GET        /contact-details                         controllers.seis.ContactDetailsController.show
 POST       /contact-details                         controllers.seis.ContactDetailsController.submit
 
-GET       /date-of-incorporation   controllers.seis.DateOfIncorporationController.show
-POST      /date-of-incorporation   controllers.seis.DateOfIncorporationController.submit
+GET       /date-of-incorporation                    controllers.seis.DateOfIncorporationController.show
+POST      /date-of-incorporation                    controllers.seis.DateOfIncorporationController.submit
 
-GET       /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.show
-POST      /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.submit
+GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
+POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
 
+GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
+POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
