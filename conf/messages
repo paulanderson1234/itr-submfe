@@ -616,6 +616,14 @@ page.seis.companyDetails.tradeStartDate.heading=Has your company started trading
 page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
 page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
 
+#trade start date error
+page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
+page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
+page.seis.companyDetails.tradeStartDateError.reason=Your company:
+page.seis.companyDetails.tradeStartDateError.bullet.one=has been trading for too long to get tax relief on investment
+page.seis.companyDetails.tradeStartDateError.bullet.two=has been trading longer than 2 years
+page.seis.companyDetails.tradeStartDateError.link.schemeGuidance=Link back to guidance
+
 #test
 page.test.clear-cache.button=Clear cache
 page.test.submit-form.button=Submit

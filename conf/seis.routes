@@ -8,6 +8,8 @@ POST      /nature-of-business                      controllers.seis.NatureOfBusi
 GET       /trade-start-date                        controllers.seis.TradeStartDateController.show
 GET       /trade-start-date                        controllers.seis.TradeStartDateController.submit
 
+GET       /trade-start-date-error                  controllers.seis.TradeStartDateErrorController.show
+
 GET       /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.show
 POST      /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.submit
 

@@ -16,18 +16,27 @@
 
 package forms
 
-import models.TradeStartDateModel
+import models.{DateOfIncorporationModel, TradeStartDateModel}
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.i18n.Messages
 import utils.Validation._
 
 object TradeStartDateForm {
   val tradeStartDateForm = Form(
     mapping(
       "hasTradeStartDate" -> nonEmptyText,
-      "hasTradeStartDay" -> optional(number),
-      "hasTradeStartMonth" -> optional(number),
-      "hasTradeStartYear" -> optional(number)
-    )(TradeStartDateModel.apply)(TradeStartDateModel.unapply)
+      "tradeStartDay" -> optional(number),
+      "tradeStartMonth" -> optional(number),
+      "tradeStartYear" -> optional(number)
+    )
+    (TradeStartDateModel.apply)(TradeStartDateModel.unapply)
+//      .verifying(Messages("validation.error.DateNotEntered"), fields =>
+//        validateNonEmptyDateOptions(fields.tradeStartDay, fields.tradeStartMonth, fields.tradeStartYear))
+//      .verifying(Messages("common.date.error.invalidDate"), fields =>
+//        isValidDateOptions(fields.tradeStartDay, fields.tradeStartMonth, fields.tradeStartYear))
+//      .verifying(Messages("validation.error.tradeStartDate.Future"), fields =>
+//        dateNotInFutureOptions(fields.tradeStartDay, fields.tradeStartMonth, fields.tradeStartYear))
+  //(TradeStartDateModel.apply)(TradeStartDateModel.unapply)
   )
 }

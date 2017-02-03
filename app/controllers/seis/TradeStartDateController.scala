@@ -17,16 +17,19 @@
 package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.KnowledgeIntensiveHelper
+import controllers.Helpers.{ControllerHelpers, KnowledgeIntensiveHelper}
+import controllers.routes
+import forms.HadPreviousRFIForm._
 import forms.TradeStartDateForm._
 import models.TradeStartDateModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.companyDetails.TradeStartDate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.previousInvestment
 
 import scala.concurrent.Future
 
@@ -58,3 +61,40 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
     )
   }
 }
+
+//  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+//    hadPreviousRFIForm.bindFromRequest().fold(
+//      formWithErrors => {
+//        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
+//          case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
+//          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
+//        }
+//      },
+//      validFormData => {
+//        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
+//        validFormData.hadPreviousRFI match {
+//
+//          case Constants.StandardRadioButtonYesValue => {
+//            getAllInvestmentFromKeystore(s4lConnector).flatMap {
+//              previousSchemes =>
+//                if(previousSchemes.nonEmpty) {
+//                  s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
+//                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+//                }
+//                else {
+//                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+//                  Future.successful(Redirect(routes.PreviousSchemeController.show()))
+//                }
+//            }
+//          }
+//          case Constants.StandardRadioButtonNoValue => {
+//            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
+//            clearPreviousInvestments(s4lConnector)
+//            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+//          }
+//
+//        }
+//      }
+//    )
+//  }
+//}

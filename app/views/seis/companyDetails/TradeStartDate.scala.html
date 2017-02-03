@@ -7,7 +7,7 @@
 
 @main_template(Messages("page.seis.companyDetails.tradeStartDate.title")) {
 
-@backButtonWithProgress(controllers.routes.DateOfIncorporationController.show().url, Messages("common.section.progress.company.details.one"))
+@backButtonWithProgress(controllers.seis.routes.DateOfIncorporationController.show().url, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(tradeStartDateForm, "trade-start-date", "tradeStartDay")
 
