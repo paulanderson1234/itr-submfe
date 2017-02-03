@@ -67,8 +67,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(proposedInvestment)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        //TODO: .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().url)))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -80,8 +79,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        //TODO: .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url))
-        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().url)))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -99,8 +97,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          //TODO: redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
-          redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
@@ -173,8 +170,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
     "redirect to itself" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        //TODO: .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
-        .thenReturn(Future.successful(Option(routes.ProposedInvestmentController.show().url)))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "")(

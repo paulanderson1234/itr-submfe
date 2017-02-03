@@ -55,8 +55,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
           }
         } else {
           // no back link - send to beginning of flow
-          //TODO: Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-          Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
       }
       for {
@@ -71,8 +70,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
         formWithErrors => {
           ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).map {
             url => BadRequest(ProposedInvestment(formWithErrors,
-                //TODO: url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
-                url.getOrElse(routes.ProposedInvestmentController.show().url)))
+                url.getOrElse(routes.HadPreviousRFIController.show().url)))
           }
         },
         validFormData => {
