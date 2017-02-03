@@ -20,6 +20,7 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.featureSwitch.SEISFeatureSwitch
 import models.ContactDetailsModel
 import forms.ContactDetailsForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -37,27 +38,29 @@ object ContactDetailsController extends ContactDetailsController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
-      case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
-      case None => Ok(ContactDetails(contactDetailsForm))
+  val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
+        case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
+        case None => Ok(ContactDetails(contactDetailsForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    contactDetailsForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(ContactDetails(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.manualContactDetails, validFormData)
-        s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
-        Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-      }
-    )
+  val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      contactDetailsForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(ContactDetails(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.manualContactDetails, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
+          Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+        }
+      )
+    }
   }
 }
