@@ -17,21 +17,23 @@
 package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import models.NatureOfBusinessModel
-import common._
 import controllers.featureSwitch.SEISFeatureSwitch
-import forms.NatureOfBusinessForm._
+import forms.ContactAddressForm._
+import models.{AddressModel, ContactAddressModel}
+import play.api.i18n.Messages
+import play.api.mvc._
+import uk.gov.hmrc.play.frontend.controller.FrontendController
+import utils.CountriesHelper
+import views.html.seis.contactInformation.ContactAddress
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html.seis.companyDetails.NatureOfBusiness
 
-object NatureOfBusinessController extends NatureOfBusinessController
+object ContactAddressController extends ContactAddressController
 {
   val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -39,26 +41,32 @@ object NatureOfBusinessController extends NatureOfBusinessController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
+  lazy val countriesList = CountriesHelper.getIsoCodeTupleList
+
   val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
-        case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
-        case None => Ok(NatureOfBusiness(natureOfBusinessForm))
+      s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
+        case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
+        case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("", "")), countriesList))
       }
     }
   }
 
   val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      natureOfBusinessForm.bindFromRequest().fold(
+      contactAddressForm.bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
+          Future.successful(BadRequest(ContactAddress(if (formWithErrors.hasGlobalErrors)
+            formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode"))
+          else formWithErrors, countriesList)))
         },
         validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-          Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+          s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
+          Future.successful(Redirect(routes.ContactAddressController.show()))
         }
       )
     }

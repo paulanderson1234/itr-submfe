@@ -13,6 +13,9 @@ GET        /                                        controllers.ApplicationHubCo
 GET         /session-timeout         controllers.TimeoutController.timeout
 #####################################################################################################################
 
+GET        /select-schemes                          controllers.schemeSelection.SchemeSelectionController.show
+POST       /select-schemes                          controllers.schemeSelection.SchemeSelectionController.submit
+
 GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
 POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
 

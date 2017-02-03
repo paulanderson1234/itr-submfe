@@ -21,6 +21,7 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import controllers.featureSwitch.SEISFeatureSwitch
 import forms.HadPreviousRFIForm._
 import forms.NewGeographicalMarketForm._
 import models.{HadPreviousRFIModel, NewGeographicalMarketModel}
@@ -58,50 +59,53 @@ object HadPreviousRFIController extends HadPreviousRFIController{
 trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch with PreviousSchemesHelper {
 
   val s4lConnector: S4LConnector
-//
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  //
+  val show = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-        s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
-          case Some(data) => Ok(HadPreviousRFI(hadPreviousRFIForm.fill(data)))
-          case None => Ok(HadPreviousRFI(hadPreviousRFIForm))
-        }
+      s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
+        case Some(data) => Ok(HadPreviousRFI(hadPreviousRFIForm.fill(data)))
+        case None => Ok(HadPreviousRFI(hadPreviousRFIForm))
       }
+    }
+  }
 
 
+  val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      hadPreviousRFIForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(HadPreviousRFI(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
+          validFormData.hadPreviousRFI match {
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    hadPreviousRFIForm.bindFromRequest().fold(
-      formWithErrors => {
-         Future.successful(BadRequest(HadPreviousRFI(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-        validFormData.hadPreviousRFI match {
-
-          case Constants.StandardRadioButtonYesValue => {
-            getAllInvestmentFromKeystore(s4lConnector).flatMap {
-              previousSchemes =>
-                if(previousSchemes.nonEmpty) {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
-//                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-                  Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-                }
-                else {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
-//                  TODO: Future.successful(Redirect(routes.PreviousSchemeController.show()))
-                  Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-                }
+            case Constants.StandardRadioButtonYesValue => {
+              getAllInvestmentFromKeystore(s4lConnector).flatMap {
+                previousSchemes =>
+                  if (previousSchemes.nonEmpty) {
+                    s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
+                    //                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+                    Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+                  }
+                  else {
+                    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+                    //                  TODO: Future.successful(Redirect(routes.PreviousSchemeController.show()))
+                    Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+                  }
+              }
             }
-          }
-          case Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
-            clearPreviousInvestments(s4lConnector)
-//            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-            Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-          }
+            case Constants.StandardRadioButtonNoValue => {
+              s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
+              clearPreviousInvestments(s4lConnector)
+              //            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+              Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+            }
 
+          }
         }
-      }
-    )
+      )
+    }
   }
 }

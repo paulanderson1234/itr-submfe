@@ -186,12 +186,12 @@ class ApplicationHubControllerSpec extends ControllerSpec{
   }
 
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'nature of business' page if table is not empty" in {
+    "redirect to 'scheme selection' page if table is not empty" in {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.newApplication)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.NatureOfBusinessController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SchemeSelectionController.show().url)
         }
       )
     }

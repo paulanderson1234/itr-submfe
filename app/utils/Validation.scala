@@ -26,10 +26,10 @@ import play.api.i18n.Messages
 import java.util.{Calendar, Date}
 
 import common.Constants
+import models.submission.SchemeTypesModel
 import org.joda.time.DateTime
 
 import scala.util.{Failure, Success, Try}
-
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -295,6 +295,17 @@ object Validation {
       addressForm: AddressModel =>
         if (addressForm.countryCode == "GB" && addressForm.postcode.fold(true)( _.isEmpty)) {
           Invalid(Seq(ValidationError(Messages("validation.error.countrypostcode"))))
+        } else {
+          Valid
+        }
+    })
+  }
+
+  def schemeTypesConstraint: Constraint[SchemeTypesModel] = {
+    Constraint("constraints.schemeSelection")({
+      schemeTypeForm =>
+        if (schemeTypeForm.equals(SchemeTypesModel(false,false,false,false))) {
+          Invalid(Seq(ValidationError(Messages("validation.error.schemeSelection"))))
         } else {
           Valid
         }

@@ -17,21 +17,20 @@
 package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import models.NatureOfBusinessModel
-import common._
 import controllers.featureSwitch.SEISFeatureSwitch
-import forms.NatureOfBusinessForm._
+import models.ContactDetailsModel
+import forms.ContactDetailsForm._
+import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.seis.contactInformation.ContactDetails
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html.seis.companyDetails.NatureOfBusiness
 
-object NatureOfBusinessController extends NatureOfBusinessController
+object ContactDetailsController extends ContactDetailsController
 {
   val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -39,26 +38,27 @@ object NatureOfBusinessController extends NatureOfBusinessController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
   val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
-        case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
-        case None => Ok(NatureOfBusiness(natureOfBusinessForm))
+      s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
+        case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
+        case None => Ok(ContactDetails(contactDetailsForm))
       }
     }
   }
 
   val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      natureOfBusinessForm.bindFromRequest().fold(
+      contactDetailsForm.bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
+          Future.successful(BadRequest(ContactDetails(formWithErrors)))
         },
         validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-          Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+          s4lConnector.saveFormData(KeystoreKeys.manualContactDetails, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
+          Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
         }
       )
     }
