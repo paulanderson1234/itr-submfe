@@ -82,7 +82,7 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       supportingDocumentsUploadForm.bindFromRequest().fold(
         formWithErrors => {
-          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
+          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
             case Some(link) => Future.successful(BadRequest(SupportingDocumentsUpload(formWithErrors, link)))
             case None => Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
           }
