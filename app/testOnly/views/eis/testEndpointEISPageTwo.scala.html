@@ -1,0 +1,466 @@
+
+@import models._
+@import testOnly.models.TestPreviousSchemesModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import utils.CountriesHelper
+@import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
+
+@(proposedInvestmentForm: Form[ProposedInvestmentModel], usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel], previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], newGeographicalMarketForm: Form[NewGeographicalMarketModel],
+newProductForm: Form[NewProductModel], testTurnoverCostsForm: Form[AnnualTurnoverCostsModel], investmentGrowForm: Form[InvestmentGrowModel], confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
+confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
+@main_template(Messages("page.test.page-two.title")) {
+<div class="grid-row">
+
+    @form(action = testOnly.controllers.routes.TestEndpointEISController.submitPageTwo()) {
+    <h2>How much you want to raise</h2>
+    <div class="form-group">
+        @inputWithCurrencySymbol(
+        proposedInvestmentForm("investmentAmount"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-amount",
+        '_hintId -> "label-amount-hint",
+        '_label -> Messages("page.investment.amount.heading"),
+        '_labelTextClass -> "visuallyhidden",
+        '_inputHint -> Messages("page.investment.amount.hint"),
+        '_inputClass -> "input--normal input--no-spinner input--left-padding",
+        '_type -> "text",
+        '_maxlength -> "7",
+        'id -> "investmentAmount"
+        )
+
+    </div>
+
+
+    <h2>Same reason as before</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = usedInvestmentReasonBeforeForm("usedInvestmentReasonBefore"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.investment.UsedInvestmentReasonBefore.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Previous before DoFCS</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = previousBeforeDOFCSForm("previousBeforeDOFCS"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.previousInvestment.previousBeforeDOFCS.heading","date1", "date2"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "previousBeforeDOFCS",
+        '_groupClass -> "inline",
+        '_helpText -> Messages("page.previousInvestment.previousBeforeDOFCS.description","X")
+        )
+    </div>
+
+    <h2>New Geographical Market</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = newGeographicalMarketForm("isNewGeographicalMarket"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.investment.NewGeographicalMarket.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>New Product</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = newProductForm("isNewProduct"),
+        Seq(
+        Constants.StandardRadioButtonYesValue-> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.investment.NewProduct.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Average Annual Turnover</h2>
+    <div class="form-group">
+        <table id="table">
+            <thead>
+            <tr>
+                <th class="visuallyhidden" id="col-heading-one" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.one")</th>
+                <th id="col-heading-two" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.two")</th>
+                <th id="col-heading-three" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.three")</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td class="heading-small" id="aat-row-heading-one">@Messages("page.companyDetails.TurnoverCosts.row.heading.one")</td>
+                <td>
+                    @input(
+                    testTurnoverCostsForm("turnoverFirstYear"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-firstYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.one.label.year"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth",
+                    '_maxlength-> 4,
+                    'id -> "firstYear"
+                    )
+                </td>
+                <td>
+
+                    @inputWithCurrencySymbol(
+                    testTurnoverCostsForm("turnoverAmount1"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-amount-one",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.one.label.turnover"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                    '_type -> "text",
+                    '_maxlength -> "9",
+                    'id -> "amount1"
+                    )
+                </td>
+            </tr>
+
+            <tr>
+                <td class="heading-small" id="aat-row-heading-two">@Messages("page.companyDetails.TurnoverCosts.row.heading.two")</td>
+                <td>
+                    @input(
+                    testTurnoverCostsForm("turnoverSecondYear"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-secondYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.two.label.year"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth",
+                    '_maxlength-> 4,
+                    'id -> "secondYear"
+                    )
+                </td>
+                <td>
+                    @inputWithCurrencySymbol(
+                    testTurnoverCostsForm("turnoverAmount2"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-amount-two",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.two.label.turnover"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                    '_type -> "text",
+                    '_maxlength -> "9",
+                    'id -> "amount2"
+                    )
+                </td>
+            </tr>
+            <tr>
+                <td class="heading-small" id="aat-row-heading-three">@Messages("page.companyDetails.TurnoverCosts.row.heading.three")</td>
+                <td>
+                    @input(
+                    testTurnoverCostsForm("turnoverThirdYear"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-thirdYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.three.label.year"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth",
+                    '_maxlength-> 4,
+                    'id -> "thirdYear"
+                    )
+                </td>
+                <td>
+
+                    @inputWithCurrencySymbol(
+                    testTurnoverCostsForm("turnoverAmount3"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-amount-three",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.three.label.turnover"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                    '_type -> "text",
+                    '_maxlength -> "9",
+                    'id -> "amount3"
+                    )
+                </td>
+            </tr>
+            <tr>
+                <td class="heading-small" id="aat-row-heading-four">@Messages("page.companyDetails.TurnoverCosts.row.heading.four")</td>
+                <td>
+                    @input(
+                    testTurnoverCostsForm("turnoverFourthYear"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-fourthYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.four.label.year"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth",
+                    '_maxlength-> 4,
+                    'id -> "fourthYear"
+                    )
+                </td>
+                <td>
+                    @inputWithCurrencySymbol(
+                    testTurnoverCostsForm("turnoverAmount4"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-amount-rAndDCosts2ndYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.four.label.turnover"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                    '_type -> "text",
+                    '_maxlength -> "9",
+                    'id -> "amount4"
+                    )
+
+                </td>
+            </tr>
+            <tr>
+                <td class="heading-small" id="aat-row-heading-five">@Messages("page.companyDetails.TurnoverCosts.row.heading.five")</td>
+                <td>
+                    @input(
+                    testTurnoverCostsForm("turnoverFifthYear"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-fifthYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.five.label.year"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth",
+                    '_maxlength-> 4,
+                    'id -> "fifthYear"
+                    )
+                </td>
+                <td>
+
+                    @inputWithCurrencySymbol(
+                    testTurnoverCostsForm("turnoverAmount5"),
+                    '_divClass -> "form-label",
+                    '_labelId -> "label-amount-operatingCosts3rdYear",
+                    '_label -> Messages("page.companyDetails.TurnoverCosts.row.five.label.turnover"),
+                    '_labelTextClass -> "visuallyhidden",
+                    '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                    '_type -> "text",
+                    '_maxlength -> "9",
+                    'id -> "amount5"
+                    )
+
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <h2>How you plan to use investment</h2>
+    <div class="form-group">
+        <span id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</span>
+        <ul id="optional-bullet-list" class="list list-bullet">
+            <li id="bullet-geographical-market">@Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")</li>
+            <li id="bullet-product-market">@Messages("page.investment.InvestmentGrow.bullet.productMarket")</li>
+        </ul>
+    </div>
+    <div class="form-group">
+        <span class = "form-hint" id="desc-one">@Messages("page.investment.InvestmentGrow.question.hint")</span>
+        @textArea(
+        investmentGrowForm("investmentGrowDesc"),
+        '_cols -> "50",
+        '_rows -> "10",
+        '_maxLength-> Constants.SuggestedTextMaxLength,
+        '_label-> Messages("page.investment.InvestmentGrow.heading"),
+        '_labelTextClass-> "visuallyhidden"
+        )
+    </div>
+
+    <h2>Confirm Contact Details</h2>
+    <div class="form-group">
+
+        <div id="storedContactDetailsDiv" class="form-group">
+            <input id="contactDetails.forename" name="contactDetails.forename" type="text" class="form-group" value="testName1"/>
+            <input id="contactDetails.surname" name="contactDetails.surname" type="text" class="form-group" value="testName2"/>
+            <input id="contactDetails.telephoneNumber" name="contactDetails.telephoneNumber" type="text" class="form-group" value="000000000000"/>
+            <input id="contactDetails.mobileNumber" name="contactDetails.mobileNumber" type="text" class="form-group" value="000000000001"/>
+            <input id="contactDetails.email" name="contactDetails.email" type="text" class="form-group" value="test&commat;test.com"/>
+        </div>
+
+        @formInputRadioGroup(
+        field = confirmContactDetailsForm("contactDetailsUse"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.contactInformation.ConfirmContactDetails.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Contact Details</h2>
+    <div class="form-group">
+
+        @input(
+        contactDetailsForm("forename"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-forename",
+        '_label -> Messages("page.contactInformation.contactDetails.forename.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "forename"
+        )
+
+        @input(
+        contactDetailsForm("surname"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-surname",
+        '_label -> Messages("page.contactInformation.contactDetails.surname.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "surname"
+        )
+
+        @input(
+        contactDetailsForm("telephoneNumber"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-telephoneNumber",
+        '_label -> Messages("page.contactInformation.contactDetails.phoneNumber.label"),
+        '_maxlength -> "24",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "phoneNumber"
+        )
+
+        @input(
+        contactDetailsForm("mobileNumber"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-mobileNumber",
+        '_label -> Messages("page.contactInformation.contactDetails.mobileNumber.label"),
+        '_maxlength -> "24",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "mobileNumber"
+        )
+
+        @input(
+        contactDetailsForm("email"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-email",
+        '_label -> Messages("page.contactInformation.contactDetails.email.label"),
+        '_inputClass -> "input--medium input--cleared",
+        '_maxlength -> "129",
+        'id -> "email"
+        )
+
+    </div>
+
+    <h2>Confirm Contact Address</h2>
+    <div class="form-group">
+
+        <div id="storedAddressDiv" class="form-group">
+            <input id="address.addressline1" name="address.addressline1" type="text" class="form-group" value="testLine1"/>
+            <input id="address.addressline2" name="address.addressline2" type="text" class="form-group" value="testLine2"/>
+            <input id="address.addressline3" name="address.addressline3" type="text" class="form-group" value="testLine3"/>
+            <input id="address.addressline4" name="address.addressline4" type="text" class="form-group" value="testLine4"/>
+            <input id="address.postcode" name="address.postcode" type="text" class="form-group" value="AA1 1AA"/>
+            <input id="address.countryCode" name="address.countryCode" type="text" class="form-group" value="GB"/>
+        </div>
+
+        @formInputRadioGroup(
+        field = confirmCorrespondAddressForm("contactAddressUse"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.contactInformation.ConfirmCorrespondAddress.title"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Contact Address</h2>
+    <div class="form-group">
+        @input(
+        contactAddressForm("addressline1"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-addressline1",
+        '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline1.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "addressline1"
+        )
+    </div>
+    <div class="form-group">
+        @input(
+        contactAddressForm("addressline2"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-addressline2",
+        '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline2.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "addressline2"
+        )
+    </div>
+    <div class="form-group">
+        @input(
+        contactAddressForm("addressline3"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-addressline3",
+        '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline3.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "addressline3"
+        )
+    </div>
+    <div class="form-group">
+        @input(
+        contactAddressForm("addressline4"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-addressline4",
+        '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline4.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "addressline4"
+        )
+    </div>
+    <div class="form-group">
+        @input(
+        contactAddressForm("postcode"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-postcode",
+        '_label -> Messages("page.contactInformation.ProvideContactAddress.postcode.label"),
+        '_maxlength -> "10",
+        '_inputClass -> "input--small input--cleared",
+        'id -> "postcode"
+        )
+    </div>
+    <div class="form-group">
+        @dropdown(contactAddressForm("countryCode"),
+        elementOptions = CountriesHelper.getIsoCodeTupleList,
+        displayEmptyValue = true,
+        '_emptyValueText -> Messages("page.address.country.select"),
+        '_labelId -> "label-country",
+        '_id -> "countryCode",
+        '_inputClass -> "input--medium input--cleared",
+        '_label -> Html(Messages("page.contactInformation.ProvideContactAddress.country.label")))
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">
+            @Messages("page.test.submit-form.button")
+        </button>
+
+        <a class="btn button" id="clear-cache" href="@testOnly.controllers.routes.ClearCacheController.clearCache()">
+            @Messages("page.test.clear-cache.button")
+        </a>
+
+        <a class="btn button" id="page-one" href="@testOnly.controllers.routes.TestEndpointEISController.showPageOne(None)">
+            @Messages("page.test.page-one.button")
+        </a>
+
+    </div>
+
+    }
+</div>
+}

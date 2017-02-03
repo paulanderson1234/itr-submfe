@@ -12,7 +12,7 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
 @main_template(Messages("page.test.page-two.title")) {
 <div class="grid-row">
 
-    @form(action = testOnly.controllers.routes.TestEndpointController.submitPageTwo()) {
+    @form(action = testOnly.controllers.routes.TestEndpointSEISController.submitPageTwo()) {
     <h2>How much you want to raise</h2>
     <div class="form-group">
         @inputWithCurrencySymbol(
@@ -455,7 +455,7 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
             @Messages("page.test.clear-cache.button")
         </a>
 
-        <a class="btn button" id="page-one" href="@testOnly.controllers.routes.TestEndpointController.showPageOne(None)">
+        <a class="btn button" id="page-one" href="@testOnly.controllers.routes.TestEndpointSEISController.showPageOne(None)">
             @Messages("page.test.page-one.button")
         </a>
 

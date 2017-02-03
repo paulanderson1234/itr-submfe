@@ -10,7 +10,7 @@
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
-    @form(action = testOnly.controllers.routes.TestEndpointController.submitPageOne()) {
+    @form(action = testOnly.controllers.routes.TestEndpointEISController.submitPageOne()) {
 
     <h2> Nature Of Business</h2>
     <div class="form-group">
@@ -348,7 +348,7 @@
             @Messages("page.test.clear-cache.button")
         </a>
 
-        <a class="btn button" id="page-two" href="@testOnly.controllers.routes.TestEndpointController.showPageTwo()">
+        <a class="btn button" id="page-two" href="@testOnly.controllers.routes.TestEndpointEISController.showPageTwo()">
             @Messages("page.test.page-two.button")
         </a>
 
