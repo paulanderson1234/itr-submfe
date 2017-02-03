@@ -27,9 +27,10 @@ import models.{HadPreviousRFIModel, NewGeographicalMarketModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.seis.previousInvestment.HadPreviousRFI
 
 import scala.concurrent.Future
-import views.html._
+//import views.html._
 import views.html.investment.NewGeographicalMarket
 
 /*
@@ -59,29 +60,19 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
   val s4lConnector: S4LConnector
 //
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
+
         s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
-          case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data), backUrl.getOrElse("")))
-          case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm, backUrl.getOrElse("")))
+          case Some(data) => Ok(HadPreviousRFI(hadPreviousRFIForm.fill(data)))
+          case None => Ok(HadPreviousRFI(hadPreviousRFIForm))
         }
       }
-      else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-    }
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
-  }
+
 
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     hadPreviousRFIForm.bindFromRequest().fold(
       formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
-          case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
-          case None => Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-        }
+         Future.successful(BadRequest(HadPreviousRFI(formWithErrors)))
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
