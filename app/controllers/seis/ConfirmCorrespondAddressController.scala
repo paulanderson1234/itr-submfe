@@ -86,7 +86,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
                 s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
                   routes.ConfirmCorrespondAddressController.show().toString())
                 s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
-                Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+                Future.successful(Redirect(routes.SupportingDocumentsController.show()))
               }
               case Constants.StandardRadioButtonNoValue => {
                 Future.successful(Redirect(routes.ContactAddressController.show()))

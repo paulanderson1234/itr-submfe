@@ -410,7 +410,8 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:page.supportingDocuments.SupportingDocuments.bullet.one=business plan
+page.supportingDocuments.SupportingDocuments.text.one=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:
+page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
 page.supportingDocuments.SupportingDocuments.bullet.four=prospectuses and other documents for attracting investment

@@ -63,7 +63,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
         s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
-        Future.successful(Redirect(routes.ContactAddressController.show()))
+        Future.successful(Redirect(routes.SupportingDocumentsController.show()))
       }
     )
   }
