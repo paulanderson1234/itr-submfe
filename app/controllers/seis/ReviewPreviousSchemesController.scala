@@ -84,7 +84,8 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
     PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
-      if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+      //TODO if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+      if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.NatureOfBusinessController.show()))
       else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }
 }

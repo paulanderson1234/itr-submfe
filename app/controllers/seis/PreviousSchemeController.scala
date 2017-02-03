@@ -17,7 +17,7 @@
 package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -25,13 +25,13 @@ import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import forms.PreviousSchemeForm._
+import play.api.data.Form
 
 import scala.concurrent.Future
-import views.html.previousInvestment.PreviousScheme
-import forms.PreviousSchemeForm._
+import views.html.seis.previousInvestment.PreviousScheme
 
-object PreviousSchemeController extends PreviousSchemeController
-{
+object PreviousSchemeController extends PreviousSchemeController {
   val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -58,7 +58,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
         }
       } else {
         // no back link - send to beginning of flow
-        //Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+        //TODO: change to this -Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         Future.successful(Redirect(routes.NatureOfBusinessController.show()))
       }
     }
@@ -75,13 +75,21 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
           Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
       },
       validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
-        validFormData.processingId match {
-          case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
-            _ => Redirect(routes.ReviewPreviousSchemesController.show())
-          }
-          case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
-            _ => Redirect(routes.ReviewPreviousSchemesController.show())
+
+        if (validFormData.schemeTypeDesc == Constants.schemeTypeVct || validFormData.schemeTypeDesc == Constants.schemeTypeEis) {
+
+          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector).flatMap(url =>
+            Future.successful(BadRequest(PreviousScheme(previousSchemeForm.fill(validFormData).withError("hello", ""), url.get))))
+
+          //Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+        } else {
+          validFormData.processingId match {
+            case Some(_) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
+              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+            }
+            case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
+              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+            }
           }
         }
       }
