@@ -20,6 +20,7 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.featureSwitch.SEISFeatureSwitch
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import forms.schemeSelection.SchemeSelectionForm._
 import models.submission.SchemeTypesModel
@@ -35,27 +36,30 @@ object SchemeSelectionController extends SchemeSelectionController {
   override lazy val s4lConnector = S4LConnector
 }
 
-trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  def show(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-      case Some(scheme) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
-      case _ => Ok(SchemeSelection(schemeSelectionForm))
+  def show(): Action[AnyContent] = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+        case Some(scheme) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
+        case _ => Ok(SchemeSelection(schemeSelectionForm))
+      }
     }
   }
 
-  def submit(): Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
-    schemeSelectionForm.bindFromRequest.fold(
-      formWithErrors => {
-        BadRequest(SchemeSelection(formWithErrors))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, validFormData)
-        routeToScheme(validFormData)
-      }
-    )
+  def submit(): Action[AnyContent] = seisFeatureSwitch { AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+      schemeSelectionForm.bindFromRequest.fold(
+        formWithErrors => {
+          BadRequest(SchemeSelection(formWithErrors))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, validFormData)
+          s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+          routeToScheme(validFormData)
+        }
+      )
+    }
   }
 
   private def routeToScheme(schemeTypesModel: SchemeTypesModel)(implicit request: Request[AnyContent]): Result = {

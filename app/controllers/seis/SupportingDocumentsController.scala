@@ -22,6 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import services.{FileUploadService}
+import controllers.featureSwitch.SEISFeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.supportingDocuments.SupportingDocuments
 import play.api.i18n.Messages.Implicits._
@@ -40,28 +41,29 @@ object SupportingDocumentsController extends SupportingDocumentsController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
-  val attachmentsFrontEndUrl : String
+  val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if(fileUploadService.getUploadFeatureEnabled) {
-      Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
-    }
-    else {
-      ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-        case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
-        case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+  val show = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      if (fileUploadService.getUploadFeatureEnabled) {
+        Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+      }
+      else {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
+          case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
+          case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+        }
       }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+    }
   }
-
 }
-
-

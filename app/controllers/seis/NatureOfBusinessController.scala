@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
+import controllers.featureSwitch.SEISFeatureSwitch
 import forms.NatureOfBusinessForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -38,26 +39,28 @@ object NatureOfBusinessController extends NatureOfBusinessController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
-      case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
-      case None => Ok(NatureOfBusiness(natureOfBusinessForm))
+  val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
+        case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
+        case None => Ok(NatureOfBusiness(natureOfBusinessForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    natureOfBusinessForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-        Future.successful(Redirect(routes.NatureOfBusinessController.show()))
-      }
-    )
+  val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      natureOfBusinessForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
+          Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+        }
+      )
+    }
   }
 }
