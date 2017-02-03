@@ -38,4 +38,5 @@ object MockConfig extends AppConfig {
   override val internalAttachmentsUrl = "localhost"
   override val submissionFrontendServiceBaseUrl = "http://localhost:9635/investment-tax-relief-submission"
   override val uploadFeatureEnabled: Boolean = false
+  override val seisFlowEnabled: Boolean = true
 }
