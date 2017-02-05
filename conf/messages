@@ -375,8 +375,8 @@ page.knowledgeIntensive.TenYearPlan.description.two = Based on the information y
 validation.error.DescriptionEnteredForNoOption=If ''No'' is selected description should be removed from the ''Yes'' option.
 
 #had previous RFI
-page.previousInvestment.hadPreviousRFI.title = Has your company used a tax relief investment scheme before?
-page.previousInvestment.hadPreviousRFI.heading = Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme before?
 
 #subsidiaries spending investment
 page.investment.SubsidiariesSpendingInvestment.title = Will another company that''s owned or controlled by [your company name] spend this investment?
@@ -410,7 +410,8 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:page.supportingDocuments.SupportingDocuments.bullet.one=business plan
+page.supportingDocuments.SupportingDocuments.text.one=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:
+page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
 page.supportingDocuments.SupportingDocuments.bullet.four=prospectuses and other documents for attracting investment
@@ -568,6 +569,13 @@ page.previousInvestment.schemeType.vct=Venture Capital Trust
 page.previousInvestment.schemeType.other=Other
 page.previousInvestment.amountSpent.label=Investment amount spent
 
+#Invalid previous scheme SEIS
+page.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the scheme
+page.previousInvestment.InvalidPreviousScheme.heading=You don''t qualify for the scheme
+page.previousInvestment.InvalidPreviousScheme.reason=This is because your company has already raised investment through the Enterprise Investment Scheme or received investment from a Venture Capital Trust.
+page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect, you can
+page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
+
 #previous schmeme
 page.investment.PreviousScheme.heading=Which previous investment schemes has your company used? When and how much was the investment?
 page.investment.PreviousScheme.schemeType=Scheme
@@ -580,7 +588,6 @@ page.investment.PreviousScheme.location=It should be on the certificates you gav
 page.investment.PreviousScheme.companiesHouse = Companies House database
 page.investment.PreviousScheme.howToFind=How can you find this out?
 page.investment.PreviousScheme.investmentAmount=Investment amount raised
-
 
 #annual turnover error
 page.investment.AnnualTurnoverError.title=You don''t qualify for the scheme
@@ -596,6 +603,7 @@ page.investment.TradingForTooLong.bullet.one=has been trading for too long to ge
 page.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
 page.investment.TradingForTooLong.link.schemeGuidance=Link back to guidance
 
+
 #signout page
 page.signout.SignedOut.title = You''re signed out
 page.signout.SignedOut.header = You''re signed out
@@ -607,8 +615,24 @@ page.introduction.hub.heading=Applications overview
 page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
-page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
 page.introduction.hub.new.heading=You have no unsubmitted applications
+page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
+page.introduction.hub.existing.seis.type=Seed Enterprise Investment Scheme - Advanced assurance
+page.introduction.hub.existing.vct.type=Venture CapitalTrusts - Advanced assurance
+page.introduction.hub.existing.eis-seis.type=Enterprise & Seed Enterprise Investment Schemes - Advanced assurance
+page.introduction.hub.existing.eis-vct.type=Enterprise Investment Schemes & Venture Capital Trusts - Advanced assurance
+page.introduction.hub.existing.seis-vct.type=Seed Enterprise Investment Scheme & Venture Capital Trusts - Advanced assurance
+page.introduction.hub.existing.eis-vct.type=Enterprise Investment Scheme & Venture Capital Trusts - Advanced assurance
+
+
+# SEIS Proposed Investment page
+page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.help.link=What happens if I don''t raise this amount?
+page.seis.investment.proposedInvestment.help.link.text=You can raise more or less than this, but only £150,000 of the investments you've received over the past 3 years qualifies for relief. These investments can include:
+page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
+page.seis.investment.proposedInvestment.help.bullet.two=any previous SEIS investments
+page.seis.investment.proposedInvestment.help.bullet.three=any State aid you've received under the de minimis regulation
 
 #test
 page.test.clear-cache.button=Clear cache

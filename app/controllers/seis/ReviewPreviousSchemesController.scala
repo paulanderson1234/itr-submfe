@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import controllers.featureSwitch.SEISFeatureSwitch
 import forms.PreviousSchemeForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -37,55 +38,62 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
+trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
-        PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap{
-          previousSchemes =>
-            if(previousSchemes.nonEmpty) {
-              Future.successful(Ok(ReviewPreviousSchemes(previousSchemes,backUrl.get)))
-            }
-            //else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-            else Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+  val show = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      def routeRequest(backUrl: Option[String]) = {
+        if (backUrl.isDefined) {
+          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
+            previousSchemes =>
+              if (previousSchemes.nonEmpty) {
+                Future.successful(Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get)))
+              }
+              else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+          }
+        } else {
+          // no back link - send to beginning of flow
+          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
-      } else {
-        // no back link - send to beginning of flow
-        //Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-        Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+      }
+      for {
+        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkReviewPreviousSchemes, s4lConnector)
+        route <- routeRequest(link)
+      } yield route
+    }
+  }
+
+  def add: Action[AnyContent] = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+      Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
+    }
+  }
+
+  def change(id: Int): Action[AnyContent] = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+      Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
+    }
+  }
+
+  def remove(id: Int): Action[AnyContent] = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+      PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
+        _ => Redirect(routes.ReviewPreviousSchemesController.show())
       }
     }
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkReviewPreviousSchemes, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
   }
 
-  def add: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
-    Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
-  }
-
-  def change(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
-    Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
-  }
-
-  def remove(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().toString())
-    PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
-      _ => Redirect(routes.ReviewPreviousSchemesController.show())
+  val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
+      PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
+        if (previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+        else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
     }
-  }
-
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().toString())
-    PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
-      //TODO if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-      if(previousSchemes.nonEmpty) Future.successful(Redirect(routes.NatureOfBusinessController.show()))
-      else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
   }
 }

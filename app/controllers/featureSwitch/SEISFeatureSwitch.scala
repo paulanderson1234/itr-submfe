@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-package models
+package controllers.featureSwitch
 
-import models.submission.SchemeTypesModel
-import play.api.libs.json.Json
+import config.AppConfig
+import play.api.mvc.{Action, AnyContent}
+import play.api.mvc.Results._
 
-case class ApplicationHubModel (organisationName :String,
-                                registeredAddress: AddressModel,
-                                contactDetails: ContactDetailsModel,
-                                schemeTypes: Option[SchemeTypesModel] = None)
+trait SEISFeatureSwitch {
 
-object ApplicationHubModel {
-  implicit val format = Json.format[ApplicationHubModel]
-  implicit val writes = Json.writes[ApplicationHubModel]
+  val applicationConfig: AppConfig
+  val seisFeatureEnabled = applicationConfig.seisFlowEnabled
+
+  def seisFeatureSwitch(action: Action[AnyContent]): Action[AnyContent] = {
+    if(seisFeatureEnabled) {
+      action
+    } else {
+      redirect
+    }
+  }
+
+  private def redirect = Action.apply {
+    implicit request => Redirect(controllers.routes.ApplicationHubController.show())
+  }
+
 }

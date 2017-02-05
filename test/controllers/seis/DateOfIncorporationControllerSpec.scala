@@ -124,7 +124,7 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
   }
 
   "Sending a valid form submit to the DateOfIncorporationController when authenticated and enrolled" should {
-    "redirect to first commercial sale page" in {
+    "redirect to first trade start date page" in {
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(kiProcessingModelMet)))
       setupMocks(Some(dateOfIncorporationModel))
@@ -138,7 +138,8 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+          //TODO change to trade start date controller below when page available
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }

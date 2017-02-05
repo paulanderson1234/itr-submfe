@@ -19,6 +19,7 @@ package controllers.seis
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
@@ -29,54 +30,59 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class NatureOfBusinessControllerSpec extends ControllerSpec {
+class HadPreviousRFIControllerSpec extends ControllerSpec {
 
-  object TestController extends NatureOfBusinessController {
+  object TestController extends HadPreviousRFIController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  "NatureOfBusinessController" should {
+  "HadPreviousRFIController" should {
     "use the correct keystore connector" in {
-      NatureOfBusinessController.s4lConnector shouldBe S4LConnector
+      HadPreviousRFIController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
-      NatureOfBusinessController.authConnector shouldBe FrontendAuthConnector
+      HadPreviousRFIController.authConnector shouldBe FrontendAuthConnector
     }
     "use the correct enrolment connector" in {
-      NatureOfBusinessController.enrolmentConnector shouldBe EnrolmentConnector
+      HadPreviousRFIController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 
-  def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(natureOfBusinessModel))
+  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None,
+                 previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(hadPreviousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(previousSchemes))
 
-  "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
+  }
+
+  "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(natureOfBusinessModel))
+      setupMocks(Some(hadPreviousRFIModelYes))
       mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
+      showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      setupMocks()
+      setupMocks(None)
       mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
+      showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a GET request to NatureOfBusinessController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(natureOfBusinessModel))
+  "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
+    "redirect to subscription" in {
+      setupMocks(Some(hadPreviousRFIModelYes))
       mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
+      showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
@@ -85,7 +91,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending an Unauthenticated request with a session to NatureOfBusinessController" should {
+  "Sending an Unauthenticated request with a session to HadPreviousRFIController" should {
     "return a 302 and redirect to GG login" in {
       showWithSessionWithoutAuth(TestController.show())(
         result => {
@@ -98,7 +104,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a request with no session to NatureOfBusinessController" should {
+  "Sending a request with no session to HadPreviousRFIController" should {
     "return a 302 and redirect to GG login" in {
       showWithoutSession(TestController.show())(
         result => {
@@ -111,7 +117,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a timed-out request to NatureOfBusinessController" should {
+  "Sending a timed-out request to HadPreviousRFIController" should {
     "return a 302 and redirect to the timeout page" in {
       showWithTimeout(TestController.show())(
         result => {
@@ -122,25 +128,60 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
-    "redirect to the date of incorporation page" in {
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
+    "and there are previous enrolments" should {
+    "redirect to review schemes page" in {
       mockEnrolledRequest()
-      val formInput = "natureofbusiness" -> "some text so it's valid"
-
+      setupMocks(previousSchemes = Some(previousSchemesValid))
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
   }
 
-  "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
-    "redirect to itself" in {
+  "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
+    "and there are no previous enrolments" should {
+    "redirect to previous scheme page" in {
       mockEnrolledRequest()
-      val formInput = "natureofbusiness" -> ""
+      setupMocks()
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
+      submitWithSessionAndAuth(TestController.submit,formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url)
+        }
+      )
+    }
+  }
 
+  "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
+    "redirect to the commercial sale page" in {
+      mockEnrolledRequest()
+      val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
+      submitWithSessionAndAuth(TestController.submit,formInput)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
+        }
+      )
+    }
+  }
+
+  "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated and enrolled" should {
+    "redirect to itself" in {
+
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
+
+       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
+
+      mockEnrolledRequest()
+      val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
@@ -149,8 +190,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-
-  "Sending a submission to the NatureOfBusinessController when not authenticated" should {
+  "Sending a submission to the HadPreviousRFIController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
       submitWithSessionWithoutAuth(TestController.submit)(
@@ -175,7 +215,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a submission to the NatureOfBusinessController when a timeout has occured" should {
+  "Sending a submission to the HadPreviousRFIController when a timeout has occured" should {
     "redirect to the Timeout page when session has timed out" in {
       submitWithTimeout(TestController.submit)(
         result => {
@@ -186,7 +226,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a submission to the NatureOfBusinessController when NOT enrolled" should {
+  "Sending a submission to the HadPreviousRFIController when NOT enrolled" should {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit)(

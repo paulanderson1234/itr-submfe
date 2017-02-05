@@ -19,8 +19,9 @@ package controllers.seis
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
@@ -29,34 +30,44 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class NatureOfBusinessControllerSpec extends ControllerSpec {
+class ProposedInvestmentControllerSpec extends ControllerSpec {
 
-  object TestController extends NatureOfBusinessController {
-    override lazy val applicationConfig = FrontendAppConfig
+  object TestController extends ProposedInvestmentController {
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  "NatureOfBusinessController" should {
+  val proposedInvestment = ProposedInvestmentModel(12345)
+
+  "ProposedInvestmentController" should {
     "use the correct keystore connector" in {
-      NatureOfBusinessController.s4lConnector shouldBe S4LConnector
+      ProposedInvestmentController.s4lConnector shouldBe S4LConnector
     }
     "use the correct auth connector" in {
-      NatureOfBusinessController.authConnector shouldBe FrontendAuthConnector
+      ProposedInvestmentController.authConnector shouldBe FrontendAuthConnector
     }
     "use the correct enrolment connector" in {
-      NatureOfBusinessController.enrolmentConnector shouldBe EnrolmentConnector
+      ProposedInvestmentController.enrolmentConnector shouldBe EnrolmentConnector
+    }
+    "use the correct submission connector" in {
+      ProposedInvestmentController.submissionConnector shouldBe SubmissionConnector
+    }
+    "use the correct application config" in {
+      ProposedInvestmentController.applicationConfig shouldBe FrontendAppConfig
     }
   }
 
-  def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(natureOfBusinessModel))
+  "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
 
-  "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(natureOfBusinessModel))
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(proposedInvestment)))
+      when(mockS4lConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -64,34 +75,53 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      setupMocks()
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(mockS4lConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
+
   }
 
-  "Sending a GET request to NatureOfBusinessController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(natureOfBusinessModel))
-      mockNotEnrolledRequest()
+  "Sending a GET request to ProposedInvestmentController without a valid backlink from keystore when authenticated and enrolled" should {
+    "redirect to the beginning of the flow" in {
+      when(mockS4lConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(None))
+      mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
   }
 
-  "Sending an Unauthenticated request with a session to NatureOfBusinessController" should {
+  "Sending a GET request to ProposedInvestmentController when authenticated and NOT enrolled" should {
+    "return a 200 when something is fetched from keystore" in {
+      mockNotEnrolledRequest()
+      showWithSessionAndAuth(TestController.show)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
+        }
+      )
+    }
+  }
+
+  "Sending an Unauthenticated request with a session to ProposedInvestmentController" should {
     "return a 302 and redirect to GG login" in {
       showWithSessionWithoutAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -103,8 +133,8 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
       showWithoutSession(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -122,26 +152,28 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
-    "redirect to the date of incorporation page" in {
+  "Sending a valid form submit to the ProposedInvestmentController" should {
+    "redirect to the confirm contact details page" in {
       mockEnrolledRequest()
-      val formInput = "natureofbusiness" -> "some text so it's valid"
-
-      submitWithSessionAndAuth(TestController.submit,formInput)(
+      submitWithSessionAndAuth(TestController.submit,
+        "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+          redirectLocation(result) shouldBe Some(routes.ConfirmContactDetailsController.show().url)
         }
       )
     }
   }
 
-  "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
-    "redirect to itself" in {
-      mockEnrolledRequest()
-      val formInput = "natureofbusiness" -> ""
 
-      submitWithSessionAndAuth(TestController.submit,formInput)(
+  "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
+    "redirect to itself" in {
+      when(mockS4lConnector.fetchAndGetFormData[String]
+        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
+      mockEnrolledRequest()
+      submitWithSessionAndAuth(TestController.submit,
+        "investmentAmount" -> "")(
         result => {
           status(result) shouldBe BAD_REQUEST
         }
@@ -156,8 +188,8 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
       submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -167,8 +199,8 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
       submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -192,10 +224,10 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
         }
       )
     }
   }
-
 }
+

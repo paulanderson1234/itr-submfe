@@ -25,15 +25,18 @@ import play.api.i18n.Messages.Implicits._
 
 class ApplicationHubExistingSpec extends ViewSpec{
 
+  val continueUrl = "/seis/natureOfbusiness"
+  val schemeType = "SEED Enterprise Investment Scheme - Advanced Assurance"
+
   "The Application Hub 'Existing' partial" should {
     "load the correct elements for when there is an applications in progress" in {
-      lazy val view = ApplicationHubExisting()(fakeRequest,applicationMessages)
+      lazy val view = ApplicationHubExisting(continueUrl, schemeType)(fakeRequest,applicationMessages)
       val document = Jsoup.parse(view.body)
       document.getElementById("hub-application-heading").text() shouldBe Messages("page.introduction.hub.existing.heading")
       document.getElementById("hub-application-in-progress").text() shouldBe Messages("page.introduction.hub.existing.table.heading")
-      document.getElementById("hub-application").text() shouldBe Messages("page.introduction.hub.existing.advanced.assurance.type")
+      document.getElementById("hub-application").text() shouldBe schemeType
       document.getElementById("continue").text() shouldBe Messages("common.button.continue")
-      document.getElementById("continue-ref").attr("href") shouldEqual routes.NatureOfBusinessController.show().toString()
+      document.getElementById("continue-ref").attr("href") shouldEqual continueUrl
       document.getElementById("delete-link").text() shouldBe Messages("common.button.delete")
 
     }

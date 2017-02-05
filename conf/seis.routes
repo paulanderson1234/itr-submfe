@@ -1,8 +1,8 @@
 # microservice specific routes
 
 
-GET       /nature-of-business      controllers.seis.NatureOfBusinessController.show
-POST      /nature-of-business      controllers.seis.NatureOfBusinessController.submit
+GET       /nature-of-business                       controllers.seis.NatureOfBusinessController.show
+POST      /nature-of-business                       controllers.seis.NatureOfBusinessController.submit
 
 GET        /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.show
 POST       /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.submit
@@ -16,8 +16,8 @@ POST       /confirm-contact-details                 controllers.seis.ConfirmCont
 GET        /contact-details                         controllers.seis.ContactDetailsController.show
 POST       /contact-details                         controllers.seis.ContactDetailsController.submit
 
-GET       /date-of-incorporation   controllers.seis.DateOfIncorporationController.show
-POST      /date-of-incorporation   controllers.seis.DateOfIncorporationController.submit
+GET       /date-of-incorporation                    controllers.seis.DateOfIncorporationController.show
+POST      /date-of-incorporation                    controllers.seis.DateOfIncorporationController.submit
 
 GET        /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.show
 POST       /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.submit
@@ -29,3 +29,17 @@ POST       /review-previous-schemes-remove/:Id      controllers.seis.ReviewPrevi
 GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
 POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit
 
+GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
+
+GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
+
+GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
+POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
+
+GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
+POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
+
+GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+#POST       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.submit

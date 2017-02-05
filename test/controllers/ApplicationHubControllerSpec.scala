@@ -19,9 +19,11 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
+import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -57,8 +59,10 @@ class ApplicationHubControllerSpec extends ControllerSpec{
       thenReturn(Future.successful(Some(registrationDetailsModel)))
     when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
       thenReturn(Future.successful(Some(contactDetailsModel)))
-    when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(bool))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(Future.successful(Option(seisSchemeTypesModel)))
   }
 
   def setupMocksNotAvailable(): Unit = {
