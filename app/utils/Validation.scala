@@ -421,6 +421,10 @@ object Validation {
     }
   }
 
+  def dateSinceOtherDate(day: Int, month: Int, year: Int, otherDate:Date): Boolean = {
+    constructDate(day, month, year).compareTo(otherDate) >= 0
+  }
+
   def dateNotInFuture(day: Int, month: Int, year: Int): Boolean = {
     !constructDate(day, month, year).after(DateTime.now.toDate)
   }

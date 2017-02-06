@@ -19,20 +19,24 @@ package controllers.seis
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.routes
 import forms.PreviousSchemeForm._
+import models.{DateOfIncorporationModel, HadPreviousRFIModel}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.previousInvestment.{PreviousScheme, ReviewPreviousSchemes}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.mvc._
 
 import scala.concurrent.Future
 
 object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   val s4lConnector: S4LConnector = S4LConnector
+  val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -41,6 +45,7 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
 trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
+  val submissionConnector: SubmissionConnector
 
   val show = seisFeatureSwitch {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -89,6 +94,48 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
   }
 
   val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+
+      def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean]): Future[Result] = {
+
+        Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+      }
+
+
+      s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
+
+
+      (for{
+        investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
+        hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+
+        //CALL API
+        //isLifeTimeAllowanceExceeded <- if (previousInvestmentsTotal > 0 submissionConnector.checkSeisPreviousInvestmentsAllowanceExceeded(22) else Future(false)
+        isLifeTimeAllowanceExceeded <- submissionConnector.seisPreviousInvestmentAllowanceExceeded(investmentsSinceStartDate)
+
+
+        route <- routeRequest(isLifeTimeAllowanceExceeded)
+      //
+      //      PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
+      //        if (previousSchemes.nonEmpty) {
+      //          (for {
+      //
+      //            isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
+      //              )
+      //            route <- routeRequest(isLifeTimeAllowanceExceeded)
+      //          } yield route) recover {
+      //            case e : NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+      //          }
+
+
+      //})
+    } yield route) recover {
+        case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+      }
+    }
+  }
+
+  val submit2 = seisFeatureSwitch {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
       PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>

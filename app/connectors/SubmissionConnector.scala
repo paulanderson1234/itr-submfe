@@ -16,14 +16,14 @@
 
 package connectors
 import config.{FrontendAppConfig, WSHttp}
-import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
+import models.{AnnualTurnoverCostsModel, DateOfIncorporationModel, ProposedInvestmentModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -65,6 +65,24 @@ trait SubmissionConnector {
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
       s"proposed-investment-amount/${proposedInvestmentAmount.investmentAmount}/annual-turn-over/${annualTurnoverCostsModel.amount1}" +
       s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
+  }
+
+  def seisPreviousInvestmentAllowanceExceeded(previousInvestmentSchemesTotal: Int)
+                                 (implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Option[Boolean]] = {
+
+    println(s"============================================================ total is: $previousInvestmentSchemesTotal")
+
+    if (previousInvestmentSchemesTotal == 0) {
+      Future(Some(false))
+    }
+    else {
+
+      http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
+        s"total-investments-since-trade-start-date/${previousInvestmentSchemesTotal}/${previousInvestmentSchemesTotal}")
+    }
+    //    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
+    //      s"total-investments-since-trade-start-date/${previousInvestmentSchemesTotal}/annual-turn-over/${annualTurnoverCostsModel.amount1}" +
+    //      s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
   }
 
   //TODO: put all these methods in a service?

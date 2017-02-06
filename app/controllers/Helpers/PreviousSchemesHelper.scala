@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
+import utils.Validation
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -77,6 +77,83 @@ trait PreviousSchemesHelper {
 
     result
   }
+
+  def getPreviousInvestmentsFromStartDateTotal(s4lConnector: connectors.S4LConnector)
+                                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[Int] = {
+
+    def calculateAmount(dateTradeStarted: Option[DateOfIncorporationModel],
+                        previousInvestments : Option[Vector[PreviousSchemeModel]]):Int = {
+
+      if (dateTradeStarted.isDefined) 0
+      else {
+
+        val startDate = dateTradeStarted.get
+
+        previousInvestments match {
+          case Some(data) => data.filter(investment => Validation.dateSinceOtherDate(investment.day.get,
+            investment.month.get, investment.year.get, Validation.constructDate(startDate.day.get, startDate.month.get,
+              startDate.year.get))).foldLeft(0)(_ + _.investmentAmount)
+          case _ => 0
+        }
+      }
+    }
+
+    for{
+      dateTradeStarted <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+      previousInvestments <- s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes)
+
+      amount = calculateAmount(dateTradeStarted, previousInvestments)
+    } yield amount
+
+  }
+
+//  def getPreviousInvestmentsFromStartDateTotal(s4lConnector: connectors.S4LConnector)
+//                                            (implicit hc: HeaderCarrier, user: TAVCUser): Future[Int] = {
+//
+//
+//    def calculateAmount(dateTradeStarted: Option[DateOfIncorporationModel],
+//                        previousInvestments : Option[Vector[PreviousSchemeModel]]) {
+//
+//      if (dateTradeStarted.isDefined) 0
+//      else {
+//
+//       val startDate = dateTradeStarted.get
+//
+//        previousInvestments match {
+//
+//         // case Some(data) => data.filter(x =>  isBeforeDate(x.year.getOrElse(0))).foldLeft(0)(_ + _.investmentAmount)
+//          case Some(data) => data.filter(x =>  Validation.dateSinceOtherDate(x.day.get, x.month.get, x.year.get,
+//            Validation.constructDate(startDate.day.get, startDate.month.get, startDate.year.get))).foldLeft(0)(_ + _.investmentAmount)
+//          case _ => 0
+//        }
+//      }
+//
+//
+//    }
+//
+//    for{
+//       dateTradeStarted <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+//       previousInvestments <- s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).recover {
+//         case _ => None
+//       }
+//       amount <- calculateAmount(dateTradeStarted, previousInvestments)
+//    } yield amount
+//
+//
+////    val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
+////      case Some(data) => {
+////
+////        //data.filter(_.year.getOrElse(0) != 2).foldLeft(0)(_ + _.investmentAmount)
+////        data.filter(_.year.getOrElse(0) != 2).foldLeft(0)(_ + _.investmentAmount)
+////        data.filter(x => isBeforeDate(x.year.getOrElse(0))).foldLeft(0)(_ + _.investmentAmount)
+////        //data.foldLeft(0)(_ + _.investmentAmount)
+////      }
+////      case None =>  0
+////    }.recover { case _ =>  0 }
+//
+//    //result
+//  }
+
 
   def addPreviousInvestmentToKeystore(s4lConnector: connectors.S4LConnector,
                                       previousSchemeModelToAdd: PreviousSchemeModel)
