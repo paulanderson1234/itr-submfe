@@ -53,7 +53,7 @@ trait ControllerHelpers {
       //EIS VCT Flow
       case SchemeTypesModel(true,false,false,true) => controllers.routes.NatureOfBusinessController.show().url
       //SEIS VCT Flow
-      case SchemeTypesModel(false,true,false,true) => controllers.routes.NatureOfBusinessController.show().url
+      case SchemeTypesModel(false,true,false,true) => controllers.seis.routes.NatureOfBusinessController.show().url
       //EIS SEIS VCT Flow
       case SchemeTypesModel(true,true,false,true) => controllers.routes.NatureOfBusinessController.show().url
       //Assume EIS
