@@ -49,6 +49,8 @@ trait KeystoreKeys {
   val contactAddress: String = "contactInformation:contactAddress"
   val previousSchemes: String = "previousInvestmentScheme:previousInvestmentSchemes"
   val supportingDocumentsUpload: String = "attachments:supportingDocumentsUpload"
+  val tradeStartDate: String = "companyDetails:tradeStartDate"
+
 
   // processing Keys
   val kiProcessingModel: String = "processing:kiProcessingModel"
@@ -81,5 +83,4 @@ trait KeystoreKeys {
 
   //file upload keys
   val envelopeID: String = "fileUpload:envelopeID"
-
 }

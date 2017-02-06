@@ -18,18 +18,20 @@ package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, KnowledgeIntensiveHelper}
 import controllers.routes
 import forms.HadPreviousRFIForm._
 import forms.TradeStartDateForm._
 import models.TradeStartDateModel
+import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.companyDetails.TradeStartDate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.previousInvestment
+import views.html.seis.companyDetails.TradeStartDate._
 
 import scala.concurrent.Future
 
@@ -39,13 +41,15 @@ object TradeStartDateController extends TradeStartDateController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  override lazy val submissionConnector = SubmissionConnector
 }
 
 trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC {
   val s4lConnector: S4LConnector
+  val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.seis.companyDetails.TradeStartDate(tradeStartDateForm)))
+    Future.successful(Ok(TradeStartDate(tradeStartDateForm)))
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -54,47 +58,25 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
         Future.successful(BadRequest(TradeStartDate(formWithErrors)))
       },
       validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        KnowledgeIntensiveHelper.setKiDateCondition(s4lConnector, validFormData.tradeStartDay.get, validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get)
-        Future.successful(Redirect(routes.TradeStartDateController.show()))
+        validFormData.hasTradeStartDate match {
+          case Constants.StandardRadioButtonYesValue => {
+            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+            Logger.debug(validFormData.tradeStartDay.getOrElse(1).toString)
+            submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
+              validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
+              case Some(validated) =>  if(validated) Redirect(routes.HadPreviousRFIController.show()) else Redirect(routes.TradeStartDateErrorController.show())
+              case _ => {
+                Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
+                InternalServerError(internalServerErrorTemplate)
+              }
+            }
+          }
+          case  Constants.StandardRadioButtonNoValue => {
+            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+            Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+          }
+        }
       }
     )
   }
 }
-
-//  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-//    hadPreviousRFIForm.bindFromRequest().fold(
-//      formWithErrors => {
-//        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
-//          case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
-//          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
-//        }
-//      },
-//      validFormData => {
-//        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-//        validFormData.hadPreviousRFI match {
-//
-//          case Constants.StandardRadioButtonYesValue => {
-//            getAllInvestmentFromKeystore(s4lConnector).flatMap {
-//              previousSchemes =>
-//                if(previousSchemes.nonEmpty) {
-//                  s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
-//                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-//                }
-//                else {
-//                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
-//                  Future.successful(Redirect(routes.PreviousSchemeController.show()))
-//                }
-//            }
-//          }
-//          case Constants.StandardRadioButtonNoValue => {
-//            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
-//            clearPreviousInvestments(s4lConnector)
-//            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-//          }
-//
-//        }
-//      }
-//    )
-//  }
-//}

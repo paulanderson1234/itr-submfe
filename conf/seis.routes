@@ -5,7 +5,7 @@ GET       /nature-of-business                       controllers.seis.NatureOfBus
 POST      /nature-of-business                       controllers.seis.NatureOfBusinessController.submit
 
 GET       /trade-start-date                        controllers.seis.TradeStartDateController.show
-GET       /trade-start-date                        controllers.seis.TradeStartDateController.submit
+POST      /trade-start-date                        controllers.seis.TradeStartDateController.submit
 
 GET       /trade-start-date-error                  controllers.seis.TradeStartDateErrorController.show
 
@@ -24,11 +24,11 @@ POST      /contact-details                         controllers.seis.ContactDetai
 GET       /date-of-incorporation                   controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation                   controllers.seis.DateOfIncorporationController.submit
 
-GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
-POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
+GET       /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST      /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
 
-GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
-POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
+GET       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
+POST      /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
 
 GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
 POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
