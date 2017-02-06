@@ -57,4 +57,5 @@ trait Constants {
   val enrolmentOrgKey = "HMRC-TAVC-ORG"
   val enrolmentTavcRefKey = "TAVCRef"
 
+  val standardIgnoreYearValue = "9999-12-31"
 }

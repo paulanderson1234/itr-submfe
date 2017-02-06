@@ -35,3 +35,6 @@ POST      /proposed-investment                      controllers.seis.ProposedInv
 
 GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
 POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
+
+GET       /acknowledgement                          controllers.seis.AcknowledgementController.show
+POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
