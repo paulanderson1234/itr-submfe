@@ -236,7 +236,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/confirm-correspondence-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents")
         }
       )
     }

@@ -1,9 +1,8 @@
 # microservice specific routes
 
 
-GET       /nature-of-business                      controllers.seis.NatureOfBusinessController.show
-POST      /nature-of-business                      controllers.seis.NatureOfBusinessController.submit
-
+GET       /nature-of-business                       controllers.seis.NatureOfBusinessController.show
+POST      /nature-of-business                       controllers.seis.NatureOfBusinessController.submit
 
 GET       /trade-start-date                        controllers.seis.TradeStartDateController.show
 GET       /trade-start-date                        controllers.seis.TradeStartDateController.submit
@@ -25,6 +24,14 @@ POST      /contact-details                         controllers.seis.ContactDetai
 GET       /date-of-incorporation                   controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation                   controllers.seis.DateOfIncorporationController.submit
 
-GET       /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.show
-POST      /used-investment-scheme-before   controllers.seis.HadPreviousRFIController.submit
+GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
 
+GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
+
+GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
+POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
+
+GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
+POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
