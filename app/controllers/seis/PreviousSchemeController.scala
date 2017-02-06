@@ -24,6 +24,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.routes
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import forms.PreviousSchemeForm._
@@ -78,6 +79,8 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
             Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
         },
         validFormData => {
+
+          s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
 
           if (validFormData.schemeTypeDesc == Constants.schemeTypeVct || validFormData.schemeTypeDesc == Constants.schemeTypeEis) {
             Future.successful(Redirect(routes.InvalidPreviousSchemeController.show()))

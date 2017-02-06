@@ -51,7 +51,8 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
               if (previousSchemes.nonEmpty) {
                 Future.successful(Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get)))
               }
-              else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+              else
+                Future.successful(Redirect(routes.HadPreviousRFIController.show()))
           }
         } else {
           // no back link - send to beginning of flow
