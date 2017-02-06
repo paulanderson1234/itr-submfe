@@ -19,11 +19,8 @@ GET        /investment-tax-relief/test-only/test-endpoint/eis/page-2            
 POST       /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.TestEndpointEISController.submitPageTwo
 
 #seis
-GET        /investment-tax-relief/test-only/test-endpoint/seis/page-1                        testOnly.controllers.TestEndpointSEISController.showPageOne(schemes: Option[Int])
-POST       /investment-tax-relief/test-only/test-endpoint/seis/page-1                        testOnly.controllers.TestEndpointSEISController.submitPageOne
-
-GET        /investment-tax-relief/test-only/test-endpoint/seis/page-2                        testOnly.controllers.TestEndpointSEISController.showPageTwo
-POST       /investment-tax-relief/test-only/test-endpoint/seis/page-2                        testOnly.controllers.TestEndpointSEISController.submitPageTwo
+GET        /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.TestEndpointSEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.TestEndpointSEISController.submitPageOne
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
