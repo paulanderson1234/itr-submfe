@@ -577,7 +577,7 @@ page.previousInvestment.InvalidPreviousScheme.change-text=If this information is
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
 
 #previous schmeme
-page.investment.PreviousScheme.heading=Which previous investment schemes has your company used? When and how much was the investment?
+page.investment.PreviousScheme.heading=Which schemes has your company used?
 page.investment.PreviousScheme.schemeType=Scheme
 page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
@@ -632,7 +632,7 @@ page.seis.investment.proposedInvestment.help.link=What happens if I don''t raise
 page.seis.investment.proposedInvestment.help.link.text=You can raise more or less than this, but only £150,000 of the investments you've received over the past 3 years qualifies for relief. These investments can include:
 page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
 page.seis.investment.proposedInvestment.help.bullet.two=any previous SEIS investments
-page.seis.investment.proposedInvestment.help.bullet.three=any State aid you've received under the de minimis regulation
+page.seis.investment.proposedInvestment.help.bullet.three=any State aid you''ve received under the de minimis regulation
 
 #test
 page.test.clear-cache.button=Clear cache
