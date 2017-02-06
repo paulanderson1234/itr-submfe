@@ -19,6 +19,16 @@ POST       /contact-details                         controllers.seis.ContactDeta
 GET       /date-of-incorporation                    controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation                    controllers.seis.DateOfIncorporationController.submit
 
+GET        /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.show
+POST       /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.submit
+
+GET        /review-previous-schemes-add             controllers.seis.ReviewPreviousSchemesController.add
+GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
+POST       /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
+POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit
+
 GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
 POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
 
@@ -30,3 +40,6 @@ POST      /proposed-investment                      controllers.seis.ProposedInv
 
 GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
 POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
+
+GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+#POST       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.submit

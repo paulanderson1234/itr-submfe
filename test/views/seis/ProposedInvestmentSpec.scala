@@ -16,6 +16,7 @@
 
 package views.seis
 
+import controllers.seis.routes
 import forms.ProposedInvestmentForm._
 import models.ProposedInvestmentModel
 import org.jsoup.Jsoup
@@ -28,7 +29,7 @@ import views.html.seis.investment.ProposedInvestment
 class ProposedInvestmentSpec extends ViewSpec {
 
   val page = (form: Form[ProposedInvestmentModel]) =>
-    ProposedInvestment(form, controllers.seis.routes.ProposedInvestmentController.show().url)(fakeRequest, applicationMessages)
+    ProposedInvestment(form, routes.ProposedInvestmentController.show().url)(fakeRequest, applicationMessages)
 
   "The Proposed Investment page" should {
 
@@ -44,7 +45,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("help-bullet-two").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.two")
       document.getElementById("help-bullet-three").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.ProposedInvestmentController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
 
@@ -60,7 +61,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("help-bullet-two").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.two")
       document.getElementById("help-bullet-three").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.ProposedInvestmentController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
@@ -77,7 +78,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("help-bullet-two").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.two")
       document.getElementById("help-bullet-three").text() shouldBe Messages("page.seis.investment.proposedInvestment.help.bullet.three")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.ProposedInvestmentController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
   }

@@ -19,7 +19,6 @@ package views.seis
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.seis.{NatureOfBusinessController, routes}
-import controllers.routes
 import models.NatureOfBusinessModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

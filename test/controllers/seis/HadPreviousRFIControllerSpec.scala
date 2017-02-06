@@ -62,7 +62,6 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-//      setupMocks(Some(hadPreviousRFIModelYes), Some(routes.ProposedInvestmentController.show().url))
       setupMocks(Some(hadPreviousRFIModelYes))
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
@@ -138,8 +137,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
-          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
@@ -154,8 +152,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          //TODO: redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url)
-          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+          redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url)
         }
       )
     }
@@ -168,8 +165,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          //TODO:// change to me..redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
         }
       )
     }
@@ -178,21 +174,11 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending an invalid form submission with validation errors to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to itself" in {
 
-      //TODO: remove and replace with below when proposed controlelr is avilable
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
-        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.HadPreviousRFIController.show().url)))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
 
-      //TODO: replace with above
-//      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
-//        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
-
-      //TODO: Change below to this...
-      // when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-//        .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
-
-      //TODO: remove me and use abobe...
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Some(routes.HadPreviousRFIController.show().url)))
+       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
 
       mockEnrolledRequest()
       val formInput = "hadPreviousRFI" -> ""
@@ -203,7 +189,6 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
       )
     }
   }
-
 
   "Sending a submission to the HadPreviousRFIController when not authenticated" should {
 
