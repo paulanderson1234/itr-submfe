@@ -21,17 +21,12 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.Helpers.{ControllerHelpers, KnowledgeIntensiveHelper}
-import controllers.routes
-import forms.HadPreviousRFIForm._
 import forms.TradeStartDateForm._
-import models.TradeStartDateModel
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.companyDetails.TradeStartDate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.seis.companyDetails.TradeStartDate._
 
 import scala.concurrent.Future
 

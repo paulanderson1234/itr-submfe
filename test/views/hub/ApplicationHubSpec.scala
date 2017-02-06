@@ -26,6 +26,9 @@ import play.api.i18n.Messages.Implicits._
 
 class ApplicationHubSpec extends ViewSpec {
 
+  val continueUrl = "/seis/natureOfbusiness"
+  val schemeType = "SEED Enterprise Investment Scheme - Advanced Assurance"
+
   "The Application Hub page" should {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
@@ -52,7 +55,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the max amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -91,7 +94,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")

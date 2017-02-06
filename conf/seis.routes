@@ -21,6 +21,19 @@ POST      /confirm-contact-details                 controllers.seis.ConfirmConta
 GET       /contact-details                         controllers.seis.ContactDetailsController.show
 POST      /contact-details                         controllers.seis.ContactDetailsController.submit
 
+GET        /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.show
+POST       /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.submit
+
+GET        /review-previous-schemes-add             controllers.seis.ReviewPreviousSchemesController.add
+GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
+POST       /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
+POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit
+
+GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
+
 GET       /date-of-incorporation                   controllers.seis.DateOfIncorporationController.show
 POST      /date-of-incorporation                   controllers.seis.DateOfIncorporationController.submit
 
@@ -38,3 +51,7 @@ POST      /used-investment-scheme-before            controllers.seis.HadPrevious
 
 GET       /acknowledgement                          controllers.seis.AcknowledgementController.show
 POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
+
+GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+#POST       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.submit
+

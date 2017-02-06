@@ -17,7 +17,7 @@
 package views.seis
 
 import common.Constants
-import controllers.routes
+import controllers.seis.routes
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.Helpers._

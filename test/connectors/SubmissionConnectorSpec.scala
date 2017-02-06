@@ -65,6 +65,12 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
   val newGeographicalNo = false
   val newProductYes = true
   val newProductNo= false
+  val tradeStartDayYes = true
+  val tradeStartDayNo = false
+  val tradeStartMonthYes = true
+  val tradeStartMonthNo = false
+  val tradeStartYearYes = true
+  val tradeStartYearNo = false
 
   object TargetSubmissionConnector extends SubmissionConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
@@ -275,6 +281,21 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
       await(result) shouldBe Some(false)
     }
 
+  }
+
+  "Calling validateTradeStartDateCondition" should {
+
+    when(mockHttp.GET[Option[Boolean]](Matchers.anyString())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(validResponse)))
+
+    "return a valid response" in {
+
+      val tradeStartDay = 1
+      val tradeStartMonth = 1
+      val tradeStartYear = 2000
+
+      val result = TargetSubmissionConnector.validateTradeStartDateCondition(tradeStartDay, tradeStartMonth, tradeStartYear)
+      await(result) shouldBe Some(validResponse)
+    }
   }
 
 }

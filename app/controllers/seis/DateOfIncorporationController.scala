@@ -58,7 +58,8 @@ trait DateOfIncorporationController extends FrontendController with AuthorisedAn
         validFormData => {
           s4lConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
           KnowledgeIntensiveHelper.setKiDateCondition(s4lConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
-          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+          //TODO: change to Trade Strart Page below when availbale
+          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
       )
     }

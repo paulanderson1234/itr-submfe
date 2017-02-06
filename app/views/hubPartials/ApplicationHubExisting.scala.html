@@ -1,6 +1,6 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 
-@()(implicit request: Request[_], messages: Messages)
+@(applicationContinueUrl: String, schemeTypeDescription: String)(implicit request: Request[_], messages: Messages)
 
 <div class="form-group">
 
@@ -15,8 +15,8 @@
 
         </tr>
         <tr>
-            <td id="hub-application">@Messages("page.introduction.hub.existing.advanced.assurance.type")</td>
-            <td id="continue"><a id="continue-ref" href=@routes.NatureOfBusinessController.show.toString>@Messages("common.button.continue")</a></td>
+            <td id="hub-application">@schemeTypeDescription</td>
+            <td id="continue"><a id="continue-ref" href=@applicationContinueUrl>@Messages("common.button.continue")</a></td>
             <td id="delete"> @form(action = controllers.routes.ApplicationHubController.delete) {
                 <button class="button--link-style font-xsmall removeLink" type="submit" id="delete-link"> @Messages("common.button.delete")</button>
                 }</td>
