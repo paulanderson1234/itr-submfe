@@ -442,7 +442,7 @@ page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance As
 page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
-page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
+page.checkAndSubmit.checkAnswers.suportingDocs.desc=To support your application you will need to send us your company''s:
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Business details
@@ -451,8 +451,10 @@ summaryQuestion.utr =Company Unique Taxpayer Reference
 summaryQuestion.registeredAddress =Registered address
 summaryQuestion.dateOfIncorporation =Date of incorporation
 summaryQuestion.natureOfBusiness =What your company does
-summaryQuestion.hasCommercialSale = Has made commercial sale
+summaryQuestion.hasCommercialSale =First commercial sale yet
 summaryQuestion.commercialSaleDate =Date of first commercial sale
+summaryQuestion.hasTradeStartDate =Started trading yet
+summaryQuestion.tradeStartDate =Trade start date
 summaryQuestion.knowledgeIntensive =Knowledge intensive
 summaryQuestion.operatingCosts =Operating costs
 summaryQuestion.rdCosts =Research and development costs
@@ -633,6 +635,9 @@ page.seis.investment.proposedInvestment.help.link.text=You can raise more or les
 page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
 page.seis.investment.proposedInvestment.help.bullet.two=any previous SEIS investments
 page.seis.investment.proposedInvestment.help.bullet.three=any State aid you've received under the de minimis regulation
+
+# SEIS Check Answers
+page.seis.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for the Seed Enterprise Investment Scheme.
 
 # SEIS acknowledgement
 page.seis.checkAndSubmit.acknowledgement.title=You''ve submitted your answers
