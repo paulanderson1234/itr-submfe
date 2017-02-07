@@ -53,7 +53,7 @@ class TradeStartDateSpec extends ViewSpec {
 
   "The Trade Start Date page" should {
 
-    "Verify that the commercial sale page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new Setup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelYes))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -73,7 +73,7 @@ class TradeStartDateSpec extends ViewSpec {
     }
 
 
-    "Verify that the commercial sale page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new Setup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelNo))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -92,7 +92,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
-    "Verify that the commercial sale page contains the correct elements when an invalid TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new Setup {
       val document: Document = {
         setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)
@@ -112,7 +112,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
-    "Verify that the commercial sale page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new Setup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelInvalidYes))
         val result = TestController.submit.apply(authorisedFakeRequest)

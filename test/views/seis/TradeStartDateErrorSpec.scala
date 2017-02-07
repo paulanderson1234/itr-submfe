@@ -50,7 +50,7 @@ class TradeStartDateErrorSpec extends ViewSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  "The Trading for too long error page" should {
+  "The Treade Start Date error page" should {
 
     "Verify that start page contains the correct elements" in new Setup {
       val document: Document = {
