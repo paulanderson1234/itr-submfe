@@ -19,6 +19,7 @@ package controllers.seis
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
+import controllers.featureSwitch.SEISFeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -32,9 +33,11 @@ object TradeStartDateErrorController extends TradeStartDateErrorController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait TradeStartDateErrorController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait TradeStartDateErrorController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.seis.companyDetails.TradeStartDateError()))
-  }
+    val show = seisFeatureSwitch {
+      AuthorisedAndEnrolled.async { implicit user => implicit request =>
+        Future.successful(Ok(views.html.seis.companyDetails.TradeStartDateError()))
+      }
+    }
 }

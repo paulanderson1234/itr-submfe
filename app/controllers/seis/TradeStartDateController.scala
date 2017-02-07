@@ -21,7 +21,10 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import controllers.featureSwitch.SEISFeatureSwitch
+import forms.NatureOfBusinessForm._
 import forms.TradeStartDateForm._
+import models.{NatureOfBusinessModel, TradeStartDateModel}
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.companyDetails.TradeStartDate
@@ -39,39 +42,45 @@ object TradeStartDateController extends TradeStartDateController{
   override lazy val submissionConnector = SubmissionConnector
 }
 
-trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch{
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(TradeStartDate(tradeStartDateForm)))
+  val show = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
+        case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
+        case None => Ok(TradeStartDate(tradeStartDateForm))
+      }
+    }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    tradeStartDateForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(TradeStartDate(formWithErrors)))
-      },
-      validFormData => {
-        validFormData.hasTradeStartDate match {
-          case Constants.StandardRadioButtonYesValue => {
-            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-            Logger.debug(validFormData.tradeStartDay.getOrElse(1).toString)
-            submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
-              validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
-              case Some(validated) =>  if(validated) Redirect(routes.HadPreviousRFIController.show()) else Redirect(routes.TradeStartDateErrorController.show())
-              case _ => {
-                Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
-                InternalServerError(internalServerErrorTemplate)
+  val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      tradeStartDateForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(TradeStartDate(formWithErrors)))
+        },
+        validFormData => {
+          validFormData.hasTradeStartDate match {
+            case Constants.StandardRadioButtonYesValue => {
+              s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+              submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
+                validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
+                case Some(validated) => if (validated) Redirect(routes.HadPreviousRFIController.show()) else Redirect(routes.TradeStartDateErrorController.show())
+                case _ => {
+                  Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
+                  InternalServerError(internalServerErrorTemplate)
+                }
               }
             }
-          }
-          case  Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-            Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+            case Constants.StandardRadioButtonNoValue => {
+              s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+              Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
 }
