@@ -240,6 +240,9 @@ trait SubmissionFixture {
     ctUtr = Some("5555555555"), crn = Some("crnvalue"), companyAddress = Some(fullCorrespondenceAddress),
     previousRFIs = Some(previousSchemesFull.toList))
 
+  val tradeStartDateModelYes = TradeStartDateModel(Constants.StandardRadioButtonYesValue, Some(1), Some(1), Some(2001))
+  val tradeStartDateModelNo = TradeStartDateModel(Constants.StandardRadioButtonNoValue, None, None, None)
+
   val model = AdvancedAssuranceSubmissionType(
     agentReferenceNumber = Some(testAgentRef),
     acknowledgementReference = Some("AARN1234567"),
@@ -249,6 +252,7 @@ trait SubmissionFixture {
     correspondenceAddress = fullCorrespondenceAddress,
     schemeTypes = schemeTypes,
     marketInfo = Some(marketInfo),
+    dateTradeCommenced = tradeStartDateModelYes.toDate,
     annualCosts = Some(costsFull),
     annualTurnover = Some(turnover),
     proposedInvestmentModel = ProposedInvestmentModel(250000),

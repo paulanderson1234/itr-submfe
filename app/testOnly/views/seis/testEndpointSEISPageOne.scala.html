@@ -5,7 +5,7 @@
 @import utils.CountriesHelper
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
-@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel],
+@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel],tradeStartDateForm: Form[TradeStartDateModel],
 hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int,
 proposedInvestmentForm: Form[ProposedInvestmentModel],confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
 confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
@@ -36,6 +36,19 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
         true, Some(Messages("date.hint.dateOfIncorporation")), None)
     </div>
 
+    <h2>Trade Start Date</h2>
+    <div class="form-group">
+        @formHiddenYesNoRadioNoError(
+        tradeStartDateForm,
+        "hasTradeStartDate",
+        Messages("page.seis.companyDetails.TradeStartDate.question.hint"),
+        formInlineDateInput(tradeStartDateForm,"tradeStart",Some(Messages("page.seis.companyDetails.TradeStartDate.question.hint")),
+        false, Some(Messages("common.date.hint.example")), None),
+        None,
+        Some("visuallyhidden")
+        )</div>
+
+
     <h2>Used Investment Scheme Before</h2>
     <div class="form-group">
         @formInputRadioGroup(
@@ -55,86 +68,86 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
     <h2>Add Previous Scheme</h2>
 
     @for(previousScheme <- 0 to previousSchemesSize - 1) {
+    <div class="form-group">
+        <h3>Scheme @(previousScheme + 1)</h3>
         <div class="form-group">
-            <h3>Scheme @(previousScheme + 1)</h3>
-            <div class="form-group">
-                @formInputRadioGroup(
-                field = testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].schemeTypeDesc"),
-                Seq(
-                Constants.schemeTypeEis->Messages("page.previousInvestment.schemeType.eis"),
-                Constants.schemeTypeSeis->Messages("page.previousInvestment.schemeType.seis"),
-                Constants.schemeTypeSitr->Messages("page.previousInvestment.schemeType.sitr"),
-                Constants.schemeTypeVct->Messages("page.previousInvestment.schemeType.vct"),
-                Constants.schemeTypeOther->Messages("page.previousInvestment.schemeType.other")),
-                '_legend -> Messages("page.investment.PreviousScheme.schemeType"),
-                '_legendClass -> "heading-small",
-                '_legendID -> "scheme-type",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label"
-                )
-            </div>
-
-            <div class="panel-indent form-group"  id="other-scheme">
-                @input(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeOtherSchemeName"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-other-scheme",
-                '_hintId -> "label-other-scheme-hint",
-                '_label -> Messages("page.investment.PreviousScheme.otherSchemeName.label"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "",
-                '_type -> "text",
-                '_maxlength -> "50",
-                'id -> "previousSchemeOtherSchemeName"
-                )
-
-            </div>
-            <div class="form-group"></div>
-
-            <div class="form-group divider--top--thick">
-                @inputWithCurrencySymbol(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentAmount"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-amount",
-                '_hintId -> "label-amount-hint",
-                '_label -> Messages("page.investment.PreviousScheme.investmentAmount"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "input--normal input--no-spinner input--left-padding",
-                '_type -> "text",
-                '_maxlength -> "9",
-                'id -> "previousSchemeInvestmentAmount"
-                )
-            </div>
-
-            <div class="panel-indent" id="investment-spent">
-                @inputWithCurrencySymbol(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentSpent"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-amount-spent",
-                '_hintId -> "label-amount-spent-hint",
-                '_label -> Messages("page.previousInvestment.amountSpent.label"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "input--normal input--no-spinner input--left-padding",
-                '_type -> "text",
-                '_maxlength -> "9",
-                'id -> "previousSchemeInvestmentSpent"
-                )
-            </div>
-            <div class="form-group"></div>
-
-            <div class="form-group divider--top--thick"></div>
-
-            @formInlineDateInput(testPreviousSchemesForm,s"testPreviousSchemes[$previousScheme].previousSchemeInvestment",
-            Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
-            false, Some(Messages("common.date.hint.example")), Some("heading-small"))
-
-            <div>
-                <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
-            </div>
+            @formInputRadioGroup(
+            field = testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].schemeTypeDesc"),
+            Seq(
+            Constants.schemeTypeEis->Messages("page.previousInvestment.schemeType.eis"),
+            Constants.schemeTypeSeis->Messages("page.previousInvestment.schemeType.seis"),
+            Constants.schemeTypeSitr->Messages("page.previousInvestment.schemeType.sitr"),
+            Constants.schemeTypeVct->Messages("page.previousInvestment.schemeType.vct"),
+            Constants.schemeTypeOther->Messages("page.previousInvestment.schemeType.other")),
+            '_legend -> Messages("page.investment.PreviousScheme.schemeType"),
+            '_legendClass -> "heading-small",
+            '_legendID -> "scheme-type",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+            )
         </div>
+
+        <div class="panel-indent form-group"  id="other-scheme">
+            @input(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeOtherSchemeName"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-other-scheme",
+            '_hintId -> "label-other-scheme-hint",
+            '_label -> Messages("page.investment.PreviousScheme.otherSchemeName.label"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "",
+            '_type -> "text",
+            '_maxlength -> "50",
+            'id -> "previousSchemeOtherSchemeName"
+            )
+
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group divider--top--thick">
+            @inputWithCurrencySymbol(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentAmount"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount",
+            '_hintId -> "label-amount-hint",
+            '_label -> Messages("page.investment.PreviousScheme.investmentAmount"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "9",
+            'id -> "previousSchemeInvestmentAmount"
+            )
+        </div>
+
+        <div class="panel-indent" id="investment-spent">
+            @inputWithCurrencySymbol(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentSpent"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount-spent",
+            '_hintId -> "label-amount-spent-hint",
+            '_label -> Messages("page.previousInvestment.amountSpent.label"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "9",
+            'id -> "previousSchemeInvestmentSpent"
+            )
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group divider--top--thick"></div>
+
+        @formInlineDateInput(testPreviousSchemesForm,s"testPreviousSchemes[$previousScheme].previousSchemeInvestment",
+        Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
+        false, Some(Messages("common.date.hint.example")), Some("heading-small"))
+
+        <div>
+            <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
+        </div>
+    </div>
     }
 
     <h2>How much you want to raise</h2>

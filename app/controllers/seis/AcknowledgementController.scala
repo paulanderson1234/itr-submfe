@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.seis
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
+import controllers.feedback
 import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
@@ -31,7 +32,6 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
 
 import scala.concurrent.Future
 
@@ -57,30 +57,23 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     for {
     // minimum required fields to continue
-      kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
       contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
       proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
-      investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef <- getTavCReferenceNumber()
+      tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
       // potentially optional or required
-      operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
-      turnoverCosts <- s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
       subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
       subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
       previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
-      commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-      newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
-      newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
-      result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
-        investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
+      result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
+        dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        previousSchemes.toList, registrationDetailsModel)
     } yield result
   }
 
@@ -88,7 +81,13 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     Redirect(feedback.routes.FeedbackController.show().url)
   }
 
-
+  private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {
+    if(tradeStartDateModel.hasTradeStartDate.equals(Constants.StandardRadioButtonYesValue)) {
+      tradeStartDateModel.toDate
+    } else {
+      Constants.standardIgnoreYearValue
+    }
+  }
 
 
   //noinspection ScalaStyle
@@ -96,54 +95,45 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   // 1) subsidiary performing trade name/adress is required if subsidiary and needs retrieving (post MVP)
   private def createSubmissionDetailsModel(
                                             //required
-                                            kiProcModel: Option[KiProcessingModel],
                                             natOfBusiness: Option[NatureOfBusinessModel],
                                             contactDetails: Option[ContactDetailsModel],
                                             proposedInvestment: Option[ProposedInvestmentModel],
-                                            investmentGrowModel: Option[InvestmentGrowModel],
                                             dateOfIncorporation: Option[DateOfIncorporationModel],
                                             contactAddress: Option[AddressModel],
                                             tavcReferenceNumber: String,
+                                            tradeStartDateModel: Option[TradeStartDateModel],
 
                                             // potentially optional or potentially required
                                             subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
                                             subsidiariesNinetyOwned: Option[SubsidiariesNinetyOwnedModel],
                                             previousSchemes: List[PreviousSchemeModel],
-                                            commercialSale: Option[CommercialSaleModel],
-                                            newGeographicalMarket: Option[NewGeographicalMarketModel],
-                                            newProduct: Option[NewProductModel],
-                                            tenYearPlan: Option[TenYearPlanModel],
-                                            operatingCosts: Option[OperatingCostsModel],
-                                            turnoverCosts: Option[AnnualTurnoverCostsModel],
-                                            registrationDetailsModel: Option[RegistrationDetailsModel])
+                                            registrationDetailsModel: Option[RegistrationDetailsModel]
+                                          )
                                           (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
 
     val tempAddress = None
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
-    (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
-      contactAddress, registrationDetailsModel) match {
-      case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(regDetail)) => {
+    (natOfBusiness, contactDetails, proposedInvestment, dateOfIncorporation,
+      contactAddress, registrationDetailsModel, tradeStartDateModel) match {
+      case (Some(natureBusiness), Some(cntDetail), Some(propInv), Some(dateIncorp), Some(cntAddress), Some(regDetail), Some(tradeDateModel)) => {
 
-        // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
-          natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
-          investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
-          schemeTypes = SchemeTypesModel(eis = true),
-          marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
-          dateTradeCommenced = Constants.standardIgnoreYearValue,
-          annualCosts = if (operatingCosts.nonEmpty)
-            Some(Converters.operatingCostsToList(operatingCosts.get))
-          else None,
-          annualTurnover = if (turnoverCosts.nonEmpty)
-            Some(Converters.turnoverCostsToList(turnoverCosts.get))
-          else None,
-          knowledgeIntensive = buildKnowledgeIntensive(ki, tenYearPlan),
+          natureOfBusinessModel = natureBusiness,
+          contactDetailsModel = cntDetail,
+          proposedInvestmentModel = propInv,
+          investmentGrowModel = InvestmentGrowModel("N/A"),
+          correspondenceAddress = cntAddress,
+          schemeTypes = SchemeTypesModel(seis = true),
+          marketInfo = None,
+          dateTradeCommenced = getTradeStartDate(tradeDateModel),
+          annualCosts = None,
+          annualTurnover = None,
+          knowledgeIntensive = None,
           subsidiaryPerformingTrade = buildSubsidiaryPerformingTrade(subsidiariesSpendInvest,
             subsidiariesNinetyOwned, tempSubsidiaryTradeName, tempAddress),
-          organisationDetails = buildOrganisationDetails(commercialSale, dateOfIncorporation.get, regDetail.organisationName
+          organisationDetails = buildOrganisationDetails(None, dateOfIncorporation.get, regDetail.organisationName
             , regDetail.addressModel, previousSchemes)
         ))
 
@@ -153,7 +143,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             submissionResponse.status match {
               case OK =>
                 s4lConnector.clearCache()
-                Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                Ok(views.html.seis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
                 Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 InternalServerError
@@ -171,7 +161,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                     result => result.status match {
                       case OK =>
                         s4lConnector.clearCache()
-                        Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                        Ok(views.html.seis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
                       case _ => s4lConnector.clearCache()
                         InternalServerError
                     }
@@ -189,27 +179,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _, _, _) => {
+      case (_, _, _, _, _, _, _) => {
         Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
-        Future.successful(Redirect(routes.ApplicationHubController.show()))
+        Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
       }
     }
-  }
-
-  private def buildKnowledgeIntensive(ki: KiProcessingModel, tenYearPlan: Option[TenYearPlanModel]): Option[KiModel] = {
-    if (ki.companyAssertsIsKi.getOrElse(false))
-      Some(KiModel(skilledEmployeesConditionMet = ki.hasPercentageWithMasters.getOrElse(false),
-        innovationConditionMet = if (tenYearPlan.nonEmpty) tenYearPlan.get.tenYearPlanDesc else None,
-        kiConditionMet = ki.isKi))
-    else None
-  }
-
-  private def buildMarketInformation(ki: KiProcessingModel, newGeographicalMarket: Option[NewGeographicalMarketModel],
-                                     newProduct: Option[NewProductModel]): Option[SubmitMarketInfoModel] = {
-
-    if (newGeographicalMarket.nonEmpty || newProduct.nonEmpty) Some(SubmitMarketInfoModel(
-      newGeographicalMarketModel = newGeographicalMarket.get, newProductModel = newProduct.get))
-    else None
   }
 
   private def buildSubsidiaryPerformingTrade(subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
@@ -240,3 +214,4 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   }
 
 }
+
