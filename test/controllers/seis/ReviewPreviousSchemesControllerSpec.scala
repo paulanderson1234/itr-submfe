@@ -39,6 +39,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val submissionConnector = mockSubmissionConnector
   }
 
   val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
@@ -64,11 +65,14 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
-  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
+  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None, tradeStartDate: Option[DateOfIncorporationModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(previousSchemes))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn( if(tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get))
+    else Future.successful(None))
   }
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
@@ -155,7 +159,11 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
   "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
-      setupMocks(Some(previousSchemeVectorList))
+      setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+
+      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
+
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -165,8 +173,11 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       )
     }
 
-    "redirect to itself if table is empty" in {
-      setupMocks()
+    "redirect to itself if no payments table is empty" in {
+      setupMocks(None, None, Some(dateOfIncorporationModel))
+
+      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -175,6 +186,47 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
         }
       )
     }
+  }
+
+ "redirect to proposed investment if there is no trade start date" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), None)
+
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
+    mockEnrolledRequest()
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
+      }
+    )
+  }
+
+  "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    mockEnrolledRequest()
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    )
+  }
+
+  "redirect to error page if the check previous investmetn exceeds the max value allowed" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
+    mockEnrolledRequest()
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-schemes-allowance-exceeded")
+      }
+    )
   }
 
   "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {

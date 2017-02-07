@@ -16,7 +16,7 @@
 
 package connectors
 import config.{FrontendAppConfig, WSHttp}
-import models.{AnnualTurnoverCostsModel, DateOfIncorporationModel, ProposedInvestmentModel}
+import models.{AnnualTurnoverCostsModel, ProposedInvestmentModel}
 import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
@@ -67,25 +67,17 @@ trait SubmissionConnector {
       s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
   }
 
-  def seisPreviousInvestmentAllowanceExceeded(previousInvestmentSchemesTotal: Int)
-                                 (implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Option[Boolean]] = {
-
-    println(s"============================================================ total is: $previousInvestmentSchemesTotal")
-
+  def checkPreviousInvestmentSeisAllowanceExceeded(previousInvestmentSchemesTotal: Int)
+                                 (implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Option[Boolean]] = {
     if (previousInvestmentSchemesTotal == 0) {
+      // nothing to do - don't make the call
       Future(Some(false))
     }
     else {
-
-      http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
-        s"total-investments-since-trade-start-date/${previousInvestmentSchemesTotal}/${previousInvestmentSchemesTotal}")
+     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/seis/previous-investments-checker/investments-since-trade-start-date/$previousInvestmentSchemesTotal/is-total-exceeded")
     }
-    //    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/averaged-annual-turnover/check-averaged-annual-turnover/" +
-    //      s"total-investments-since-trade-start-date/${previousInvestmentSchemesTotal}/annual-turn-over/${annualTurnoverCostsModel.amount1}" +
-    //      s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
   }
 
-  //TODO: put all these methods in a service?
   def submitAdvancedAssurance(submissionRequest: Submission, tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     if(tavcReferenceNumber.isEmpty) {
       Logger.warn("[SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed")

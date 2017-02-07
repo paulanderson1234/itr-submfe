@@ -147,4 +147,6 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   val seisSchemeTypesModel = SchemeTypesModel(seis = true)
 
+  //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
+
 }

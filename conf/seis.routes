@@ -42,4 +42,6 @@ GET       /used-investment-scheme-before            controllers.seis.HadPrevious
 POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
 
 GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
-#POST       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.submit
+GET        /previous-schemes-allowance-exceeded     controllers.seis.PreviousInvestmentsAllowanceExceededController.show
+
+

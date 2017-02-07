@@ -67,6 +67,17 @@ trait PreviousSchemesHelper {
     result
   }
 
+  def previousInvestmentsExist(s4lConnector: connectors.S4LConnector)
+                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+
+    val result:Future[Boolean] = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).flatMap {
+      case Some(data) => Future(true)
+      case None => Future(false)
+    }.recoverWith { case _ => Future(false) }
+
+    result
+  }
+
   def getPreviousInvestmentTotalFromKeystore(s4lConnector: connectors.S4LConnector)
                                             (implicit hc: HeaderCarrier, user: TAVCUser): Future[Int] = {
 
@@ -84,7 +95,7 @@ trait PreviousSchemesHelper {
     def calculateAmount(dateTradeStarted: Option[DateOfIncorporationModel],
                         previousInvestments : Option[Vector[PreviousSchemeModel]]):Int = {
 
-      if (dateTradeStarted.isDefined) 0
+      if (dateTradeStarted.isEmpty) 0
       else {
 
         val startDate = dateTradeStarted.get
@@ -100,7 +111,9 @@ trait PreviousSchemesHelper {
 
     for{
       dateTradeStarted <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      previousInvestments <- s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes)
+      previousInvestments <- s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).recover {
+        case _ => None
+      }
 
       amount = calculateAmount(dateTradeStarted, previousInvestments)
     } yield amount
