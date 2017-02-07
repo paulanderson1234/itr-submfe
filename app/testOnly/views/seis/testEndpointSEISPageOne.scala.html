@@ -4,7 +4,7 @@
 @import common.Constants
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
-@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], commercialSaleForm: Form[CommercialSaleModel],
+@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], tradeStartDateForm: Form[TradeStartDateModel]commercialSaleForm: Form[CommercialSaleModel],
   isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
   tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int)(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
@@ -33,6 +33,19 @@
         @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some(Messages("page.companyDetails.DateOfIncorporation.heading")),
         true, Some(Messages("date.hint.dateOfIncorporation")), None)
     </div>
+
+    <h2>Trade Start Date</h2>
+    <div class="form-group">
+        @formHiddenYesNoRadioNoError(
+        tradeStartDateForm,
+        "hasTradeStartDate",
+        Messages("page.seis.companyDetails.TradeStartDate.question.hint"),
+        formInlineDateInput(tradeStartDateForm,"tradeStart",Some(Messages("page.seis.companyDetails.TradeStartDate.question.hint")),
+        false, Some(Messages("common.date.hint.example")), None),
+        None,
+        Some("visuallyhidden")
+    )</div>
+
 
     <h2>First Commercial Sale</h2>
     <div class="form-group">
