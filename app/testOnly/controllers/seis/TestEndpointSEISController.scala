@@ -124,6 +124,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         testOnly.views.html.seis.testEndpointSEISPageOne(
         natureOfBusiness,
         dateOfIncorporation,
+          tradeStartDate,
         commercialSale,
         isKnowledgeIntensive,
         testOperatingCosts,

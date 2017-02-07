@@ -4,7 +4,7 @@
 @import common.Constants
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
-@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], tradeStartDateForm: Form[TradeStartDateModel]commercialSaleForm: Form[CommercialSaleModel],
+@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], tradeStartDateForm: Form[TradeStartDateModel],commercialSaleForm: Form[CommercialSaleModel],
   isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
   tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int)(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
