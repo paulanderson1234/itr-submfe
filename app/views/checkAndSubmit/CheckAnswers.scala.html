@@ -37,7 +37,9 @@
             @if(checkAnswersModel.commercialSaleModel.isDefined){
                 @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>
                     @if(commercialSaleModel.hasCommercialSale == Messages("common.radioYesLabel")){
-                        @textRowHelperBasic("commercialSaleDate", Messages("summaryQuestion.commercialSaleDate"), CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get),Some(controllers.routes.CommercialSaleController.show().toString))
+                        @textRowHelperMultiLineQuestion("commercialSale", Array(Messages("summaryQuestion.hasCommercialSale"),Messages("summaryQuestion.commercialSaleDate")),Array(commercialSaleModel.hasCommercialSale, CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get)), Some(controllers.routes.CommercialSaleController.show().toString), None)
+                    } else {
+                        @textRowHelperBasic("commercialSale", Messages("summaryQuestion.hasCommercialSale"), commercialSaleModel.hasCommercialSale, Some(controllers.routes.CommercialSaleController.show().toString))
                     }
                 }
             }
@@ -152,42 +154,28 @@
         <table id="supporting-docs-table">
             @tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))
             <tbody>
-                <tr>
-                    <td>
-                        <div class="form-group">
-                            <div id="supportingDocs-sub-text" class="h4-heading form-group">@Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")</div>
-                        </div>
-
-                        <span id="supportingDocs-business-plan">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</span>
-
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td id="supportingDocs-company-accounts">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td id="shareholder-agree">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td id="memorandum-docs">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</td>
-                    <td></td>
-                    <td></td>
-                </tr>
-
-                <tr>
-                    <td id="supportingDocs-prospectus">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</td>
-                    <td></td>
-                    <td></td>
-                </tr>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <p id="supportingDocs-sub-text">@Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")</p>
+                        <ul class="bullets">
+                            <li id="supportingDocs-business-plan" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</li>
+                            <li id="supportingDocs-company-accounts" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</li>
+                            <li id="shareholder-agree" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</li>
+                            <li id="memorandum-docs" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</li>
+                            <li id="supportingDocs-prospectus" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</li>
+                        </ul>
+                    </div>
+                </td>
+                <td></td>
+                @if(checkAnswersModel.attachmentsEnabled) {
+                <td valign="top" class="summaryLink">
+                    <a id="supporting-docs-link" href=@controllers.routes.SupportingDocumentsUploadController.show().url>@Messages("common.base.change")</a>
+                </td>
+                } else {
+                <td></td>
+                }
+            </tr>
             </tbody>
         </table>
     </div>

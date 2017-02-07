@@ -78,11 +78,15 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-link")
         .attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       //Date of first commercial sale
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Question0").text() shouldBe
+        Messages("summaryQuestion.hasCommercialSale")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Answer0").text() shouldBe
+        commercialSaleModelYes.hasCommercialSale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Question1").text() shouldBe
         Messages("summaryQuestion.commercialSaleDate")
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Answer1").text() shouldBe
         CommercialSaleModel.toDateString(commercialSaleModelYes.commercialSaleDay.get,commercialSaleModelYes.commercialSaleMonth.get,commercialSaleModelYes.commercialSaleYear.get)
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-link")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-link")
         .attr("href") shouldEqual routes.CommercialSaleController.show().url
       //Is Knowledge Intensive
       companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-question").text() shouldBe
@@ -211,59 +215,66 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get,dateOfIncorporationModel.month.get,dateOfIncorporationModel.year.get)
       companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-link")
         .attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      // Commercial sale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-question").text() shouldBe
+        Messages("summaryQuestion.hasCommercialSale")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-answer").text() shouldBe
+        commercialSaleModelNo.hasCommercialSale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-link")
+        .attr("href") shouldEqual routes.CommercialSaleController.show().url
       //Is Knowledge Intensive
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-question").text() shouldBe
         Messages("summaryQuestion.knowledgeIntensive")
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-answer").text() shouldBe
         isKnowledgeIntensiveModelYes.isKnowledgeIntensive
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-link")
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-link")
         .attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
       //Operating costs
-      companyDetailsTableTBody.select("tr").get(3).getElementById("operatingCosts-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(4).getElementById("operatingCosts-question").text() shouldBe
         Messages("summaryQuestion.operatingCosts")
 
       // check multi line field
-      companyDetailsTableTBody.select("tr").get(3).getElementById("operatingCosts-Line0").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(4).getElementById("operatingCosts-Line0").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
 
-      companyDetailsTableTBody.select("tr").get(3).getElementById("operatingCosts-Line1").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(4).getElementById("operatingCosts-Line1").text() shouldBe
       OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
 
-      companyDetailsTableTBody.select("tr").get(3).getElementById("operatingCosts-Line2").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(4).getElementById("operatingCosts-Line2").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.operatingCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
 
-      companyDetailsTableTBody.select("tr").get(3).getElementById("operatingCosts-link")
+      companyDetailsTableTBody.select("tr").get(4).getElementById("operatingCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().url
       //R&D costs
-      companyDetailsTableTBody.select("tr").get(4).getElementById("rdCosts-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(5).getElementById("rdCosts-question").text() shouldBe
         Messages("summaryQuestion.rdCosts")
 
       // check multi line field
-      companyDetailsTableTBody.select("tr").get(4).getElementById("rdCosts-Line0").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(5).getElementById("rdCosts-Line0").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts1stYear, Messages("page.companyDetails.OperatingCosts.row.heading.one"))
 
-      companyDetailsTableTBody.select("tr").get(4).getElementById("rdCosts-Line1").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(5).getElementById("rdCosts-Line1").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts2ndYear, Messages("page.companyDetails.OperatingCosts.row.heading.two"))
 
-      companyDetailsTableTBody.select("tr").get(4).getElementById("rdCosts-Line2").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(5).getElementById("rdCosts-Line2").text() shouldBe
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingCostsModel.rAndDCosts3rdYear, Messages("page.companyDetails.OperatingCosts.row.heading.three"))
 
-      companyDetailsTableTBody.select("tr").get(4).getElementById("rdCosts-link")
+      companyDetailsTableTBody.select("tr").get(5).getElementById("rdCosts-link")
         .attr("href") shouldEqual routes.OperatingCostsController.show().url
       //Percentage of staff with masters
-      companyDetailsTableTBody.select("tr").get(5).getElementById("percentageStaffWithMasters-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(6).getElementById("percentageStaffWithMasters-question").text() shouldBe
         Messages("summaryQuestion.percentageStaffWithMasters")
-      companyDetailsTableTBody.select("tr").get(5).getElementById("percentageStaffWithMasters-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(6).getElementById("percentageStaffWithMasters-answer").text() shouldBe
         PercentageStaffWithMastersModel.staffWithMastersToString(percentageStaffWithMastersModelNo.staffWithMasters)
-      companyDetailsTableTBody.select("tr").get(5).getElementById("percentageStaffWithMasters-link")
+      companyDetailsTableTBody.select("tr").get(6).getElementById("percentageStaffWithMasters-link")
         .attr("href") shouldEqual routes.PercentageStaffWithMastersController.show().url
       //Has ten year plan
-      companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-question").text() shouldBe
         Messages("summaryQuestion.developmentPlan")++" "++Messages("summaryQuestion.developmentPlanDesc")
 
-      companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-answer").text() shouldBe
         tenYearPlanModelYes.hasTenYearPlan++" "++tenYearPlanModelYes.tenYearPlanDesc.get
-      companyDetailsTableTBody.select("tr").get(6).getElementById("tenYearPlan-link")
+      companyDetailsTableTBody.select("tr").get(7).getElementById("tenYearPlan-link")
         .attr("href") shouldEqual routes.TenYearPlanController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
@@ -311,12 +322,19 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get,dateOfIncorporationModel.month.get,dateOfIncorporationModel.year.get)
       companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-link")
         .attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      // Commercial sale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-question").text() shouldBe
+        Messages("summaryQuestion.hasCommercialSale")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-answer").text() shouldBe
+        commercialSaleModelNo.hasCommercialSale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-link")
+        .attr("href") shouldEqual routes.CommercialSaleController.show().url
       //Is Knowledge Intensive
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-question").text() shouldBe
         Messages("summaryQuestion.knowledgeIntensive")
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-answer").text() shouldBe
         isKnowledgeIntensiveModelNo.isKnowledgeIntensive
-      companyDetailsTableTBody.select("tr").get(2).getElementById("knowledgeIntensive-link")
+      companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-link")
         .attr("href") shouldEqual routes.IsKnowledgeIntensiveController.show().url
 
 
@@ -367,11 +385,15 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").get(1).getElementById("dateOfIncorporation-link")
         .attr("href") shouldEqual routes.DateOfIncorporationController.show().url
       //Date of first commercial sale
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-question").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Question0").text() shouldBe
+        Messages("summaryQuestion.hasCommercialSale")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Answer0").text() shouldBe
+        commercialSaleModelYes.hasCommercialSale
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Question1").text() shouldBe
         Messages("summaryQuestion.commercialSaleDate")
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-answer").text() shouldBe
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-Answer1").text() shouldBe
         CommercialSaleModel.toDateString(commercialSaleModelYes.commercialSaleDay.get,commercialSaleModelYes.commercialSaleMonth.get,commercialSaleModelYes.commercialSaleYear.get)
-      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSaleDate-link")
+      companyDetailsTableTBody.select("tr").get(2).getElementById("commercialSale-link")
         .attr("href") shouldEqual routes.CommercialSaleController.show().url
       //Is Knowledge Intensive
       companyDetailsTableTBody.select("tr").get(3).getElementById("knowledgeIntensive-question").text() shouldBe
