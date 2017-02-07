@@ -442,7 +442,7 @@ page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance As
 page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
-page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:
+page.checkAndSubmit.checkAnswers.suportingDocs.desc=To support your application you will need to send us your company''s:
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Business details
@@ -451,8 +451,10 @@ summaryQuestion.utr =Company Unique Taxpayer Reference
 summaryQuestion.registeredAddress =Registered address
 summaryQuestion.dateOfIncorporation =Date of incorporation
 summaryQuestion.natureOfBusiness =What your company does
-summaryQuestion.hasCommercialSale = Has made commercial sale
+summaryQuestion.hasCommercialSale =First commercial sale yet
 summaryQuestion.commercialSaleDate =Date of first commercial sale
+summaryQuestion.hasTradeStartDate =Started trading yet
+summaryQuestion.tradeStartDate =Trade start date
 summaryQuestion.knowledgeIntensive =Knowledge intensive
 summaryQuestion.operatingCosts =Operating costs
 summaryQuestion.rdCosts =Research and development costs
@@ -625,6 +627,20 @@ page.introduction.hub.existing.seis-vct.type=Seed Enterprise Investment Scheme &
 page.introduction.hub.existing.eis-vct.type=Enterprise Investment Scheme & Venture Capital Trusts - Advanced assurance
 
 
+# SEIS trade start date
+page.seis.companyDetails.tradeStartDate.title=Has your company started trading?
+page.seis.companyDetails.tradeStartDate.heading=Has your company started trading?
+page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
+page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+
+# SEIS trade start date error
+page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
+page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
+page.seis.companyDetails.tradeStartDateError.reason=Your company:
+page.seis.companyDetails.tradeStartDateError.bullet.one=has been trading for too long to get tax relief on investment
+page.seis.companyDetails.tradeStartDateError.bullet.two=has been trading longer than 2 years
+page.seis.companyDetails.tradeStartDateError.link.schemeGuidance=Link back to guidance
+
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
 page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
@@ -633,6 +649,34 @@ page.seis.investment.proposedInvestment.help.link.text=You can raise more or les
 page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
 page.seis.investment.proposedInvestment.help.bullet.two=any previous SEIS investments
 page.seis.investment.proposedInvestment.help.bullet.three=any State aid you''ve received under the de minimis regulation
+
+# SEIS Check Answers
+page.seis.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for the Seed Enterprise Investment Scheme.
+
+# SEIS acknowledgement
+page.seis.checkAndSubmit.acknowledgement.title=You''ve submitted your answers
+page.seis.checkAndSubmit.acknowledgement.submissionConfirmation=Your application details have been submitted
+page.seis.checkAndSubmit.acknowledgement.refNumberHeading=Make a note of your reference number:
+page.seis.checkAndSubmit.acknowledgement.application.not.complete=Your application is not yet complete
+page.seis.checkAndSubmit.acknowledgement.supporting.docs.heading=Supporting documentation
+page.seis.checkAndSubmit.acknowledgement.review=To review your application, we need to see your company''s:
+page.seis.checkAndSubmit.acknowledgement.doc.one=business plan
+page.seis.checkAndSubmit.acknowledgement.doc.two=shareholder agreements or drafts
+page.seis.checkAndSubmit.acknowledgement.doc.three=memorandum and articles of association
+page.seis.checkAndSubmit.acknowledgement.doc.four=prospectuses and other documents for attracting investment
+page.seis.checkAndSubmit.acknowledgement.doc.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
+page.seis.checkAndSubmit.acknowledgement.email.docs.heading=Send by email
+page.seis.checkAndSubmit.acknowledgement.emailTo=You can email your documents to
+page.seis.checkAndSubmit.acknowledgement.email.include=The subject line must include:
+page.seis.checkAndSubmit.acknowledgement.email.one=your company name
+page.seis.checkAndSubmit.acknowledgement.email.two=your company''s Unique Taxpayer Reference Number (UTR)
+page.seis.checkAndSubmit.acknowledgement.email.three=the word ‘WHITELISTER’
+page.seis.checkAndSubmit.acknowledgement.email.size=We can''t accept emails that are larger than 10MB.
+page.seis.checkAndSubmit.acknowledgement.post.docs.heading=Send by post
+page.seis.checkAndSubmit.acknowledgement.post.to=If you need to send by post, call the Small Companies Enterprise Centre (SCEC) on 0300 123 1083.
+page.seis.checkAndSubmit.acknowledgement.waitingTime.heading=How long you''ll have to wait
+page.seis.checkAndSubmit.acknowledgement.courseOfAction=Once we''ve received your supporting documents we''ll contact you within 4 weeks.
+page.seis.checkAndSubmit.acknowledgement.button.confirm=Finish
 
 #test
 page.test.clear-cache.button=Clear cache
