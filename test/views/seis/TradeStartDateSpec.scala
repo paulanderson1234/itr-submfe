@@ -59,15 +59,15 @@ class TradeStartDateSpec extends ViewSpec {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-//      document.title() shouldBe Messages("page.companyDetails.TradeStartDate.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.tradeStartDate.heading")
+      document.title() shouldBe Messages("page.seis.companyDetails.tradeStartDate.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.seis.companyDetails.tradeStartDate.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
-      document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.TradeStartDate.question.hint")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.seis.companyDetails.TradeStartDate.question.hint")
       document.getElementById("question-text-id").hasClass("h2-heading")
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.seis.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
@@ -79,15 +79,15 @@ class TradeStartDateSpec extends ViewSpec {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.companyDetails.TradeStartDate.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.TradeStartDate.heading")
+      document.title() shouldBe Messages("page.seis.companyDetails.tradeStartDate.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.seis.companyDetails.tradeStartDate.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
-      document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.TradeStartDate.question.hint")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.seis.companyDetails.TradeStartDate.question.hint")
       document.getElementById("question-text-id").hasClass("h2-heading")
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
@@ -98,15 +98,15 @@ class TradeStartDateSpec extends ViewSpec {
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.companyDetails.TradeStartDate.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.TradeStartDate.heading")
+      document.title() shouldBe Messages("page.seis.companyDetails.tradeStartDate.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.seis.companyDetails.tradeStartDate.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
-      document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.TradeStartDate.question.hint")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.seis.companyDetails.TradeStartDate.question.hint")
       document.getElementById("question-text-id").hasClass("h2-heading")
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
@@ -118,15 +118,15 @@ class TradeStartDateSpec extends ViewSpec {
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.companyDetails.TradeStartDate.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.TradeStartDate.heading")
+      document.title() shouldBe Messages("page.seis.companyDetails.tradeStartDate.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.seis.companyDetails.tradeStartDate.heading")
       document.getElementById("form-hint-id").text() shouldBe Messages("common.date.hint.example")
-      document.getElementById("question-text-id").text() shouldBe Messages("page.companyDetails.TradeStartDate.question.hint")
+      document.getElementById("question-text-id").text() shouldBe Messages("page.seis.companyDetails.TradeStartDate.question.hint")
       document.getElementById("question-text-id").hasClass("h2-heading")
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-//      document.body.getElementById("back-link").attr("href") shouldEqual routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
