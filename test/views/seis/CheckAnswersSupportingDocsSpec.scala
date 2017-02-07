@@ -14,46 +14,29 @@
  * limitations under the License.
  */
 
-package views
+package views.seis
 
-import auth.MockAuthConnector
-import config.FrontendAppConfig
-import controllers.{CheckAnswersController, routes}
+import models.seis.SEISCheckAnswersModel
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
 import play.api.i18n.Messages.Implicits._
+import views.html.seis.checkAndSubmit.CheckAnswers
 
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
-
-  object TestController extends CheckAnswersController {
-    override lazy val applicationConfig = FrontendAppConfig
-    override lazy val authConnector = MockAuthConnector
-    override lazy val s4lConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mockEnrolmentConnector
-  }
 
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 5: Supporting Documents" +
       " when the page is loaded" in new Setup {
-      val document: Document = {
-        previousRFISetup()
-        investmentSetup()
-        contactDetailsSetup()
-        companyDetailsSetup()
-        contactAddressSetup()
-        val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
-        Jsoup.parse(contentAsString(result))
-      }
+      val model = SEISCheckAnswersModel(None, None, None, None, None, None, Vector(), None, None, None, None, None, false)
+      val page = CheckAnswers(model)(authorisedFakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
 
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
-      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-one").text() shouldBe Messages("page.seis.checkAndSubmit.checkAnswers.description.one")
       document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
 
       lazy val supportingDocsTableBody = document.getElementById("supporting-docs-table").select("tbody")
@@ -74,7 +57,8 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
     }
   }
 }
+

@@ -14,31 +14,22 @@
  * limitations under the License.
  */
 
-package models
+package models.seis
 
-case class CheckAnswersModel(
-                              yourCompanyNeedModel: Option[YourCompanyNeedModel],
-                              taxpayerReferenceModel: Option[TaxpayerReferenceModel],
+import models._
+
+case class SEISCheckAnswersModel(
                               registeredAddressModel: Option[RegisteredAddressModel],
                               dateOfIncorporationModel: Option[DateOfIncorporationModel],
+                              tradeStartDateModel: Option[TradeStartDateModel],
                               natureOfBusinessModel: Option[NatureOfBusinessModel],
-                              commercialSaleModel: Option[CommercialSaleModel],
-                              isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel],
-                              operatingCostsModel: Option[OperatingCostsModel],
-                              percentageStaffWithMastersModel: Option[PercentageStaffWithMastersModel],
-                              tenYearPlanModel: Option[TenYearPlanModel],
                               subsidiariesModel: Option[SubsidiariesModel],
                               hadPreviousRFIModel: Option[HadPreviousRFIModel],
                               previousSchemes: Vector[PreviousSchemeModel],
                               proposedInvestmentModel: Option[ProposedInvestmentModel],
-                              usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel],
-                              previousBeforeDOFCSModel: Option[PreviousBeforeDOFCSModel],
-                              newGeographicalMarketModel: Option[NewGeographicalMarketModel],
-                              newProductModel: Option[NewProductModel],
                               subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
                               contactDetailsModel: Option[ContactDetailsModel],
                               contactAddressModel: Option[AddressModel],
-                              investmentGrowModel: Option[InvestmentGrowModel],
                               attachmentsEnabled: Boolean
-                              )
+                            )
