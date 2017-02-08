@@ -59,10 +59,10 @@ class TradeStartDateErrorSpec extends ViewSpec {
       }
       document.title shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.title")
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.heading")
-      document.body.getElementById("trade-start-date-reason").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.reason")
-      document.body.getElementById("bullet-one").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.bullet.one")
-      document.body.getElementById("bullet-two").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.bullet.two")
-      document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154"
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers")
+      document.body.getElementById("change-answers").attr("href") shouldEqual controllers.seis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
 
     }
