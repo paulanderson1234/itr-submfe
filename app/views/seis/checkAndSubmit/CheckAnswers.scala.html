@@ -55,7 +55,7 @@
         @if(checkAnswersModel.previousSchemes.length > 0){
         @for((previousScheme, index) <- checkAnswersModel.previousSchemes.zipWithIndex){
         @textRowHelperMultiLine(s"previousScheme-$index", previousScheme.otherSchemeName.getOrElse(PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)),
-        PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.seis.routes.CheckAnswersController.show().url))
+        PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.seis.routes.ReviewPreviousSchemesController.show().url))
         }
         }else{
         @textRowHelperBasic("noPreviousScheme", Messages("page.summaryQuestion.none.question"), Messages("page.summaryQuestion.none.answer"), Some(controllers.seis.routes.HadPreviousRFIController.show().url))
@@ -112,7 +112,7 @@
             </td>
             <td></td>
             @if(checkAnswersModel.attachmentsEnabled) {
-            <td valign="top" class="summaryLink">
+            <td class="summaryLink align-top">
                 <a id="supporting-docs-link" href=@controllers.seis.routes.SupportingDocumentsUploadController.show().url>@Messages("common.base.change")</a>
             </td>
             } else {
