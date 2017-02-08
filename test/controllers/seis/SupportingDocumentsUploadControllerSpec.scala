@@ -132,7 +132,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents-upload")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/check-your-answers")
         }
       }
     }
@@ -148,12 +148,12 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
   }
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
-    "redirect to CommercialSaleController when no backlink is found" in {
+    "redirect to ProposedInvestment when no backlink is found" in {
       mockEnrolledRequest()
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents-upload")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
       }
     }
   }

@@ -104,7 +104,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/check-your-answers")
       }
     }
   }

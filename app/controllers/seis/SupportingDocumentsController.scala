@@ -63,7 +63,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
 
   val submit = seisFeatureSwitch {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+      Future.successful(Redirect(routes.CheckAnswersController.show()))
     }
   }
 }

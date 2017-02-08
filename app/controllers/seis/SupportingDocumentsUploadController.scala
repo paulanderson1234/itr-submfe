@@ -84,14 +84,14 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
         formWithErrors => {
           ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
             case Some(link) => Future.successful(BadRequest(SupportingDocumentsUpload(formWithErrors, link)))
-            case None => Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+            case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
           }
         },
         validFormData => {
           s4lConnector.saveFormData(KeystoreKeys.supportingDocumentsUpload, validFormData)
           validFormData.doUpload match {
             case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(attachmentsFrontEndUrl))
-            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.CheckAnswersController.show()))
           }
         }
       )
