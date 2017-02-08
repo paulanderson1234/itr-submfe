@@ -16,7 +16,7 @@
 
 package views.seis
 
-import controllers.routes
+import controllers.seis.routes
 import forms.ConfirmContactDetailsForm._
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
@@ -25,8 +25,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
-import views.html.contactInformation._
-
+import views.html.seis.contactInformation.ConfirmContactDetails
 
 class ConfirmContactDetailsSpec extends UnitSpec with OneAppPerSuite{
 
@@ -56,7 +55,7 @@ class ConfirmContactDetailsSpec extends UnitSpec with OneAppPerSuite{
       }
 
       s"has a link to '${routes.ContactDetailsController.show().url}" in {
-        document.body.getElementById("back-link").attr("href") shouldEqual routes.InvestmentGrowController.show().url
+        document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
       }
 
       s"has a Section heading next to it of '${Messages("common.section.progress.company.details.four")}" in {
