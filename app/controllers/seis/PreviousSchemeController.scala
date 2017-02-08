@@ -24,11 +24,9 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.featureSwitch.SEISFeatureSwitch
-import controllers.routes
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import forms.PreviousSchemeForm._
-import play.api.data.Form
 
 import scala.concurrent.Future
 import views.html.seis.previousInvestment.PreviousScheme

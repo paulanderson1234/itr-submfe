@@ -571,12 +571,25 @@ page.previousInvestment.schemeType.vct=Venture Capital Trust
 page.previousInvestment.schemeType.other=Other
 page.previousInvestment.amountSpent.label=Investment amount spent
 
+
+
 #Invalid previous scheme SEIS
 page.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.heading=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.reason=This is because your company has already raised investment through the Enterprise Investment Scheme or received investment from a Venture Capital Trust.
 page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect, you can
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
+
+#150k error for SEIS review previous schemes
+page.previousInvestment.previousInvestmentsExceededExceeded.title=You don''t qualify for the scheme
+page.previousInvestment.previousInvestmentsExceededExceeded.heading=You don''t qualify for the scheme
+page.previousInvestment.previousInvestmentsExceededExceeded.reason=This is because your company has already raised £150,000 or more of investment from:
+page.previousInvestment.previousInvestmentsExceededExceeded.bullet.one=any previous SEIS investments
+page.previousInvestment.previousInvestmentsExceededExceeded.bullet.two=any state aid under the de minimis regulation
+page.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect, you can
+page.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
+
+
 
 #previous schmeme
 page.investment.PreviousScheme.heading=Which schemes has your company used?
@@ -618,13 +631,12 @@ page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.new.heading=You have no unsubmitted applications
-page.introduction.hub.existing.advanced.assurance.type=Enterprise Investment Scheme - Advanced assurance
-page.introduction.hub.existing.seis.type=Seed Enterprise Investment Scheme - Advanced assurance
-page.introduction.hub.existing.vct.type=Venture Capital Trusts - Advanced assurance
-page.introduction.hub.existing.eis-seis.type=Enterprise & Seed Enterprise Investment Schemes - Advanced assurance
-page.introduction.hub.existing.eis-vct.type=Enterprise Investment Schemes & Venture Capital Trusts - Advanced assurance
-page.introduction.hub.existing.seis-vct.type=Seed Enterprise Investment Scheme & Venture Capital Trusts - Advanced assurance
-page.introduction.hub.existing.eis-vct.type=Enterprise Investment Scheme & Venture Capital Trusts - Advanced assurance
+page.introduction.hub.existing.advanced.assurance.type=Advance Assurance - Enterprise Investment Scheme
+page.introduction.hub.existing.seis.type=Advance Assurance - Seed Enterprise Investment Scheme
+page.introduction.hub.existing.vct.type=Advance Assurance - Venture Capital Trust Scheme
+page.introduction.hub.existing.eis-seis.type=Advance Assurance - Enterprise Investment Scheme and Seed Enterprise Investment Scheme
+page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Investment Scheme and Venture Capital Trust Scheme
+page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
 
 
 # SEIS trade start date

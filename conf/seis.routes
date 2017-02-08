@@ -56,5 +56,6 @@ GET       /acknowledgement                          controllers.seis.Acknowledge
 POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
 
 GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
-#POST       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.submit
+GET        /previous-schemes-allowance-exceeded     controllers.seis.PreviousInvestmentsAllowanceExceededController.show
+
 

@@ -201,6 +201,10 @@ trait SubmissionFixture {
     TurnoverCostModel("2005", turnover = CostModel("70")))
 
   val dateOfIncorporationModel = DateOfIncorporationModel(day = Some(5), month = Some(6), year = Some(2007))
+  val startDateModelModelYes = TradeStartDateModel(tradeStartDay = Some(5), tradeStartMonth = Some(6),
+    tradeStartYear = Some(2007), hasTradeStartDate = Constants.StandardRadioButtonYesValue)
+  val startDateModelModelNo = TradeStartDateModel(tradeStartDay = Some(5), tradeStartMonth = Some(6),
+    tradeStartYear = Some(2007), hasTradeStartDate = Constants.StandardRadioButtonNoValue)
 
   val subsidiaryPerformingTradeMinimumReq = SubsidiaryPerformingTradeModel(ninetyOwnedModel = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue),
     organisationName = "Made up test subsidiary org name")

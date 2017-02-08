@@ -7,7 +7,7 @@
 
 @main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
 
-    @backButtonWithProgress(controllers.seis.routes.HadPreviousRFIController.show().url, Messages("common.section.progress.company.details.two"))
+    @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.two"))
 
     @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
