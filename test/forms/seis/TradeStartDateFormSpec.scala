@@ -23,8 +23,6 @@ import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
 import common.Constants
-import play.api.i18n.Messages.Implicits._
-
 
 class TradeStartDateFormSpec extends UnitSpec with OneAppPerSuite {
 

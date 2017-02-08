@@ -19,7 +19,7 @@ package views.seis
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import controllers.ConfirmCorrespondAddressController
+import controllers.seis.ConfirmCorrespondAddressController
 import controllers.helpers.ControllerSpec
 import data.SubscriptionTestData._
 import models.{AddressModel, ConfirmCorrespondAddressModel}

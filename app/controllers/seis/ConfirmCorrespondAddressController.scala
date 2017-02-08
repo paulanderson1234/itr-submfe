@@ -24,7 +24,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import controllers.featureSwitch.SEISFeatureSwitch
 import forms.ConfirmCorrespondAddressForm._
-import models.{AddressModel, ConfirmCorrespondAddressModel, ContactDetailsModel}
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.mvc.Result
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
