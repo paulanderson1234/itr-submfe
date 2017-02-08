@@ -44,7 +44,6 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
   val backLink = "/investment-tax-relief/previous-investment"
 
-  val emptyVectorList = Vector[PreviousSchemeModel]()
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
   val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))

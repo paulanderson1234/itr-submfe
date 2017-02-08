@@ -22,8 +22,6 @@ import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
-
-import scala.concurrent.ExecutionContext.Implicits.global._
 import scala.concurrent.{ExecutionContext, Future}
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
@@ -68,7 +66,17 @@ trait SubmissionConnector {
       s"/${annualTurnoverCostsModel.amount2}/${annualTurnoverCostsModel.amount3}/${annualTurnoverCostsModel.amount4}/${annualTurnoverCostsModel.amount5}")
   }
 
-  //TODO: put all these methods in a service?
+  def checkPreviousInvestmentSeisAllowanceExceeded(previousInvestmentSchemesTotal: Int)
+                                 (implicit hc: HeaderCarrier, executionContext: ExecutionContext): Future[Option[Boolean]] = {
+    if (previousInvestmentSchemesTotal == 0) {
+      // nothing to do - don't make the call
+      Future(Some(false))
+    }
+    else {
+     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/seis/previous-investments-checker/investments-since-trade-start-date/$previousInvestmentSchemesTotal/is-total-exceeded")
+    }
+  }
+
   def submitAdvancedAssurance(submissionRequest: Submission, tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     if(tavcReferenceNumber.isEmpty) {
       Logger.warn("[SubmissionConnector][submitAdvancedAssurance] An empty tavcReferenceNumber was passed")

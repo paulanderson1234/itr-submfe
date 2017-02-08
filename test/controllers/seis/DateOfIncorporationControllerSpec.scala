@@ -138,8 +138,7 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          //TODO change to trade start date controller below when page available
-          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+          redirectLocation(result) shouldBe Some(routes.TradeStartDateController.show().url)
         }
       )
     }
