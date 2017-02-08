@@ -53,7 +53,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.getElementById("previousScheme-0-Line2").text shouldBe
         s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(0).day.get,previousSchemesValid(0).month.get,
           previousSchemesValid(0).year.get)}"
-      document.getElementById("previousScheme-0-link").attr("href") shouldBe controllers.seis.routes.CheckAnswersController.show().url
+      document.getElementById("previousScheme-0-link").attr("href") shouldBe controllers.seis.routes.ReviewPreviousSchemesController.show().url
       document.getElementById("previousScheme-1-question").text shouldBe PreviousSchemeModel.getSchemeName(previousSchemesValid(1).schemeTypeDesc)
       document.getElementById("previousScheme-1-Line0").text shouldBe
         s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemesValid(1).investmentAmount)}"
@@ -62,7 +62,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.getElementById("previousScheme-1-Line2").text shouldBe
         s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(1).day.get,previousSchemesValid(1).month.get,
           previousSchemesValid(1).year.get)}"
-      document.getElementById("previousScheme-1-link").attr("href") shouldBe controllers.seis.routes.CheckAnswersController.show().url
+      document.getElementById("previousScheme-1-link").attr("href") shouldBe controllers.seis.routes.ReviewPreviousSchemesController.show().url
       document.getElementById("previousScheme-2-question").text shouldBe previousSchemesValid(2).otherSchemeName.get
       document.getElementById("previousScheme-2-Line0").text shouldBe
         s"${Messages("page.investment.amount.label")} ${getAmountAsFormattedString(previousSchemesValid(2).investmentAmount)}"
@@ -71,7 +71,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.getElementById("previousScheme-2-Line2").text shouldBe
         s"${Messages("page.investment.dateOfShareIssue.label")} ${toDateString(previousSchemesValid(2).day.get,previousSchemesValid(2).month.get,
           previousSchemesValid(2).year.get)}"
-      document.getElementById("previousScheme-2-link").attr("href") shouldBe controllers.seis.routes.CheckAnswersController.show().url
+      document.getElementById("previousScheme-2-link").attr("href") shouldBe controllers.seis.routes.ReviewPreviousSchemesController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
     }
