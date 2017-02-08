@@ -45,7 +45,6 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
   val backLink = "/investment-tax-relief/seis/previous-investment"
 
-  val emptyVectorList = Vector[PreviousSchemeModel]()
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
   val cacheMapDeleted: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorListDeleted)))
@@ -65,14 +64,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
-  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None, tradeStartDate: Option[DateOfIncorporationModel] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemes))
+  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None,
+                 tradeStartDate: Option[TradeStartDateModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),
+      Matchers.any())).thenReturn(Future.successful(previousSchemes))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
-    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn( if(tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get))
-    else Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(
+      if(tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get)) else Future.successful(None))
   }
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
@@ -159,7 +159,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
   "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
-      setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+      setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
 
       when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -174,7 +174,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
 
     "redirect to itself if no payments table is empty" in {
-      setupMocks(None, None, Some(dateOfIncorporationModel))
+      setupMocks(None, None, Some(startDateModelModelYes))
 
       when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
@@ -203,7 +203,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   }
 
   "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
 
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -216,7 +216,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   }
 
   "redirect to error page if the check previous investmetn exceeds the max value allowed" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(dateOfIncorporationModel))
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
 
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))

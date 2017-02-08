@@ -126,6 +126,8 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
     Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
   val previousSchemeVectorList = Vector(previousSchemeModel1, previousSchemeModel2, previousSchemeModel3)
 
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+
   val registeredAddressModel = RegisteredAddressModel("AB1 1AB")
 
   val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.seis
 
 import auth._
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.ControllerSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -29,7 +28,10 @@ import play.api.test.Helpers._
 import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
+
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
+import controllers.feedback
+import controllers.helpers.ControllerSpec
 import models.submission.SubmissionResponse
 
 import scala.concurrent.Future
@@ -42,7 +44,6 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   val submissionRequestValid = SubmissionRequest(contactValid, yourCompanyNeed)
   val submissionRequestInvalid = SubmissionRequest(contactInvalid, yourCompanyNeed)
   val submissionResponse = SubmissionResponse("2014-12-17", "FBUND09889765")
-
 
   object TestController extends AcknowledgementController {
     override lazy val applicationConfig = FrontendAppConfig
@@ -57,19 +58,23 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   class SetupPageFull() {
     setUpMocks(mockS4lConnector)
     setUpMocksRegistrationService(mockRegistrationDetailsService)
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
   }
 
   class SetupPageMinimum() {
-
     when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     setUpMocksMinimumRequiredModels(mockS4lConnector)
     setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
-  def setupMocks(): Unit =
+  def setupMocks(): Unit = {
     when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
+  }
 
   "AcknowledgementController" should {
     "use the correct keystore connector" in {
@@ -127,19 +132,6 @@ class AcknowledgementControllerSpec extends ControllerSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 303 redirect if mandatory KiProcessingModel is missing from keystore" in {
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, kiModel = None,
-        Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
-      setupMocks()
-      mockEnrolledRequest()
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
-    }
-  }
-
-  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory NatureOfBusinessModel is missing from keystore" in {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
@@ -149,7 +141,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -163,7 +155,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -177,21 +169,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
-    }
-  }
-
-  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 303 redirect if mandatory InvestmentGrowModel is missing from keystore" in {
-
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
-        Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
-      setupMocks()
-      mockEnrolledRequest()
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -205,7 +183,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -219,7 +197,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -233,20 +211,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
-    }
-  }
-
-  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 if KI is set to false" in {
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
-      setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
-        Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
-      setupMocks()
-      mockEnrolledRequest()
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe OK
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 
@@ -266,7 +231,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       mockNotEnrolledRequest()
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+      redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
     }
   }
 
@@ -278,8 +243,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
     s"should redirect to GG login" in new SetupPageFull {
       val result = TestController.show.apply(fakeRequest)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+      redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
       }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -292,8 +257,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
     s"should redirect to GG login" in new SetupPageFull {
       val result = TestController.show.apply(fakeRequestWithSession)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+      redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+        URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
       }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
     }
   }
@@ -307,7 +272,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
     s"should redirect to timeout page" in {
       val result = TestController.show.apply(timedOutFakeRequest)
-      redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+      redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
     }
   }
 
@@ -329,8 +294,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       submitWithSessionWithoutAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -340,8 +305,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       submitWithoutSession(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
+          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
+            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
         }
       )
@@ -353,7 +318,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       submitWithTimeout(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
+          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
         }
       )
     }
@@ -365,10 +330,11 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
         }
       )
     }
   }
 
 }
+

@@ -66,6 +66,7 @@ case class AdvancedAssuranceSubmissionType(
                                             whatWillUseForModel: Option[WhatWillUseForModel] =
                                               Some(WhatWillUseForModel(None)), //trade:businessActivity
                                             marketInfo: Option[SubmitMarketInfoModel], // trade: Market info
+                                            dateTradeCommenced: String,
                                             // converted from from operating costs model with dynamic period generated:
                                             annualCosts: Option[Seq[AnnualCostModel]],
                                             // derive from captured turnover when done.

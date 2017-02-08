@@ -293,7 +293,7 @@ object DesSubmitAdvancedAssuranceModel {
     (__ \ "whatWillUseForModel" \ "whatWillUseFor").readNullable[String] and
       (__ \ "natureOfBusinessModel" \ "natureofbusiness").read[String] and
       (__ \ "marketInfo").readNullable[SubmitDesMarketInfo] and
-      ((__ \ "dateTradeCommenced").read[String] or Reads.pure("2001-12-01")) and
+      ((__ \ "dateTradeCommenced").read[String] or Reads.pure("9999-12-31")) and
       (__ \ "annualCosts").readNullable[AnnualCostsModel] and
       (__ \ "annualTurnover").readNullable[AnnualTurnoversModel]) (SubmitDesTradeModel.apply _)
 

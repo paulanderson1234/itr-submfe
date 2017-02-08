@@ -22,7 +22,6 @@ import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
-
 import scala.concurrent.{ExecutionContext, Future}
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
@@ -95,6 +94,10 @@ trait SubmissionConnector {
 
   def checkMarketCriteria(newGeographical: Boolean, newProduct: Boolean)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/market-criteria/new-geographical/$newGeographical/new-product/$newProduct")
+  }
+
+  def validateTradeStartDateCondition(tradeStartDay: Int, tradeStartMonth: Int, tradeStartYear: Int)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/trade-start-date/validate-trade-start-date/trade-start-day/$tradeStartDay/trade-start-month/$tradeStartMonth/trade-start-year/$tradeStartYear")
   }
 
 }
