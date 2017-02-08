@@ -36,7 +36,7 @@ import scala.concurrent.Future
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
   val s4lConnector: S4LConnector = S4LConnector
-  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadSEISUrl
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
   val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -91,7 +91,7 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
           s4lConnector.saveFormData(KeystoreKeys.supportingDocumentsUpload, validFormData)
           validFormData.doUpload match {
             case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(attachmentsFrontEndUrl))
-            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
           }
         }
       )

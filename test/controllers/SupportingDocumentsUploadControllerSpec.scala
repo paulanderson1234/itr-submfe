@@ -38,7 +38,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeEis.toLowerCase)
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 

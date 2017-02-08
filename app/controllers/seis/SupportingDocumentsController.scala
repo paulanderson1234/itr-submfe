@@ -17,7 +17,7 @@
 package controllers.seis
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.{KeystoreKeys}
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
@@ -34,7 +34,7 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
-  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
   val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector

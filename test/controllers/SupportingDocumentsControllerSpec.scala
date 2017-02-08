@@ -19,7 +19,7 @@ package controllers
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.{KeystoreKeys}
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import helpers.ControllerSpec
@@ -37,7 +37,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeEis.toLowerCase)
     override lazy val enrolmentConnector = mockEnrolmentConnector
 
   }

@@ -33,8 +33,7 @@ trait AppConfig {
   val contactFrontendService: String
   val signOutPageUrl: String
   val submissionUrl: String
-  val attachmentFileUploadEISUrl: String
-  val attachmentFileUploadSEISUrl: String
+  val attachmentFileUploadUrl: (String)=> String
   val internalAttachmentsUrl: String
   val attachmentsFrontEndServiceBaseUrl: String
   val uploadFeatureEnabled: Boolean
@@ -66,10 +65,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
   override lazy val internalAttachmentsUrl = baseUrl("internal-attachments")
-  override lazy val attachmentFileUploadEISUrl = s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
-    s"/eis/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/eis/supporting-documents-upload"
-  override lazy val attachmentFileUploadSEISUrl = s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
-    s"/seis/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/seis/supporting-documents-upload"
+  override lazy val attachmentFileUploadUrl: (String)=> String = schemeType => s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
+    s"/$schemeType/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/$schemeType/supporting-documents-upload"
   override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
   override lazy val seisFlowEnabled: Boolean = getFeature(s"$env.features.seisFlowEnabled")
 }
