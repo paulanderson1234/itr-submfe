@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
+import controllers.featureSwitch.SEISFeatureSwitch
 import models._
 import models.seis.SEISCheckAnswersModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,7 +40,8 @@ object CheckAnswersController extends CheckAnswersController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
+trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper
+  with SEISFeatureSwitch {
 
   val s4lConnector: S4LConnector
 
@@ -60,17 +62,20 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     previousSchemes, proposedInvestment, subsidiariesSpendingInvestment, subsidiariesNinetyOwned, contactDetails, contactAddress,
     applicationConfig.uploadFeatureEnabled)
 
-  def show (envelopeId: Option[String]) : Action[AnyContent]= AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if(envelopeId.fold("")(_.toString).length > 0) {
-      s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
+  def show (envelopeId: Option[String]) : Action[AnyContent]= seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      if (envelopeId.fold("")(_.toString).length > 0) {
+        s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
+      }
+
+      checkAnswersModel.flatMap(checkAnswers => Future.successful(Ok(CheckAnswers(checkAnswers))))
     }
-
-    checkAnswersModel.flatMap(checkAnswers => Future.successful(Ok(CheckAnswers(checkAnswers))))
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(controllers.seis.routes.AcknowledgementController.show()))
+  val submit = seisFeatureSwitch {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      Future.successful(Redirect(controllers.seis.routes.AcknowledgementController.show()))
+    }
   }
-
 
 }

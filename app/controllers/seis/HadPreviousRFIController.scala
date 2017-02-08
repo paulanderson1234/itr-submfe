@@ -52,7 +52,6 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-
   val submit = seisFeatureSwitch {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       hadPreviousRFIForm.bindFromRequest().fold(

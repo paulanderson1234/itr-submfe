@@ -19,7 +19,6 @@ package views.seis
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAppConfig
-import controllers.seis
 import controllers.seis.{SupportingDocumentsController, routes}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

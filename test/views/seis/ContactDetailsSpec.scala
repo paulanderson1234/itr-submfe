@@ -18,7 +18,7 @@ package views.seis
 
 import auth.MockAuthConnector
 import config.FrontendAppConfig
-import controllers.{ContactDetailsController, routes}
+import controllers.seis.{ContactDetailsController, routes}
 import models.ContactDetailsModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

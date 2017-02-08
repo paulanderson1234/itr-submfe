@@ -22,9 +22,8 @@ import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.featureSwitch.SEISFeatureSwitch
-import forms.NatureOfBusinessForm._
 import forms.TradeStartDateForm._
-import models.{NatureOfBusinessModel, TradeStartDateModel}
+import models.TradeStartDateModel
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.companyDetails.TradeStartDate
@@ -67,7 +66,8 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
               s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
               submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
                 validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
-                case Some(validated) => if (validated) Redirect(routes.HadPreviousRFIController.show()) else Redirect(routes.TradeStartDateErrorController.show())
+                case Some(validated) => if (validated) Redirect(routes.HadPreviousRFIController.show()) else
+                  Redirect(routes.TradeStartDateErrorController.show())
                 case _ => {
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
                   InternalServerError(internalServerErrorTemplate)
