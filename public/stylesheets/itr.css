@@ -131,6 +131,10 @@ related ul {
     vertical-align: bottom;
 }
 
+.align-top {
+    vertical-align: top;
+}
+
 .block-label input {
     position: absolute;
     top: 28px;
