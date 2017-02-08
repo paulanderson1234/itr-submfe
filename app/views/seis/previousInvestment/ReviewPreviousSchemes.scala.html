@@ -1,0 +1,58 @@
+@import models.PreviousSchemeModel
+@import config.FrontendAppConfig
+@(previousSchemes: Vector[PreviousSchemeModel], backUrl: String)(implicit request: Request[_], messages: Messages)
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField}
+
+@main_template(Messages("page.previousInvestment.reviewPreviousSchemes.title")) {
+
+@backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
+
+<div class="grid-column">
+    <div class="column-two-thirds">
+        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.previousInvestment.reviewPreviousSchemes.heading")</h1>
+            <table id="previous-schemes-table">
+            <thead>
+            <tr>
+                <th id="scheme-table-heading">@Messages("page.previousInvestment.reviewPreviousSchemes.scheme")</th>
+                <th id="date-table-heading">@Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")</th>
+                <th id="amount-table-heading">@Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmount")</th>
+                <th>
+                    <span class="visuallyhidden">
+                        @Messages("common.base.change")
+                    </span>
+                </th>
+                <th>
+                    <span class="visuallyhidden">
+                        @Messages("common.base.remove")
+                    </span>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            @for((previousScheme, index) <- previousSchemes.zipWithIndex) {
+                <tr>
+                    <td id="scheme-type-@{index}">@previousScheme.schemeTypeDesc</td>
+                    <td id="scheme-date-@{index}">@PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)</td>
+                    <td id="scheme-amount-@{index}">@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
+                    <td id="change-@{index}"><a id="change-ref-@{index}" href=@controllers.seis.routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString>@Messages("common.base.change")</a></td>
+                    <td id="remove-@{index}"> @form(action = controllers.seis.routes.ReviewPreviousSchemesController.remove(previousScheme.processingId.getOrElse(0))) {
+                        <button class="button--link-style font-xsmall removeLink" type="submit" id="remove-link-@{index}"> @Messages("common.base.remove")</button>
+                        }</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="5"><a  id="add-scheme" href="@controllers.seis.routes.ReviewPreviousSchemesController.add.toString">@Messages("page.previousInvestment.reviewPreviousSchemes.add")</a></td>
+            </tr>
+            </tbody>
+        </table>
+
+        @form(action = controllers.seis.routes.ReviewPreviousSchemesController.submit()) {
+            <div class="form-group">
+                <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+            </div>
+        }
+
+    </div>
+</div>
+}

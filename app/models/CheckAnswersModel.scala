@@ -39,5 +39,6 @@ case class CheckAnswersModel(
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
                               contactDetailsModel: Option[ContactDetailsModel],
                               contactAddressModel: Option[AddressModel],
-                              investmentGrowModel: Option[InvestmentGrowModel]
+                              investmentGrowModel: Option[InvestmentGrowModel],
+                              attachmentsEnabled: Boolean
                               )

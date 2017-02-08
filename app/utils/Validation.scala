@@ -87,6 +87,35 @@ object Validation {
     })
   }
 
+  def tradeStartDateValidation: Constraint[TradeStartDateModel] = {
+
+    def validateYes(dateForm: TradeStartDateModel) = {
+      anyEmpty(dateForm.tradeStartDay, dateForm.tradeStartMonth, dateForm.tradeStartYear) match {
+        case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+        case false => isValidDate(dateForm.tradeStartDay.get, dateForm.tradeStartMonth.get, dateForm.tradeStartYear.get) match {
+          case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+          case true => dateNotInFuture(dateForm.tradeStartDay.get, dateForm.tradeStartMonth.get, dateForm.tradeStartYear.get) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
+          }
+        }
+      }
+    }
+
+    Constraint("constraints.trade_start_date")({
+      dateForm: TradeStartDateModel =>
+        dateForm.hasTradeStartDate match {
+          case Constants.StandardRadioButtonNoValue => allDatesEmpty(dateForm.tradeStartDay,
+            dateForm.tradeStartMonth, dateForm.tradeStartYear) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
+          }
+          case Constants.StandardRadioButtonYesValue => validateYes(dateForm)
+        }
+    })
+  }
+
+
   def tenYearPlanDescValidation: Constraint[TenYearPlanModel] = {
 
     def validateFields(hasPlan: String, planDesc: Option[String]): Boolean = {
@@ -419,6 +448,10 @@ object Validation {
       case Success(result) => result
       case Failure(_) => false
     }
+  }
+
+  def dateSinceOtherDate(day: Int, month: Int, year: Int, otherDate:Date): Boolean = {
+    constructDate(day, month, year).compareTo(otherDate) >= 0
   }
 
   def dateNotInFuture(day: Int, month: Int, year: Int): Boolean = {

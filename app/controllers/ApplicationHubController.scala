@@ -21,7 +21,9 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.Helpers.ControllerHelpers
 import models._
+import models.submission.SchemeTypesModel
 import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubscriptionService}
 import play.Logger
@@ -31,6 +33,7 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages
 
 import scala.concurrent.Future
 
@@ -42,7 +45,6 @@ object ApplicationHubController extends ApplicationHubController{
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
 }
-
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
@@ -56,24 +58,25 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       if (applicationHubModel.nonEmpty) {
 
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
-          case Some(true) => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubExisting()))
+          case Some(true) => Ok(ApplicationHub(applicationHubModel.get,
+            ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.routes.NatureOfBusinessController.show().url)(ControllerHelpers.routeToScheme),
+              ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))))
           case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew()))
         }
       }
       else Future.successful(InternalServerError(internalServerErrorTemplate))
     }
 
-    def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = {
-      (for {
-        tavcRef <- getTavCReferenceNumber()
-        registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
-        subscriptionDetailsModel <- subscriptionService.getSubscriptionContactDetails(tavcRef)
-      } yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName, registrationDetailsModel.get.addressModel,
-        subscriptionDetailsModel.get))).recover {
-        case _ =>
-          Logger.warn(s"[ApplicationHubController][getApplicationModel] - ApplicationHubModel components not found")
-          None
-      }
+    def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = (for {
+      tavcRef <- getTavCReferenceNumber()
+      registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
+      subscriptionDetailsModel <- subscriptionService.getSubscriptionContactDetails(tavcRef)
+      schemeTypesModel <-   s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
+    } yield Some(ApplicationHubModel(registrationDetailsModel.get.organisationName, registrationDetailsModel.get.addressModel,
+      subscriptionDetailsModel.get, schemeTypesModel))).recover {
+      case _ =>
+        Logger.warn(s"[ApplicationHubController][getApplicationModel] - ApplicationHubModel components not found")
+        None
     }
 
     for {

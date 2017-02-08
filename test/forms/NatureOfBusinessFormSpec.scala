@@ -16,7 +16,7 @@
 
 package forms
 
-import forms.NatureOfBusinessForm
+import forms.NatureOfBusinessForm.natureOfBusinessForm
 import models.NatureOfBusinessModel
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
@@ -30,14 +30,14 @@ import play.api.i18n.Messages.Implicits._
 class NatureOfBusinessFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
-    NatureOfBusinessForm.natureOfBusinessForm.bindFromRequest()(request).fold(
+    natureOfBusinessForm.bindFromRequest()(request).fold(
       formWithErrors => None,
       userData => Some(userData)
     )
   }
 
   private def bindWithError(request: FakeRequest[AnyContentAsFormUrlEncoded]): Option[FormError] = {
-    NatureOfBusinessForm.natureOfBusinessForm.bindFromRequest()(request).fold(
+    natureOfBusinessForm.bindFromRequest()(request).fold(
       formWithErrors => Some(formWithErrors.errors(0)),
       userData => None
     )
@@ -105,15 +105,15 @@ class NatureOfBusinessFormSpec extends UnitSpec with OneAppPerSuite{
   "The utr Form model" should {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[NatureOfBusinessModel]
-      val natureOfBusinessForm = NatureOfBusinessForm.natureOfBusinessForm.fill(natureOfBusinessModel)
-      natureOfBusinessForm.get.natureofbusiness shouldBe "I sell cars to car warehouse outets in major towns"
+      val form = natureOfBusinessForm.fill(natureOfBusinessModel)
+      form.get.natureofbusiness shouldBe "I sell cars to car warehouse outets in major towns"
     }
 
     // form json to model - unapply
     "call unapply successfully to create expected Json" in {
       implicit val formats = Json.format[NatureOfBusinessModel]
-      val natureOfBusinessForm = NatureOfBusinessForm.natureOfBusinessForm.fill(natureOfBusinessModel)
-      val formJson = Json.toJson(natureOfBusinessForm.get).toString()
+      val form = natureOfBusinessForm.fill(natureOfBusinessModel)
+      val formJson = Json.toJson(form.get).toString()
       formJson shouldBe natureOfBusinessJson
     }
   }

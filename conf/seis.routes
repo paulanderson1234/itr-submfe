@@ -4,29 +4,58 @@
 GET       /nature-of-business                       controllers.seis.NatureOfBusinessController.show
 POST      /nature-of-business                       controllers.seis.NatureOfBusinessController.submit
 
-GET        /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.show
-POST       /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.submit
+GET       /trade-start-date                        controllers.seis.TradeStartDateController.show
+POST      /trade-start-date                        controllers.seis.TradeStartDateController.submit
 
-GET        /contact-address                         controllers.seis.ContactAddressController.show
-POST       /contact-address                         controllers.seis.ContactAddressController.submit
+GET       /trade-start-date-error                  controllers.seis.TradeStartDateErrorController.show
 
-GET        /confirm-contact-details                 controllers.seis.ConfirmContactDetailsController.show
-POST       /confirm-contact-details                 controllers.seis.ConfirmContactDetailsController.submit
+GET       /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.show
+POST      /confirm-correspondence-address          controllers.seis.ConfirmCorrespondAddressController.submit
 
-GET        /contact-details                         controllers.seis.ContactDetailsController.show
-POST       /contact-details                         controllers.seis.ContactDetailsController.submit
+GET       /contact-address                         controllers.seis.ContactAddressController.show
+POST      /contact-address                         controllers.seis.ContactAddressController.submit
 
-GET       /date-of-incorporation                    controllers.seis.DateOfIncorporationController.show
-POST      /date-of-incorporation                    controllers.seis.DateOfIncorporationController.submit
+GET       /confirm-contact-details                 controllers.seis.ConfirmContactDetailsController.show
+POST      /confirm-contact-details                 controllers.seis.ConfirmContactDetailsController.submit
+
+GET       /contact-details                         controllers.seis.ContactDetailsController.show
+POST      /contact-details                         controllers.seis.ContactDetailsController.submit
+
+GET        /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.show
+POST       /review-previous-schemes                 controllers.seis.ReviewPreviousSchemesController.submit
+
+GET        /review-previous-schemes-add             controllers.seis.ReviewPreviousSchemesController.add
+GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
+POST       /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
+POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit
 
 GET        /supporting-documents                    controllers.seis.SupportingDocumentsController.show
 POST       /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
 
-GET        /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
-POST       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
+GET       /date-of-incorporation                   controllers.seis.DateOfIncorporationController.show
+POST      /date-of-incorporation                   controllers.seis.DateOfIncorporationController.submit
+
+GET       /supporting-documents                    controllers.seis.SupportingDocumentsController.show
+POST      /supporting-documents                    controllers.seis.SupportingDocumentsController.submit
+
+GET       /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.show
+POST      /supporting-documents-upload             controllers.seis.SupportingDocumentsUploadController.submit
 
 GET       /proposed-investment                      controllers.seis.ProposedInvestmentController.show
 POST      /proposed-investment                      controllers.seis.ProposedInvestmentController.submit
 
 GET       /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.show
 POST      /used-investment-scheme-before            controllers.seis.HadPreviousRFIController.submit
+
+GET       /check-your-answers                       controllers.seis.CheckAnswersController.show(envelopeId: Option[String]?=None)
+POST      /check-your-answers                       controllers.seis.CheckAnswersController.submit
+
+GET       /acknowledgement                          controllers.seis.AcknowledgementController.show
+POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
+
+GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+GET        /previous-schemes-allowance-exceeded     controllers.seis.PreviousInvestmentsAllowanceExceededController.show
+
+

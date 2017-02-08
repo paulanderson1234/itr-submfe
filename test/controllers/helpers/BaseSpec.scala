@@ -19,13 +19,14 @@ package controllers.helpers
 import common.Constants
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
+import models.submission.SchemeTypesModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
-import uk.gov.hmrc.play.test.{UnitSpec}
+import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
 
 
@@ -125,6 +126,8 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
     Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
   val previousSchemeVectorList = Vector(previousSchemeModel1, previousSchemeModel2, previousSchemeModel3)
 
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+
   val registeredAddressModel = RegisteredAddressModel("AB1 1AB")
 
   val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
@@ -143,5 +146,9 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val yourCompanyNeedModel = YourCompanyNeedModel("AA")
 
   val envelopeId: Option[String] = Some("00000000000000000000000000000000")
+
+  val seisSchemeTypesModel = SchemeTypesModel(seis = true)
+
+  //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
 
 }

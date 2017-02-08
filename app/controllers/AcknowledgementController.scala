@@ -133,6 +133,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
           schemeTypes = SchemeTypesModel(eis = true),
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
+          dateTradeCommenced = Constants.standardIgnoreYearValue,
           annualCosts = if (operatingCosts.nonEmpty)
             Some(Converters.operatingCostsToList(operatingCosts.get))
           else None,

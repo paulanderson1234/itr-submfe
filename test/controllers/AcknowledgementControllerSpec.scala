@@ -26,7 +26,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import services.{FileUploadService}
+import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}

@@ -41,29 +41,20 @@ class HadPreviousRFISpec extends ViewSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  def setupMocks(backLink: Option[String] = None, hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
-//    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
-//      .thenReturn(Future.successful(backLink))
+  def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(hadPreviousRFIModel))
-//    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
-//      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
   }
-
 
   "Verify that the hadPreviousRFI page contains the correct elements " +
     "when a valid HadPreviousRFIModel is passed as returned from keystore" in new Setup {
     val document : Document = {
-      //TODO: to replace when ProposedInvestmentController is made available
-//      setupMocks(Some(routes.ProposedInvestmentController.show().url), Some(hadPreviousRFIModelYes))
-      //TODO: replace with above when new controller available
-      setupMocks(Some(routes.HadPreviousRFIController.show().url), Some(hadPreviousRFIModelYes))
-
+      setupMocks(Some(hadPreviousRFIModelYes))
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-//TODO: relace when ProposedInvestment available... document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show().url
+
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
@@ -78,15 +69,13 @@ class HadPreviousRFISpec extends ViewSpec {
   "Verify that hadPreviousRFI page contains the correct elements when an empty model " +
     "is passed because nothing was returned from keystore" in new Setup {
     val document : Document = {
-      //TODO: to replace when ProposedInvestmentController is available
-//      setupMocks(Some(routes.ProposedInvestmentController.show().url))
       //TODO: replace with above when new controller available
-      setupMocks(Some(routes.HadPreviousRFIController.show().url))
+      setupMocks()
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
     //TODO: replace when ProposedInvestment available...document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.HadPreviousRFIController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
@@ -99,11 +88,7 @@ class HadPreviousRFISpec extends ViewSpec {
   }
 
   "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {
-    //TODO: replace with this when ProposedInvestmentController available
-//    setupMocks(Some(routes.ProposedInvestmentController.show().url), Some(hadPreviousRFIModelYes))
-
-    //TODO: remove once above is available
-    setupMocks(Some(routes.HadPreviousRFIController.show().url), Some(hadPreviousRFIModelYes))
+    setupMocks(Some(hadPreviousRFIModelYes))
 
     val document : Document = {
       // submit the model with no radio selected as a post action

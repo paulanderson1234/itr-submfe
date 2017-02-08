@@ -201,6 +201,10 @@ trait SubmissionFixture {
     TurnoverCostModel("2005", turnover = CostModel("70")))
 
   val dateOfIncorporationModel = DateOfIncorporationModel(day = Some(5), month = Some(6), year = Some(2007))
+  val startDateModelModelYes = TradeStartDateModel(tradeStartDay = Some(5), tradeStartMonth = Some(6),
+    tradeStartYear = Some(2007), hasTradeStartDate = Constants.StandardRadioButtonYesValue)
+  val startDateModelModelNo = TradeStartDateModel(tradeStartDay = Some(5), tradeStartMonth = Some(6),
+    tradeStartYear = Some(2007), hasTradeStartDate = Constants.StandardRadioButtonNoValue)
 
   val subsidiaryPerformingTradeMinimumReq = SubsidiaryPerformingTradeModel(ninetyOwnedModel = SubsidiariesNinetyOwnedModel(Constants.StandardRadioButtonYesValue),
     organisationName = "Made up test subsidiary org name")
@@ -240,6 +244,9 @@ trait SubmissionFixture {
     ctUtr = Some("5555555555"), crn = Some("crnvalue"), companyAddress = Some(fullCorrespondenceAddress),
     previousRFIs = Some(previousSchemesFull.toList))
 
+  val tradeStartDateModelYes = TradeStartDateModel(Constants.StandardRadioButtonYesValue, Some(1), Some(1), Some(2001))
+  val tradeStartDateModelNo = TradeStartDateModel(Constants.StandardRadioButtonNoValue, None, None, None)
+
   val model = AdvancedAssuranceSubmissionType(
     agentReferenceNumber = Some(testAgentRef),
     acknowledgementReference = Some("AARN1234567"),
@@ -249,6 +256,7 @@ trait SubmissionFixture {
     correspondenceAddress = fullCorrespondenceAddress,
     schemeTypes = schemeTypes,
     marketInfo = Some(marketInfo),
+    dateTradeCommenced = tradeStartDateModelYes.toDate,
     annualCosts = Some(costsFull),
     annualTurnover = Some(turnover),
     proposedInvestmentModel = ProposedInvestmentModel(250000),

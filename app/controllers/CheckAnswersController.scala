@@ -70,7 +70,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     ,natureOfBusiness,commercialSale,isKnowledgeIntensive,operatingCosts
     ,percentageStaffWithMasters,tenYearPlan,subsidiaries,hadPreviousRFI, previousSchemes, proposedInvestment
     ,usedInvestmentReasonBefore,previousBeforeDOFCS,newGeographicalMarket,newProduct,subsidiariesSpendingInvestment,
-    subsidiariesNinetyOwned,contactDetails,contactAddress,investmentGrowModel)
+    subsidiariesNinetyOwned,contactDetails,contactAddress,investmentGrowModel, applicationConfig.uploadFeatureEnabled)
 
 
   def show (envelopeId: Option[String]) : Action[AnyContent]= AuthorisedAndEnrolled.async { implicit user => implicit request =>

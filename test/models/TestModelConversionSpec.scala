@@ -97,6 +97,7 @@ val subsidiaryPerformingTradeWithAddress = SubsidiaryPerformingTradeModel(ninety
     correspondenceAddress = fullCorrespondenceAddress,
     schemeTypes = schemeTypes,
     marketInfo = Some(marketInfo),
+    dateTradeCommenced = "2001-01-01",
     annualCosts = Some(costsFull),
     annualTurnover = Some(turnover),
     proposedInvestmentModel = ProposedInvestmentModel(250000),

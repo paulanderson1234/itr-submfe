@@ -171,8 +171,6 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
   val model7 = PreviousSchemeModel(
     Constants.PageInvestmentSchemeAnotherValue, 15000000, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
 
-
-  val emptyVectorList = Vector[PreviousSchemeModel]()
   val previousSchemeTrueKIVectorList = Vector(model1, model2, model3)
   val previousSchemeOverTrueKIVectorList = Vector(model4, model5, model5)
   val previousSchemeFalseKIVectorList = Vector(model1, model2, model3)

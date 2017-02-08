@@ -183,6 +183,9 @@ $(document).ready($(function() {
          $("#commercialSaleYear").val("");
          $("#otherSchemeName").val("");
          $("#investmentSpent").val("");
+         $("#tradeStartDay").val("");
+         $("#tradeStartMonth").val("");
+         $("#tradeStartYear").val("");
     }
 
     function ClearPageErrors()

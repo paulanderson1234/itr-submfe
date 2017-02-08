@@ -130,7 +130,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.NatureOfBusinessController.show().url)
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }

@@ -16,14 +16,13 @@
 
 package models
 
+import models.submission.SchemeTypesModel
 import play.api.libs.json.Json
 
-/**
-  * Created by jade on 03/11/16.
-  */
 case class ApplicationHubModel (organisationName :String,
                                 registeredAddress: AddressModel,
-                                contactDetails: ContactDetailsModel)
+                                contactDetails: ContactDetailsModel,
+                                schemeTypes: Option[SchemeTypesModel] = None)
 
 object ApplicationHubModel {
   implicit val format = Json.format[ApplicationHubModel]
