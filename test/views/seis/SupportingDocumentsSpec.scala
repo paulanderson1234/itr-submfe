@@ -17,7 +17,7 @@
 package views.seis
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.seis
 import controllers.seis.{SupportingDocumentsController, routes}
@@ -39,7 +39,7 @@ class SupportingDocumentsSpec extends ViewSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
 
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }

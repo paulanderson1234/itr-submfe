@@ -17,7 +17,7 @@
 package views
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.{SupportingDocumentsController, routes}
 import org.jsoup.Jsoup
@@ -38,7 +38,7 @@ class SupportingDocumentsSpec extends ViewSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
 
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }

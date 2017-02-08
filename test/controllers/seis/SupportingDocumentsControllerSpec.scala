@@ -19,7 +19,7 @@ package controllers.seis
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
@@ -37,7 +37,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
     override lazy val enrolmentConnector = mockEnrolmentConnector
 
   }
@@ -104,7 +104,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/check-your-answers")
       }
     }
   }

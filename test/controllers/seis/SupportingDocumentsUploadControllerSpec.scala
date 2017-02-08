@@ -38,7 +38,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
@@ -121,7 +121,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonYesValue){
           result => status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents-upload")
+            redirectLocation(result) shouldBe Some(TestController.attachmentsFrontEndUrl)
         }
       }
     }
@@ -132,7 +132,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents-upload")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/check-your-answers")
         }
       }
     }
@@ -148,12 +148,12 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
   }
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
-    "redirect to CommercialSaleController when no backlink is found" in {
+    "redirect to ProposedInvestment when no backlink is found" in {
       mockEnrolledRequest()
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents-upload")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
       }
     }
   }
