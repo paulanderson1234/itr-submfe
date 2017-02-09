@@ -40,16 +40,20 @@ class SchemeSelectionSpec extends BaseSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.schemeSelection.SchemeSelection.heading")
       document.getElementById("SEIS").attr("checked") shouldBe "checked"
       document.getElementById("SEIS-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.seis")
-      document.getElementById("SEIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.link")
+      document.getElementById("SEIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.subHeading")
       document.getElementById("SEIS-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.text")
       document.getElementById("EIS").attr("checked") shouldBe "checked"
       document.getElementById("EIS-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.eis")
-      document.getElementById("EIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.link")
+      document.getElementById("EIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.subHeading")
       document.getElementById("EIS-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.text")
+      document.getElementById("EIS-bullet-one").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.one")
+      document.getElementById("EIS-bullet-two").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.two")
       document.getElementById("VCT").attr("checked") shouldBe "checked"
       document.getElementById("VCT-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.vct")
-      document.getElementById("VCT-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.link")
+      document.getElementById("VCT-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.subHeading")
       document.getElementById("VCT-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.text")
+      document.getElementById("VCT-bullet-one").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.one")
+      document.getElementById("VCT-bullet-two").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.two")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
@@ -62,16 +66,20 @@ class SchemeSelectionSpec extends BaseSpec {
       document.getElementById("main-heading").text() shouldBe Messages("page.schemeSelection.SchemeSelection.heading")
       document.getElementById("SEIS").attr("checked") shouldBe ""
       document.getElementById("SEIS-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.seis")
-      document.getElementById("SEIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.link")
+      document.getElementById("SEIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.subHeading")
       document.getElementById("SEIS-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.seis.text")
       document.getElementById("EIS").attr("checked") shouldBe ""
       document.getElementById("EIS-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.eis")
-      document.getElementById("EIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.link")
+      document.getElementById("EIS-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.subHeading")
       document.getElementById("EIS-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.text")
+      document.getElementById("EIS-bullet-one").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.one")
+      document.getElementById("EIS-bullet-two").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.two")
       document.getElementById("VCT").attr("checked") shouldBe ""
       document.getElementById("VCT-label").text() shouldBe Messages("page.schemeSelection.SchemeSelection.checkbox.vct")
-      document.getElementById("VCT-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.link")
+      document.getElementById("VCT-help").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.subHeading")
       document.getElementById("VCT-help-text").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.text")
+      document.getElementById("VCT-bullet-one").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.one")
+      document.getElementById("VCT-bullet-two").text() shouldBe Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.two")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
