@@ -61,7 +61,7 @@ class TradeStartDateErrorSpec extends ViewSpec {
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.heading")
       document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.trading.over.two.years")
       document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
-        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers")
+        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
       document.body.getElementById("change-answers").attr("href") shouldEqual controllers.seis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
 
