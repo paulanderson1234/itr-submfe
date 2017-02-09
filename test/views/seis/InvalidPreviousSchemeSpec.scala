@@ -46,7 +46,8 @@ class InvalidPreviousSchemeSpec extends ViewSpec {
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.heading")
 
       document.body.getElementById("invalid-scheme-reason").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.reason")
-      document.body.getElementById("change-answers-text").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.change-text")
+      document.body.getElementById("change-answers").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.change-text") +
+        " " + Messages("page.previousInvestment.InvalidPreviousScheme.change-link") + "."
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ReviewPreviousSchemesController.show().url
       document.body.getElementById("change-answers-link").attr("href") shouldEqual routes.ReviewPreviousSchemesController.show().url
 

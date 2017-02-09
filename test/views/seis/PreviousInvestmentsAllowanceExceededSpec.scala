@@ -44,7 +44,8 @@ class PreviousInvestmentsAllowanceExceededSpec extends ViewSpec {
       document.title shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.title")
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.heading")
       document.body.getElementById("investments-exceeded-reason").text() shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.reason")
-      document.body.getElementById("change-answers-text").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.change-text")
+      document.body.getElementById("change-answers").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.change-text") +
+        " " + Messages("page.previousInvestment.InvalidPreviousScheme.change-link") + "."
       document.body.getElementById("previous-seis-investments").text() shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.bullet.one")
       document.body.getElementById("de-minimis-aid").text() shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.bullet.two")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ReviewPreviousSchemesController.show().url
