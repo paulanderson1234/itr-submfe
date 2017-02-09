@@ -39,109 +39,45 @@ import scala.concurrent.Future
 trait TestEndpointSEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
-  val defaultPreviousSchemesSize = 5
-
-  val kiProcessingModelYes = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
-  val kiProcessingModelNo = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), Some(false), Some(false))
+  val defaultPreviousSchemesSize = 2
 
   def showPageOne(schemes: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async {
     implicit user => implicit request =>
       for {
         natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
         dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
-        commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
-        isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
-        operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
-        percentageStaffWithMastersForm <- fillForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
-          PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
-        tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
+        tradeStartDateForm <- fillForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
+        proposedInvestmentForm <- fillForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
+        confirmContactDetailsForm <- fillForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
+        contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
+        confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
+        contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
       } yield Ok(
-          testOnly.views.html.seis.testEndpointSEISPageOne(
+        testOnly.views.html.seis.testEndpointSEISPageOne(
           natureOfBusinessForm,
           dateOfIncorporationForm,
-          commercialSaleForm,
-          isKnowledgeIntensiveForm,
-          operatingCostsForm,
-          percentageStaffWithMastersForm,
-          tenYearPlanForm,
+          tradeStartDateForm,
           hadPreviousRFIForm,
           previousSchemesForm,
-          schemes.getOrElse(defaultPreviousSchemesSize)
+          schemes.getOrElse(defaultPreviousSchemesSize),
+          proposedInvestmentForm,
+          confirmContactDetailsForm,
+          contactDetailsForm,
+          confirmCorrespondAddressForm,
+          contactAddressForm
         )
       )
-  }
-
-  def showPageTwo: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    for {
-      proposedInvestmentForm <- fillForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
-      usedInvestmentReasonBeforeForm <- fillForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore,
-        UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
-      previousBeforeDoFCSForm <- fillForm[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS, PreviousBeforeDOFCSForm.previousBeforeDOFCSForm)
-      newGeographicalMarketForm <- fillForm[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, NewGeographicalMarketForm.newGeographicalMarketForm)
-      newProductForm <- fillForm[NewProductModel](KeystoreKeys.newProduct, NewProductForm.newProductForm)
-      turnoverCostsForm <- fillForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
-      investmentGrowForm <- fillForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
-      confirmContactDetailsForm <- fillForm[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails, ConfirmContactDetailsForm.confirmContactDetailsForm)
-      contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
-      confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress,
-        ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
-      contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
-    } yield Ok(
-        testOnly.views.html.seis.testEndpointSEISPageTwo(
-        proposedInvestmentForm,
-        usedInvestmentReasonBeforeForm,
-        previousBeforeDoFCSForm,
-        newGeographicalMarketForm,
-        newProductForm,
-        turnoverCostsForm,
-        investmentGrowForm,
-        confirmContactDetailsForm,
-        contactDetailsForm,
-        confirmCorrespondAddressForm,
-        contactAddressForm
-      )
-    )
   }
 
   def submitPageOne: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
-    val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
-    val isKnowledgeIntensive = bindKIForm()
-    val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
-    val percentageStaffWithMasters = bindForm[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters,
-      PercentageStaffWithMastersForm.percentageStaffWithMastersForm)
-    val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
+    val tradeStartDate = bindForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
-    saveBackLinks()
-    Future.successful(Ok(
-        testOnly.views.html.seis.testEndpointSEISPageOne(
-        natureOfBusiness,
-        dateOfIncorporation,
-        commercialSale,
-        isKnowledgeIntensive,
-        testOperatingCosts,
-        percentageStaffWithMasters,
-        tenYearPlan,
-        hadPreviousRFI,
-        testPreviousSchemes,
-        defaultPreviousSchemesSize
-      )
-    ))
-  }
-
-  def submitPageTwo: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val proposedInvestment = bindForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
-    val usedInvestmentReasonBefore = bindForm[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore,
-      UsedInvestmentReasonBeforeForm.usedInvestmentReasonBeforeForm)
-    val previousBeforeDoFCS = bindForm[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS, PreviousBeforeDOFCSForm.previousBeforeDOFCSForm)
-    val newGeographicalMarket = bindForm[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket, NewGeographicalMarketForm.newGeographicalMarketForm)
-    val newProduct = bindForm[NewProductModel](KeystoreKeys.newProduct, NewProductForm.newProductForm)
-    val testTurnoverCosts = bindForm[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts, TestTurnoverCostsForm.testTurnoverCostsForm)
-    val investmentGrow = bindForm[InvestmentGrowModel](KeystoreKeys.investmentGrow, InvestmentGrowForm.investmentGrowForm)
     val confirmContactDetails = bindConfirmContactDetails()
     val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
     val confirmCorrespondAddress = bindConfirmContactAddress()
@@ -149,18 +85,19 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
-        testOnly.views.html.seis.testEndpointSEISPageTwo(
+      testOnly.views.html.seis.testEndpointSEISPageOne(
+        natureOfBusiness,
+        dateOfIncorporation,
+        tradeStartDate,
+        hadPreviousRFI,
+        testPreviousSchemes,
+        defaultPreviousSchemesSize,
         proposedInvestment,
-        usedInvestmentReasonBefore,
-        previousBeforeDoFCS,
-        newGeographicalMarket,
-        newProduct,
-        testTurnoverCosts,
-        investmentGrow,
         confirmContactDetails,
         contactDetails,
         confirmCorrespondAddress,
         contactAddress
+
       )
     ))
   }
@@ -168,14 +105,9 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
   private def saveBackLinks()(implicit hc: HeaderCarrier, user: TAVCUser) = {
     s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointSEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointSEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointSEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointSEISController.showPageOne(None).url)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointSEISController.showPageOne(None).url)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointSEISController.showPageOne(None).url)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointSEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointSEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointSEISController.showPageOne(None).url)
     s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointSEISController.showPageOne(None).url)
   }
 
@@ -269,25 +201,6 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
       }
     )
   }
-
-  def bindKIForm()(implicit request: Request[AnyContent], user: TAVCUser): Form[IsKnowledgeIntensiveModel] = {
-    IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm.bindFromRequest().fold(
-      formWithErrors => {
-        formWithErrors
-      },
-      validFormData => {
-        if(validFormData.isKnowledgeIntensive == Constants.StandardRadioButtonYesValue)  {
-          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelYes)
-          s4lConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
-        } else {
-          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, kiProcessingModelNo)
-          s4lConnector.saveFormData(KeystoreKeys.isKnowledgeIntensive, validFormData)
-        }
-        IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm.fill(validFormData)
-      }
-    )
-  }
-
 
   def bindPreviousSchemesForm()(implicit request: Request[AnyContent], user: TAVCUser): Form[TestPreviousSchemesModel] = {
     TestPreviousSchemesForm.testPreviousSchemesForm.bindFromRequest().fold(

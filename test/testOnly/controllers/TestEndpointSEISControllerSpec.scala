@@ -145,37 +145,6 @@ class TestEndpointSEISControllerSpec extends ControllerSpec {
 
   }
 
-  "TestEndpointEISController.showPageTwo" when {
-
-    "Called as an authorised and enrolled user" should {
-
-      "Return OK" in {
-        mockEnrolledRequest()
-        setupShowMocks()
-        showWithSessionAndAuth(TestController.showPageTwo())(
-          result => status(result) shouldBe OK
-        )
-      }
-
-    }
-
-  }
-
-  "TestEndpointEISController.submitPageTwo" when {
-
-    "Called as an authorised and enrolled user" should {
-
-      "Return OK" in {
-        mockEnrolledRequest()
-        submitWithSessionAndAuth(TestController.submitPageTwo())(
-          result => status(result) shouldBe OK
-        )
-      }
-
-    }
-
-  }
-
   "TestEndpointEISController.fillForm" when {
 
     "s4lConnector returns data" should {
