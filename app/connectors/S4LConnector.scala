@@ -19,7 +19,7 @@ package connectors
 import auth.TAVCUser
 import config.TAVCShortLivedCache
 import play.api.libs.json.Format
-import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache, ShortLivedCache}
+import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
@@ -33,19 +33,19 @@ trait S4LConnector {
   val shortLivedCache : ShortLivedCache
 
   def saveFormData[T](key: String, data : T)(implicit hc: HeaderCarrier, format: Format[T], user: TAVCUser): Future[CacheMap] = {
-    shortLivedCache.cache[T](user.authContext.user.oid, key, data)
+    shortLivedCache.cache[T](user.internalId, key, data)
   }
 
   def fetchAndGetFormData[T](key : String)(implicit hc: HeaderCarrier, format: Format[T], user: TAVCUser): Future[Option[T]] = {
-    shortLivedCache.fetchAndGetEntry(user.authContext.user.oid, key)
+    shortLivedCache.fetchAndGetEntry(user.internalId, key)
   }
 
   def clearCache()(implicit hc : HeaderCarrier, user: TAVCUser) : Future[HttpResponse] = {
-    shortLivedCache.remove(user.authContext.user.oid)
+    shortLivedCache.remove(user.internalId)
   }
 
   def fetch()(implicit hc : HeaderCarrier, user: TAVCUser) : Future[Option[CacheMap]] = {
-    shortLivedCache.fetch(user.authContext.user.oid)
+    shortLivedCache.fetch(user.internalId)
   }
 
 }
