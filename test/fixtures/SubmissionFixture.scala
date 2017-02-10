@@ -181,7 +181,8 @@ trait SubmissionFixture {
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
     surname = "Flinsstone", telephoneNumber = Some("01952 255899"), mobileNumber = None, email = "rubble@jurassic.com")
 
-  val schemeTypes: SchemeTypesModel = SchemeTypesModel(eis = true, seis = false, vct = false, sitr = false)
+  val schemeTypesEIS: SchemeTypesModel = SchemeTypesModel(eis = true, seis = false, vct = false, sitr = false)
+  val schemeTypesSEIS: SchemeTypesModel = SchemeTypesModel(eis = false, seis = true, vct = false, sitr = false)
   val testAgentRef = "AARN1234567"
   val tavcReferenceId = "XATAVC000123456"
 
@@ -254,7 +255,7 @@ trait SubmissionFixture {
     natureOfBusinessModel = NatureOfBusinessModel("Some nature of business description"),
     contactDetailsModel = fullContactDetailsModel,
     correspondenceAddress = fullCorrespondenceAddress,
-    schemeTypes = schemeTypes,
+    schemeTypes = schemeTypesEIS,
     marketInfo = Some(marketInfo),
     dateTradeCommenced = tradeStartDateModelYes.toDate,
     annualCosts = Some(costsFull),
