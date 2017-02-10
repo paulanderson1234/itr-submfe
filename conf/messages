@@ -164,12 +164,22 @@ page.schemeSelection.SchemeSelection.heading=Which Advanced Assurance scheme are
 page.schemeSelection.SchemeSelection.checkbox.seis=Seed Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.checkbox.eis=Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.checkbox.vct=Venture Capital Trust
-page.schemeSelection.SchemeSelection.help.seis.link=What is the Seed Enterprise Investment Scheme?
-page.schemeSelection.SchemeSelection.help.seis.text=Content TBD
-page.schemeSelection.SchemeSelection.help.eis.link=What is the Enterprise Investment Scheme?
-page.schemeSelection.SchemeSelection.help.eis.text=Content TBD
-page.schemeSelection.SchemeSelection.help.vct.link=What is the Venture Capital Trust Scheme?
-page.schemeSelection.SchemeSelection.help.vct.text=Content TBD
+page.schemeSelection.SchemeSelection.help.seis.subHeading=What''s the Seed Enterprise Investment Scheme?
+page.schemeSelection.SchemeSelection.help.seis.text=The Seed Enterprise Investment Scheme helps startup companies attract investors by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of £150,000 received over the last 3 years.
+page.schemeSelection.SchemeSelection.help.seis.findOutMore=Find out more about the
+page.schemeSelection.SchemeSelection.help.seis.link=Seed Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.help.eis.subHeading=What''s the Enterprise Investment Scheme?
+page.schemeSelection.SchemeSelection.help.eis.text=The Enterprise Investment Scheme helps small companies attract investors by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of:
+page.schemeSelection.SchemeSelection.help.eis.bullet.one=£5 million received in 1 year
+page.schemeSelection.SchemeSelection.help.eis.bullet.two=£12 million received over the company''s lifetime
+page.schemeSelection.SchemeSelection.help.eis.findOutMore=Find out more about the
+page.schemeSelection.SchemeSelection.help.eis.link=Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.help.vct.subHeading=What''s the Venture Capital Trust Scheme?
+page.schemeSelection.SchemeSelection.help.vct.text=The Venture Capital Trust Scheme helps small companies attract investment by offering tax reliefs to individual investors who buy new shares in a Venture Capital Trust. Tax relief is available on a maximum of:
+page.schemeSelection.SchemeSelection.help.vct.bullet.one=£5 million received in 1 year
+page.schemeSelection.SchemeSelection.help.vct.bullet.two=£12 million received over the company''s lifetime
+page.schemeSelection.SchemeSelection.help.vct.findOutMore=Find out more about the
+page.schemeSelection.SchemeSelection.help.vct.link=Venture Capital Trust Scheme
 
 #Utr page
 page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?
@@ -650,7 +660,7 @@ page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the sc
 page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
 page.seis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
 page.seis.companyDetails.tradeStartDateError.incorrect.info=If this information is incorrect, you can
-page.seis.companyDetails.tradeStartDateError.link.changeAnswers=change your answers.
+page.seis.companyDetails.tradeStartDateError.link.changeAnswers=change your answers
 
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?

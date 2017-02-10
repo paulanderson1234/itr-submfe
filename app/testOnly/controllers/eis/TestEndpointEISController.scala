@@ -39,7 +39,7 @@ import scala.concurrent.Future
 trait TestEndpointEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   val s4lConnector: S4LConnector
-  val defaultPreviousSchemesSize = 5
+  val defaultPreviousSchemesSize = 2
 
   val kiProcessingModelYes = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
   val kiProcessingModelNo = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), Some(false), Some(false))

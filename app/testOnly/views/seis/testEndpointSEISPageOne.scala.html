@@ -2,11 +2,13 @@
 @import testOnly.models.TestPreviousSchemesModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
+@import utils.CountriesHelper
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
-@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], commercialSaleForm: Form[CommercialSaleModel],
-  isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
-  tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int)(implicit request: Request[_], messages: Messages)
+@(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel],tradeStartDateForm: Form[TradeStartDateModel],
+hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int,
+proposedInvestmentForm: Form[ProposedInvestmentModel],confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
+confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
@@ -34,209 +36,19 @@
         true, Some(Messages("date.hint.dateOfIncorporation")), None)
     </div>
 
-    <h2>First Commercial Sale</h2>
-    <div class="form-group">
-        @formInputRadioGroup(
-        field = commercialSaleForm("hasCommercialSale"),
-        Seq(
-        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
-        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
-        '_legendClass -> "visuallyhidden",
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_groupClass -> "inline"
-        )
-
-        @formInlineDateInput(commercialSaleForm, "commercialSale", Some(Messages("page.companyDetails.CommercialSale.question.hint")),
-        true, Some(Messages("page.companyDetails.CommercialSale.question.hint")), None)
-    </div>
-
-    <h2>Is your company KI?</h2>
-    <div class="form-group">
-        @formInputRadioGroup(
-        field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
-        Seq(
-        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
-        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
-        '_legendClass -> "visuallyhidden",
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_groupClass -> "inline"
-        )
-    </div>
-
-    <h2>Operating Costs</h2>
-    <table>
-    <tbody>
-    <tr>
-        <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.OperatingCosts.row.heading.one")</td>
-        <td>
-            @input(
-            testOperatingCostsForm("operatingCostsFirstYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-firstYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.one.label.year"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth",
-            '_maxlength-> 4,
-            'id -> "operating-year-one"
-            )
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("operatingCosts1stYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-operatingCosts1stYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.one.label.operatingcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "operating-one"
-            )
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("rAndDCosts1stYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-rAndDCosts1stYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.one.label.randdcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "research-one"
-            )
-        </td>
-    </tr>
-    <tr>
-        <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.OperatingCosts.row.heading.two")</td>
-        <td>
-            @input(
-            testOperatingCostsForm("operatingCostsSecondYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-secondYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.two.label.year"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth",
-            '_type -> "text",
-            '_maxlength-> 4,
-            'id -> "operating-year-two"
-            )
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("operatingCosts2ndYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-operatingCosts2ndYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.two.label.operatingcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "operating-two"
-            )
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("rAndDCosts2ndYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-rAndDCosts2ndYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.two.label.randdcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "research-two"
-            )
-
-        </td>
-    </tr>
-    <tr>
-        <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.OperatingCosts.row.heading.three")</td>
-        <td>
-            @input(
-            testOperatingCostsForm("operatingCostsThirdYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-thirdYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.three.label.year"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth",
-            '_maxlength-> 4,
-            'id -> "operating-year-three"
-            )
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("operatingCosts3rdYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-operatingCosts3rdYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.three.label.operatingcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "operating-three"
-            )
-
-        </td>
-        <td>
-
-            @inputWithCurrencySymbol(
-            testOperatingCostsForm("rAndDCosts3rdYear"),
-            '_divClass -> "form-label",
-            '_labelId -> "label-amount-rAndDCosts3rdYear",
-            '_label -> Messages("page.companyDetails.OperatingCosts.row.three.label.randdcosts"),
-            '_labelTextClass -> "visuallyhidden",
-            '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
-            '_type -> "text",
-            '_maxlength -> "9",
-            'id -> "research-three"
-            )
-        </td>
-    </tr>
-    </tbody>
-    </table>
-
-    <h2>Percentage of staff with masters</h2>
+    <h2>Trade Start Date</h2>
     <div class="form-group">
         @formHiddenYesNoRadioNoError(
-        percentageStaffWithMastersForm,
-        "staffWithMasters",
-        Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint"),
-        formHint("yes-hint", Messages("page.percentageStaffWithMasters.yes.hint")),
+        tradeStartDateForm,
+        "hasTradeStartDate",
+        Messages("page.seis.companyDetails.TradeStartDate.question.hint"),
+        formInlineDateInput(tradeStartDateForm,"tradeStart",Some(Messages("page.seis.companyDetails.TradeStartDate.question.hint")),
+        false, Some(Messages("common.date.hint.example")), None),
         None,
         Some("visuallyhidden")
-        )
-    </div>
+        )</div>
 
-    <h2>10 Year Plan</h2>
-    <div class="form-group">
-        @formHiddenYesNoRadioNoError(
-        tenYearPlanForm,
-        "hasTenYearPlan",
-        Messages("page.companyDetails.CommercialSale.question.hint"),
-        textArea(
-        tenYearPlanForm("tenYearPlanDesc"),
-        '_cols -> "50",
-        '_rows -> "10",
-        '_maxLength-> Constants.SuggestedTextMaxLengthLower,
-        '_label-> Messages("page.knowledgeIntensive.TenYearPlan.description.one"),
-        '_info-> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.three"),
-        '_info2-> Messages("page.knowledgeIntensive.TenYearPlan.question.hint.four"),
-        '_infoTextClass-> "form-hint"
-        ),
-        None,
-        Some("visuallyhidden")
-        )
-    </div>
+
     <h2>Used Investment Scheme Before</h2>
     <div class="form-group">
         @formInputRadioGroup(
@@ -256,102 +68,287 @@
     <h2>Add Previous Scheme</h2>
 
     @for(previousScheme <- 0 to previousSchemesSize - 1) {
+    <div class="form-group">
+        <h3>Scheme @(previousScheme + 1)</h3>
         <div class="form-group">
-            <h3>Scheme @(previousScheme + 1)</h3>
-            <div class="form-group">
-                @formInputRadioGroup(
-                field = testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].schemeTypeDesc"),
-                Seq(
-                Constants.schemeTypeEis->Messages("page.previousInvestment.schemeType.eis"),
-                Constants.schemeTypeSeis->Messages("page.previousInvestment.schemeType.seis"),
-                Constants.schemeTypeSitr->Messages("page.previousInvestment.schemeType.sitr"),
-                Constants.schemeTypeVct->Messages("page.previousInvestment.schemeType.vct"),
-                Constants.schemeTypeOther->Messages("page.previousInvestment.schemeType.other")),
-                '_legend -> Messages("page.investment.PreviousScheme.schemeType"),
-                '_legendClass -> "heading-small",
-                '_legendID -> "scheme-type",
-                '_labelAfter -> true,
-                '_labelClass -> "block-label"
-                )
-            </div>
-
-            <div class="panel-indent form-group"  id="other-scheme">
-                @input(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeOtherSchemeName"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-other-scheme",
-                '_hintId -> "label-other-scheme-hint",
-                '_label -> Messages("page.investment.PreviousScheme.otherSchemeName.label"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "",
-                '_type -> "text",
-                '_maxlength -> "50",
-                'id -> "previousSchemeOtherSchemeName"
-                )
-
-            </div>
-            <div class="form-group"></div>
-
-            <div class="form-group divider--top--thick">
-                @inputWithCurrencySymbol(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentAmount"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-amount",
-                '_hintId -> "label-amount-hint",
-                '_label -> Messages("page.investment.PreviousScheme.investmentAmount"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "input--normal input--no-spinner input--left-padding",
-                '_type -> "text",
-                '_maxlength -> "9",
-                'id -> "previousSchemeInvestmentAmount"
-                )
-            </div>
-
-            <div class="panel-indent" id="investment-spent">
-                @inputWithCurrencySymbol(
-                testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentSpent"),
-                '_divClass -> "form-label",
-                '_labelId -> "label-amount-spent",
-                '_hintId -> "label-amount-spent-hint",
-                '_label -> Messages("page.previousInvestment.amountSpent.label"),
-                '_labelTextClass -> "heading-small block",
-                '_inputHint -> "",
-                '_inputClass -> "input--normal input--no-spinner input--left-padding",
-                '_type -> "text",
-                '_maxlength -> "9",
-                'id -> "previousSchemeInvestmentSpent"
-                )
-            </div>
-            <div class="form-group"></div>
-
-            <div class="form-group divider--top--thick"></div>
-
-            @formInlineDateInput(testPreviousSchemesForm,s"testPreviousSchemes[$previousScheme].previousSchemeInvestment",
-            Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
-            false, Some(Messages("common.date.hint.example")), Some("heading-small"))
-
-            <div>
-                <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
-            </div>
+            @formInputRadioGroup(
+            field = testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].schemeTypeDesc"),
+            Seq(
+            Constants.schemeTypeEis->Messages("page.previousInvestment.schemeType.eis"),
+            Constants.schemeTypeSeis->Messages("page.previousInvestment.schemeType.seis"),
+            Constants.schemeTypeSitr->Messages("page.previousInvestment.schemeType.sitr"),
+            Constants.schemeTypeVct->Messages("page.previousInvestment.schemeType.vct"),
+            Constants.schemeTypeOther->Messages("page.previousInvestment.schemeType.other")),
+            '_legend -> Messages("page.investment.PreviousScheme.schemeType"),
+            '_legendClass -> "heading-small",
+            '_legendID -> "scheme-type",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label"
+            )
         </div>
+
+        <div class="panel-indent form-group"  id="other-scheme">
+            @input(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeOtherSchemeName"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-other-scheme",
+            '_hintId -> "label-other-scheme-hint",
+            '_label -> Messages("page.investment.PreviousScheme.otherSchemeName.label"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "",
+            '_type -> "text",
+            '_maxlength -> "50",
+            'id -> "previousSchemeOtherSchemeName"
+            )
+
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group divider--top--thick">
+            @inputWithCurrencySymbol(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentAmount"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount",
+            '_hintId -> "label-amount-hint",
+            '_label -> Messages("page.investment.PreviousScheme.investmentAmount"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "9",
+            'id -> "previousSchemeInvestmentAmount"
+            )
+        </div>
+
+        <div class="panel-indent" id="investment-spent">
+            @inputWithCurrencySymbol(
+            testPreviousSchemesForm(s"testPreviousSchemes[$previousScheme].previousSchemeInvestmentSpent"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount-spent",
+            '_hintId -> "label-amount-spent-hint",
+            '_label -> Messages("page.previousInvestment.amountSpent.label"),
+            '_labelTextClass -> "heading-small block",
+            '_inputHint -> "",
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "9",
+            'id -> "previousSchemeInvestmentSpent"
+            )
+        </div>
+        <div class="form-group"></div>
+
+        <div class="form-group divider--top--thick"></div>
+
+        @formInlineDateInput(testPreviousSchemesForm,s"testPreviousSchemes[$previousScheme].previousSchemeInvestment",
+        Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
+        false, Some(Messages("common.date.hint.example")), Some("heading-small"))
+
+        <div>
+            <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
+        </div>
+    </div>
     }
 
+    <h2>How much you want to raise</h2>
+    <div class="form-group">
+        @inputWithCurrencySymbol(
+        proposedInvestmentForm("investmentAmount"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-amount",
+        '_hintId -> "label-amount-hint",
+        '_label -> Messages("page.investment.amount.heading"),
+        '_labelTextClass -> "visuallyhidden",
+        '_inputHint -> Messages("page.investment.amount.hint"),
+        '_inputClass -> "input--normal input--no-spinner input--left-padding",
+        '_type -> "text",
+        '_maxlength -> "7",
+        'id -> "investmentAmount"
+        )
+
+    </div>
+
+    <h2>Confirm Contact Details</h2>
+    <div class="form-group">
+
+        <div id="storedContactDetailsDiv" class="form-group">
+            <input id="contactDetails.forename" name="contactDetails.forename" type="text" class="form-group" value="testName1"/>
+            <input id="contactDetails.surname" name="contactDetails.surname" type="text" class="form-group" value="testName2"/>
+            <input id="contactDetails.telephoneNumber" name="contactDetails.telephoneNumber" type="text" class="form-group" value="000000000000"/>
+            <input id="contactDetails.mobileNumber" name="contactDetails.mobileNumber" type="text" class="form-group" value="000000000001"/>
+            <input id="contactDetails.email" name="contactDetails.email" type="text" class="form-group" value="test&commat;test.com"/>
+        </div>
+
+        @formInputRadioGroup(
+        field = confirmContactDetailsForm("contactDetailsUse"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.contactInformation.ConfirmContactDetails.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Contact Details</h2>
+    <div class="form-group">
+
+        @input(
+        contactDetailsForm("forename"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-forename",
+        '_label -> Messages("page.contactInformation.contactDetails.forename.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "forename"
+        )
+
+        @input(
+        contactDetailsForm("surname"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-surname",
+        '_label -> Messages("page.contactInformation.contactDetails.surname.label"),
+        '_maxlength -> "35",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "surname"
+        )
+
+        @input(
+        contactDetailsForm("telephoneNumber"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-telephoneNumber",
+        '_label -> Messages("page.contactInformation.contactDetails.phoneNumber.label"),
+        '_maxlength -> "24",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "phoneNumber"
+        )
+
+        @input(
+        contactDetailsForm("mobileNumber"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-mobileNumber",
+        '_label -> Messages("page.contactInformation.contactDetails.mobileNumber.label"),
+        '_maxlength -> "24",
+        '_inputClass -> "input--medium input--cleared",
+        'id -> "mobileNumber"
+        )
+
+        @input(
+        contactDetailsForm("email"),
+        '_divClass -> "form-label",
+        '_labelId -> "label-email",
+        '_label -> Messages("page.contactInformation.contactDetails.email.label"),
+        '_inputClass -> "input--medium input--cleared",
+        '_maxlength -> "129",
+        'id -> "email"
+        )
+
+    </div>
+
+    <h2>Confirm Contact Address</h2>
+    <div class="form-group">
+
+        <div id="storedAddressDiv" class="form-group">
+            <input id="address.addressline1" name="address.addressline1" type="text" class="form-group" value="testLine1"/>
+            <input id="address.addressline2" name="address.addressline2" type="text" class="form-group" value="testLine2"/>
+            <input id="address.addressline3" name="address.addressline3" type="text" class="form-group" value="testLine3"/>
+            <input id="address.addressline4" name="address.addressline4" type="text" class="form-group" value="testLine4"/>
+            <input id="address.postcode" name="address.postcode" type="text" class="form-group" value="AA1 1AA"/>
+            <input id="address.countryCode" name="address.countryCode" type="text" class="form-group" value="GB"/>
+        </div>
+
+        @formInputRadioGroup(
+        field = confirmCorrespondAddressForm("contactAddressUse"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.contactInformation.ConfirmCorrespondAddress.title"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Contact Address</h2>
+    <div class="form-group">
+        <div class="form-group">
+            @input(
+            contactAddressForm("addressline1"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-addressline1",
+            '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline1.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "addressline1"
+            )
+        </div>
+        <div class="form-group">
+            @input(
+            contactAddressForm("addressline2"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-addressline2",
+            '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline2.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "addressline2"
+            )
+        </div>
+        <div class="form-group">
+            @input(
+            contactAddressForm("addressline3"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-addressline3",
+            '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline3.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "addressline3"
+            )
+        </div>
+        <div class="form-group">
+            @input(
+            contactAddressForm("addressline4"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-addressline4",
+            '_label -> Messages("page.contactInformation.ProvideContactAddress.addressline4.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "addressline4"
+            )
+        </div>
+        <div class="form-group">
+            @input(
+            contactAddressForm("postcode"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-postcode",
+            '_label -> Messages("page.contactInformation.ProvideContactAddress.postcode.label"),
+            '_maxlength -> "10",
+            '_inputClass -> "input--small input--cleared",
+            'id -> "postcode"
+            )
+        </div>
+        <div class="form-group">
+            @dropdown(contactAddressForm("countryCode"),
+            elementOptions = CountriesHelper.getIsoCodeTupleList,
+            displayEmptyValue = true,
+            '_emptyValueText -> Messages("page.address.country.select"),
+            '_labelId -> "label-country",
+            '_id -> "countryCode",
+            '_inputClass -> "input--medium input--cleared",
+            '_label -> Html(Messages("page.contactInformation.ProvideContactAddress.country.label")))
+        </div>
+    </div>
 
     <div class="form-group">
         <button class="btn button" type="submit" id="next">
-           @Messages("page.test.submit-form.button")
+            @Messages("page.test.submit-form.button")
         </button>
 
         <a class="btn button" id="clear-cache" href="@testOnly.controllers.routes.ClearCacheController.clearCache()">
             @Messages("page.test.clear-cache.button")
         </a>
-
-        <a class="btn button" id="page-two" href="@testOnly.controllers.routes.TestEndpointSEISController.showPageTwo()">
-            @Messages("page.test.page-two.button")
-        </a>
-
     </div>
 
     }

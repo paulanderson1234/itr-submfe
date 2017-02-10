@@ -1,6 +1,6 @@
 @import models.submission.SchemeTypesModel
 @import uk.gov.hmrc.play.views.html.helpers.form
-@import views.html.helpers.{backButton,singleCheckbox,errorSummary}
+@import views.html.helpers.{externalLink,backButton,singleCheckbox,errorSummary}
 
 @(schemeTypesForm: Form[SchemeTypesModel])(implicit request: Request[_], messages: Messages)
 
@@ -16,6 +16,30 @@
 
         <div class="form-group">
             @singleCheckbox(
+            schemeTypesForm("EIS"),
+            '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.eis"),
+            '_labelTextClass -> "visuallyhidden",
+            'id -> "EIS"
+            )
+
+            <details>
+                <summary><span id="EIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.eis.subHeading")</span></summary>
+                <div class="panel panel-indent panel-border-narrow">
+                    <p id="EIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.eis.text")</p>
+                        <ul class ="list list-bullet">
+                            <li id="EIS-bullet-one">@Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.one")</li>
+                            <li id="EIS-bullet-two">@Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.two")</li>
+                        </ul>
+                    <p id="EIS-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.eis.findOutMore")
+                        @externalLink(Messages("page.schemeSelection.SchemeSelection.help.eis.link"),
+                        "https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction/enterprise-investment-scheme",
+                        Some("the-enterprise-investment-scheme"))
+                    </p>
+                </div>
+            </details>
+
+
+            @singleCheckbox(
                 schemeTypesForm("SEIS"),
                 '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.seis"),
                 '_labelTextClass -> "visuallyhidden",
@@ -23,23 +47,14 @@
             )
 
             <details>
-                <summary><span id="SEIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.seis.link")</span></summary>
+                <summary><span id="SEIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.seis.subHeading")</span></summary>
                 <div class="panel panel-indent panel-border-narrow">
                     <p id="SEIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.seis.text")</p>
-                </div>
-            </details>
-
-            @singleCheckbox(
-                schemeTypesForm("EIS"),
-                '_label -> Messages("page.schemeSelection.SchemeSelection.checkbox.eis"),
-                '_labelTextClass -> "visuallyhidden",
-                'id -> "EIS"
-            )
-
-            <details>
-                <summary><span id="EIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.eis.link")</span></summary>
-                <div class="panel panel-indent panel-border-narrow">
-                    <p id="EIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.eis.text")</p>
+                    <p id="SEIS-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.seis.findOutMore")
+                        @externalLink(Messages("page.schemeSelection.SchemeSelection.help.seis.link"),
+                        "https://www.gov.uk/guidance/seed-enterprise-investment-scheme-background",
+                        Some("the-seed-enterprise-investment-scheme"))
+                    </p>
                 </div>
             </details>
 
@@ -51,9 +66,18 @@
             )
 
             <details>
-                <summary><span id="VCT-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.vct.link")</span></summary>
+                <summary><span id="VCT-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.vct.subHeading")</span></summary>
                 <div class="panel panel-indent panel-border-narrow">
                     <p id="VCT-help-text">@Messages("page.schemeSelection.SchemeSelection.help.vct.text")</p>
+                    <ul class ="list list-bullet">
+                        <li id="VCT-bullet-one">@Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.one")</li>
+                        <li id="VCT-bullet-two">@Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.two")</li>
+                    </ul>
+                    <p id="VCT-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.vct.findOutMore")
+                        @externalLink(Messages("page.schemeSelection.SchemeSelection.help.vct.link"),
+                        "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm50010",
+                        Some("the-venture-capital-trust-scheme"))
+                    </p>
                 </div>
             </details>
 
