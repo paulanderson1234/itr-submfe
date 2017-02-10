@@ -23,7 +23,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import forms.PreviousSchemeForm._
@@ -38,11 +38,11 @@ object PreviousSchemeController extends PreviousSchemeController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  def show(id: Option[Int]): Action[AnyContent] = seisFeatureSwitch {
+  def show(id: Option[Int]): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -69,7 +69,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       previousSchemeForm.bindFromRequest().fold(
         formWithErrors => {

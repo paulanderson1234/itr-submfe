@@ -21,7 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import models._
 import models.seis.SEISCheckAnswersModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -41,7 +41,7 @@ object CheckAnswersController extends CheckAnswersController{
 }
 
 trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper
-  with SEISFeatureSwitch {
+  with FeatureSwitch {
 
   val s4lConnector: S4LConnector
 
@@ -62,7 +62,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     previousSchemes, proposedInvestment, subsidiariesSpendingInvestment, subsidiariesNinetyOwned, contactDetails, contactAddress,
     applicationConfig.uploadFeatureEnabled)
 
-  def show (envelopeId: Option[String]) : Action[AnyContent]= seisFeatureSwitch {
+  def show (envelopeId: Option[String]) : Action[AnyContent]= featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       if (envelopeId.fold("")(_.toString).length > 0) {
         s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
@@ -72,7 +72,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(controllers.seis.routes.AcknowledgementController.show()))
     }

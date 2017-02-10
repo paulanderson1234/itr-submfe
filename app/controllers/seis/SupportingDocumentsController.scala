@@ -22,7 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import services.{FileUploadService}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.supportingDocuments.SupportingDocuments
 import play.api.i18n.Messages.Implicits._
@@ -41,13 +41,13 @@ object SupportingDocumentsController extends SupportingDocumentsController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       if (fileUploadService.getUploadFeatureEnabled) {
         Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
@@ -61,7 +61,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(routes.CheckAnswersController.show()))
     }

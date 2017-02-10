@@ -23,7 +23,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.NatureOfBusinessForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -39,11 +39,11 @@ object NatureOfBusinessController extends NatureOfBusinessController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
         case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
         case None => Ok(NatureOfBusiness(natureOfBusinessForm))
@@ -51,7 +51,7 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
     }
   }
 
-  val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       natureOfBusinessForm.bindFromRequest().fold(
         formWithErrors => {
           Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))

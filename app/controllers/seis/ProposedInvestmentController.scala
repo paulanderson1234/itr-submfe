@@ -24,7 +24,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models._
 import common._
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.ProposedInvestmentForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -40,12 +40,12 @@ object ProposedInvestmentController extends ProposedInvestmentController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-  def show: Action[AnyContent] = seisFeatureSwitch {
+  def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -65,7 +65,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     }
   }
 
-  def submit: Action[AnyContent] = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       proposedInvestmentForm.bindFromRequest().fold(
         formWithErrors => {
           ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).map {

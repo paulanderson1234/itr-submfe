@@ -19,7 +19,7 @@ package controllers.seis
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -33,9 +33,9 @@ object PreviousInvestmentsAllowanceExceededController extends PreviousInvestment
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousInvestmentsAllowanceExceededController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch{
+trait PreviousInvestmentsAllowanceExceededController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch{
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Ok(PreviousInvestmentnsAllowanceExceeded()))
     }

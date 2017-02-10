@@ -21,8 +21,8 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.featureSwitch.SEISFeatureSwitch
 import controllers.feedback
+import controllers.predicates.FeatureSwitch
 import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
@@ -46,7 +46,7 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val fileUploadService = FileUploadService
 }
 
-trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
@@ -55,7 +55,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
 
   //noinspection ScalaStyle
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       for {
       // minimum required fields to continue
@@ -80,7 +80,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     }
   }
 
-  def submit: Action[AnyContent] = seisFeatureSwitch {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.apply { implicit user => implicit request =>
       Redirect(feedback.routes.FeedbackController.show().url)
     }

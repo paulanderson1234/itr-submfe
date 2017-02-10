@@ -29,7 +29,7 @@ import views.html.seis.supportingDocuments.SupportingDocumentsUpload
 import config.FrontendGlobal.notFoundTemplate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 
 import scala.concurrent.Future
 
@@ -43,13 +43,13 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
 
@@ -78,7 +78,7 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       supportingDocumentsUploadForm.bindFromRequest().fold(
         formWithErrors => {

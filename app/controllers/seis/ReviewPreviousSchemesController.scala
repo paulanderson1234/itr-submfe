@@ -22,7 +22,7 @@ import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import models.HadPreviousRFIModel
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -42,12 +42,12 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
 }
 
 trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with
-  PreviousSchemesHelper with SEISFeatureSwitch {
+  PreviousSchemesHelper with FeatureSwitch {
 
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -71,21 +71,21 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  def add: Action[AnyContent] = seisFeatureSwitch {
+  def add: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
       Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
     }
   }
 
-  def change(id: Int): Action[AnyContent] = seisFeatureSwitch {
+  def change(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
       Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
     }
   }
 
-  def remove(id: Int): Action[AnyContent] = seisFeatureSwitch {
+  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
       PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
@@ -94,7 +94,7 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean): Future[Result] = {

@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package controllers.featureSwitch
+package controllers.predicates
 
-import config.AppConfig
-import play.api.mvc.{Action, AnyContent}
 import play.api.mvc.Results._
+import play.api.mvc.{Action, AnyContent}
 
-trait SEISFeatureSwitch {
+trait FeatureSwitch {
 
-  val applicationConfig: AppConfig
-  val seisFeatureEnabled = applicationConfig.seisFlowEnabled
-
-  def seisFeatureSwitch(action: Action[AnyContent]): Action[AnyContent] = {
-    if(seisFeatureEnabled) {
+  def featureSwitch(featureEnabled: Boolean)(action: Action[AnyContent]): Action[AnyContent] = {
+    if(featureEnabled) {
       action
     } else {
       redirect

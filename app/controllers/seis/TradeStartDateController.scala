@@ -21,7 +21,7 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.TradeStartDateForm._
 import models.TradeStartDateModel
 import play.Logger
@@ -41,11 +41,11 @@ object TradeStartDateController extends TradeStartDateController{
   override lazy val submissionConnector = SubmissionConnector
 }
 
-trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch{
+trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch{
   val s4lConnector: S4LConnector
   val submissionConnector: SubmissionConnector
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
         case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
@@ -54,7 +54,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       tradeStartDateForm.bindFromRequest().fold(
         formWithErrors => {

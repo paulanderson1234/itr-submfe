@@ -20,7 +20,7 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import models.ContactDetailsModel
 import forms.ContactDetailsForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,11 +38,11 @@ object ContactDetailsController extends ContactDetailsController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   val s4lConnector: S4LConnector
 
-  val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
         case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))
         case None => Ok(ContactDetails(contactDetailsForm))
@@ -50,7 +50,7 @@ trait ContactDetailsController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       contactDetailsForm.bindFromRequest().fold(
         formWithErrors => {
           Future.successful(BadRequest(ContactDetails(formWithErrors)))
