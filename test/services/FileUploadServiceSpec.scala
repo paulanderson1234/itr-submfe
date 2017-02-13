@@ -41,8 +41,10 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTes
     override val getUploadFeatureEnabled = true
   }
 
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
+
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
-  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
+  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext, internalId)
 
   val envelopeId: Option[String] = Some("000000000000000000000000")
 

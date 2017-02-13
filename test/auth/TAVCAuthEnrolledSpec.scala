@@ -33,6 +33,8 @@ import scala.concurrent.Future
 
 class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSugar {
 
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
+
   "Government Gateway Provider" should {
     "have an account type additional parameter set to organisation" in {
       val ggw = new GovernmentGatewayProvider(MockConfig.introductionUrl, MockConfig.ggSignInUrl)
@@ -66,7 +68,7 @@ class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSuga
 
   "Extract previously logged in time of logged in user" should {
     s"return ${ggUser.previouslyLoggedInAt.get}" in {
-      val user = TAVCUser(ggUser.allowedAuthContext)
+      val user = TAVCUser(ggUser.allowedAuthContext,internalId)
       user.previouslyLoggedInAt shouldBe ggUser.previouslyLoggedInAt
     }
   }

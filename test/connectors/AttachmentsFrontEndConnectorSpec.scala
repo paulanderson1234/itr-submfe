@@ -43,9 +43,11 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
     override val http = mock[WSHttp]
   }
 
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
+
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
 
-  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
+  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext, internalId)
   
   val validTavcReference = "XATAVC000123456"
 
@@ -61,7 +63,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
     "expecting a successful response" should {
       "return a Status OK (200) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
-          s"/internal/$validTavcReference/${envelopeId.get}/${user.authContext.user.oid}/close-envelope"))
+          s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
           (Matchers.any(),Matchers.any())).thenReturn(successResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
@@ -75,7 +77,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
     "expecting a non-successful response" should {
       "return a Status BAD_REQUEST (400) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
-          s"/internal/$validTavcReference/${envelopeId.get}/${user.authContext.user.oid}/close-envelope"))
+          s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
           (Matchers.any(),Matchers.any())).thenReturn(failedResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
