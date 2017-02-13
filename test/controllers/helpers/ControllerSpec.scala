@@ -36,6 +36,7 @@ trait ControllerSpec extends BaseSpec {
     .thenReturn(Future.successful(None))
 
   implicit val hc = HeaderCarrier()
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
 
 
 }

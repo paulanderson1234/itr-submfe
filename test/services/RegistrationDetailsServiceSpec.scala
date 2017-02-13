@@ -41,6 +41,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with One
   val mockS4LConnector = mock[S4LConnector]
   val mockSubscriptionService = mock[SubscriptionService]
   val tavcRef = "XATAVC000123456"
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
 
   val minimumRegResponse = Json.parse(
     """
@@ -71,7 +72,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with One
   val failedResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
 
   implicit val hc = HeaderCarrier()
-  implicit val user = TAVCUser(allowedAuthContext)
+  implicit val user = TAVCUser(allowedAuthContext, internalId)
 
   object TestService extends RegistrationDetailsService {
     override lazy val submissionConnector = mockSubmissionConnector
