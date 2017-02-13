@@ -383,8 +383,8 @@ page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for 
 page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you might still be eligible for other tax relief schemes.
 
 #investment grow description page
-page.investment.InvestmentGrow.heading=How will this investment help your company grow?
-page.investment.InvestmentGrow.title=How will this investment help your company grow?
+page.investment.InvestmentGrow.heading=How will this investment help your company grow and develop?
+page.investment.InvestmentGrow.title=How will this investment help your company grow and develop?
 page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
 page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
@@ -398,7 +398,7 @@ page.investment.InvestmentGrow.description.three=You must provide a business pla
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
 page.supportingDocuments.SupportingDocuments.heading=Supporting documents
-page.supportingDocuments.SupportingDocuments.text.one=Once you''ve submitted your details, you''ll need to email the company documents below. Further details are at the end of the application.
+page.supportingDocuments.SupportingDocuments.text.one=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:
 page.supportingDocuments.SupportingDocuments.bullet.one=business plan
 page.supportingDocuments.SupportingDocuments.bullet.two=shareholder agreements or drafts
 page.supportingDocuments.SupportingDocuments.bullet.three=memorandum and articles of association
@@ -413,7 +413,8 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
-page.checkAndSubmit.checkAnswers.description=You''re applying for an advance assurance for the Enterprise Investment Scheme.
+page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for the Enterprise Investment Scheme.
+page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=When you send your application, remember to include your company''s:

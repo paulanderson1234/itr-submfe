@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class SupportingDocumentsSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.checkAnswers")
+      document.getElementById("next").text() shouldBe Messages("common.button.continue")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.getElementById("description-one").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.one")
       document .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe
