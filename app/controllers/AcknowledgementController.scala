@@ -65,6 +65,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef <- getTavCReferenceNumber()
+      schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
       // potentially optional or required
@@ -79,7 +80,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
-        investmentGrow, dateOfIncorporation, contactAddress, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
     } yield result
   }
@@ -103,6 +104,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                             investmentGrowModel: Option[InvestmentGrowModel],
                                             dateOfIncorporation: Option[DateOfIncorporationModel],
                                             contactAddress: Option[AddressModel],
+                                            schemeType: Option[SchemeTypesModel],
                                             tavcReferenceNumber: String,
 
                                             // potentially optional or potentially required
@@ -122,16 +124,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
-      contactAddress, registrationDetailsModel) match {
+      contactAddress, registrationDetailsModel, schemeType) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(regDetail)) => {
+      Some(cntAddress), Some(regDetail), Some(schemeType)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
-          schemeTypes = SchemeTypesModel(eis = true),
+          schemeTypes = schemeType,
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           dateTradeCommenced = Constants.standardIgnoreYearValue,
           annualCosts = if (operatingCosts.nonEmpty)
@@ -189,7 +191,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _, _, _) => {
+      case (_, _, _, _, _, _, _, _, _) => {
         Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
         Future.successful(Redirect(routes.ApplicationHubController.show()))
       }

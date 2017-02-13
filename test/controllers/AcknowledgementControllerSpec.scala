@@ -30,7 +30,7 @@ import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
 import java.net.URLEncoder
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
-import models.submission.SubmissionResponse
+import models.submission.{SchemeTypesModel, SubmissionResponse}
 
 import scala.concurrent.Future
 
@@ -67,9 +67,12 @@ class AcknowledgementControllerSpec extends ControllerSpec {
     setUpMocksRegistrationService(mockRegistrationDetailsService)
   }
 
-  def setupMocks(): Unit =
+  def setupMocks(): Unit = {
     when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
+  }
 
   "AcknowledgementController" should {
     "use the correct keystore connector" in {
@@ -252,6 +255,8 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 5xx when an invalid email is submitted" in new SetupPageFull {
+      when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
       when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
       mockEnrolledRequest()

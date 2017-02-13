@@ -66,6 +66,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
         tavcRef <- getTavCReferenceNumber()
         tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
+        schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
         registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
         // potentially optional or required
@@ -74,7 +75,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
 
         result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
-          dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+          dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, schemeType, subsidiariesSpendInvest, subsidiariesNinetyOwned,
           previousSchemes.toList, registrationDetailsModel)
       } yield result
     }
@@ -107,6 +108,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                             contactAddress: Option[AddressModel],
                                             tavcReferenceNumber: String,
                                             tradeStartDateModel: Option[TradeStartDateModel],
+                                            schemeType: Option[SchemeTypesModel],
 
                                             // potentially optional or potentially required
                                             subsidiariesSpendInvest: Option[SubsidiariesSpendingInvestmentModel],
@@ -120,8 +122,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
     (natOfBusiness, contactDetails, proposedInvestment, dateOfIncorporation,
-      contactAddress, registrationDetailsModel, tradeStartDateModel) match {
-      case (Some(natureBusiness), Some(cntDetail), Some(propInv), Some(dateIncorp), Some(cntAddress), Some(regDetail), Some(tradeDateModel)) => {
+      contactAddress, registrationDetailsModel, tradeStartDateModel, schemeType) match {
+      case (Some(natureBusiness), Some(cntDetail), Some(propInv), Some(dateIncorp), Some(cntAddress), Some(regDetail), Some(tradeDateModel), Some(schemeType)) => {
 
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
@@ -130,7 +132,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           proposedInvestmentModel = propInv,
           investmentGrowModel = InvestmentGrowModel("N/A"),
           correspondenceAddress = cntAddress,
-          schemeTypes = SchemeTypesModel(seis = true),
+          schemeTypes = schemeType,
           marketInfo = None,
           dateTradeCommenced = getTradeStartDate(tradeDateModel),
           annualCosts = None,
@@ -184,7 +186,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _, _) => {
+      case (_, _, _, _, _, _, _, _) => {
         Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
         Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
       }
