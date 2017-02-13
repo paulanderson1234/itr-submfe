@@ -33,7 +33,6 @@ trait AppConfig {
   val contactFrontendService: String
   val signOutPageUrl: String
   val submissionUrl: String
-  val tempAttachmentFileUploadEISUrl: String
   val attachmentFileUploadUrl: (String)=> String
   val internalAttachmentsUrl: String
   val attachmentsFrontEndServiceBaseUrl: String
@@ -66,8 +65,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val reportAProblemNonJSUrl = s"$contactFrontendService/problem_reports_nonjs?service=$contactFormServiceIdentifier"
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
   override lazy val internalAttachmentsUrl = baseUrl("internal-attachments")
-  override lazy val tempAttachmentFileUploadEISUrl: String =  s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
-    s"/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/supporting-documents-upload"
   override lazy val attachmentFileUploadUrl: (String)=> String = schemeType => {
     s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
       s"/$schemeType/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/$schemeType/supporting-documents-upload"

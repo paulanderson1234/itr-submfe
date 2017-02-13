@@ -33,7 +33,7 @@ import scala.concurrent.Future
 object SupportingDocumentsController extends SupportingDocumentsController
 {
   val s4lConnector: S4LConnector = S4LConnector
-  val attachmentsFrontEndUrl = applicationConfig.tempAttachmentFileUploadEISUrl
+  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl("eis")
   val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector

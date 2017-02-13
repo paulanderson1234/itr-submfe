@@ -37,7 +37,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
     override lazy val authConnector = MockAuthConnector
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
+    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl("eis")
     override lazy val enrolmentConnector = mockEnrolmentConnector
 
   }
