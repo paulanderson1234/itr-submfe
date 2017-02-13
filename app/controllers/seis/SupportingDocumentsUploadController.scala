@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
   val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
@@ -45,7 +45,9 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
 
 trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 

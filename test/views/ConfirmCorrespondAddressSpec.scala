@@ -19,7 +19,7 @@ package views
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import controllers.ConfirmCorrespondAddressController
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
@@ -35,7 +35,7 @@ import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
+class ConfirmCorrespondAddressSpec extends ViewSpec with BaseSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]
@@ -67,7 +67,6 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
       "and there is no data already stored so it uses the ETMP address" in new Setup {
       val document: Document = {
         setupSaveForLaterMocks(None,Some("backLink"))
-        mockEnrolledRequest()
         mockSubscriptionServiceResponse(Some(expectedContactAddressFull))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue

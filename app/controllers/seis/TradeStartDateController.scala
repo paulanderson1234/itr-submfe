@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
@@ -33,16 +33,19 @@ import play.api.Play.current
 import scala.concurrent.Future
 
 
-object TradeStartDateController extends TradeStartDateController{
-  val s4lConnector: S4LConnector = S4LConnector
+object TradeStartDateController extends TradeStartDateController {
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val submissionConnector = SubmissionConnector
 }
 
-trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch{
-  val s4lConnector: S4LConnector
+trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
 
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {

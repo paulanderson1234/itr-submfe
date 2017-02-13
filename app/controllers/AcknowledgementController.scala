@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
@@ -32,7 +32,6 @@ import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
-
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
@@ -47,7 +46,9 @@ object AcknowledgementController extends AcknowledgementController{
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
   val fileUploadService: FileUploadService

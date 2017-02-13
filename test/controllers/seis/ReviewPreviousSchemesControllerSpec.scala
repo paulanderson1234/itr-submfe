@@ -16,13 +16,11 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -32,10 +30,10 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
+class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
   object TestController extends ReviewPreviousSchemesController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -72,13 +70,13 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(
-      if(tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get)) else Future.successful(None))
+      if (tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get)) else Future.successful(None))
   }
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
     "return a 200 OK when a populated vector is returned from keystore and a back link is retrieved" in {
       setupMocks(Some(previousSchemeVectorList), Some(routes.HadPreviousRFIController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -86,7 +84,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     "redirect to HadPreviousRFI when nothing is returned from keystore when authenticated and enrolled" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -97,61 +95,11 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     "redirect to HadPreviousRFI when no previous schemes are returned from keystore when authenticated and enrolled" in {
       setupMocks(backLink = Some(routes.HadPreviousRFIController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
-        }
-      )
-    }
-  }
-
-  "Sending a GET request to ReviewPreviousSchemesController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      setupMocks(Some(previousSchemeVectorList))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ReviewPreviousSchemesController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ReviewPreviousSchemesController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ReviewPreviousSchemesController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
         }
       )
     }
@@ -164,7 +112,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
 
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -178,7 +126,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
       when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -188,12 +136,12 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
- "redirect to proposed investment if there is no trade start date" in {
+  "redirect to proposed investment if there is no trade start date" in {
     setupMocks(Some(previousSchemeVectorList), Some("link"), None)
 
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-    mockEnrolledRequest()
+    mockEnrolledRequest(seisSchemeTypesModel)
     submitWithSessionAndAuth(TestController.submit)(
       result => {
         status(result) shouldBe SEE_OTHER
@@ -207,7 +155,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    mockEnrolledRequest()
+    mockEnrolledRequest(seisSchemeTypesModel)
     submitWithSessionAndAuth(TestController.submit)(
       result => {
         status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -220,7 +168,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
-    mockEnrolledRequest()
+    mockEnrolledRequest(seisSchemeTypesModel)
     submitWithSessionAndAuth(TestController.submit)(
       result => {
         status(result) shouldBe SEE_OTHER
@@ -232,8 +180,8 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
       setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapDeleted)
-      mockEnrolledRequest()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -246,8 +194,8 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" +
       "when authenticated and enrolled" in {
       setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -258,8 +206,8 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     "redirect to 'Review previous scheme' when the vector is empty when authenticated and enrolled" in {
       setupMocks()
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapEmpty)
-      mockEnrolledRequest()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -271,8 +219,8 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
   "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.add)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -284,60 +232,12 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
   "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest()
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-investment?id=" + testId)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NewGeographicalMarketController when NOT enrolled" should {
-    "redirect to the Susbcription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

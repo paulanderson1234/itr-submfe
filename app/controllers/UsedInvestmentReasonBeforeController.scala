@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -30,16 +30,16 @@ import play.api.Play.current
 import scala.concurrent.Future
 import views.html.investment.UsedInvestmentReasonBefore
 
-object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeController{
+object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeController {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {

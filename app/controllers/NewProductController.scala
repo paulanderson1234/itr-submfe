@@ -16,22 +16,23 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{SubmissionConnector, EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.NewProductForm._
 import models.{NewGeographicalMarketModel, NewProductModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.Transformers._
+
 import scala.concurrent.Future
 import views.html.investment.NewProduct
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 object NewProductController extends NewProductController{
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -40,7 +41,9 @@ object NewProductController extends NewProductController{
 
 trait NewProductController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>

@@ -38,7 +38,9 @@ object SchemeSelectionController extends SchemeSelectionController {
 
 trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq()
+
+
 
   def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>

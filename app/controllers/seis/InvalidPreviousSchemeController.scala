@@ -16,9 +16,9 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
@@ -31,9 +31,12 @@ object InvalidPreviousSchemeController extends InvalidPreviousSchemeController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait InvalidPreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch{
+
+  override val acceptedFlows = Seq(Seq(SEIS))
 
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>

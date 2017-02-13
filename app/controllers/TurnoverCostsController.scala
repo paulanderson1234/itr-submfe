@@ -16,9 +16,9 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{SubmissionConnector, EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import forms.TurnoverCostsForm._
@@ -33,7 +33,7 @@ import play.api.Play.current
 import scala.concurrent.Future
 
 object TurnoverCostsController extends TurnoverCostsController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -42,8 +42,10 @@ object TurnoverCostsController extends TurnoverCostsController {
 
 trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
   implicit val formatCostModel = Json.format[CostModel]
-  val s4lConnector: S4LConnector
+
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>

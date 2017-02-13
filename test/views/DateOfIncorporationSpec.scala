@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{DateOfIncorporationController, routes}
 import models.DateOfIncorporationModel
@@ -41,8 +42,8 @@ class DateOfIncorporationSpec extends ViewSpec {
   }
   
   def setupMocks(dateOfIncorporationModel: Option[DateOfIncorporationModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(dateOfIncorporationModel))
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(dateOfIncorporationModel))
 
   "The Date Of Incorporation page" should {
 

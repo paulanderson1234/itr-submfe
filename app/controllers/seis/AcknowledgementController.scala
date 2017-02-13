@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
@@ -48,7 +48,9 @@ object AcknowledgementController extends AcknowledgementController{
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
   val fileUploadService: FileUploadService

@@ -17,6 +17,7 @@
 package views.seis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.seis.{DateOfIncorporationController, routes}
 import models.DateOfIncorporationModel
@@ -41,12 +42,12 @@ class DateOfIncorporationSpec extends ViewSpec {
   }
   
   def setupMocks(dateOfIncorporationModel: Option[DateOfIncorporationModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(dateOfIncorporationModel))
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(dateOfIncorporationModel))
 
   "The Date Of Incorporation page" should {
 
-    "Verify that date of incorporation page contains the correct elements when a valid DateOfIncorporationModel is passed" in new Setup {
+    "Verify that date of incorporation page contains the correct elements when a valid DateOfIncorporationModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(dateOfIncorporationModel))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -67,7 +68,7 @@ class DateOfIncorporationSpec extends ViewSpec {
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.one")
     }
 
-    "Verify that the date of incorporation page contains the correct elements when an invalid DateOfIncorporationModel is passed" in new Setup {
+    "Verify that the date of incorporation page contains the correct elements when an invalid DateOfIncorporationModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)

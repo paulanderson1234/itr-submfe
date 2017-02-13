@@ -32,11 +32,12 @@ class TradeStartDateErrorSpec extends ViewSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "The Treade Start Date error page" should {
 
-    "Verify that start page contains the correct elements" in new Setup {
+    "Verify that start page contains the correct elements" in new SEISSetup {
       val document: Document = {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))

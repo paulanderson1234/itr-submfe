@@ -36,7 +36,7 @@ class SupportingDocumentsSpec extends ViewSpec {
   object TestController extends SupportingDocumentsController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override val s4lConnector = mockS4lConnector
+    override lazy val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
 
@@ -51,7 +51,7 @@ class SupportingDocumentsSpec extends ViewSpec {
 
   "The Supporting documents page" should {
 
-    "Verify that the Supporting documents page contains the correct elements with Correspondence Address back link" in new Setup {
+    "Verify that the Supporting documents page contains the correct elements with Correspondence Address back link" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)

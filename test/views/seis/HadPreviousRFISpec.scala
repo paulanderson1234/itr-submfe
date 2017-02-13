@@ -47,7 +47,7 @@ class HadPreviousRFISpec extends ViewSpec {
   }
 
   "Verify that the hadPreviousRFI page contains the correct elements " +
-    "when a valid HadPreviousRFIModel is passed as returned from keystore" in new Setup {
+    "when a valid HadPreviousRFIModel is passed as returned from keystore" in new SEISSetup {
     val document : Document = {
       setupMocks(Some(hadPreviousRFIModelYes))
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -67,7 +67,7 @@ class HadPreviousRFISpec extends ViewSpec {
   }
 
   "Verify that hadPreviousRFI page contains the correct elements when an empty model " +
-    "is passed because nothing was returned from keystore" in new Setup {
+    "is passed because nothing was returned from keystore" in new SEISSetup {
     val document : Document = {
       //TODO: replace with above when new controller available
       setupMocks()
@@ -87,7 +87,7 @@ class HadPreviousRFISpec extends ViewSpec {
     document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
 
-  "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new Setup {
+  "Verify that HadPreviousRFI page contains show the error summary when an invalid model (no radio button selection) is submitted" in new SEISSetup {
     setupMocks(Some(hadPreviousRFIModelYes))
 
     val document : Document = {

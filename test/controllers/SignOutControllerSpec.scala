@@ -19,16 +19,17 @@ package controllers
 import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.EnrolmentConnector
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
 
-class SignOutControllerSpec extends ControllerSpec {
+class SignOutControllerSpec extends BaseSpec {
 
   object TestController extends SignOutController {
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "SignOutController" should {

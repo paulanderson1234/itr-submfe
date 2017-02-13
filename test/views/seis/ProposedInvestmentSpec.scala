@@ -33,7 +33,7 @@ class ProposedInvestmentSpec extends ViewSpec {
 
   "The Proposed Investment page" should {
 
-    "Verify that the proposed investment page contains the correct elements when a valid ProposedInvestmentModel is passed" in new Setup {
+    "Verify that the proposed investment page contains the correct elements when a valid ProposedInvestmentModel is passed" in new SEISSetup {
       val document = Jsoup.parse(page(proposedInvestmentForm.fill(ProposedInvestmentModel(2))).body)
       document.title() shouldBe Messages("page.seis.investment.proposedInvestment.amount.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.seis.investment.proposedInvestment.amount.heading")
@@ -49,7 +49,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.three")
     }
 
-    "Verify that the proposed investment page contains the correct elements when an invalid ProposedInvestmentModel is passed" in new Setup {
+    "Verify that the proposed investment page contains the correct elements when an invalid ProposedInvestmentModel is passed" in new SEISSetup {
       val document = Jsoup.parse(page(proposedInvestmentForm.bindFromRequest()(fakeRequest.withHeaders("" -> ""))).body)
       document.title() shouldBe Messages("page.seis.investment.proposedInvestment.amount.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.seis.investment.proposedInvestment.amount.heading")
@@ -66,7 +66,7 @@ class ProposedInvestmentSpec extends ViewSpec {
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
-    "Verify that the proposed investment page contains the correct elements when an empty ProposedInvestmentModel is passed" in new Setup {
+    "Verify that the proposed investment page contains the correct elements when an empty ProposedInvestmentModel is passed" in new SEISSetup {
       val document = Jsoup.parse(page(proposedInvestmentForm).body)
       document.title() shouldBe Messages("page.seis.investment.proposedInvestment.amount.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.amount.heading")

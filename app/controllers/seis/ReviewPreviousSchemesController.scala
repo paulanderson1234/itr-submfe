@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
@@ -34,7 +34,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 
 object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -44,7 +44,9 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
 trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with
   PreviousSchemesHelper with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
 
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {

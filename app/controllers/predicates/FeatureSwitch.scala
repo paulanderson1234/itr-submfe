@@ -22,11 +22,8 @@ import play.api.mvc.{Action, AnyContent}
 trait FeatureSwitch {
 
   def featureSwitch(featureEnabled: Boolean)(action: Action[AnyContent]): Action[AnyContent] = {
-    if(featureEnabled) {
-      action
-    } else {
-      redirect
-    }
+    if(featureEnabled) action
+    else redirect
   }
 
   private def redirect = Action.apply {

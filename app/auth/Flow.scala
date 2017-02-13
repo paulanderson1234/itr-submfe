@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-package controllers
+package auth
 
-import helpers.BaseSpec
-import play.api.test.Helpers._
-
-class TimeoutControllerSpec extends BaseSpec {
-
-  "Sending a GET request to TimeoutController" should {
-    "return a 200" in {
-      status(TimeoutController.timeout(fakeRequest)) shouldBe OK
-    }
-  }
-}
+sealed trait Flow
+case object EIS extends Flow
+case object SEIS extends Flow
+case object VCT extends Flow
+case object SITR extends Flow

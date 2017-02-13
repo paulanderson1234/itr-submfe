@@ -43,8 +43,8 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
   }
 
   def setupMocks(previousSchemeVectorList: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemeVectorList))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemeVectorList))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
   }
@@ -53,7 +53,7 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
   "The Review Previous Schemes Spec page" should {
 
     "Verify that Review Previous Schemes page contains the correct table rows and data " +
-      "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new Setup {
+      "when a valid vector of PreviousSchemeModels are passed as returned from keystore" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(previousSchemeVectorList), Some(routes.PreviousSchemeController.show().url))
         val result = TestController.show.apply(authorisedFakeRequest)

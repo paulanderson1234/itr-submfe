@@ -16,16 +16,14 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
 
-class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
+class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
   
   object TestController extends CheckAnswersController {
     override lazy val applicationConfig = MockConfig
@@ -54,7 +52,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactAddressSetup(Some(contactAddressModel))
       seisCompanyDetailsSetup(Some(registeredAddressModel), Some(dateOfIncorporationModel),
         Some(natureOfBusinessModel), Some(subsidiariesModelYes), Some(tradeStartDateModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
       )
@@ -68,7 +66,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       seisCompanyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
       )
@@ -82,7 +80,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       seisCompanyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(None))(
         result => status(result) shouldBe OK
       )
@@ -96,96 +94,9 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       seisCompanyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(Some("")))(
         result => status(result) shouldBe OK
-      )
-    }
-  }
-
-  "Sending an Authenticated and NOT Enrolled GET request with a session to CheckAnswersControllerTest" should {
-    "redirect to the TAVC Subscription Service" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(envelopeId))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Authenticated and NOT Enrolled GET request (envelopeId is None) with a session to CheckAnswersControllerTest" should {
-    "redirect to the TAVC Subscription Service" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show(envelopeId))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request (envelopeId is None) with a session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show(envelopeId))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request (envelopeId is None) with no session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to CheckAnswersController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show(envelopeId))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
       )
     }
   }
@@ -193,52 +104,11 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
   "Sending a submission to the CheckAnswersController" should {
 
     "redirect to the acknowledgement page when authenticated and enrolled" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.seis.routes.AcknowledgementController.show().url)
-        }
-      )
-    }
-
-    "redirect to the subscription service when authenticated and NOT enrolled" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
         }
       )
     }

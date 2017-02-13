@@ -16,29 +16,27 @@
 
 package controllers
 
-import java.net.URLEncoder
 import java.time.ZoneId
 import java.util.Date
 
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
-class ProposedInvestmentControllerSpec extends ControllerSpec {
+class ProposedInvestmentControllerSpec extends BaseSpec {
 
   object TestController extends ProposedInvestmentController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
@@ -194,24 +192,24 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
 
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(keyStoreSavedProposedInvestment)))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockEnrolledRequest
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockEnrolledRequest
+        .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().url)))
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -223,11 +221,11 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
@@ -250,12 +248,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
         }
       )
     }
@@ -278,12 +276,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
         }
       )
     }
@@ -306,12 +304,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -335,12 +333,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -363,12 +361,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -391,12 +389,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -420,12 +418,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -448,12 +446,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -476,12 +474,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -504,12 +502,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -532,12 +530,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -546,7 +544,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
   // 5e
   "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
     "and when it IS deemed knowledge intensive and does not have subsidiaries and not exceeded lifetime limit" should {
-    "redirect to new subsidiaries-spending-investment page" in {
+    "redirect to investment grow page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -561,12 +559,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -575,7 +573,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
   // 5f
   "Sending a valid form submit to the ProposedInvestmentController for the first investment when no commercial sale has been made " +
     "and when it IS NOT deemed knowledge intensive and does not have subsidiaries and not exceeded lifetime limit" should {
-    "redirect to new subsidiaries-spending-investment page" in {
+    "redirect to investment grow page" in {
       when(mockSubmissionConnector.checkLifetimeAllowanceExceeded(Matchers.any(),Matchers.any(),Matchers.any(),Matchers.any())
       (Matchers.any())).thenReturn(Future.successful(Option(false)))
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(), Matchers.any()))
@@ -590,12 +588,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
         }
       )
     }
@@ -618,12 +616,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
         }
       )
     }
@@ -646,12 +644,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
         }
       )
     }
@@ -674,12 +672,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3YearsLessOneDay)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+          redirectLocation(result) shouldBe Some(routes.UsedInvestmentReasonBeforeController.show().url)
         }
       )
     }
@@ -702,12 +700,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+          redirectLocation(result) shouldBe Some(routes.UsedInvestmentReasonBeforeController.show().url)
         }
       )
     }
@@ -729,12 +727,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
@@ -757,12 +755,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(None))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
         }
       )
     }
@@ -785,12 +783,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(keyStoreSavedDOI3Years)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeTrueKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
@@ -809,12 +807,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(trueKIModel)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeUnderTotalAmount)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentAmount" -> "5000000"
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+          redirectLocation(result) shouldBe Some(routes.LifetimeAllowanceExceededController.show().url)
         }
       )
     }
@@ -834,12 +832,12 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+          redirectLocation(result) shouldBe Some(routes.LifetimeAllowanceExceededController.show().url)
         }
       )
     }
@@ -859,26 +857,23 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         .thenReturn(Future.successful(Option(falseKIModel)))
       when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(previousSchemeOverFalseKIVectorList)))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentAmount" -> "1234567"
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
         }
       )
     }
   }
-
-
-
 
   "Sending an invalid form submission with validation errors to the ProposedInvestmentController" should {
     "redirect to itself" in {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.ReviewPreviousSchemesController.show().toString())))
-      mockEnrolledRequest
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "")(
         result => {
@@ -888,101 +883,4 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
-
-  "Sending a request with no session to ProposedInvestmentController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ProposedInvestmentController" should {
-    "return a 303" in {
-      status(ProposedInvestmentController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to ProposedInvestmentController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a request to ProposedInvestmentController when NOT enrolled" should {
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest
-      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

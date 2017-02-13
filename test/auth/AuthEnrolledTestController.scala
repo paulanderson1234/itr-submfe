@@ -16,7 +16,7 @@
 
 package auth
 
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
@@ -26,6 +26,8 @@ object AuthEnrolledTestController extends AuthEnrolledTestController with Mockit
   override lazy val applicationConfig = mockConfig
   override lazy val authConnector = mockAuthConnector
   override lazy val enrolmentConnector = mock[EnrolmentConnector]
+  override lazy val s4lConnector = mock[S4LConnector]
+  override lazy val acceptedFlows = Seq()
 }
 
 trait AuthEnrolledTestController extends FrontendController with AuthorisedAndEnrolledForTAVC {

@@ -18,20 +18,25 @@ package auth
 
 import java.net.URLEncoder
 
+import common.KeystoreKeys
+import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.helpers.BaseSpec
+import models.submission.SchemeTypesModel
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.test.FakeRequest
 import play.api.http.Status
 import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
-import uk.gov.hmrc.play.test.{UnitSpec}
+import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import uk.gov.hmrc.play.http.HeaderCarrier
+
 import scala.concurrent.Future
 
 
-class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSugar {
+class TAVCAuthEnrolledSpec extends BaseSpec {
 
   "Government Gateway Provider" should {
     "have an account type additional parameter set to organisation" in {
@@ -83,6 +88,8 @@ class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSuga
   "Calling authenticated async action with a default GG login session with no TAVC enrolment" should {
     "result in a redirect to subscription" in {
       implicit val hc = HeaderCarrier()
+      when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -94,6 +101,8 @@ class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSuga
     "result in a status OK" in {
       implicit val hc = HeaderCarrier()
       val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -119,6 +128,81 @@ class TAVCAuthEnrolledSpec extends UnitSpec with OneAppPerSuite with MockitoSuga
         .thenReturn(Future.successful("XATAVC000123456"))
       val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
       await(result) shouldBe "XATAVC000123456"
+    }
+  }
+
+  "Calling authenticated async action and selected schemes are valid for the controller" should {
+    "result in a status OK" in {
+      implicit val hc = HeaderCarrier()
+      object TestController extends AuthEnrolledTestController with MockitoSugar {
+        override lazy val applicationConfig = mockConfig
+        override lazy val authConnector = mockAuthConnector
+        override lazy val enrolmentConnector = mock[EnrolmentConnector]
+        override lazy val s4lConnector = mock[S4LConnector]
+        override lazy val acceptedFlows = Seq(Seq(EIS))
+      }
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSchemeTypesModel))
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
+      val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      status(result) shouldBe Status.OK
+    }
+  }
+
+  "Calling authenticated async action and no schemeTypesModel is returned and controller accepts all scheme types" should {
+    "result in status OK" in {
+      implicit val hc = HeaderCarrier()
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
+      val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      status(result) shouldBe Status.OK
+    }
+  }
+
+  "Calling authenticated async action and no schemeTypesModel is returned and controller only accepts specific schemes" should {
+    "redirect to the application hub page" in {
+      implicit val hc = HeaderCarrier()
+      object TestController extends AuthEnrolledTestController with MockitoSugar {
+        override lazy val applicationConfig = mockConfig
+        override lazy val authConnector = mockAuthConnector
+        override lazy val enrolmentConnector = mock[EnrolmentConnector]
+        override lazy val s4lConnector = mock[S4LConnector]
+        override lazy val acceptedFlows = Seq(Seq(EIS))
+      }
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
+      val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      status(result) shouldBe Status.SEE_OTHER
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+    }
+  }
+
+  "Calling authenticated async action and selected schemes are not valid for the controller" should {
+    "redirect to the application hub page" in {
+      implicit val hc = HeaderCarrier()
+      object TestController extends AuthEnrolledTestController with MockitoSugar {
+        override lazy val applicationConfig = mockConfig
+        override lazy val authConnector = mockAuthConnector
+        override lazy val enrolmentConnector = mock[EnrolmentConnector]
+        override lazy val s4lConnector = mock[S4LConnector]
+        override lazy val acceptedFlows = Seq(Seq(EIS))
+      }
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(seisSchemeTypesModel))
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
+      val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      status(result) shouldBe Status.SEE_OTHER
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
   }
 }

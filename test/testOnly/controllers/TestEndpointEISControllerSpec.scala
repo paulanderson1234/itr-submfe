@@ -21,7 +21,7 @@ import auth._
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import forms.NatureOfBusinessForm
 import models._
 import org.mockito.Matchers
@@ -33,7 +33,7 @@ import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.Future
 
-class TestEndpointEISControllerSpec extends ControllerSpec {
+class TestEndpointEISControllerSpec extends BaseSpec {
 
   object TestController extends TestEndpointEISController {
     override lazy val applicationConfig = FrontendAppConfig

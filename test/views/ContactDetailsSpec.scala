@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{ContactDetailsController, routes}
 import models.ContactDetailsModel
@@ -41,8 +42,8 @@ class ContactDetailsSpec extends ViewSpec {
   }
 
   def setupMocks(contactDetailsModel: Option[ContactDetailsModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(contactDetailsModel))
+    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.manualContactDetails))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(contactDetailsModel))
 
   "The Contact Details page" should {
 

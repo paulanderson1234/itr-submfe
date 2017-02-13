@@ -20,7 +20,6 @@ import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.seis.ConfirmCorrespondAddressController
-import controllers.helpers.ControllerSpec
 import data.SubscriptionTestData._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
@@ -35,7 +34,7 @@ import views.helpers.ViewSpec
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
+class ConfirmCorrespondAddressSpec extends ViewSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]
@@ -64,10 +63,9 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
   "The Confirm Correspondence Address page" should {
 
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid ConfirmCorrespondAddressModel is passed" +
-      "and there is no data already stored so it uses the ETMP address" in new Setup {
+      "and there is no data already stored so it uses the ETMP address" in new SEISSetup {
       val document: Document = {
         setupSaveForLaterMocks(None,Some("backLink"))
-        mockEnrolledRequest()
         mockSubscriptionServiceResponse(Some(expectedContactAddressFull))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
           "contactAddressUse" -> Constants.StandardRadioButtonYesValue
@@ -94,7 +92,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
       }
 
     "Verify that the Confirm Correspondence Address page contains the correct elements when a valid" +
-      "and there is data stored for the confirmCorrespondenceAddress" in new Setup {
+      "and there is data stored for the confirmCorrespondenceAddress" in new SEISSetup {
       val document: Document = {
         setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
         val result = TestController.show.apply(authorisedFakeRequest.withFormUrlEncodedBody(
@@ -122,7 +120,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with ControllerSpec {
     }
 
     "Verify that the Confirm Correspondence Address page contains the correct elements " +
-      "when an invalid ConfirmCorrespondAddressModel is passed" in new Setup {
+      "when an invalid ConfirmCorrespondAddressModel is passed" in new SEISSetup {
       val document: Document = {
         setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
         val result = TestController.submit.apply(authorisedFakeRequest.withFormUrlEncodedBody(

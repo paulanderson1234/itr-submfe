@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package auth
 
-import helpers.BaseSpec
-import play.api.test.Helpers._
+import connectors.S4LConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel.L50
+import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, NonNegotiableIdentityConfidencePredicate, PageVisibilityPredicate}
 
-class TimeoutControllerSpec extends BaseSpec {
-
-  "Sending a GET request to TimeoutController" should {
-    "return a 200" in {
-      status(TimeoutController.timeout(fakeRequest)) shouldBe OK
-    }
-  }
+class TAVCCompositePageVisibilityPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]]) extends CompositePageVisibilityPredicate {
+  override def children: Seq[PageVisibilityPredicate] = Seq (
+    new NonNegotiableIdentityConfidencePredicate(L50),
+    new FlowControlPredicate(s4lConnector, acceptedFlows)
+  )
 }

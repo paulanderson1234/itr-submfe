@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{NatureOfBusinessController, routes}
 import models.NatureOfBusinessModel
@@ -28,6 +29,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import play.api.i18n.Messages.Implicits._
+
 import scala.concurrent.Future
 
 class NatureOfBusinessSpec extends ViewSpec {
@@ -40,8 +42,8 @@ class NatureOfBusinessSpec extends ViewSpec {
   }
 
   def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(natureOfBusinessModel))
+    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(natureOfBusinessModel))
 
   "The Nature of business page" should {
 

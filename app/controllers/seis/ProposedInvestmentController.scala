@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.ControllerHelpers
@@ -33,7 +33,7 @@ import scala.concurrent.Future
 import views.html.seis.investment.ProposedInvestment
 
 object ProposedInvestmentController extends ProposedInvestmentController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -42,7 +42,9 @@ object ProposedInvestmentController extends ProposedInvestmentController {
 
 trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
 
   def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {

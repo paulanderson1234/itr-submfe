@@ -16,15 +16,13 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import data.SubscriptionTestData._
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
@@ -33,14 +31,14 @@ import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.SubscriptionService
 
-class ConfirmContactDetailsControllerSpec extends ControllerSpec {
+class ConfirmContactDetailsControllerSpec extends BaseSpec {
 
   implicit lazy val actorSystem = ActorSystem()
   implicit lazy val mat = ActorMaterializer()
 
   object TestController extends ConfirmContactDetailsController {
     override lazy val subscriptionService = mock[SubscriptionService]
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -80,7 +78,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       "return a Status OK (200) when something is fetched from keystore" in {
         mockSaveForLaterResponse(Some(confirmContactDetailsModel))
         mockSubscriptionServiceResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         status(result) shouldBe OK
       }
 
@@ -108,7 +106,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
       "return Status OK (200)" in {
         mockSaveForLaterResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         mockSubscriptionServiceResponse(Some(expectedContactDetailsFull))
         status(result) shouldBe OK
       }
@@ -141,69 +139,17 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
       "return Status INTERNAL_SERVER_ERROR (500)" in {
         mockSaveForLaterResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         mockSubscriptionServiceResponse()
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }
 
-  "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
-
-    "return a 303 to the subscription url" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the GG login page" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect Confirm Correspondence Address Page when the Yes option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonYesValue,
         "contactDetails.forename" -> "first",
@@ -222,7 +168,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonNoValue,
         "contactDetails.forename" -> "first",
@@ -242,7 +188,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   "Submitting a invalid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> "",
         "contactDetails.forename" -> "first",
@@ -258,63 +204,4 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
     }
   }
 
-  "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithSessionWithoutAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController with no session" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithoutSession(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController with a timeout" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the timeout page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithTimeout(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController when NOT enrolled" should {
-    "return a 303 and redirect to the Subscription Service" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockNotEnrolledRequest()
-      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

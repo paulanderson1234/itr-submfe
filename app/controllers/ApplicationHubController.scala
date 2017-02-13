@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
@@ -41,14 +41,16 @@ object ApplicationHubController extends ApplicationHubController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq()
+
+
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
 
