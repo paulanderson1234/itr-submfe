@@ -16,6 +16,7 @@
 
 package auth
 
+import auth.authModels.UserIDs
 import common.KeystoreKeys
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.S4LConnector
@@ -23,28 +24,34 @@ import models.submission.SchemeTypesModel
 import play.api.mvc.Results._
 import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.play.frontend.auth._
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FlowControlPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]]) extends PageVisibilityPredicate {
+class FlowControlPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]], authConnector: AuthConnector) extends PageVisibilityPredicate {
 
   override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
     implicit val hc = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
-    implicit val user = TAVCUser(authContext)
-    s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-      selectedSchemes =>
-        if (acceptedFlows.nonEmpty) {
-          if (selectedSchemes.isDefined) {
-            if (flowToSchemeTypesModel(acceptedFlows).contains(selectedSchemes.get)) PageIsVisible
+    getInternalId(authContext).flatMap {
+      internalID =>
+      implicit val user = TAVCUser(authContext, internalID)
+      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+        selectedSchemes =>
+          if (acceptedFlows.nonEmpty) {
+            if (selectedSchemes.isDefined) {
+              if (flowToSchemeTypesModel(acceptedFlows).contains(selectedSchemes.get)) PageIsVisible
+              else PageBlocked(redirect)
+            }
             else PageBlocked(redirect)
           }
-          else PageBlocked(redirect)
-        }
-        else PageIsVisible
+          else PageIsVisible
+      }.recover {
+        case e: Exception => PageBlocked(error(request))
+      }
     }.recover {
-      case e : Exception => PageBlocked(error(request))
+      case e: Exception => PageBlocked(error(request))
     }
   }
 
@@ -57,6 +64,14 @@ class FlowControlPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Fl
     )
     if(index < acceptedFlows.length - 1) flowToSchemeTypesModel(acceptedFlows, index + 1, output:+ schemeTypeModel)
     else output:+ schemeTypeModel
+  }
+
+  private def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] =
+  {
+    for {
+      userIds <- authConnector.getIds[UserIDs](authContext)
+    } yield userIds.internalId
+
   }
 
   private def redirect = Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))

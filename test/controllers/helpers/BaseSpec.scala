@@ -173,6 +173,8 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val eisSchemeTypesModel = Some(SchemeTypesModel(eis = true))
   val vctSchemeTypesModel = Some(SchemeTypesModel(vct = true))
 
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
+
   //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
 
 }

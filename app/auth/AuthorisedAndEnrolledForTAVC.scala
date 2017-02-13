@@ -16,12 +16,12 @@
 
 package auth
 
+import auth.authModels.UserIDs
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.http.HeaderCarrier
-
 import scala.concurrent.Future
 import connectors.{EnrolmentConnector, S4LConnector}
 
@@ -41,13 +41,15 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = TAVCUser => AsyncPlayRequest
 
-  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows)
+  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
 
   class AuthorisedAndEnrolled(regime: TaxRegime) {
     def async(action: AsyncUserRequest): Action[AnyContent] = {
       AuthorisedFor(regime, pageVisibilityPredicate).async {
         authContext: AuthContext => implicit request => enrolledCheck {
-          case Enrolled => action(TAVCUser(authContext))(request)
+          case Enrolled => getInternalId(authContext).flatMap{internalId =>
+            action(TAVCUser(authContext,internalId))(request)
+          }
           case NotEnrolled => Future.successful(Redirect(notEnrolledRedirectUrl))
         }
       }
@@ -57,6 +59,14 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   }
 
   object AuthorisedAndEnrolled extends AuthorisedAndEnrolled(TAVCRegime)
+
+  def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] =
+  {
+    for {
+      userIds <- authConnector.getIds[UserIDs](authContext)
+    } yield userIds.internalId
+
+  }
 
   def enrolledCheck(f: EnrolmentResult => Future[Result])(implicit hc: HeaderCarrier): Future[Result] = {
     for {

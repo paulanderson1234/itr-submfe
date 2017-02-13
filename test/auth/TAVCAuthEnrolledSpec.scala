@@ -71,7 +71,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
 
   "Extract previously logged in time of logged in user" should {
     s"return ${ggUser.previouslyLoggedInAt.get}" in {
-      val user = TAVCUser(ggUser.allowedAuthContext)
+      val user = TAVCUser(ggUser.allowedAuthContext,internalId)
       user.previouslyLoggedInAt shouldBe ggUser.previouslyLoggedInAt
     }
   }

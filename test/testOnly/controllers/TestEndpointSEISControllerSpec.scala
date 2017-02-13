@@ -42,7 +42,7 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
-  implicit val user = TAVCUser(ggUser.allowedAuthContext)
+  implicit val user = TAVCUser(ggUser.allowedAuthContext,internalId)
 
   def setupShowMocks(): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))

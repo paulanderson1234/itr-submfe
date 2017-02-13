@@ -17,12 +17,14 @@
 package auth
 
 import connectors.S4LConnector
+import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel.L50
 import uk.gov.hmrc.play.frontend.auth.{CompositePageVisibilityPredicate, NonNegotiableIdentityConfidencePredicate, PageVisibilityPredicate}
 
-class TAVCCompositePageVisibilityPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]]) extends CompositePageVisibilityPredicate {
+class TAVCCompositePageVisibilityPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]], authConnector: AuthConnector)
+  extends CompositePageVisibilityPredicate {
   override def children: Seq[PageVisibilityPredicate] = Seq (
     new NonNegotiableIdentityConfidencePredicate(L50),
-    new FlowControlPredicate(s4lConnector, acceptedFlows)
+    new FlowControlPredicate(s4lConnector, acceptedFlows, authConnector)
   )
 }
