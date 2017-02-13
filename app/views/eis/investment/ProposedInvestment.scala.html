@@ -1,0 +1,49 @@
+@import models.ProposedInvestmentModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+
+@(proposedInvestmentForm: Form[ProposedInvestmentModel], backlinkUrl: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.amount.title")) {
+
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        @errorSummary(proposedInvestmentForm, "proposed-investment", "investmentAmount")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.amount.heading")</h1>
+
+        @form(action = controllers.eis.routes.ProposedInvestmentController.submit()) {
+        <div class="form-group">
+           @inputWithCurrencySymbol(
+            proposedInvestmentForm("investmentAmount"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount",
+            '_hintId -> "label-amount-hint",
+            '_label -> Messages("page.investment.amount.heading"),
+            '_labelTextClass -> "visuallyhidden",
+            '_inputHint -> Messages("page.investment.amount.hint"),
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "7",
+            'id -> "investmentAmount"
+            )
+
+        </div>
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.investment.help.link")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p id="help-text">@Messages("page.investment.help.link.text")</p>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+        }
+    </div>
+</div>
+}

@@ -1,0 +1,61 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import models.InvestmentGrowModel
+@import common.Constants
+@import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea}
+
+@(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String, hasGeoMarket: Boolean, hasNewProduct: Boolean)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.InvestmentGrow.title")) {
+
+@backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(investmentGrowForm, "investment-growth-description", "investmentGrow")
+
+    <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.investment.InvestmentGrow.heading")</h1>
+
+    <div class="form-group">
+        <span id="description-one">@Messages("page.investment.InvestmentGrow.example.text")</span>
+        <ul class="list list-bullet">
+            <li id="bullet-one">@Messages("page.investment.InvestmentGrow.bullet.one")</li>
+            <li id="bullet-two">@Messages("page.investment.InvestmentGrow.bullet.two")</li>
+            <li id="bullet-three">@Messages("page.investment.InvestmentGrow.bullet.three")</li>
+        </ul>
+    </div>
+    @if(hasGeoMarket || hasNewProduct) {
+    <div class="form-group">
+        <span id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</span>
+        <ul id="optional-bullet-list" class="list list-bullet">
+            @if(hasGeoMarket) {
+            <li id="bullet-geographical-market">@Messages("page.investment.InvestmentGrow.bullet.geographicalMarket")</li>
+            }
+            @if(hasNewProduct) {
+            <li id="bullet-product-market">@Messages("page.investment.InvestmentGrow.bullet.productMarket")</li>
+            }
+        </ul>
+    </div>
+    }
+
+    <div class="form-group">
+        <p id="description-three">@Messages("page.investment.InvestmentGrow.description.three")</p>
+    </div>
+
+    @form(action = controllers.eis.routes.InvestmentGrowController.submit()) {
+
+            <div class="form-group">
+            <span class = "form-hint" id="desc-one">@Messages("page.investment.InvestmentGrow.question.hint")</span>
+            @textArea(
+                investmentGrowForm("investmentGrowDesc"),
+                '_cols -> "50",
+                '_rows -> "10",
+                '_maxLength-> Constants.SuggestedTextMaxLength,
+                '_label-> Messages("page.investment.InvestmentGrow.heading"),
+                '_labelTextClass-> "visuallyhidden"
+            )
+            </div>
+
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}

@@ -167,7 +167,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
@@ -201,7 +201,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
@@ -218,7 +218,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
@@ -235,7 +235,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
@@ -252,7 +252,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
@@ -269,7 +269,7 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
         ){
           result =>
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.NatureOfBusinessController.show().url)
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 

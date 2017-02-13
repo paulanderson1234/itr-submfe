@@ -1,0 +1,18 @@
+@import views.html.helpers.backButton
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.AnnualTurnoverError.title")) {
+
+    @backButton(controllers.eis.routes.TurnoverCostsController.show().toString)
+
+    <h1 id="main-heading" class="heading-xlarge">@Messages("page.investment.AnnualTurnoverError.heading")</h1>
+
+    <p id="description">
+        @Messages("page.investment.AnnualTurnoverError.description")
+    </p>
+
+    <p id="guidance">
+        <a id="guidance-link" href="#">@Messages("page.investment.AnnualTurnoverError.guidance")</a>
+    </p>
+}

@@ -65,19 +65,19 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
   private def routeToScheme(schemeTypesModel: SchemeTypesModel)(implicit request: Request[AnyContent]): Result = {
     schemeTypesModel match {
       //EIS Flow
-      case SchemeTypesModel(true,false,false,false) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(true,false,false,false) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //SEIS Flow
       case SchemeTypesModel(false,true,false,false) => Redirect(controllers.seis.routes.NatureOfBusinessController.show().url)
       //VCT Flow
-      case SchemeTypesModel(false,false,false,true) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(false,false,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //EIS SEIS Flow
-      case SchemeTypesModel(true,true,false,false) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(true,true,false,false) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //EIS VCT Flow
-      case SchemeTypesModel(true,false,false,true) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(true,false,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //SEIS VCT Flow
-      case SchemeTypesModel(false,true,false,true) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(false,true,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //EIS SEIS VCT Flow
-      case SchemeTypesModel(true,true,false,true) => Redirect(controllers.routes.NatureOfBusinessController.show().url)
+      case SchemeTypesModel(true,true,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //Invalid Flow
       case _ => BadRequest(SchemeSelection(schemeSelectionForm.fill(schemeTypesModel)))
     }

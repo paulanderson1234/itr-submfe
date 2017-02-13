@@ -1,0 +1,42 @@
+@import models.NewProductModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, externalLink}
+
+@(newProductForm: Form[NewProductModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.NewProduct.title")) {
+
+@backButtonWithProgress(controllers.eis.routes.NewGeographicalMarketController.show().toString, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(newProductForm, "used-investment-reason-before", "usedNewProduct")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.investment.NewProduct.heading")</h1>
+
+    <div class="form-group">
+        <span id="external-hint" class="form-hint">@Messages("page.investment.NewProduct.hint")
+            @externalLink(Messages("page.investment.NewProduct.hint.link"),"https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8157",Some("product-link"))
+        </span>
+    </div>
+
+    @form(action = controllers.eis.routes.NewProductController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = newProductForm("isNewProduct"),
+            Seq(
+            Constants.StandardRadioButtonYesValue-> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.investment.NewProduct.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}
