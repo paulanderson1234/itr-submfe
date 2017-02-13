@@ -81,7 +81,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/confirm-correspondence-address")
         }
       )
     }
@@ -94,7 +94,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), true)
       showWithSessionAndAuth(TestController.show) {
           result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents-upload")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/supporting-documents-upload")
       }
     }
   }
@@ -104,7 +104,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/check-your-answers")
       }
     }
   }

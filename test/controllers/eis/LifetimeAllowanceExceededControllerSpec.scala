@@ -118,7 +118,7 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }

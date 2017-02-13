@@ -138,7 +138,7 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/operating-costs")
         }
       )
     }
@@ -152,7 +152,7 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -166,7 +166,7 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }
@@ -180,7 +180,7 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -194,7 +194,7 @@ class IsKnowledgeIntensiveControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }

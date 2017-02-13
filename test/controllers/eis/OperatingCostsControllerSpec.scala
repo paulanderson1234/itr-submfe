@@ -153,7 +153,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/percentage-of-staff-with-masters")
         }
       )
     }
@@ -178,7 +178,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ineligible-for-knowledge-intensive")
         }
       )
     }
@@ -227,7 +227,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -252,7 +252,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -277,7 +277,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
         }
       )
     }

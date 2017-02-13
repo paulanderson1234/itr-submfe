@@ -81,7 +81,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }
@@ -144,7 +144,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-product")
         }
       )
     }
@@ -157,7 +157,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-product")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-product")
         }
       )
     }
@@ -172,7 +172,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }

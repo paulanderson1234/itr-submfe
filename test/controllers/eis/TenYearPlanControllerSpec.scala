@@ -100,7 +100,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
         }
       )
     }
@@ -115,7 +115,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -130,7 +130,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -145,7 +145,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ineligible-for-knowledge-intensive")
         }
       )
     }
@@ -160,7 +160,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
         "tenYearPlanDesc" -> "text")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }

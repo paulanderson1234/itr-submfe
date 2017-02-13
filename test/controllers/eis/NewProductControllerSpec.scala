@@ -151,7 +151,7 @@ class NewProductControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/annual-turnover")
           }
         )
       }
@@ -172,7 +172,7 @@ class NewProductControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/trading-for-too-long")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/trading-for-too-long")
           }
         )
       }

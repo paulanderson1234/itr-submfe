@@ -226,7 +226,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
         }
       )
     }
@@ -254,7 +254,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
@@ -282,7 +282,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
@@ -310,7 +310,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -339,7 +339,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -367,7 +367,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -395,7 +395,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -424,7 +424,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -452,7 +452,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -480,7 +480,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -508,7 +508,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -536,7 +536,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -565,7 +565,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -594,7 +594,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -622,7 +622,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -650,7 +650,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }
@@ -678,7 +678,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-reason-before")
         }
       )
     }
@@ -706,7 +706,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-reason-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-reason-before")
         }
       )
     }
@@ -733,7 +733,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
         }
       )
     }
@@ -761,7 +761,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/commercial-sale")
         }
       )
     }
@@ -789,7 +789,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -813,7 +813,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/lifetime-allowance-exceeded")
         }
       )
     }
@@ -838,7 +838,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/lifetime-allowance-exceeded")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/lifetime-allowance-exceeded")
         }
       )
     }
@@ -863,7 +863,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
         }
       )
     }

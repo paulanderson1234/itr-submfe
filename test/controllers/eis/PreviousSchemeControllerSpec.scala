@@ -160,7 +160,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
     showWithSessionAndAuth(TestController.show(Some(3)))(
       result => {
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
       }
     )
   }
@@ -171,7 +171,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
     showWithSessionAndAuth(TestController.show(None))(
       result => {
         status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+        redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
       }
     )
   }
@@ -195,7 +195,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }
@@ -221,7 +221,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }

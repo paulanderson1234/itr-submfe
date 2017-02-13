@@ -236,7 +236,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
@@ -250,7 +250,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -264,7 +264,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
         }
       )
     }
@@ -278,7 +278,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
@@ -292,7 +292,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
@@ -306,7 +306,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }

@@ -163,7 +163,7 @@ class SubsidiariesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/used-investment-scheme-before")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
         }
       )
     }

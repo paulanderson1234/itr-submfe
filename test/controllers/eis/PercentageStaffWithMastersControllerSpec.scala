@@ -145,7 +145,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }
@@ -159,7 +159,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
         }
       )
     }
@@ -173,7 +173,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -187,7 +187,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
         }
       )
     }
@@ -201,7 +201,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ten-year-plan")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ten-year-plan")
         }
       )
     }

@@ -132,7 +132,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/check-your-answers")
         }
       }
     }
@@ -153,7 +153,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/commercial-sale")
       }
     }
   }

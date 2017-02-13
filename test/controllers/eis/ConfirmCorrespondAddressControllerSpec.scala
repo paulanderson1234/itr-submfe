@@ -236,7 +236,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/supporting-documents")
         }
       )
     }
@@ -257,7 +257,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/contact-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/contact-address")
         }
       )
     }

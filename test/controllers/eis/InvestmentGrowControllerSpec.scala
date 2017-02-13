@@ -257,7 +257,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }

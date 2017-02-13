@@ -42,7 +42,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   }
 
   val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
-  val backLink = "/investment-tax-relief/previous-investment"
+  val backLink = "/investment-tax-relief/eis/previous-investment"
 
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
   val cacheMapEmpty: CacheMap = CacheMap("", Map("" -> Json.toJson(emptyVectorList)))
@@ -159,7 +159,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }
@@ -170,7 +170,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }
@@ -184,7 +184,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }
@@ -198,7 +198,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }
@@ -210,7 +210,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/review-previous-schemes")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
         }
       )
     }
@@ -223,7 +223,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.add)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-investment")
         }
       )
     }
@@ -236,7 +236,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-investment?id=" + testId)
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-investment?id=" + testId)
         }
       )
     }

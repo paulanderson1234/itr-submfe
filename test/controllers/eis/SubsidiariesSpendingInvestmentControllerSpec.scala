@@ -81,7 +81,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }
@@ -144,7 +144,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-ninety-percent-owned")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-ninety-percent-owned")
         }
       )
     }
@@ -157,7 +157,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
         }
       )
     }
@@ -171,7 +171,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
         }
       )
     }

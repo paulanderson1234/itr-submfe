@@ -62,7 +62,7 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/operating-costs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/operating-costs")
         }
       )
     }
@@ -136,7 +136,7 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
     }

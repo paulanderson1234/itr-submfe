@@ -168,7 +168,7 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries-spending-investment")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
           }
         )
       }
@@ -191,7 +191,7 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
           submitWithSessionAndAuth(TestController.submit, formInput: _*)(
             result => {
               status(result) shouldBe SEE_OTHER
-              redirectLocation(result) shouldBe Some("/investment-tax-relief/how-plan-to-use-investment")
+              redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
             }
           )
         }
@@ -214,7 +214,7 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/annual-turnover-error")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/annual-turnover-error")
           }
         )
       }
@@ -237,7 +237,7 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
           }
         )
       }
@@ -260,7 +260,7 @@ class TurnoverCostsControllerSpec extends ControllerSpec {
         submitWithSessionAndAuth(TestController.submit, formInput: _*)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
           }
         )
       }

@@ -217,7 +217,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
         submitWithSessionAndAuth(TestController.submit)(
           result => {
             status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/acknowledgement")
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/acknowledgement")
           }
         )
       }

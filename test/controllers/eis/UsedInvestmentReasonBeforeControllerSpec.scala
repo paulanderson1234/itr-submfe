@@ -80,7 +80,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/previous-before-dofcs")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-before-dofcs")
         }
       )
     }
@@ -93,7 +93,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/new-geographical-market")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
         }
       )
     }
