@@ -57,7 +57,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    for {
+    (for {
     // minimum required fields to continue
       kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
@@ -84,7 +84,12 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
         investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
-    } yield result
+    } yield result) recover {
+      case e: Exception => {
+        Logger.warn(s"[AcknowledgementController][submit] - SEIS - Exception: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+      }
+    }
   }
 
   def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
@@ -125,14 +130,14 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
       contactAddress, registrationDetailsModel, schemeType) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(regDetail), Some(schemeType)) => {
+      Some(cntAddress), Some(regDetail), Some(schType)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
-          schemeTypes = schemeType,
+          schemeTypes = schType,
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           dateTradeCommenced = Constants.standardIgnoreYearValue,
           annualCosts = if (operatingCosts.nonEmpty)
@@ -156,10 +161,15 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                 s4lConnector.clearCache()
                 Ok(views.html.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 InternalServerError
               }
             }
+          }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
         }
 
@@ -179,7 +189,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                   }
                 }
               case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel][ProcessResultUpload] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 Future.successful(InternalServerError)
               }
             }

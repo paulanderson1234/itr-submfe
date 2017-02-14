@@ -22,6 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
+import controllers.seis.routes
 import models._
 import models.submission.SchemeTypesModel
 import play.api.mvc.Result
@@ -81,11 +82,16 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
         None
     }
 
-    for {
+    (for {
       applicationHubModel <- getApplicationHubModel()
       route <- routeRequest(applicationHubModel)
-    } yield route
-
+    } yield route ) recover{
+      case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+      case e: Exception => {
+        Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+      }
+    }
   }
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -93,6 +99,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
     } else {
       s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+      s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
       Future.successful(Redirect(routes.NatureOfBusinessController.show()))
     }
   }

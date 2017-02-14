@@ -45,6 +45,9 @@ class ApplicationHubControllerSpec extends BaseSpec{
     override lazy val registrationDetailsService = mockRegistrationDetailsService
   }
 
+  val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+
+
   def setupMocks(bool: Option[Boolean]): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
@@ -54,6 +57,8 @@ class ApplicationHubControllerSpec extends BaseSpec{
       .thenReturn(Future.successful(bool))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(seisSchemeTypesModel))
+    when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(cacheMapSchemeTypes)
   }
 
   def setupMocksNotAvailable(): Unit = {

@@ -18,10 +18,12 @@ package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
+import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -92,13 +94,18 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
         val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
           Constants.StandardRadioButtonYesValue) true
         else false
-        for {
+        (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
-            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false) //TO DO - PROPER API CALL
+            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false)
           route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
-        } yield route
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
+        }
       }
     )
   }

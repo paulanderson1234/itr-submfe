@@ -19,6 +19,7 @@ package controllers.seis
 import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import controllers.feedback
@@ -59,7 +60,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   //noinspection ScalaStyle
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      for {
+      (for {
       // minimum required fields to continue
         natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
         contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
@@ -79,7 +80,12 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
           dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, schemeType, subsidiariesSpendInvest, subsidiariesNinetyOwned,
           previousSchemes.toList, registrationDetailsModel)
-      } yield result
+      } yield result) recover {
+        case e: Exception => {
+          Logger.warn(s"[AcknowledgementController][submit] - Exception: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
+      }
     }
   }
 
@@ -159,6 +165,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
               }
             }
           }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
 
         def ProcessResultUpload: Future[Result] = {
@@ -181,6 +192,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                 Future.successful(InternalServerError)
               }
             }
+          }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
         }
 

@@ -41,7 +41,9 @@ class NatureOfBusinessSpec extends ViewSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
+
   def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
+
     when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(natureOfBusinessModel))
 

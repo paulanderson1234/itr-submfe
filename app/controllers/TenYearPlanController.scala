@@ -23,7 +23,9 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
 import common._
+import config.FrontendGlobal._
 import forms.TenYearPlanForm._
+import play.Logger
 import views.html.knowledgeIntensive.TenYearPlan
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -40,7 +42,7 @@ object TenYearPlanController extends TenYearPlanController {
 
 trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
 
 
   val submissionConnector: SubmissionConnector
@@ -59,7 +61,8 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
       kiModel match {
         // check previous answers present
         case Some(data) if isMissingData(data) =>
-          /**not sure if we are still using isMissingData**/
+
+          /** not sure if we are still using isMissingData **/
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
           Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
@@ -93,13 +96,18 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
         val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
           Constants.StandardRadioButtonYesValue) true
         else false
-        for {
+        (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
-            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan) //TO DO - PROPER API CALL
+            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan)
           route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
-        } yield route
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[TenYearPlanController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
+        }
       }
     )
   }

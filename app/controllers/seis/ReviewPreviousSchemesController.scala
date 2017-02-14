@@ -24,6 +24,7 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
 import models.HadPreviousRFIModel
+import play.Logger
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.previousInvestment.ReviewPreviousSchemes
@@ -121,6 +122,10 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
         route <- routeRequest(isLimitExceeded, previousSchemesExist)
       } yield route) recover {
         case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+        case e: Exception => {
+          Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
       }
     }
   }

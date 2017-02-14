@@ -23,8 +23,10 @@ import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import forms.TurnoverCostsForm._
 import common._
+import config.FrontendGlobal._
 import models._
 import models.submission.CostModel
+import play.Logger
 import play.api.libs.json.Json
 import views.html.investment.TurnoverCosts
 import play.api.i18n.Messages.Implicits._
@@ -61,17 +63,16 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
        turnoverCheckRes match {
          case Some(true) => subsidiaries match {
            case Some(data)  if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-             s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.TurnoverCostsController.show().toString())
+             s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.TurnoverCostsController.show().url)
                 Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
            case Some(_) =>
-             s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.TurnoverCostsController.show().toString())
+             s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.TurnoverCostsController.show().url)
              Future.successful(Redirect(routes.InvestmentGrowController.show()))
            case _ =>  Future.successful(Redirect(routes.SubsidiariesController.show()))
          }
          case _ => Future.successful(Redirect(routes.AnnualTurnoverErrorController.show()))
        }
     }
-
 
     turnoverCostsForm.bindFromRequest().fold(
       formWithErrors => {
@@ -87,6 +88,10 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
           route <- routeRequest(subsidiaries, turnoverCheckRes)
         } yield route) recover {
           case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+          case e: Exception => {
+            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
       }
     )

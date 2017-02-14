@@ -32,7 +32,6 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-
 object TradeStartDateController extends TradeStartDateController {
   override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -73,6 +72,11 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
                   Redirect(routes.TradeStartDateErrorController.show())
                 case _ => {
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
+                  InternalServerError(internalServerErrorTemplate)
+                }
+              }.recover {
+                case e: Exception => {
+                  Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
                   InternalServerError(internalServerErrorTemplate)
                 }
               }

@@ -18,10 +18,12 @@ package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.OperatingCostsForm._
 import models.{KiProcessingModel, OperatingCostsModel}
+import play.Logger
 import play.api.mvc.{Action, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.knowledgeIntensive.OperatingCosts
@@ -92,7 +94,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
 
-        for {
+        (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           costConditionMet <- submissionConnector.validateKiCostConditions(
@@ -102,9 +104,14 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
             validFormData.rAndDCosts1stYear.toInt,
             validFormData.rAndDCosts2ndYear.toInt,
             validFormData.rAndDCosts3rdYear.toInt
-          ) //TO DO - PROPER API CALL
+          )
           route <- routeRequest(kiModel, costConditionMet)
-        } yield route
+        } yield route) recover{
+          case e: Exception => {
+            Logger.warn(s"[OperatingCostsController][submit] - Exception checking Ki Conditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
+        }
       }
     )
   }

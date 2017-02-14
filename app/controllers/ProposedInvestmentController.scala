@@ -25,7 +25,9 @@ import play.api.mvc._
 import models._
 import common._
 import common.Constants._
+import config.FrontendGlobal._
 import forms.ProposedInvestmentForm._
+import play.Logger
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
 import play.api.i18n.Messages.Implicits._
@@ -116,7 +118,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
             url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
@@ -124,13 +126,17 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
           // Call API
           isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
-            if(hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
+            if (hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
 
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get)
         } yield route) recover {
-          case e : NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+          case e: NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+          case e: Exception => {
+            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
       }
     )

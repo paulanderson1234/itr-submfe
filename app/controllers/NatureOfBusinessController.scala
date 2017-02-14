@@ -24,6 +24,7 @@ import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
+import models.submission.SchemeTypesModel
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
