@@ -17,18 +17,22 @@
 package views.eis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.NatureOfBusinessController
 import controllers.routes
 import models.NatureOfBusinessModel
+import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
-import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
+import play.api.i18n.Messages.Implicits._
+import play.api.libs.json.Json
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
@@ -41,9 +45,16 @@ class NatureOfBusinessSpec extends ViewSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
+  val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+  val cacheMapNatureofBusiness: CacheMap = CacheMap("", Map("" -> Json.toJson(NatureOfBusinessModel("some nature of business"))))
+
   def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
     when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(natureOfBusinessModel))
+  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    .thenReturn(cacheMapSchemeTypes)
+  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.natureOfBusiness), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    .thenReturn(cacheMapNatureofBusiness)
 
   "The Nature of business page" should {
 

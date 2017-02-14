@@ -17,7 +17,6 @@
 package views.eis
 
 import common.Constants
-import controllers.routes
 import forms.SupportingDocumentsUploadForm._
 import org.jsoup.Jsoup
 import play.api.i18n.Messages

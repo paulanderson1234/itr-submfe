@@ -19,13 +19,17 @@ package controllers.eis
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
 import models._
+import models.submission.SchemeTypesModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
+import play.api.libs.json.Json
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
@@ -37,6 +41,9 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
+
+  val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+  val cacheMapNatureofBusiness: CacheMap = CacheMap("", Map("" -> Json.toJson(NatureOfBusinessModel("some nature of business"))))
 
   "NatureOfBusinessController" should {
     "use the correct keystore connector" in {
@@ -53,6 +60,10 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
   def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
     when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(natureOfBusinessModel))
+  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    .thenReturn(cacheMapSchemeTypes)
+  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.natureOfBusiness), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    .thenReturn(cacheMapNatureofBusiness)
 
   "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {

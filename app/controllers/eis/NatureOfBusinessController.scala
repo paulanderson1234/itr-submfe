@@ -24,6 +24,7 @@ import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
+import models.submission.SchemeTypesModel
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -55,6 +56,8 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
         Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
       },
       validFormData => {
+        // TODO: remove this once scheme selection page is built in to main app in all flows
+        s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
         s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
         Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
