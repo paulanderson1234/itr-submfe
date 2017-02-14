@@ -86,7 +86,6 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       applicationHubModel <- getApplicationHubModel()
       route <- routeRequest(applicationHubModel)
     } yield route ) recover{
-      case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
       case e: Exception => {
         Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
         InternalServerError(internalServerErrorTemplate)
