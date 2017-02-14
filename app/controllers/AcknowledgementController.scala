@@ -126,14 +126,14 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
       contactAddress, registrationDetailsModel, schemeType) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(regDetail), Some(schemeType)) => {
+      Some(cntAddress), Some(regDetail), Some(schType)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
           natureOfBusinessModel = natureBusiness, contactDetailsModel = cntDetail, proposedInvestmentModel = propInv,
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
-          schemeTypes = schemeType,
+          schemeTypes = schType,
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
           dateTradeCommenced = Constants.standardIgnoreYearValue,
           annualCosts = if (operatingCosts.nonEmpty)
