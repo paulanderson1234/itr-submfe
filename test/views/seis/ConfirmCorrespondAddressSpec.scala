@@ -18,9 +18,9 @@ package views.seis
 
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
 import controllers.seis.ConfirmCorrespondAddressController
 import data.SubscriptionTestData._
+import fixtures.MockSeisConfig
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -38,7 +38,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockSeisConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
