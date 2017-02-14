@@ -16,11 +16,11 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.ContactAddressForm._
 import models.{AddressModel, ContactAddressModel}
 import play.api.i18n.Messages
@@ -35,19 +35,21 @@ import scala.concurrent.Future
 
 object ContactAddressController extends ContactAddressController
 {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
 
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
         case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
@@ -56,7 +58,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       contactAddressForm.bindFromRequest().fold(
         formWithErrors => {

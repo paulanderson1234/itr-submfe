@@ -52,7 +52,7 @@ class PreviousSchemeSpec extends ViewSpec {
 
   "The Previous Scheme page" should {
 
-    "Verify that the page contains the correct elements for a new scheme model and back link" in new Setup {
+    "Verify that the page contains the correct elements for a new scheme model and back link" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(previousSchemeVectorList),Some(routes.ReviewPreviousSchemesController.show().url))
         val result = TestController.show(None).apply(authorisedFakeRequest)
@@ -89,7 +89,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("page.investment.PreviousScheme.button.add")
     }
 
-    "Verify the page contains the correct elements for an exiting scheme model and changed back link" in new Setup {
+    "Verify the page contains the correct elements for an exiting scheme model and changed back link" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(previousSchemeVectorList), Some(routes.HadPreviousRFIController.show().url))
         val result = TestController.show(Some(previousSchemeModel3.processingId.get)).apply(authorisedFakeRequest)
@@ -127,7 +127,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("page.investment.PreviousScheme.button.update")
     }
 
-    "Verify the previous scheeme page contains the error summary, button text and back link for invalid new submission" in new Setup {
+    "Verify the previous scheeme page contains the error summary, button text and back link for invalid new submission" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(previousSchemeVectorList), Some(routes.HadPreviousRFIController.show().url))
         val result = TestController.submit().apply(authorisedFakeRequest)

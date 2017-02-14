@@ -18,7 +18,7 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.signout.SignedOut
@@ -31,9 +31,12 @@ object SignOutController extends SignOutController {
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait SignOutController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+
+  override val acceptedFlows = Seq()
 
   def signout(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(s"${applicationConfig.ggSignOutUrl}?continue=${applicationConfig.signOutPageUrl}"))

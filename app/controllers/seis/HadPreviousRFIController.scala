@@ -16,12 +16,12 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.HadPreviousRFIForm._
 import models.HadPreviousRFIModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -32,17 +32,19 @@ import views.html.seis.previousInvestment.HadPreviousRFI
 import scala.concurrent.Future
 
 object HadPreviousRFIController extends HadPreviousRFIController{
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch with PreviousSchemesHelper {
+trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   //
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
@@ -52,7 +54,7 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       hadPreviousRFIForm.bindFromRequest().fold(
         formWithErrors => {

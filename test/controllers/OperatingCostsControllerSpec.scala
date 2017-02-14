@@ -16,13 +16,11 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +28,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class OperatingCostsControllerSpec extends ControllerSpec {
+class OperatingCostsControllerSpec extends BaseSpec {
 
   object TestController extends OperatingCostsController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
@@ -69,7 +67,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending a GET request to OperatingCostsController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupShowMocks(Some(operatingCostsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -77,59 +75,9 @@ class OperatingCostsControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
       setupShowMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
-      )
-    }
-  }
-
-  "Sending a GET request to OperatingCostsController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupShowMocks(Some(operatingCostsModel))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to OperatingCostsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to OperatingCostsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to OperatingCostsController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
       )
     }
   }
@@ -137,7 +85,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending a valid form submit to the OperatingCostsController when authenticated and enrolled" should {
     "redirect to the Percentage Of Staff With Masters page (for now)" in {
       setupSubmitMocks(Some(true), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "1000",
         "operatingCosts2ndYear" -> "1000",
@@ -153,7 +101,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/percentage-of-staff-with-masters")
+          redirectLocation(result) shouldBe Some(routes.PercentageStaffWithMastersController.show().url)
         }
       )
     }
@@ -162,7 +110,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending a valid form submit to the OperatingCostsController but not KI when authenticated and enrolled" should {
     "redirect to the Ineligible For KI page" in {
       setupSubmitMocks(Some(false), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "1000",
         "operatingCosts2ndYear" -> "1000",
@@ -178,7 +126,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
+          redirectLocation(result) shouldBe Some(routes.IneligibleForKIController.show().url)
         }
       )
     }
@@ -187,7 +135,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending a invalid form submit to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
       setupSubmitMocks(kiProcessingModel = Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "0",
         "operatingCosts2ndYear" -> "0",
@@ -211,7 +159,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending an empty KI Model to the OperatingCostsController when authenticated and enrolled" should {
     "redirect to DateOfIncorporation page" in {
       setupSubmitMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -227,7 +175,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
@@ -236,7 +184,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending an KI Model with missing data to the OperatingCostsController when authenticated and enrolled" should {
     "redirect to DateOfIncorporation page" in {
       setupSubmitMocks(Some(false), Some(missingDataKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -252,7 +200,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
@@ -261,7 +209,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending an non KI Model to the OperatingCostsController when authenticated and enrolled" should {
     "redirect to IsKI page" in {
       setupSubmitMocks(Some(false), Some(falseKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "100",
         "operatingCosts2ndYear" -> "100",
@@ -277,7 +225,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
         }
       )
     }
@@ -286,7 +234,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
   "Sending an empty invalid form submission with validation errors to the CommercialSaleController when authenticated and enrolled" should {
     "return a bad request" in {
       setupShowMocks(Some(operatingCostsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> " ",
         "operatingCosts2ndYear" -> " ",
@@ -302,7 +250,6 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }
@@ -311,7 +258,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
 
   "Sending an invalid form with missing data submission with validation errors to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
@@ -326,7 +273,6 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }
@@ -334,7 +280,7 @@ class OperatingCostsControllerSpec extends ControllerSpec {
 
   "Sending an invalid form with invalid data submission with validation errors to the OperatingCostsController when authenticated and enrolled" should {
     "return a bad request" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "operatingCosts1stYear" -> "230000",
         "operatingCosts2ndYear" -> "189250",
@@ -349,58 +295,8 @@ class OperatingCostsControllerSpec extends ControllerSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-          //redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
         }
       )
     }
   }
-
-  "Sending a submission to the ContactDetailsController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ContactDetailsController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ContactDetailsController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
 }

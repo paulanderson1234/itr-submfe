@@ -29,8 +29,11 @@ import scala.concurrent.Future
 trait ViewSpec extends BaseSpec {
 
   class Setup {
-    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+    mockEnrolledRequest(eisSchemeTypesModel)
+  }
+
+  class SEISSetup {
+    mockEnrolledRequest(seisSchemeTypesModel)
   }
 
   def getExternalLinkText(linkText: String): String = s"""$linkText ${Messages("common.externalLink")}"""

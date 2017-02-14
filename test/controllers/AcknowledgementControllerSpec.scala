@@ -18,9 +18,9 @@ package controllers
 
 import auth._
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -28,13 +28,12 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
-import java.net.URLEncoder
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
 import models.submission.{SchemeTypesModel, SubmissionResponse}
 
 import scala.concurrent.Future
 
-class AcknowledgementControllerSpec extends ControllerSpec {
+class AcknowledgementControllerSpec extends BaseSpec {
 
   val contactValid = ContactDetailsModel("first", "last", Some("07000 111222"), None, "test@test.com")
   val contactInvalid = ContactDetailsModel("first", "last", Some("07000 111222"), None, "test@badrequest.com")
@@ -45,11 +44,11 @@ class AcknowledgementControllerSpec extends ControllerSpec {
 
 
   object TestController extends AcknowledgementController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override val registrationDetailsService = mockRegistrationDetailsService
-    override val s4lConnector = mockS4lConnector
+    override lazy val s4lConnector = mockS4lConnector
     override val submissionConnector = mockSubmissionConnector
     override lazy val fileUploadService = mockFileUploadService
   }
@@ -97,7 +96,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
     }
@@ -112,7 +111,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
     }
@@ -123,7 +122,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
     }
@@ -135,7 +134,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -149,7 +148,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -163,7 +162,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -177,7 +176,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -191,7 +190,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
         investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -205,7 +204,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -219,7 +218,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -233,7 +232,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), false)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe SEE_OTHER
       redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
@@ -247,7 +246,7 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
         Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe OK
     }
@@ -259,118 +258,19 @@ class AcknowledgementControllerSpec extends ControllerSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
       when(mockSubmissionConnector.submitAdvancedAssurance(Matchers.any(), Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
-  "Sending an Authenticated and NOT Enrolled GET request with a session to AcknowledgementController" should {
-    "redirect to the TAVC Subscription Service" in new SetupPageFull {
-      setupMocks()
-      mockNotEnrolledRequest()
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a request with no session to AcknowledgementController" should {
-    "return a 302" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequest)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequest)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to AcknowledgementController" should {
-    "return a 302" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequestWithSession)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequestWithSession)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to AcknowledgementController" should {
-
-    "return a 303 in" in new SetupPageFull {
-      val result = TestController.show.apply(timedOutFakeRequest)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      val result = TestController.show.apply(timedOutFakeRequest)
-      redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-    }
-  }
-
   "Sending a POST request to the Acknowledgement controller when authenticated and enrolled" should {
     "redirect to the feedback page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(feedback.routes.FeedbackController.show().url)
-        }
-      )
-    }
-  }
-
-  "Sending a POST request to the Acknowledgement controller when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a POST request to the Acknowledgement controller when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a POST request to the Acknowledgement controller when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

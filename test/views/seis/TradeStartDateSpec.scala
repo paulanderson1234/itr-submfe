@@ -18,7 +18,7 @@ package views
 
 
 import auth.MockAuthConnector
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import connectors.SubmissionConnector
 import controllers.seis.TradeStartDateController
@@ -43,16 +43,16 @@ class TradeStartDateSpec extends ViewSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
-    override val submissionConnector: SubmissionConnector = mockSubmissionConnector
+    override lazy val submissionConnector: SubmissionConnector = mockSubmissionConnector
   }
 
   def setupMocks(tradeStartDateModel: Option[TradeStartDateModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(tradeStartDateModel))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
 
   "The Trade Start Date page" should {
 
-    "Verify that the Trade start date  page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelYes))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -72,7 +72,7 @@ class TradeStartDateSpec extends ViewSpec {
     }
 
 
-    "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelNo))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -91,7 +91,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
-    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)
@@ -111,7 +111,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
-    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new Setup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelInvalidYes))
         val result = TestController.submit.apply(authorisedFakeRequest)

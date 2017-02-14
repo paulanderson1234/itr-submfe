@@ -20,7 +20,7 @@ import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import forms.schemeSelection.SchemeSelectionForm._
 import models.submission.SchemeTypesModel
@@ -36,11 +36,14 @@ object SchemeSelectionController extends SchemeSelectionController {
   override lazy val s4lConnector = S4LConnector
 }
 
-trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq()
 
-  def show(): Action[AnyContent] = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+
+
+  def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
         case Some(scheme) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
         case _ => Ok(SchemeSelection(schemeSelectionForm))
@@ -48,7 +51,8 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
     }
   }
 
-  def submit(): Action[AnyContent] = seisFeatureSwitch { AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+  def submit(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
       schemeSelectionForm.bindFromRequest.fold(
         formWithErrors => {
           BadRequest(SchemeSelection(formWithErrors))

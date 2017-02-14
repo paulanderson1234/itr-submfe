@@ -28,7 +28,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
   "The Check Answers page" should {
 
     "Verify that the Check Answers page contains the correct elements for Section 5: Supporting Documents" +
-      " when the page is loaded" in new Setup {
+      " when the page is loaded" in new SEISSetup {
       val model = SEISCheckAnswersModel(None, None, None, None, None, None, Vector(), None, None, None, None, None, false)
       val page = CheckAnswers(model)(authorisedFakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)

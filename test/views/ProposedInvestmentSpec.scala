@@ -37,8 +37,8 @@ class ProposedInvestmentSpec extends ViewSpec {
   object TestController extends ProposedInvestmentController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    val s4lConnector = mockS4lConnector
-    val submissionConnector = mockSubmissionConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val submissionConnector = mockSubmissionConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
   

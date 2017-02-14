@@ -28,14 +28,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LifetimeLimitHelper extends LifetimeLimitHelper {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait LifetimeLimitHelper {
 
-  //implicit val hc = HeaderCarrier()
-
-  val s4lConnector: S4LConnector
+  val s4lConnector : S4LConnector
 
   //Future of all previous schemes as vector
   def previousSchemesFut(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {

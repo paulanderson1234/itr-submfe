@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, Request, RequestHeader}
 import play.twirl.api.Html
 import config.{AppConfig, FrontendAppConfig, FrontendAuthConnector, WSHttp}
 import config.FrontendGlobal.internalServerErrorTemplate
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 import views.html.feedback.feedback_thankyou
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
@@ -59,9 +59,13 @@ object FeedbackController extends FeedbackController with PartialRetriever {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait FeedbackController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+
+  override val acceptedFlows = Seq()
+
   implicit val formPartialRetriever: FormPartialRetriever
   implicit val cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever
 

@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -35,7 +35,7 @@ import play.api.Play.current
 import scala.concurrent.Future
 
 object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -43,7 +43,9 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
 
 trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     createResponse(None)

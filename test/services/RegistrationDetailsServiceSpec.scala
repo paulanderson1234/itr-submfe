@@ -76,7 +76,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with One
 
   object TestService extends RegistrationDetailsService {
     override lazy val submissionConnector = mockSubmissionConnector
-    override lazy val s4LConnector = mockS4LConnector
+    override lazy val s4lConnector = mockS4LConnector
     override lazy val subscriptionService = mockSubscriptionService
   }
 
@@ -101,7 +101,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with One
     }
 
     "Use the correct save 4 later connector" in {
-      RegistrationDetailsService.s4LConnector shouldBe S4LConnector
+      RegistrationDetailsService.s4lConnector shouldBe S4LConnector
     }
 
   }

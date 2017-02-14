@@ -16,13 +16,14 @@
 
 package controllers.seis
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.featureSwitch.SEISFeatureSwitch
 import controllers.feedback
+import controllers.predicates.FeatureSwitch
 import models.registration.RegistrationDetailsModel
 import models.submission._
 import models._
@@ -46,18 +47,20 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val fileUploadService = FileUploadService
 }
 
-trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
   val fileUploadService: FileUploadService
 
 
   //noinspection ScalaStyle
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      for {
+      (for {
       // minimum required fields to continue
         natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
         contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
@@ -77,11 +80,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
           dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, schemeType, subsidiariesSpendInvest, subsidiariesNinetyOwned,
           previousSchemes.toList, registrationDetailsModel)
-      } yield result
+      } yield result) recover {
+        case e: Exception => {
+          Logger.warn(s"[AcknowledgementController][submit] - Exception: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
+      }
     }
   }
 
-  def submit: Action[AnyContent] = seisFeatureSwitch {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.apply { implicit user => implicit request =>
       Redirect(feedback.routes.FeedbackController.show().url)
     }
@@ -157,6 +165,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
               }
             }
           }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
 
         def ProcessResultUpload: Future[Result] = {
@@ -179,6 +192,11 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                 Future.successful(InternalServerError)
               }
             }
+          }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
         }
 

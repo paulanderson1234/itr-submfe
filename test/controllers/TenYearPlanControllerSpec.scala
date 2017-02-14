@@ -16,13 +16,11 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +28,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class TenYearPlanControllerSpec extends ControllerSpec {
+class TenYearPlanControllerSpec extends BaseSpec {
 
   object TestController extends TenYearPlanController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
@@ -75,7 +73,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupShowMocks(Some(tenYearPlanModelYes), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -83,7 +81,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupShowMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -94,13 +92,13 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController with a false KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(isKiKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
         }
       )
     }
@@ -109,13 +107,13 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController without a KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
@@ -124,13 +122,13 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController without hasPercentageWithMasters in the KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(noMastersKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/date-of-incorporation")
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         }
       )
     }
@@ -139,13 +137,13 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(ineligibleKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/ineligible-for-knowledge-intensive")
+          redirectLocation(result) shouldBe Some(routes.IneligibleForKIController.show().url)
         }
       )
     }
@@ -154,13 +152,13 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid Yes form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page with valid submission" in {
       setupSubmitMocks(Some(true), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/subsidiaries")
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
         }
       )
     }
@@ -168,7 +166,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
   "Sending an empty invalid form submission with validation errors to the TenYearPlanController" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> "",
         "tenYearPlanDesc" -> "")(
@@ -182,7 +180,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
   "Sending an an invalid form submission with both Yes and a blank description to the TenYearPlanController" should {
     "redirect to itself with validation errors" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "")(
@@ -193,102 +191,4 @@ class TenYearPlanControllerSpec extends ControllerSpec {
     }
   }
 
-
-
-  "Sending a request with no session to TenYearPlanController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to TenYearPlanController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to TenYearPlanController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a request to TenYearPlanController when NOT enrolled" should {
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

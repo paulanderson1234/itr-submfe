@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{NewProductController, routes}
 import models.NewProductModel
@@ -28,6 +29,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import play.api.i18n.Messages.Implicits._
+
 import scala.concurrent.Future
 
 class NewProductSpec extends ViewSpec {
@@ -41,8 +43,8 @@ class NewProductSpec extends ViewSpec {
   }
 
   def setupMocks(newProductModel: Option[NewProductModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(newProductModel))
+    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(newProductModel))
 
   "Verify that the NewProduct page contains the correct elements " +
     "when a valid NewProductModel is passed as returned from keystore" in new Setup {

@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-package controllers.featureSwitch
+package auth
 
-import config.AppConfig
-import play.api.mvc.{Action, AnyContent}
-import play.api.mvc.Results._
-
-trait SEISFeatureSwitch {
-
-  val applicationConfig: AppConfig
-  val seisFeatureEnabled = applicationConfig.seisFlowEnabled
-
-  def seisFeatureSwitch(action: Action[AnyContent]): Action[AnyContent] = {
-    if(seisFeatureEnabled) {
-      action
-    } else {
-      redirect
-    }
-  }
-
-  private def redirect = Action.apply {
-    implicit request => Redirect(controllers.routes.ApplicationHubController.show())
-  }
-
-}
+sealed trait Flow
+case object EIS extends Flow
+case object SEIS extends Flow
+case object VCT extends Flow
+case object SITR extends Flow

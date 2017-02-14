@@ -16,13 +16,11 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import common.KeystoreKeys
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
@@ -30,12 +28,12 @@ import services.FileUploadService
 
 import scala.concurrent.Future
 
-class SupportingDocumentsControllerSpec extends ControllerSpec {
+class SupportingDocumentsControllerSpec extends BaseSpec {
 
   object TestController extends SupportingDocumentsController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
-    override val s4lConnector = mockS4lConnector
+    override lazy val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -66,7 +64,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SupportingDocumentsController with upload feature disabled" should {
     "return a 200 OK" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), false)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -76,12 +74,12 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "sending a Get requests to the SupportingDocumentsController when authenticated and enrolled with upload feature disabled" should {
     "redirect to the confirm correspondence address page if no saved back link was found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks()
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/confirm-correspondence-address")
+          redirectLocation(result) shouldBe Some(routes.ConfirmCorrespondAddressController.show().url)
         }
       )
     }
@@ -90,121 +88,23 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SupportingDocumentsController with upload feature enabled" should {
     "redirect to the upload file supporting documents page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), true)
       showWithSessionAndAuth(TestController.show) {
           result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/supporting-documents-upload")
+          redirectLocation(result) shouldBe Some(routes.SupportingDocumentsUploadController.show().url)
       }
     }
   }
 
   "Posting to the SupportingDocumentsController when authenticated and enrolled" should {
     "redirect to Check your answers page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+        redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
       }
     }
   }
 
-  "Sending a request with no session to SupportingDocumentsController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to SupportingDocumentsController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to SupportingDocumentsController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a SupportingDocumentsController when NOT enrolled" should {
-
-    lazy val result = TestController.show(authorisedFakeRequest)
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

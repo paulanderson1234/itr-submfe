@@ -16,29 +16,27 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import models.SupportingDocumentsUploadModel
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
-import services.{FileUploadService}
+import services.FileUploadService
 
 import scala.concurrent.Future
 
-class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
+class SupportingDocumentsUploadControllerSpec extends BaseSpec {
 
   object TestController extends SupportingDocumentsUploadController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
-    override val s4lConnector = mockS4lConnector
-    override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val fileUploadService = mockFileUploadService
+    override lazy val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
@@ -73,7 +71,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a GET request to SupportingDocumentsUploadController with upload feature enabled" should {
       "return a 200 OK" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
@@ -83,7 +81,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a GET request to SupportingDocumentsUploadController with upload feature disabled" should {
       "return a 404 NOT_FOUND" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), None, false)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe NOT_FOUND
@@ -93,7 +91,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a Get request to the SupportingDocumentsUploadController when authenticated and enrolled with upload feature disabled" should {
       "redirect to the confirm correspondence address page if no back link is found" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         showWithSessionAndAuth(TestController.show)(
           result => {
@@ -105,7 +103,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a Get request to the SupportingDocumentsUploadController when authenticated and enrolled with upload feature enabled" should {
       "redirect to the confirm correspondence address page if no SupportingDocumentsUploadModel is found" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url))
         showWithSessionAndAuth(TestController.show)(
           result => {
@@ -117,7 +115,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Posting to the SupportingDocumentsUploadController when authenticated and enrolled and with upload feature enabled" should {
       "redirect to Check your answers page" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonYesValue){
           result => status(result) shouldBe SEE_OTHER
@@ -128,18 +126,18 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Posting to the SupportingDocumentsUploadController when authenticated and enrolled and with upload feature disabled" should {
       "redirect to Check your answers page" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/check-your-answers")
+            redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
         }
       }
     }
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to itself when a backlink is found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe BAD_REQUEST
@@ -149,111 +147,13 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to CommercialSaleController when no backlink is found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/commercial-sale")
+          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
       }
     }
   }
 
-  "Sending a request with no session to SupportingDocumentsUploadController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to SupportingDocumentsUploadController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to SupportingDocumentsUploadController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a SupportingDocumentsUploadController when NOT enrolled" should {
-
-    lazy val result = TestController.show(authorisedFakeRequest)
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

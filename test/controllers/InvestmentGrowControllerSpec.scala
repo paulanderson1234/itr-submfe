@@ -16,13 +16,11 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.ControllerSpec
+import helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +28,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class InvestmentGrowControllerSpec extends ControllerSpec {
+class InvestmentGrowControllerSpec extends BaseSpec {
 
   object TestController extends InvestmentGrowController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -73,7 +71,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "an Investment Grow form can be retrieved from keystore" should {
       "return an OK" in {
         setup(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -83,7 +81,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "no Investment Grow form is retrieved from keystore" should {
       "return an OK" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -93,7 +91,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "no new geographical market model and new product market model are retrieved from keystore" should {
       "return an OK" in {
         setup(None,None,None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -104,7 +102,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -114,7 +112,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the investment purpose page" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
@@ -127,7 +125,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,None, Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -137,7 +135,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the new geographical market page" in {
         setup(None,None, Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
@@ -150,7 +148,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,Some(newGeographicalMarketModelYes),None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -160,7 +158,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the new product market page" in {
         setup(None,Some(newGeographicalMarketModelYes),None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.NewProductController.show().url)
@@ -170,64 +168,10 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a GET request to InvestmentGrowController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(investmentGrowModel)))
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkInvestmentGrow))(Matchers.any(), Matchers.any(),Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.SubsidiariesNinetyOwnedController.show().url)))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to InvestmentGrowController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to InvestmentGrowController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to InvestmentGrowController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
   "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> "some text so it's valid"
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -242,7 +186,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
     "return a SEE_OTHER" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -253,11 +197,11 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
     "redirect to WhatWillUseFor page" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/proposed-investment")
+          redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
         }
       )
     }
@@ -266,7 +210,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
   "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -276,51 +220,4 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a submission to the InvestmentGrowController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the InvestmentGrowController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the InvestmentGrowController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

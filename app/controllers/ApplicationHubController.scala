@@ -16,12 +16,13 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
+import controllers.seis.routes
 import models._
 import models.submission.SchemeTypesModel
 import play.api.mvc.Result
@@ -41,14 +42,16 @@ object ApplicationHubController extends ApplicationHubController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq()
+
+
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
 
@@ -79,11 +82,16 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
         None
     }
 
-    for {
+    (for {
       applicationHubModel <- getApplicationHubModel()
       route <- routeRequest(applicationHubModel)
-    } yield route
-
+    } yield route ) recover{
+      case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+      case e: Exception => {
+        Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+      }
+    }
   }
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -91,6 +99,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
     } else {
       s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+      s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
       Future.successful(Redirect(routes.NatureOfBusinessController.show()))
     }
   }

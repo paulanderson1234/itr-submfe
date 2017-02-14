@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{TurnoverCostsController, routes}
 import models.AnnualTurnoverCostsModel
@@ -28,6 +29,7 @@ import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import play.api.i18n.Messages.Implicits._
+
 import scala.concurrent.Future
 
 class TurnoverCostsSpec extends ViewSpec {
@@ -41,8 +43,8 @@ class TurnoverCostsSpec extends ViewSpec {
   }
 
   def setupMocks(annualTurnoverCostsModel: Option[AnnualTurnoverCostsModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(annualTurnoverCostsModel))
+    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(annualTurnoverCostsModel))
 
   "Verify that the TurnoverCosts page contains the correct elements " +
     "when a valid TurnoverCostsModel is passed as returned from keystore" in new Setup {

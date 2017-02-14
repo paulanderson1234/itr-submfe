@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{TenYearPlanController, routes}
 import models.TenYearPlanModel
@@ -44,7 +45,7 @@ class TenYearPlanSpec extends ViewSpec {
   }
 
   def setupMocks(tenYearPlanModel: Option[TenYearPlanModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(tenYearPlanModel))
 
   "The Ten Year Plan page" should {

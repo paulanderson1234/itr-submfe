@@ -14,34 +14,29 @@
  * limitations under the License.
  */
 
-package controllers.featureSwitch
+package controllers.predicates
 
-import auth.MockConfig
 import controllers.helpers.BaseSpec
-import play.api.mvc.{Action, AnyContent}
 import play.api.mvc.Results._
+import play.api.mvc.{Action, AnyContent}
 import play.api.test.Helpers._
 
-class SEISFeatureSwitchSpec extends BaseSpec {
+class FeatureSwitchSpec extends BaseSpec {
 
-  object TestControllerOn extends SEISFeatureSwitch {
-    override lazy val applicationConfig = MockConfig
+  object TestControllerOn extends FeatureSwitch {
 
-    def test: Action[AnyContent] = seisFeatureSwitch { Action.apply { implicit request =>
+    def test: Action[AnyContent] = featureSwitch(featureEnabled = true) { Action.apply { implicit request =>
         Ok
       }
     }
   }
 
-  object TestControllerOff extends SEISFeatureSwitch {
-    override lazy val applicationConfig = MockConfig
+  object TestControllerOff extends FeatureSwitch {
 
-    def test: Action[AnyContent] = seisFeatureSwitch { Action.apply { implicit request =>
+    def test: Action[AnyContent] = featureSwitch(featureEnabled = false) { Action.apply { implicit request =>
         Ok
       }
     }
-
-    override val seisFeatureEnabled = false
   }
 
   "seisFeatureSwitch" when {

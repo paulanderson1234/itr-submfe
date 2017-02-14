@@ -17,6 +17,7 @@
 package views
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.{PercentageStaffWithMastersController, routes}
 import models.PercentageStaffWithMastersModel
@@ -42,8 +43,8 @@ class PercentageStaffWithMastersSpec extends ViewSpec {
   }
 
   def setupMocks(percentageStaffWithMastersModel: Option[PercentageStaffWithMastersModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(percentageStaffWithMastersModel))
+    when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(percentageStaffWithMastersModel))
 
   "Verify that the PercentageStaffWithMasters page contains the correct elements " +
     "when a valid PercentageStaffWithMastersModel is passed as returned from keystore" in new Setup {

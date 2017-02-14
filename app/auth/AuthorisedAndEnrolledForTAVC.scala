@@ -22,9 +22,8 @@ import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.http.HeaderCarrier
-
 import scala.concurrent.Future
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -34,15 +33,19 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   val applicationConfig: AppConfig
   val postSignInRedirectUrl: String = applicationConfig.introductionUrl
   val notEnrolledRedirectUrl: String = applicationConfig.subscriptionUrl
+  val s4lConnector: S4LConnector
+  val acceptedFlows: Seq[Seq[Flow]]
 
   private type PlayRequest = Request[AnyContent] => Result
   private type UserRequest = TAVCUser => PlayRequest
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = TAVCUser => AsyncPlayRequest
 
+  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
+
   class AuthorisedAndEnrolled(regime: TaxRegime) {
     def async(action: AsyncUserRequest): Action[AnyContent] = {
-      AuthorisedFor(regime, GGConfidence).async {
+      AuthorisedFor(regime, pageVisibilityPredicate).async {
         authContext: AuthContext => implicit request => enrolledCheck {
           case Enrolled => getInternalId(authContext).flatMap{internalId =>
             action(TAVCUser(authContext,internalId))(request)

@@ -38,6 +38,8 @@ import scala.concurrent.Future
 
 trait TestEndpointEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
+  override val acceptedFlows = Seq()
+
   val s4lConnector: S4LConnector
   val defaultPreviousSchemesSize = 2
 
