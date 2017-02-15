@@ -62,7 +62,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
 
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
           case Some(true) => Ok(ApplicationHub(applicationHubModel.get,
-            ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.routes.NatureOfBusinessController.show().url)(ControllerHelpers.routeToScheme),
+            ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)(ControllerHelpers.routeToScheme),
               ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))))
           case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew()))
         }
@@ -99,7 +99,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     } else {
       s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
       s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
-      Future.successful(Redirect(routes.NatureOfBusinessController.show()))
+      Future.successful(Redirect(eis.routes.NatureOfBusinessController.show()))
     }
   }
 

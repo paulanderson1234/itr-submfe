@@ -16,11 +16,10 @@
 
 package utils
 
-import models.{OperatingCostsModel, CommercialSaleModel}
+import models.{OperatingCostsModel}
 import org.scalatest.Matchers
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
-import views.html.knowledgeIntensive.OperatingCosts
 
 class CostFormatterSpec extends UnitSpec with MockitoSugar with Matchers{
 

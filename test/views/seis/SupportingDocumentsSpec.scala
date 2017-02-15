@@ -37,8 +37,8 @@ class SupportingDocumentsSpec extends ViewSpec {
     override lazy val applicationConfig = MockSeisConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
-    override val fileUploadService = mockFileUploadService
-    override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
+    override lazy val fileUploadService = mockFileUploadService
+    override lazy val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl(Constants.schemeTypeSeis.toLowerCase)
 
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }

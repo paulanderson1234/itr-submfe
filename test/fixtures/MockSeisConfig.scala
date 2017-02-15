@@ -39,10 +39,6 @@ object MockSeisConfig extends AppConfig {
   override val uploadFeatureEnabled: Boolean = false
   override val seisFlowEnabled: Boolean = true
 
-  override lazy val tempAttachmentFileUploadEISUrl: String =
-    s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/investment-tax-relief/check-your-answers"
-
-
   override lazy val attachmentFileUploadUrl: (String) => String = schemeType =>
     s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
       s"investment-tax-relief/$schemeType/check-your-answers"

@@ -1,0 +1,39 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButton}
+
+@(backlinkUrl: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.knowledgeIntensive.IneligibleForKI.title")) {
+
+@backButton(backlinkUrl)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.knowledgeIntensive.IneligibleForKI.heading")</h1>
+
+        <p id="description-one">@Messages("page.knowledgeIntensive.IneligibleForKI.description.one")</p>
+
+        <ul class="list list-bullet">
+            <li id="reason-one">@Messages("page.knowledgeIntensive.IneligibleForKI.bullet.one")</li>
+            <li id="reason-two">@Messages("page.knowledgeIntensive.IneligibleForKI.bullet.two")</li>
+            <li id="reason-three">@Messages("page.knowledgeIntensive.IneligibleForKI.bullet.three")</li>
+        </ul>
+
+        <br>
+
+        <p id="description-two">@Messages("page.knowledgeIntensive.IneligibleForKI.description.two")</p>
+
+        <br>
+
+        <div class="form-group">
+            @form(action = controllers.eis.routes.IneligibleForKIController.submit()) {
+            <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+            }
+        </div>
+    </div>
+</div>
+
+}
+
+
+

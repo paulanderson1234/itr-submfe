@@ -1,0 +1,42 @@
+@import models.NewGeographicalMarketModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, externalLink}
+@import common.Constants
+
+@(newGeographicalMarketForm: Form[NewGeographicalMarketModel], backlinkUrl: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.NewGeographicalMarket.title")) {
+
+    @backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(newGeographicalMarketForm, "used-investment-reason-before", "usedNewGeographicalMarket")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.investment.NewGeographicalMarket.heading")</h1>
+
+    <div class="form-group">
+        <span id="external-hint" class="form-hint">@Messages("page.investment.NewGeographicalMarket.hint")
+            @externalLink(Messages("page.investment.NewGeographicalMarket.hint.link"),"https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8157",Some("geographic-link"))
+        </span>
+    </div>
+
+    @form(action = controllers.eis.routes.NewGeographicalMarketController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = newGeographicalMarketForm("isNewGeographicalMarket"),
+            Seq(
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.investment.NewGeographicalMarket.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}

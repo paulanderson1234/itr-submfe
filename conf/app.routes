@@ -16,101 +16,6 @@ GET         /session-timeout         controllers.TimeoutController.timeout
 GET        /select-schemes                          controllers.schemeSelection.SchemeSelectionController.show
 POST       /select-schemes                          controllers.schemeSelection.SchemeSelectionController.submit
 
-GET        /date-of-incorporation                   controllers.DateOfIncorporationController.show
-POST       /date-of-incorporation                   controllers.DateOfIncorporationController.submit
-
-GET        /commercial-sale                         controllers.CommercialSaleController.show
-POST       /commercial-sale                         controllers.CommercialSaleController.submit
-
-GET        /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.show
-POST       /is-knowledge-intensive                  controllers.IsKnowledgeIntensiveController.submit
-
-GET        /ineligible-for-knowledge-intensive      controllers.IneligibleForKIController.show
-POST       /ineligible-for-knowledge-intensive      controllers.IneligibleForKIController.submit
-
-GET        /subsidiaries                            controllers.SubsidiariesController.show
-POST       /subsidiaries                            controllers.SubsidiariesController.submit
-
-GET        /nature-of-business                      controllers.NatureOfBusinessController.show
-POST       /nature-of-business                      controllers.NatureOfBusinessController.submit
-
-GET        /operating-costs                         controllers.OperatingCostsController.show
-POST       /operating-costs                         controllers.OperatingCostsController.submit
-
-GET        /annual-turnover                         controllers.TurnoverCostsController.show
-POST       /annual-turnover                         controllers.TurnoverCostsController.submit
-
-GET        /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.show
-POST       /percentage-of-staff-with-masters        controllers.PercentageStaffWithMastersController.submit
-
-GET        /ten-year-plan                           controllers.TenYearPlanController.show
-POST       /ten-year-plan                           controllers.TenYearPlanController.submit
-
-GET        /proposed-investment                     controllers.ProposedInvestmentController.show
-POST       /proposed-investment                     controllers.ProposedInvestmentController.submit
-
-GET        /new-product                             controllers.NewProductController.show
-POST       /new-product                             controllers.NewProductController.submit
-
-GET        /new-geographical-market		            controllers.NewGeographicalMarketController.show
-POST       /new-geographical-market	                controllers.NewGeographicalMarketController.submit
-
-GET        /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.show
-POST       /used-investment-reason-before           controllers.UsedInvestmentReasonBeforeController.submit
-
-GET        /used-investment-scheme-before           controllers.HadPreviousRFIController.show
-POST       /used-investment-scheme-before           controllers.HadPreviousRFIController.submit
-
-GET        /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.show
-POST       /subsidiaries-spending-investment        controllers.SubsidiariesSpendingInvestmentController.submit
-
-GET        /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.show
-POST       /previous-before-dofcs                   controllers.PreviousBeforeDOFCSController.submit
-
-GET        /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.show
-POST       /subsidiaries-ninety-percent-owned       controllers.SubsidiariesNinetyOwnedController.submit
-
-GET        /how-plan-to-use-investment              controllers.InvestmentGrowController.show
-POST       /how-plan-to-use-investment              controllers.InvestmentGrowController.submit
-
-GET        /contact-details                         controllers.ContactDetailsController.show
-POST       /contact-details                         controllers.ContactDetailsController.submit
-
-GET        /supporting-documents                    controllers.SupportingDocumentsController.show
-POST       /supporting-documents                    controllers.SupportingDocumentsController.submit
-
-GET        /supporting-documents-upload             controllers.SupportingDocumentsUploadController.show
-POST       /supporting-documents-upload             controllers.SupportingDocumentsUploadController.submit
-
-GET        /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.show
-POST       /confirm-correspondence-address          controllers.ConfirmCorrespondAddressController.submit
-
-GET        /confirm-contact-details                 controllers.ConfirmContactDetailsController.show
-POST       /confirm-contact-details                 controllers.ConfirmContactDetailsController.submit
-
-GET        /check-your-answers                      controllers.CheckAnswersController.show(envelopeId: Option[String]?=None)
-POST       /check-your-answers                      controllers.CheckAnswersController.submit
-
-GET        /previous-investment                     controllers.PreviousSchemeController.show(id: Option[Int]?=None)
-POST       /previous-investment                     controllers.PreviousSchemeController.submit
-
-GET        /contact-address                         controllers.ContactAddressController.show
-POST       /contact-address                         controllers.ContactAddressController.submit
-
-GET        /review-previous-schemes                 controllers.ReviewPreviousSchemesController.show
-POST       /review-previous-schemes                 controllers.ReviewPreviousSchemesController.submit
-
-GET        /review-previous-schemes-add             controllers.ReviewPreviousSchemesController.add
-GET        /review-previous-schemes-change/:Id      controllers.ReviewPreviousSchemesController.change(Id: Int)
-POST       /review-previous-schemes-remove/:Id      controllers.ReviewPreviousSchemesController.remove(Id: Int)
-
-GET        /acknowledgement                         controllers.AcknowledgementController.show
-POST       /acknowledgement                         controllers.AcknowledgementController.submit
-
-GET        /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.show
-POST       /lifetime-allowance-exceeded             controllers.LifetimeAllowanceExceededController.submit
-
-GET        /annual-turnover-error                   controllers.AnnualTurnoverErrorController.show
 
 GET        /sign-out                                controllers.SignOutController.signout
 GET        /signed-out                              controllers.SignOutController.show
@@ -119,7 +24,6 @@ GET        /hub                                     controllers.ApplicationHubCo
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 
-GET        /trading-for-too-long                    controllers.TradingForTooLongController.show
 
 #Feedback routes
 #####################################################################################################################
