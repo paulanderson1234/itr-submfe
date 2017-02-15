@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.Constants
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/UsedInvestmentReasonBeforeControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/UsedInvestmentReasonBeforeControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
+class UsedInvestmentReasonBeforeControllerSpec extends BaseSpec {
 
   object TestController extends UsedInvestmentReasonBeforeController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -58,7 +60,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
   "Sending a GET request to UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(usedInvestmentReasonBeforeModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -66,7 +68,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -75,12 +77,16 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
 
   "Sending a valid 'Yes' form submit to the UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonYesValue)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/UsedInvestmentReasonBeforeControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-before-dofcs")
+=======
+          redirectLocation(result) shouldBe Some(routes.PreviousBeforeDOFCSController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/UsedInvestmentReasonBeforeControllerSpec.scala
         }
       )
     }
@@ -88,12 +94,16 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
 
   "Sending a valid 'No' form submit to the UsedInvestmentReasonBeforeController when authenticated and enrolled" should {
     "redirect the ten year plan page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "usedInvestmentReasonBefore" -> Constants.StandardRadioButtonNoValue)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/UsedInvestmentReasonBeforeControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
+=======
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/UsedInvestmentReasonBeforeControllerSpec.scala
         }
       )
     }
@@ -101,7 +111,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the UsedInvestmentReasonBeforeController" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "usedInvestmentReasonBefore" -> "")(
         result => {
@@ -111,6 +121,7 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/UsedInvestmentReasonBeforeControllerSpec.scala
   "Sending a request with no session to UsedInvestmentReasonBeforeController" should {
     "return a 303" in {
       status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
@@ -208,4 +219,6 @@ class UsedInvestmentReasonBeforeControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/UsedInvestmentReasonBeforeControllerSpec.scala
 }

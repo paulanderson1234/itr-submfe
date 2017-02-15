@@ -16,22 +16,24 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
 import common._
+import config.FrontendGlobal._
 import forms.TenYearPlanForm._
 import views.html.eis.knowledgeIntensive.TenYearPlan
+import play.Logger
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
 
 object TenYearPlanController extends TenYearPlanController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -40,7 +42,9 @@ object TenYearPlanController extends TenYearPlanController {
 
 trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
+
+
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -57,7 +61,8 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
       kiModel match {
         // check previous answers present
         case Some(data) if isMissingData(data) =>
-          /**not sure if we are still using isMissingData**/
+
+          /** not sure if we are still using isMissingData **/
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
           Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
@@ -91,13 +96,18 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
         val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
           Constants.StandardRadioButtonYesValue) true
         else false
-        for {
+        (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
-            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan) //TO DO - PROPER API CALL
+            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan)
           route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
-        } yield route
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[TenYearPlanController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
+        }
       }
     )
   }

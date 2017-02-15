@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
@@ -25,7 +25,9 @@ import play.api.mvc._
 import models._
 import common._
 import common.Constants._
+import config.FrontendGlobal._
 import forms.ProposedInvestmentForm._
+import play.Logger
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
 import play.api.i18n.Messages.Implicits._
@@ -36,7 +38,7 @@ import views.html.eis.investment.ProposedInvestment
 
 object ProposedInvestmentController extends ProposedInvestmentController
 {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -45,7 +47,9 @@ object ProposedInvestmentController extends ProposedInvestmentController
 
 trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val submissionConnector: SubmissionConnector
 
   val show: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -114,7 +118,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
             url.getOrElse(routes.HadPreviousRFIController.show().toString)))))
       },
       validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
         (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
@@ -122,13 +126,17 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
           // Call API
           isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
-            if(hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
+            if (hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
 
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get)
         } yield route) recover {
-          case e : NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+          case e: NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
+          case e: Exception => {
+            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
       }
     )

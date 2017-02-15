@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/PreviousSchemeControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousSchemeControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -32,10 +34,10 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class PreviousSchemeControllerSpec extends ControllerSpec {
+class PreviousSchemeControllerSpec extends BaseSpec {
 
   object TestController extends PreviousSchemeController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -72,7 +74,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
   "Sending a GET request to PreviousSchemeController when authenticated and enrolled" should {
     "return a 200 when back link is fetched from keystore" in {
       setupMocks(Some(routes.ReviewPreviousSchemesController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(None))(
         result => status(result) shouldBe OK
       )
@@ -80,13 +82,14 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when None is fetched using keystore when authenticated and enrolled" in {
       setupMocks(Some(routes.ReviewPreviousSchemesController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(Some(1)))(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PreviousSchemeControllerSpec.scala
   "Sending a GET request to PreviousSchemeController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(routes.ReviewPreviousSchemesController.show().url))
@@ -137,9 +140,11 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousSchemeControllerSpec.scala
   "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated and enrolled" in {
     setupVectorMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
-    mockEnrolledRequest()
+    mockEnrolledRequest(eisSchemeTypesModel)
     showWithSessionAndAuth(TestController.show(Some(1)))(
       result => status(result) shouldBe OK
     )
@@ -147,7 +152,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
 
   "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated and enrolled" in {
     setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
-    mockEnrolledRequest()
+    mockEnrolledRequest(eisSchemeTypesModel)
     showWithSessionAndAuth(TestController.show(Some(3)))(
 
       result => status(result) shouldBe OK
@@ -156,7 +161,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
 
   "navigate to start of flow if no back link provided even if a valid matching model returned when authenticated and enrolled" in {
     setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
-    mockEnrolledRequest()
+    mockEnrolledRequest(eisSchemeTypesModel)
     showWithSessionAndAuth(TestController.show(Some(3)))(
       result => {
         status(result) shouldBe SEE_OTHER
@@ -167,7 +172,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
 
   "navigate to start of flow if no back link provided if a new add scheme when authenticated and enrolled" in {
     setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
-    mockEnrolledRequest()
+    mockEnrolledRequest(eisSchemeTypesModel)
     showWithSessionAndAuth(TestController.show(None))(
       result => {
         status(result) shouldBe SEE_OTHER
@@ -181,7 +186,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(cacheMap)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "12345",
@@ -206,7 +211,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(cacheMap)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeSeisValue,
         "investmentAmount" -> "666",
@@ -230,7 +235,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
   "Sending a new (processingId ==0) invalid (no amount) form submit  to the PreviousSchemeController when authenticated and enrolled" should {
     "not create the item and redirect to itself with errors as a bad request" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeAnotherValue,
         "investmentAmount" -> "",
@@ -252,7 +257,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
   "Sending a invalid (no amount) updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
     "not update the item and redirect to itself with errors as a bad request" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "schemeTypeDesc" -> Constants.PageInvestmentSchemeVctValue,
         "investmentAmount" -> "",
@@ -272,6 +277,7 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PreviousSchemeControllerSpec.scala
   "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -319,4 +325,6 @@ class PreviousSchemeControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousSchemeControllerSpec.scala
 }

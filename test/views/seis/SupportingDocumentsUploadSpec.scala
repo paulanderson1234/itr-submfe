@@ -37,7 +37,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
     lazy val document = Jsoup.parse(contentAsString(page))
     lazy val documentEmpty = Jsoup.parse(contentAsString(emptyPage))
 
-    "contain the correct elements when a valid form is submitted" in new Setup {
+    "contain the correct elements when a valid form is submitted" in new SEISSetup {
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.getElementById("intro").text() shouldBe Messages("page.supportingDocumentsUpload.heading")
@@ -58,7 +58,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
     }
 
 
-    "contain the correct elements when an empty form is submitted" in new Setup {
+    "contain the correct elements when an empty form is submitted" in new SEISSetup {
       documentEmpty.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       documentEmpty.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       documentEmpty.getElementById("intro").text() shouldBe Messages("page.supportingDocumentsUpload.heading")

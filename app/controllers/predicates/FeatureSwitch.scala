@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package controllers
+package controllers.predicates
 
-import helpers.BaseSpec
-import play.api.test.Helpers._
+import play.api.mvc.Results._
+import play.api.mvc.{Action, AnyContent}
 
-class TimeoutControllerSpec extends BaseSpec {
+trait FeatureSwitch {
 
-  "Sending a GET request to TimeoutController" should {
-    "return a 200" in {
-      status(TimeoutController.timeout(fakeRequest)) shouldBe OK
-    }
+  def featureSwitch(featureEnabled: Boolean)(action: Action[AnyContent]): Action[AnyContent] = {
+    if(featureEnabled) action
+    else redirect
   }
+
+  private def redirect = Action.apply {
+    implicit request => Redirect(controllers.routes.ApplicationHubController.show())
+  }
+
 }

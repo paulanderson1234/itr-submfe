@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class TenYearPlanControllerSpec extends ControllerSpec {
+class TenYearPlanControllerSpec extends BaseSpec {
 
   object TestController extends TenYearPlanController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
@@ -75,7 +77,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a GET request to TenYearPlanController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupShowMocks(Some(tenYearPlanModelYes), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -83,7 +85,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupShowMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -94,13 +96,17 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController with a false KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(isKiKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
+=======
+          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -109,13 +115,17 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController without a KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
+=======
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -124,13 +134,17 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController without hasPercentageWithMasters in the KI Model" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(noMastersKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
+=======
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -139,13 +153,17 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid No form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page if no and and no description" in {
       setupSubmitMocks(Some(false), Some(ineligibleKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonNoValue,
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ineligible-for-knowledge-intensive")
+=======
+          redirectLocation(result) shouldBe Some(routes.IneligibleForKIController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -154,13 +172,17 @@ class TenYearPlanControllerSpec extends ControllerSpec {
   "Sending a valid Yes form submission to the TenYearPlanController" should {
     "redirect to the subsidiaries page with valid submission" in {
       setupSubmitMocks(Some(true), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "text")(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
+=======
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -168,7 +190,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
   "Sending an empty invalid form submission with validation errors to the TenYearPlanController" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> "",
         "tenYearPlanDesc" -> "")(
@@ -182,7 +204,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
 
   "Sending an an invalid form submission with both Yes and a blank description to the TenYearPlanController" should {
     "redirect to itself with validation errors" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "hasTenYearPlan" -> Constants.StandardRadioButtonYesValue,
         "tenYearPlanDesc" -> "")(
@@ -193,6 +215,7 @@ class TenYearPlanControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
 
 
   "Sending a request with no session to TenYearPlanController" should {
@@ -291,4 +314,6 @@ class TenYearPlanControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
 }

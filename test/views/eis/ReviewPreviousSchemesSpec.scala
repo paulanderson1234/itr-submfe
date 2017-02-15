@@ -43,8 +43,8 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
   }
 
   def setupMocks(previousSchemeVectorList: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemeVectorList))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemeVectorList))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
   }

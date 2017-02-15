@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/InvestmentGrowControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/InvestmentGrowControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class InvestmentGrowControllerSpec extends ControllerSpec {
+class InvestmentGrowControllerSpec extends BaseSpec {
 
   object TestController extends InvestmentGrowController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -73,7 +75,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "an Investment Grow form can be retrieved from keystore" should {
       "return an OK" in {
         setup(Some(investmentGrowModel),Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -83,7 +85,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "no Investment Grow form is retrieved from keystore" should {
       "return an OK" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -93,7 +95,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     "no new geographical market model and new product market model are retrieved from keystore" should {
       "return an OK" in {
         setup(None,None,None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
         )
@@ -104,7 +106,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -114,7 +116,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the investment purpose page" in {
         setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
@@ -127,7 +129,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,None, Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -137,7 +139,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the new geographical market page" in {
         setup(None,None, Some(newProductMarketModelYes),Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
@@ -150,7 +152,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "return a SEE_OTHER" in {
         setup(None,Some(newGeographicalMarketModelYes),None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             status(result) shouldBe SEE_OTHER
@@ -160,7 +162,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
       "redirect to the new product market page" in {
         setup(None,Some(newGeographicalMarketModelYes),None,Some(validBackLink))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show)(
           result => {
             redirectLocation(result) shouldBe Some(routes.NewProductController.show().url)
@@ -170,6 +172,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/InvestmentGrowControllerSpec.scala
   "Sending a GET request to InvestmentGrowController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -224,10 +227,12 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
   }
 
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/InvestmentGrowControllerSpec.scala
   "Sending a valid form submit to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to Contact Details Controller" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> "some text so it's valid"
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -242,7 +247,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
     "return a SEE_OTHER" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -253,11 +258,15 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
 
     "redirect to WhatWillUseFor page" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
+<<<<<<< HEAD:test/controllers/eis/InvestmentGrowControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
+=======
+          redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/InvestmentGrowControllerSpec.scala
         }
       )
     }
@@ -266,7 +275,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
   "Sending an invalid form submission with validation errors to the InvestmentGrowController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       setup(None,Some(newGeographicalMarketModelYes),Some(newProductMarketModelYes),Some(validBackLink))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "investmentGrowDesc" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -276,6 +285,7 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/InvestmentGrowControllerSpec.scala
   "Sending a submission to the InvestmentGrowController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -323,4 +333,6 @@ class InvestmentGrowControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/InvestmentGrowControllerSpec.scala
 }

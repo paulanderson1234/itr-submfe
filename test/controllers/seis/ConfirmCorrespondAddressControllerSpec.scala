@@ -16,15 +16,13 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import data.SubscriptionTestData._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
@@ -35,14 +33,14 @@ import services.SubscriptionService
 
 import scala.concurrent.Future
 
-class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
+class ConfirmCorrespondAddressControllerSpec extends BaseSpec {
 
   implicit lazy val actorSystem = ActorSystem()
   implicit lazy val mat = ActorMaterializer()
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -85,7 +83,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       "return a Status OK (200) when something is fetched from keystore" in {
         setupSaveForLaterMocks(Some(confirmCorrespondAddressModel), Some("back-link"))
         mockSubscriptionServiceResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         status(result) shouldBe OK
       }
 
@@ -124,7 +122,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
       "return Status OK (200)" in {
         setupSaveForLaterMocks(None, Some("back-link"))
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         mockSubscriptionServiceResponse(Some(expectedContactAddressFull))
         status(result) shouldBe OK
       }
@@ -161,69 +159,17 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
       "return INTERNAL_SERVER_ERROR (500)" in {
         setupSaveForLaterMocks(None, Some("back-link"))
-        mockEnrolledRequest()
+        mockEnrolledRequest(seisSchemeTypesModel)
         mockSubscriptionServiceResponse()
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }
 
-  "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
-
-    "return a 303 to the subscription url" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to the GG login page" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect Supporting Documents when the Yes option is selected" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockEnrolledRequest()
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel), Some("backLink"))
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactAddressUse" -> Constants.StandardRadioButtonYesValue,
         "address.addressline1" -> "Line 1",
@@ -241,10 +187,11 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
       )
     }
   }
-    "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
+
+  "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockEnrolledRequest()
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel), Some("backLink"))
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactAddressUse" -> Constants.StandardRadioButtonNoValue,
         "address.addressline1" -> "Line 1",
@@ -254,7 +201,7 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
         "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB")
 
-      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+      submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/contact-address")
@@ -265,8 +212,8 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
 
   "Submitting a invalid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockEnrolledRequest()
+      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel), Some("backLink"))
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq(
         "contactAddressUse" -> "",
         "address.addressline1" -> "Line 1",
@@ -275,71 +222,12 @@ class ConfirmCorrespondAddressControllerSpec extends ControllerSpec {
         "address.addressline4" -> "line 4",
         "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB")
-       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
-          result => {
-            status(result) shouldBe BAD_REQUEST
-          }
-        )
-      }
-    }
-
-  "Submitting a form to ConfirmCorrespondAddressController with a session but not authenticated" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      submitWithSessionWithoutAuth(TestController.submit, formInput)(
+      submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+          status(result) shouldBe BAD_REQUEST
         }
       )
     }
   }
 
-  "Submitting a form to ConfirmCorrespondAddressController with no session" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      submitWithoutSession(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmCorrespondAddressController with a timeout" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the timeout page" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      submitWithTimeout(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmCorrespondAddressController when NOT enrolled" should {
-    "return a 303 and redirect to the Subscription Service" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockNotEnrolledRequest()
-      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }

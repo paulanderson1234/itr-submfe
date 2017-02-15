@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -47,7 +47,7 @@ import views.html.eis._
  * limitations under the License.
  */
 object HadPreviousRFIController extends HadPreviousRFIController{
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -55,8 +55,8 @@ object HadPreviousRFIController extends HadPreviousRFIController{
 
 trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
-  val s4lConnector: S4LConnector
-//
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if (backUrl.isDefined) {
@@ -94,13 +94,13 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
                   Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
                 }
                 else {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().toString())
+                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().url)
                   Future.successful(Redirect(routes.PreviousSchemeController.show()))
                 }
             }
           }
           case Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().url)
             clearPreviousInvestments(s4lConnector)
             Future.successful(Redirect(routes.ProposedInvestmentController.show()))
           }

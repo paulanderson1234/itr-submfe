@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 
 object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressController{
   val subscriptionService = SubscriptionService
-  val s4lConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -43,7 +43,9 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
 
 trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val subscriptionService: SubscriptionService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>

@@ -16,12 +16,12 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.TradeStartDateForm._
 import models.TradeStartDateModel
 import play.Logger
@@ -32,20 +32,22 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-
-object TradeStartDateController extends TradeStartDateController{
-  val s4lConnector: S4LConnector = S4LConnector
+object TradeStartDateController extends TradeStartDateController {
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val submissionConnector = SubmissionConnector
 }
 
-trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch{
-  val s4lConnector: S4LConnector
+trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val submissionConnector: SubmissionConnector
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
         case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
@@ -54,7 +56,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       tradeStartDateForm.bindFromRequest().fold(
         formWithErrors => {
@@ -70,6 +72,11 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
                   Redirect(routes.TradeStartDateErrorController.show())
                 case _ => {
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
+                  InternalServerError(internalServerErrorTemplate)
+                }
+              }.recover {
+                case e: Exception => {
+                  Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
                   InternalServerError(internalServerErrorTemplate)
                 }
               }

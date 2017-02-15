@@ -16,29 +16,40 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
 import models.SupportingDocumentsUploadModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
 import play.api.test.Helpers._
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
 import services.FileUploadService
 
 import scala.concurrent.Future
 
-class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
+class SupportingDocumentsUploadControllerSpec extends BaseSpec {
 
   object TestController extends SupportingDocumentsUploadController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
     override val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl("eis")
+=======
+    override lazy val s4lConnector = mockS4lConnector
+    override lazy val fileUploadService = mockFileUploadService
+    override lazy val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
@@ -73,7 +84,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a GET request to SupportingDocumentsUploadController with upload feature enabled" should {
       "return a 200 OK" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
@@ -83,7 +94,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a GET request to SupportingDocumentsUploadController with upload feature disabled" should {
       "return a 404 NOT_FOUND" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), None, false)
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe NOT_FOUND
@@ -93,7 +104,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a Get request to the SupportingDocumentsUploadController when authenticated and enrolled with upload feature disabled" should {
       "redirect to the confirm correspondence address page if no back link is found" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         showWithSessionAndAuth(TestController.show)(
           result => {
@@ -105,7 +116,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Sending a Get request to the SupportingDocumentsUploadController when authenticated and enrolled with upload feature enabled" should {
       "redirect to the confirm correspondence address page if no SupportingDocumentsUploadModel is found" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url))
         showWithSessionAndAuth(TestController.show)(
           result => {
@@ -117,7 +128,7 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Posting to the SupportingDocumentsUploadController when authenticated and enrolled and with upload feature enabled" should {
       "redirect to Check your answers page" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonYesValue){
           result => status(result) shouldBe SEE_OTHER
@@ -128,18 +139,22 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
     "Posting to the SupportingDocumentsUploadController when authenticated and enrolled and with upload feature disabled" should {
       "redirect to Check your answers page" in {
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
             redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/check-your-answers")
+=======
+            redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
         }
       }
     }
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to itself when a backlink is found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe BAD_REQUEST
@@ -149,15 +164,20 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
 
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to CommercialSaleController when no backlink is found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/commercial-sale")
+=======
+          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
       }
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
   "Sending a request with no session to SupportingDocumentsUploadController" should {
     "return a 303" in {
       status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
@@ -256,4 +276,6 @@ class SupportingDocumentsUploadControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
 }

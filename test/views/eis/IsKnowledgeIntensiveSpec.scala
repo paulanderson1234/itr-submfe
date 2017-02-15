@@ -17,6 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.IsKnowledgeIntensiveController
 import controllers.routes
@@ -29,6 +30,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
+import play.api.i18n.Messages.Implicits._
 
 import scala.concurrent.Future
 
@@ -42,8 +44,8 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
   }
 
   def setupMocks(isKnowledgeIntensiveModel: Option[IsKnowledgeIntensiveModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(isKnowledgeIntensiveModel))
+    when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(isKnowledgeIntensiveModel))
 
   "Verify that the isKnowledgeIntensive page contains the correct elements " +
     "when a valid IsKnowledgeIntensiveModel is passed as returned from keystore" in new Setup {

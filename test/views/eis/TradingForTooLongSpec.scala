@@ -33,6 +33,7 @@ class TradingForTooLongSpec extends ViewSpec {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "The Trading for too long error page" should {

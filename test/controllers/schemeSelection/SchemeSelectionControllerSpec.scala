@@ -16,14 +16,12 @@
 
 package controllers.schemeSelection
 
-import java.net.URLEncoder
-
 import akka.stream.Materializer
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -32,7 +30,7 @@ import org.mockito.Mockito._
 
 import scala.concurrent.Future
 
-class SchemeSelectionControllerSpec extends ControllerSpec {
+class SchemeSelectionControllerSpec extends BaseSpec {
 
   val schemeSelectionModel = SchemeTypesModel(eis = true, seis = true, vct = true)
   implicit lazy val materializer: Materializer = app.materializer
@@ -102,56 +100,6 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
 
     }
 
-  }
-
-  "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
-
-    "return a 303 to the subscription url" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the GG login page" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
   }
 
   "Sending an authenticated and enrolled POST request with a session to the SchemeSelectionController" when {
@@ -305,55 +253,6 @@ class SchemeSelectionControllerSpec extends ControllerSpec {
 
     }
 
-  }
-
-  "Sending a submission to the SchemeSelectionController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SchemeSelectionController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SchemeSelectionController when not enrolled" should {
-
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
   }
 
 }

@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -32,7 +32,7 @@ import views.html.eis._
 import views.html.eis.companyDetails.IsKnowledgeIntensive
 
 object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -40,7 +40,9 @@ object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
 
 trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {

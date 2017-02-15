@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
+class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
 
   object TestController extends PreviousBeforeDOFCSController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -70,7 +72,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user is KI and has filled in all required models and a PreviousBeforeDOFCSModel can be obtained from keystore" should {
       "return an OK" in {
         setupShowMocks(Some(trueKIModel), Some(commercialSaleModelYes), Some(previousBeforeDOFCSModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
@@ -80,7 +82,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user is non KI and has filled in all required models and a PreviousBeforeDOFCSModel can be obtained from keystore" should {
       "return an OK" in {
         setupShowMocks(Some(kiProcessingModelNotMet), Some(commercialSaleModelYes), Some(previousBeforeDOFCSModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
@@ -90,7 +92,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user is KI and has filled in all required models and a PreviousBeforeDOFCSModel can't be obtained from keystore" should {
       "return an OK" in {
         setupShowMocks(Some(trueKIModel), Some(commercialSaleModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
@@ -100,7 +102,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user is non KI and has filled in all required models and a PreviousBeforeDOFCSModel can't be obtained from keystore" should {
       "return an OK" in {
         setupShowMocks(Some(kiProcessingModelNotMet), Some(commercialSaleModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe OK
         )
@@ -110,14 +112,14 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user is KI and has not filled in commercial sale model" should {
       "return a SEE_OTHER" in {
         setupShowMocks(Some(kiProcessingModelMet))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe SEE_OTHER
         )
       }
       "redirect to commercial sale page" in {
         setupShowMocks(Some(kiProcessingModelMet))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
         )
@@ -127,14 +129,14 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user has not filled in the KI model" should {
       "return a SEE_OTHER" in {
         setupShowMocks(commercialSaleModel = Some(commercialSaleModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe SEE_OTHER
         )
       }
       "redirect to date of incorporation page" in {
         setupShowMocks(commercialSaleModel = Some(commercialSaleModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
         )
@@ -144,14 +146,14 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "The user has not filled in the KI model or commercial sale model" should {
       "return a SEE_OTHER" in {
         setupShowMocks()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe SEE_OTHER
         )
       }
       "redirect to commercial sale page" in {
         setupShowMocks()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
         )
@@ -161,14 +163,14 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "There is no KI model or commercial sale model" should {
       "return a SEE_OTHER" in {
         setupShowMocks()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => status(result) shouldBe SEE_OTHER
         )
       }
       "redirect to commercial sale page" in {
         setupShowMocks(None, None, None)
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         showWithSessionAndAuth(TestController.show())(
           result => redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
         )
@@ -176,6 +178,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
   "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupShowMocks(previousBeforeDOFCSModel = Some(previousBeforeDOFCSModelYes))
@@ -229,14 +232,20 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
+=======
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -245,12 +254,16 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
       setupSubmitMocks(Some(subsidiariesModelNo))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
+=======
+          redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -259,12 +272,16 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to the subsidiaries-spending-investment page" in {
       setupSubmitMocks(Some(subsidiariesModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
+=======
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -273,12 +290,16 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'Yes' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
       setupSubmitMocks(Some(subsidiariesModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
+=======
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -287,12 +308,16 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController with 'No' to Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
       setupSubmitMocks(Some(subsidiariesModelNo))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
+=======
+          redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -301,12 +326,16 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
   "Sending a valid form submit to the PreviousBeforeDOFCSController without a Subsidiaries Model when Authenticated and enrolled" should {
     "redirect to Subsidiaries page" in {
       setupSubmitMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "previousBeforeDOFCS" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
+=======
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -317,7 +346,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "the user submits and is KI" should {
       "redirect to itself" in {
         setupShowMocks(Some(trueKIModel), Some(commercialSaleModelYes), Some(previousBeforeDOFCSModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         val formInput = "previousBeforeDOFCS" -> ""
         submitWithSessionAndAuth(TestController.submit, formInput)(
           result => {
@@ -329,7 +358,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     "the user submits and is not KI" should {
       "redirect to itself" in {
         setupShowMocks(Some(kiProcessingModelNotMet), Some(commercialSaleModelYes), Some(previousBeforeDOFCSModelYes))
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         val formInput = "previousBeforeDOFCS" -> ""
         submitWithSessionAndAuth(TestController.submit, formInput)(
           result => {
@@ -340,6 +369,7 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
 
   "Sending a submission to the PreviousBeforeDOFCSController when not authenticated" should {
 
@@ -388,4 +418,6 @@ class PreviousBeforeDOFCSControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
 }

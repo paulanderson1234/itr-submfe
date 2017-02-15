@@ -16,14 +16,14 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import forms.PreviousSchemeForm._
@@ -32,17 +32,19 @@ import scala.concurrent.Future
 import views.html.seis.previousInvestment.PreviousScheme
 
 object PreviousSchemeController extends PreviousSchemeController {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
 
-  def show(id: Option[Int]): Action[AnyContent] = seisFeatureSwitch {
+
+
+  def show(id: Option[Int]): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -69,7 +71,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       previousSchemeForm.bindFromRequest().fold(
         formWithErrors => {

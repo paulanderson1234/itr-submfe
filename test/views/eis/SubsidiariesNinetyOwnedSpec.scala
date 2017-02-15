@@ -17,6 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.SubsidiariesNinetyOwnedController
 import controllers.routes
@@ -42,8 +43,8 @@ class SubsidiariesNinetyOwnedSpec extends ViewSpec {
   }
   
   def setupMocks(subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(subsidiariesNinetyOwnedModel))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(subsidiariesNinetyOwnedModel))
 
   "The Subsidiaries Ninety Owned page" should {
 

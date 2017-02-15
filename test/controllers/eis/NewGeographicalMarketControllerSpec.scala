@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/NewGeographicalMarketControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewGeographicalMarketControllerSpec.scala
 import models.NewGeographicalMarketModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class NewGeographicalMarketControllerSpec extends ControllerSpec {
+class NewGeographicalMarketControllerSpec extends BaseSpec {
 
   object TestController extends NewGeographicalMarketController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -61,7 +63,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
   "Sending a GET request to NewGeographicalMarketController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(newGeographicalMarketModelYes), Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -69,7 +71,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled"  in {
       setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -77,7 +79,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated and enrolled" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -87,6 +89,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/NewGeographicalMarketControllerSpec.scala
   "Sending a GET request to NewGeographicalMarketController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(newGeographicalMarketModelYes), Some(routes.ProposedInvestmentController.show().url))
@@ -137,9 +140,11 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewGeographicalMarketControllerSpec.scala
   "Sending a valid 'Yes' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -152,7 +157,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
 
   "Sending a valid 'No' form submit to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect the ten year plan page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "isNewGeographicalMarket" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -167,7 +172,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     "with no backlink and when authenticated and enrolled" should {
     "redirect to WhatWillUseFor page" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -181,7 +186,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
   "Sending an invalid form submission with validation errors to the NewGeographicalMarketController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "isNewGeographicalMarket" -> ""
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -191,6 +196,7 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/NewGeographicalMarketControllerSpec.scala
   "Sending a submission to the NewGeographicalMarketController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -239,4 +245,6 @@ class NewGeographicalMarketControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewGeographicalMarketControllerSpec.scala
 }

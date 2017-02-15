@@ -16,13 +16,11 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +28,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class HadPreviousRFIControllerSpec extends ControllerSpec {
+class HadPreviousRFIControllerSpec extends BaseSpec {
 
   object TestController extends HadPreviousRFIController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -53,17 +51,17 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None,
                  previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(hadPreviousRFIModel))
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemes))
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(hadPreviousRFIModel))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemes))
 
   }
 
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(hadPreviousRFIModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
@@ -71,59 +69,9 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks(None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
-      )
-    }
-  }
-
-  "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
-    "redirect to subscription" in {
-      setupMocks(Some(hadPreviousRFIModelYes))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to HadPreviousRFIController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to HadPreviousRFIController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to HadPreviousRFIController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
       )
     }
   }
@@ -131,7 +79,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
     "and there are previous enrolments" should {
     "redirect to review schemes page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       setupMocks(previousSchemes = Some(previousSchemesValid))
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -146,7 +94,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
     "and there are no previous enrolments" should {
     "redirect to previous scheme page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       setupMocks()
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -160,7 +108,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -180,59 +128,11 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
        when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
 
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the HadPreviousRFIController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the HadPreviousRFIController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the HadPreviousRFIController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
         }
       )
     }

@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/HadPreviousRFIControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/HadPreviousRFIControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class HadPreviousRFIControllerSpec extends ControllerSpec {
+class HadPreviousRFIControllerSpec extends BaseSpec {
 
   object TestController extends HadPreviousRFIController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -53,12 +55,12 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   def setupMocks(hadPreviousRFIModel: Option[HadPreviousRFIModel] = None, backLink: Option[String] = None,
                  previousSchemes: Option[Vector[PreviousSchemeModel]] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hadPreviousRFIModel))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemes))
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemes))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(backLink))
   }
@@ -66,7 +68,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending a GET request to HadPreviousRFIController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(hadPreviousRFIModelYes), Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
@@ -74,13 +76,14 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks(None,Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/HadPreviousRFIControllerSpec.scala
   "Sending a GET request to HadPreviousRFIController when authenticated and NOT enrolled" should {
     "redirect to subscription" in {
       setupMocks(Some(hadPreviousRFIModelYes),Some(routes.ProposedInvestmentController.show().url))
@@ -131,10 +134,12 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/HadPreviousRFIControllerSpec.scala
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
     "and there are previous enrolments" should {
     "redirect to review schemes page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(previousSchemes = Some(previousSchemesValid), backLink = Some(routes.ProposedInvestmentController.show().url))
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -149,7 +154,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit to the HadPreviousRFIController when authenticated and enrolled" +
     "and there are no previous enrolments" should {
     "redirect to previous scheme page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -163,7 +168,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
   "Sending a valid 'No' form submit to the HadPreviousRFIController when authenticated and enrolled" should {
     "redirect to the commercial sale page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "hadPreviousRFI" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -181,7 +186,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
 
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Some(routes.ProposedInvestmentController.show().url)))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "hadPreviousRFI" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -191,6 +196,7 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/HadPreviousRFIControllerSpec.scala
 
   "Sending a submission to the HadPreviousRFIController when not authenticated" should {
 
@@ -240,4 +246,6 @@ class HadPreviousRFIControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/HadPreviousRFIControllerSpec.scala
 }

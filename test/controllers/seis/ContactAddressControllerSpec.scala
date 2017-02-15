@@ -19,9 +19,10 @@ package controllers.seis
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -29,10 +30,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ContactAddressControllerSpec extends ControllerSpec {
+class ContactAddressControllerSpec extends BaseSpec {
 
   object TestController extends ContactAddressController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -51,13 +52,13 @@ class ContactAddressControllerSpec extends ControllerSpec {
   }
 
   def setupMocks(addressModel : Option[AddressModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(addressModel))
+    when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.manualContactAddress))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(addressModel))
 
   "Sending a GET request to ContactAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
       setupMocks(Some(addressModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -65,67 +66,16 @@ class ContactAddressControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending a GET request to ContactAddressController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      setupMocks(Some(addressModel))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ContactAddressController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ContactAddressController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ContactAddressController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
   "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
     "redirect to the Contact Details Subscription Controller page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput =
         Seq("addressline1" -> "Line 1",
           "addressline2" -> "Line 2",
@@ -145,64 +95,12 @@ class ContactAddressControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = Seq("addressLine1" -> "", "addressLine1" -> "", "addressLine3" -> "Line3",
         "addressLine4" -> "Line4", "postCode" -> "AA1 1AA", "countryCode" -> "GB")
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe BAD_REQUEST
-        }
-      )
-    }
-  }
-
-  "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      val formInput = Seq("addressline1" -> "Line1", "addressline2" -> "Line2", "addressline3" -> "Line3",
-        "addressline4" -> "Line4", "postCode" -> "AA1 1AA", "countryCode" -> "GB")
-      submitWithSessionAndAuth(TestController.submit, formInput: _*)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-
-
-  "Sending a submission to the ContactAddressController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ContactAddressController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
         }
       )
     }

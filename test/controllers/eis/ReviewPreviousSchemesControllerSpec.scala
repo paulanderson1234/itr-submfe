@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -32,10 +34,10 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
+class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
   object TestController extends ReviewPreviousSchemesController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -73,7 +75,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
     "return a 200 OK when a populated vector is returned from keystore and a back link is retrieved" in {
       setupMocks(Some(previousSchemeVectorList), Some(routes.HadPreviousRFIController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -81,7 +83,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     "redirect to HadPreviousRFI when nothing is returned from keystore when authenticated and enrolled" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -92,7 +94,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
 
     "redirect to HadPreviousRFI when no previous schemes are returned from keystore when authenticated and enrolled" in {
       setupMocks(backLink = Some(routes.HadPreviousRFIController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -102,6 +104,7 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(previousSchemeVectorList))
@@ -152,25 +155,35 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
   "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
       setupMocks(Some(previousSchemeVectorList))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/proposed-investment")
+=======
+          redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
 
     "redirect to itself if table is empty" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
+=======
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
@@ -180,11 +193,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
       setupMocks(Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapDeleted)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
+=======
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
@@ -194,11 +211,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       "when authenticated and enrolled" in {
       setupMocks(Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(10))(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
+=======
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
@@ -206,11 +227,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
     "redirect to 'Review previous scheme' when the vector is empty when authenticated and enrolled" in {
       setupMocks()
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapEmpty)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/review-previous-schemes")
+=======
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
@@ -219,11 +244,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.add)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-investment")
+=======
+          redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
@@ -232,10 +261,11 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
   "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.change(testId))(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/previous-investment?id=" + testId)
         }
       )
@@ -262,11 +292,15 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
           redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
             URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
           }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+=======
+          redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url + s"?id=$testId")
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
         }
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ReviewPreviousSchemesControllerSpec.scala
   "Sending a submission to the NewGeographicalMarketController when a timeout has occurred" should {
     "redirect to the Timeout page when session has timed out" in {
       submitWithTimeout(TestController.submit)(
@@ -289,4 +323,6 @@ class ReviewPreviousSchemesControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ReviewPreviousSchemesControllerSpec.scala
 }

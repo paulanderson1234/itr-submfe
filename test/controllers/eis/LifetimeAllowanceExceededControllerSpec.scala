@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/LifetimeAllowanceExceededControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/LifetimeAllowanceExceededControllerSpec.scala
 import models.KiProcessingModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
+class LifetimeAllowanceExceededControllerSpec extends BaseSpec {
 
   object TestController extends LifetimeAllowanceExceededController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -53,7 +55,7 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
 
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "return a 200" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel]
         (Matchers.eq(KeystoreKeys.kiProcessingModel))(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(Future.successful(Some(kiProcessingModelNotMet)))
@@ -63,6 +65,7 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/LifetimeAllowanceExceededControllerSpec.scala
   "Sending a GET request to LifetimeAllowanceExceededController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
@@ -112,9 +115,11 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/LifetimeAllowanceExceededControllerSpec.scala
   "Posting to the LifetimeAllowanceExceededController when authenticated and enrolled" should {
     "redirect to 'Proposed investment' page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -124,6 +129,7 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/LifetimeAllowanceExceededControllerSpec.scala
   "Sending a submission to the LifetimeAllowanceExceededController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -172,4 +178,6 @@ class LifetimeAllowanceExceededControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/LifetimeAllowanceExceededControllerSpec.scala
 }

@@ -16,12 +16,14 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/ContactAddressControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ContactAddressControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -29,10 +31,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ContactAddressControllerSpec extends ControllerSpec {
+class ContactAddressControllerSpec extends BaseSpec {
 
   object TestController extends ContactAddressController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -57,7 +59,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
   "Sending a GET request to ContactAddressController when authenticated and enrolled" should {
     "return a 200 OK when something is fetched from keystore" in {
       setupMocks(Some(addressModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -65,13 +67,14 @@ class ContactAddressControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ContactAddressControllerSpec.scala
   "Sending a GET request to ContactAddressController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(addressModel))
@@ -123,9 +126,11 @@ class ContactAddressControllerSpec extends ControllerSpec {
   }
 
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ContactAddressControllerSpec.scala
   "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
     "redirect to the Contact Details Subscription Controller page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput =
         Seq("addressline1" -> "Line 1",
           "addressline2" -> "Line 2",
@@ -145,7 +150,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the ContactAddressController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq("addressLine1" -> "", "addressLine1" -> "", "addressLine3" -> "Line3",
         "addressLine4" -> "Line4", "postCode" -> "AA1 1AA", "countryCode" -> "GB")
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
@@ -156,6 +161,7 @@ class ContactAddressControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ContactAddressControllerSpec.scala
   "Sending a valid form submit to the ContactAddressController when authenticated and enrolled" should {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
@@ -208,4 +214,6 @@ class ContactAddressControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ContactAddressControllerSpec.scala
 }

@@ -16,23 +16,25 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/IneligibleForKIControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IneligibleForKIControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class IneligibleForKIControllerSpec extends ControllerSpec {
+class IneligibleForKIControllerSpec extends BaseSpec {
 
   object TestController extends IneligibleForKIController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -58,7 +60,7 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
   "Sending a GET request to IneligibleForKIController without a valid backlink from keystore when authenticated and enrolled" should {
     "redirect to the beginning of the flow" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -71,13 +73,14 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and enrolled" should {
     "return a 200" in {
       setupMocks(Some(routes.OperatingCostsController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/IneligibleForKIControllerSpec.scala
   "Sending a GET request to IneligibleForKIController with a valid back link when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(routes.OperatingCostsController.show().url))
@@ -129,10 +132,12 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
   }
 
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IneligibleForKIControllerSpec.scala
   "Posting to the IneligibleForKIController when authenticated and enrolled" should {
     "redirect to 'Subsidiaries' page" in {
       setupMocks(Some(routes.OperatingCostsController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -142,6 +147,7 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/IneligibleForKIControllerSpec.scala
   "Sending a submission to the IneligibleForKIController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -190,4 +196,6 @@ class IneligibleForKIControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IneligibleForKIControllerSpec.scala
 }

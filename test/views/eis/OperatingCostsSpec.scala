@@ -17,6 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.OperatingCostsController
 import controllers.routes
@@ -43,8 +44,8 @@ class OperatingCostsSpec extends ViewSpec {
   }
 
   def setupMocks(operatingCostsModel: Option[OperatingCostsModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(operatingCostsModel))
+    when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(operatingCostsModel))
 
   "Verify that the OperatingCosts page contains the correct elements " +
     "when a valid OperatingCostsModel is passed as returned from keystore" in new Setup {

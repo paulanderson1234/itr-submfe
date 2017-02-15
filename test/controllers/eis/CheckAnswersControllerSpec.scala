@@ -16,12 +16,14 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/CheckAnswersControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CheckAnswersControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -29,12 +31,10 @@ import views.helpers.CheckAnswersSpec
 
 import scala.concurrent.Future
 
-class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
-
-  val enevleopId = "3e0c50b8-9705-470b-a49a-9f83466e1b05"
+class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -63,8 +63,8 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
         Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(Some(enevleopId)))(
+      mockEnrolledRequest(eisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
       )
     }
@@ -77,8 +77,8 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       companyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(Some(enevleopId)))(
+      mockEnrolledRequest(eisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
       )
     }
@@ -91,7 +91,7 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       companyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(None))(
         result => status(result) shouldBe OK
       )
@@ -105,99 +105,28 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
       contactDetailsSetup()
       companyDetailsSetup()
       contactAddressSetup()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(Some("")))(
         result => status(result) shouldBe OK
       )
     }
   }
 
-  "Sending an Authenticated and NOT Enrolled GET request with a session to CheckAnswersControllerTest" should {
-    "redirect to the TAVC Subscription Service" in {
-      previousRFISetup()
-      investmentSetup()
-      contactDetailsSetup()
-      companyDetailsSetup()
-      contactAddressSetup()
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(Some(enevleopId)))(
+  "Sending a submission to the CheckAnswersController" should {
+
+    "redirect to the acknowledgement page when authenticated and enrolled" in {
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      mockEnrolledRequest(eisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+          redirectLocation(result) shouldBe Some(routes.AcknowledgementController.show().url)
         }
       )
     }
-  }
 
-  "Sending an Authenticated and NOT Enrolled GET request (envelopeId is None) with a session to CheckAnswersControllerTest" should {
-    "redirect to the TAVC Subscription Service" in {
-      previousRFISetup()
-      investmentSetup()
-      contactDetailsSetup()
-      companyDetailsSetup()
-      contactAddressSetup()
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show(Some(enevleopId)))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request (envelopeId is None) with a session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show(Some(enevleopId)))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request (envelopeId is None) with no session to CheckAnswersController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show(None))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
+<<<<<<< HEAD:test/controllers/eis/CheckAnswersControllerSpec.scala
   "Sending a timed-out request to CheckAnswersController" should {
     "return a 302 and redirect to the timeout page" in {
       showWithTimeout(TestController.show(Some(enevleopId)))(
@@ -263,4 +192,8 @@ class CheckAnswersControllerSpec extends ControllerSpec with CheckAnswersSpec {
         )
       }
     }
+=======
+  }
+
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CheckAnswersControllerSpec.scala
 }

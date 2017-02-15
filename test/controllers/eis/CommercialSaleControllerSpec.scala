@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class CommercialSaleControllerSpec extends ControllerSpec {
+class CommercialSaleControllerSpec extends BaseSpec {
 
   object TestController extends CommercialSaleController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -65,7 +67,7 @@ class CommercialSaleControllerSpec extends ControllerSpec {
   "Sending a GET request to CommercialSaleController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupShowMocks(Some(commercialSaleModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -73,13 +75,14 @@ class CommercialSaleControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupShowMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
   "Sending an Unauthenticated request with a session to CommercialSaleController" should {
     "return a 302 and redirect to GG login" in {
       showWithSessionWithoutAuth(TestController.show())(
@@ -129,6 +132,8 @@ class CommercialSaleControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
   "Sending a valid Yes form submission to the CommercialSaleController when authenticated and enrolled" should {
     "redirect to the KI page if the KI date condition is met" in {
       val formInput = Seq("hasCommercialSale" -> Constants.StandardRadioButtonYesValue,
@@ -136,11 +141,15 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
       setupSubmitMocks(Some(kiProcessingModelMet), Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
+=======
+          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }
@@ -154,11 +163,15 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
       setupSubmitMocks(Some(kiProcessingModelNotMet), Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
+=======
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }
@@ -172,11 +185,15 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "11",
         "commercialSaleYear" -> "1993")
       setupSubmitMocks(dateOfIncorporationModel = Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
+=======
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }
@@ -190,11 +207,15 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
       setupSubmitMocks(Some(kiProcessingModelMet), Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
+=======
+          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }
@@ -208,11 +229,15 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
       setupSubmitMocks(dateOfIncorporationModel = Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
+=======
+          redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }
@@ -226,10 +251,11 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         "commercialSaleMonth" -> "",
         "commercialSaleYear" -> "")
       setupSubmitMocks(Some(kiProcessingModelNotMet), Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/CommercialSaleControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
         }
       )
@@ -280,6 +306,9 @@ class CommercialSaleControllerSpec extends ControllerSpec {
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
+=======
+          redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CommercialSaleControllerSpec.scala
         }
       )
     }

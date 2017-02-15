@@ -17,6 +17,7 @@
 package views.seis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.seis.{ContactDetailsController, routes}
 import models.ContactDetailsModel
@@ -41,12 +42,12 @@ class ContactDetailsSpec extends ViewSpec {
   }
 
   def setupMocks(contactDetailsModel: Option[ContactDetailsModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(contactDetailsModel))
+    when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.manualContactDetails))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(contactDetailsModel))
 
   "The Contact Details page" should {
 
-    "Verify that the contact details page contains the correct elements when a valid ContactDetailsModel is passed" in new Setup {
+    "Verify that the contact details page contains the correct elements when a valid ContactDetailsModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(contactDetailsModel))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -64,7 +65,7 @@ class ContactDetailsSpec extends ViewSpec {
       document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.four")
     }
 
-    "Verify that the proposed investment page contains the correct elements when an invalid ContactDetailsModel is passed" in new Setup {
+    "Verify that the proposed investment page contains the correct elements when an invalid ContactDetailsModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)

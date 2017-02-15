@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
 object ContactDetailsController extends ContactDetailsController
 {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -39,7 +39,9 @@ object ContactDetailsController extends ContactDetailsController
 
 trait ContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {

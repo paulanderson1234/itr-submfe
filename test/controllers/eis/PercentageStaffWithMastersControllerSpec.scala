@@ -16,13 +16,21 @@
 
 package controllers.eis
 
+<<<<<<< HEAD:test/controllers/eis/PercentageStaffWithMastersControllerSpec.scala
 import java.net.URLEncoder
 
 import auth.{MockAuthConnector, MockConfig}
+=======
+import auth.{ MockAuthConnector, MockConfig}
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PercentageStaffWithMastersControllerSpec.scala
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+<<<<<<< HEAD:test/controllers/eis/PercentageStaffWithMastersControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PercentageStaffWithMastersControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +38,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
+class PercentageStaffWithMastersControllerSpec extends BaseSpec {
 
   object TestController extends PercentageStaffWithMastersController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector
@@ -72,7 +80,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
   "Sending a GET request to PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupShowMocks(Some(false),Some(percentageStaffWithMastersModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
@@ -80,13 +88,14 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when Authenticated and enrolled" in {
       setupShowMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PercentageStaffWithMastersControllerSpec.scala
   "Sending a GET request to PercentageStaffWithMastersController when Authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupShowMocks(Some(false),Some(percentageStaffWithMastersModelYes))
@@ -137,10 +146,12 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PercentageStaffWithMastersControllerSpec.scala
   "Sending a valid 'Yes' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the subsidiaries page" in {
       setupSubmitMocks(Some(true), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -154,7 +165,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit with falseKi in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the isKI page" in {
       setupSubmitMocks(Some(false), Some(isKiKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -168,7 +179,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit without a KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       setupSubmitMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -182,7 +193,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
   "Sending a valid 'Yes' form submit with missing data in the KI Model to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
       setupSubmitMocks(Some(false), Some(missingDataKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -196,7 +207,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
   "Sending a valid 'No' form submit to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect the ten year plan page" in {
       setupSubmitMocks(Some(false), Some(trueKIModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -209,7 +220,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the PercentageStaffWithMastersController when Authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "staffWithMasters" -> ""
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
@@ -219,6 +230,7 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/PercentageStaffWithMastersControllerSpec.scala
   "Sending a submission to the PercentageStaffWithMastersController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -267,4 +279,6 @@ class PercentageStaffWithMastersControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PercentageStaffWithMastersControllerSpec.scala
 }

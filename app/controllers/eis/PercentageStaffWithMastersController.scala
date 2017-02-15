@@ -16,12 +16,14 @@
 
 package controllers.eis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
+import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -31,7 +33,7 @@ import views.html.eis._
 import views.html.eis.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters}
 
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   val submissionConnector: SubmissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -40,7 +42,9 @@ object PercentageStaffWithMastersController extends PercentageStaffWithMastersCo
 
 trait PercentageStaffWithMastersController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -90,13 +94,18 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
         val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
           Constants.StandardRadioButtonYesValue) true
         else false
-        for {
+        (for {
           kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
           // Call API
           isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
-            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false) //TO DO - PROPER API CALL
+            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false)
           route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
-        } yield route
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
+        }
       }
     )
   }

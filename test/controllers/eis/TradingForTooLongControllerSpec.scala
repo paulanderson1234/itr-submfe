@@ -16,21 +16,24 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
+<<<<<<< HEAD:test/controllers/eis/TradingForTooLongControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TradingForTooLongControllerSpec.scala
 import play.api.test.Helpers._
 
 
-class TradingForTooLongControllerSpec extends ControllerSpec {
+class TradingForTooLongControllerSpec extends BaseSpec {
 
   object TestController extends TradingForTooLongController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "TradingForTooLongController" should {
@@ -44,7 +47,7 @@ class TradingForTooLongControllerSpec extends ControllerSpec {
 
   "Sending a GET request to TradingForTooLongController when authenticated and enrolled" should {
     "return a 200 OK Swhen something is fetched from keystore" in {
-       mockEnrolledRequest()
+       mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -52,13 +55,14 @@ class TradingForTooLongControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 OK when nothing is fetched using keystore" in {
    
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/TradingForTooLongControllerSpec.scala
 
   "Sending a request with no session to TradingForTooLongController" should {
     "return a 303" in {
@@ -106,4 +110,6 @@ class TradingForTooLongControllerSpec extends ControllerSpec {
       redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TradingForTooLongControllerSpec.scala
 }

@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
+class SubsidiariesSpendingInvestmentControllerSpec extends BaseSpec {
 
   object SubsidiariesSpendingInvestmentControllerTest extends SubsidiariesSpendingInvestmentController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -61,7 +63,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -69,7 +71,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore when authenticated and enrolled" in {
       setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => status(result) shouldBe OK
       )
@@ -77,7 +79,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 300 when no back link is fetched using keystore when authenticated and enrolled" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -87,6 +89,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
   "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
@@ -137,9 +140,11 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
   "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to the subsidiaries-ninety-percent-owned page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "subSpendingInvestment" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -152,7 +157,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
 
   "Sending a valid 'No' form submit to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "subSpendingInvestment" -> Constants.StandardRadioButtonNoValue
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -166,7 +171,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
   "Sending a invalid form submit to the SubsidiariesSpendingInvestmentController with no back link when authenticated and enrolled" should {
     "redirect to the subsidiaries-ninety-percent-owned page" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -180,7 +185,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
   "Sending an invalid form submission with validation errors to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to itself with errors" in {
       setupMocks(backLink = Some(routes.ProposedInvestmentController.show().url))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "subSpendingInvestment" -> ""
       submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit, formInput)(
         result => {
@@ -190,6 +195,7 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
   "Sending a submission to the SubsidiariesSpendingInvestmentController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -237,4 +243,6 @@ class SubsidiariesSpendingInvestmentControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
 }

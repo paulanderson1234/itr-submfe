@@ -16,11 +16,13 @@
 
 package controllers.helpers
 
-import common.Constants
+import auth.{Enrolment, Identifier}
+import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
+import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
@@ -28,6 +30,9 @@ import org.scalatestplus.play.OneAppPerSuite
 import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.http.HeaderCarrier
+
+import scala.concurrent.Future
 
 
 trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
@@ -44,6 +49,23 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
     reset(mockEnrolmentConnector)
     reset(mockSubmissionConnector)
   }
+
+  def mockEnrolledRequest(selectedSchemes: Option[SchemeTypesModel] = None): Unit = {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+    when(mockEnrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(tavcReferenceId))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(selectedSchemes))
+  }
+
+  def mockNotEnrolledRequest(): Unit = {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+  }
+
+  implicit val hc = HeaderCarrier()
 
 
   val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
@@ -147,7 +169,11 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   val envelopeId: Option[String] = Some("00000000000000000000000000000000")
 
-  val seisSchemeTypesModel = SchemeTypesModel(seis = true)
+  val seisSchemeTypesModel = Some(SchemeTypesModel(seis = true))
+  val eisSchemeTypesModel = Some(SchemeTypesModel(eis = true))
+  val vctSchemeTypesModel = Some(SchemeTypesModel(vct = true))
+
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
 
   //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
 

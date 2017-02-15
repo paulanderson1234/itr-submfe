@@ -16,13 +16,11 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,7 +28,7 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class ProposedInvestmentControllerSpec extends ControllerSpec {
+class ProposedInvestmentControllerSpec extends BaseSpec {
 
   object TestController extends ProposedInvestmentController {
     override lazy val applicationConfig = MockConfig
@@ -63,24 +61,22 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
   "Sending a GET request to ProposedInvestmentController when authenticated and enrolled" should {
 
     "return a 200 when something is fetched from keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(proposedInvestment)))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
-      mockEnrolledRequest()
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(proposedInvestment)))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkProposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
-      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(None))
-      when(mockS4lConnector.fetchAndGetFormData[String]
-        (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
-      mockEnrolledRequest()
+      when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkProposedInvestment))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -93,7 +89,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(None))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -103,58 +99,9 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
-  "Sending a GET request to ProposedInvestmentController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ProposedInvestmentController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to NatureOfBusinessController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to NatureOfBusinessController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
   "Sending a valid form submit to the ProposedInvestmentController" should {
     "redirect to the confirm contact details page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "123456")(
         result => {
@@ -171,7 +118,7 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
       when(mockS4lConnector.fetchAndGetFormData[String]
         (Matchers.eq(KeystoreKeys.backLinkProposedInvestment))(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Option(routes.HadPreviousRFIController.show().url)))
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,
         "investmentAmount" -> "")(
         result => {
@@ -181,53 +128,5 @@ class ProposedInvestmentControllerSpec extends ControllerSpec {
     }
   }
 
-
-  "Sending a submission to the NatureOfBusinessController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${TestController.applicationConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(TestController.applicationConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NatureOfBusinessController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NatureOfBusinessController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(TestController.applicationConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
 }
 

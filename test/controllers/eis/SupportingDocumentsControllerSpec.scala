@@ -16,13 +16,17 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsControllerSpec.scala
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.ControllerSpec
+=======
+import config.FrontendAuthConnector
+import connectors.{EnrolmentConnector, S4LConnector}
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -30,12 +34,12 @@ import services.FileUploadService
 
 import scala.concurrent.Future
 
-class SupportingDocumentsControllerSpec extends ControllerSpec {
+class SupportingDocumentsControllerSpec extends BaseSpec {
 
   object TestController extends SupportingDocumentsController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
-    override val s4lConnector = mockS4lConnector
+    override lazy val s4lConnector = mockS4lConnector
     override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl("eis")
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -66,7 +70,7 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SupportingDocumentsController with upload feature disabled" should {
     "return a 200 OK" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), false)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -76,12 +80,16 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "sending a Get requests to the SupportingDocumentsController when authenticated and enrolled with upload feature disabled" should {
     "redirect to the confirm correspondence address page if no saved back link was found" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks()
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/confirm-correspondence-address")
+=======
+          redirectLocation(result) shouldBe Some(routes.ConfirmCorrespondAddressController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsControllerSpec.scala
         }
       )
     }
@@ -90,25 +98,34 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
 
   "Sending a GET request to SupportingDocumentsController with upload feature enabled" should {
     "redirect to the upload file supporting documents page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), true)
       showWithSessionAndAuth(TestController.show) {
           result => status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsControllerSpec.scala
           redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/supporting-documents-upload")
+=======
+          redirectLocation(result) shouldBe Some(routes.SupportingDocumentsUploadController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsControllerSpec.scala
       }
     }
   }
 
   "Posting to the SupportingDocumentsController when authenticated and enrolled" should {
     "redirect to Check your answers page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsControllerSpec.scala
         redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/check-your-answers")
+=======
+        redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsControllerSpec.scala
       }
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsControllerSpec.scala
   "Sending a request with no session to SupportingDocumentsController" should {
     "return a 303" in {
       status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
@@ -207,4 +224,6 @@ class SupportingDocumentsControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsControllerSpec.scala
 }

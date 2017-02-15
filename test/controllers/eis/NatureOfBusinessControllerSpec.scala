@@ -16,34 +16,29 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/NatureOfBusinessControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NatureOfBusinessControllerSpec.scala
 import models._
-import models.submission.SchemeTypesModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
-class NatureOfBusinessControllerSpec extends ControllerSpec {
+class NatureOfBusinessControllerSpec extends BaseSpec {
 
   object TestController extends NatureOfBusinessController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
-
-  val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
-  val cacheMapNatureofBusiness: CacheMap = CacheMap("", Map("" -> Json.toJson(NatureOfBusinessModel("some nature of business"))))
 
   "NatureOfBusinessController" should {
     "use the correct keystore connector" in {
@@ -60,15 +55,11 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
   def setupMocks(natureOfBusinessModel: Option[NatureOfBusinessModel] = None): Unit =
     when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(natureOfBusinessModel))
-  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-    .thenReturn(cacheMapSchemeTypes)
-  when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.natureOfBusiness), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-    .thenReturn(cacheMapNatureofBusiness)
 
   "Sending a GET request to NatureOfBusinessController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(natureOfBusinessModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -76,13 +67,14 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/NatureOfBusinessControllerSpec.scala
   "Sending a GET request to NatureOfBusinessController when authenticated and NOT enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(natureOfBusinessModel))
@@ -133,9 +125,11 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NatureOfBusinessControllerSpec.scala
   "Sending a valid form submit to the NatureOfBusinessController when auththenticated and enrolled" should {
     "redirect to the date of incorporation page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "natureofbusiness" -> "some text so it's valid"
 
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -149,7 +143,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the NatureOfBusinessController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "natureofbusiness" -> ""
 
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -160,6 +154,7 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/NatureOfBusinessControllerSpec.scala
 
   "Sending a submission to the NatureOfBusinessController when not authenticated" should {
 
@@ -209,4 +204,6 @@ class NatureOfBusinessControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NatureOfBusinessControllerSpec.scala
 }

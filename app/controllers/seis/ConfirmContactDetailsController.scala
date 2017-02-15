@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -26,7 +26,7 @@ import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.contactInformation.ConfirmContactDetails
 import config.FrontendGlobal.internalServerErrorTemplate
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import play.api.mvc.Result
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -35,18 +35,20 @@ import scala.concurrent.Future
 
 object ConfirmContactDetailsController extends ConfirmContactDetailsController{
   val subscriptionService = SubscriptionService
-  val s4lConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ConfirmContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ConfirmContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val subscriptionService: SubscriptionService
 
-  val show = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def getContactDetails: Future[Option[ContactDetailsModel]] = for {
         tavcRef <- getTavCReferenceNumber()
@@ -68,7 +70,7 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
     }
   }
 
-  val submit = seisFeatureSwitch { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
       confirmContactDetailsForm.bindFromRequest().fold(
         formWithErrors => {
           Future.successful(BadRequest(ConfirmContactDetails(formWithErrors)))

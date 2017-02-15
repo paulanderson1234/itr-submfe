@@ -17,7 +17,7 @@
 package controllers.feedback
 
 import auth.{MockAuthConnector, MockConfig}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialR
 
 import scala.concurrent.Future
 
-class FeedbackControllerSpec extends ControllerSpec {
+class FeedbackControllerSpec extends BaseSpec {
 
   val mockHttp = mock[WSHttp]
 
@@ -58,6 +58,8 @@ class FeedbackControllerSpec extends ControllerSpec {
     override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
+    override val acceptedFlows = Seq()
   }
 
   def setupMocks(status: Int = Status.OK, response: Option[String] = None): Unit =
@@ -76,7 +78,7 @@ class FeedbackControllerSpec extends ControllerSpec {
   "POST /feedback" should {
     "return form with thank you for valid selections" in {
       setupMocks(response = Some("1234"))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => redirectLocation(result) shouldBe Some(routes.FeedbackController.thankyou().url)
       )
@@ -84,7 +86,7 @@ class FeedbackControllerSpec extends ControllerSpec {
 
     "return form with errors for invalid selections" in {
       setupMocks(Status.BAD_REQUEST, Some("<p>:^(</p>"))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => status(result) shouldBe Status.BAD_REQUEST
       )
@@ -92,7 +94,7 @@ class FeedbackControllerSpec extends ControllerSpec {
 
     "return error for other http code back from contact-frontend" in {
       setupMocks(FORBIDDEN)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       )
@@ -100,7 +102,7 @@ class FeedbackControllerSpec extends ControllerSpec {
 
     "return internal server error when there is an empty form" in {
       setupMocks(response = Some("1234"))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.submit)(
         result => status(result) shouldBe Status.INTERNAL_SERVER_ERROR
       )
@@ -109,7 +111,7 @@ class FeedbackControllerSpec extends ControllerSpec {
 
   "GET /feedback/thankyou" should {
     "should return the thank you page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.thankyou)(
         result => status(result) shouldBe Status.OK
       )

@@ -16,20 +16,23 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
+<<<<<<< HEAD:test/controllers/eis/AnnualTurnoverErrorControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AnnualTurnoverErrorControllerSpec.scala
 import play.api.test.Helpers._
 
-class AnnualTurnoverErrorControllerSpec extends ControllerSpec {
+class AnnualTurnoverErrorControllerSpec extends BaseSpec {
 
   object TestController extends AnnualTurnoverErrorController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "AnnualTurnoverErrorController" should {
@@ -43,13 +46,14 @@ class AnnualTurnoverErrorControllerSpec extends ControllerSpec {
 
   "Sending a GET request to AnnualTurnoverErrorController when authenticated and enrolled" should {
     "return a 200 OK" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/AnnualTurnoverErrorControllerSpec.scala
   "Sending a GET request to AnnualTurnoverErrorController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       mockNotEnrolledRequest()
@@ -98,4 +102,6 @@ class AnnualTurnoverErrorControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AnnualTurnoverErrorControllerSpec.scala
 }

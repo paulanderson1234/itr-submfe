@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
+import config.FrontendGlobal.internalServerErrorTemplate
 
 import scala.concurrent.Future
 
@@ -47,7 +47,9 @@ object AcknowledgementController extends AcknowledgementController{
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+
+
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
   val fileUploadService: FileUploadService
@@ -55,7 +57,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
   //noinspection ScalaStyle
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    for {
+    (for {
     // minimum required fields to continue
       kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
@@ -82,15 +84,17 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
         investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
-    } yield result
+    } yield result) recover {
+      case e: Exception => {
+        Logger.warn(s"[AcknowledgementController][submit] - SEIS - Exception: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+      }
+    }
   }
 
   def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
     Redirect(controllers.feedback.routes.FeedbackController.show().url)
   }
-
-
-
 
   //noinspection ScalaStyle
   //TODO:
@@ -157,10 +161,15 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                 s4lConnector.clearCache()
                 Ok(views.html.eis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 InternalServerError
               }
             }
+          }
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
         }
 
@@ -180,10 +189,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                   }
                 }
               case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
+                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel][ProcessResultUpload] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 Future.successful(InternalServerError)
               }
             }
+          }
+
+        }.recover{
+          case e: Exception => {
+            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
         }
 

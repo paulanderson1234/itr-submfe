@@ -16,43 +16,37 @@
 
 package controllers
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import play.api.http.Status
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import services.{RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
 import uk.gov.hmrc.play.http.HttpResponse
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
 import scala.concurrent.Future
 
-/**
-  * Created by jade on 01/11/16.
-  */
-class ApplicationHubControllerSpec extends ControllerSpec{
+class ApplicationHubControllerSpec extends BaseSpec{
 
 
   object TestController extends ApplicationHubController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val subscriptionService = mockSubscriptionService
     override lazy val registrationDetailsService = mockRegistrationDetailsService
   }
+
+  val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+
 
   def setupMocks(bool: Option[Boolean]): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
@@ -62,7 +56,9 @@ class ApplicationHubControllerSpec extends ControllerSpec{
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(bool))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(Option(seisSchemeTypesModel)))
+      .thenReturn(Future.successful(seisSchemeTypesModel))
+    when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+      .thenReturn(cacheMapSchemeTypes)
   }
 
   def setupMocksNotAvailable(): Unit = {
@@ -107,7 +103,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
 
     "return a 200 when false is fetched from keystore" in {
       setupMocks(Some(false))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
@@ -119,7 +115,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
 
     "return a 200 when nothing is fetched from keystore" in {
       setupMocks(None)
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
@@ -131,7 +127,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
 
     "return a 500 when an ApplicationHubModel cannot be composed" in {
       setupMocksNotAvailable()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -140,58 +136,9 @@ class ApplicationHubControllerSpec extends ControllerSpec{
     }
   }
 
-  "Sending a GET request to ApplicationHubController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ApplicationHubController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ApplicationHubController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ApplicationHubController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
     "redirect to 'scheme selection' page if table is not empty" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.newApplication)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -204,7 +151,7 @@ class ApplicationHubControllerSpec extends ControllerSpec{
   "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
     "redirect to itself and delete the application currently in progress" in {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.delete)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -213,100 +160,5 @@ class ApplicationHubControllerSpec extends ControllerSpec{
       )
     }
   }
-
-  "Posting to 'newApplication' when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Posting to 'newApplication' in the ApplicationHubController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Posting to 'newApplication' in the ApplicationHubController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Posting to 'delete' when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.delete)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.delete)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Posting to 'delete' in the ApplicationHubController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.delete)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Posting to 'delete' in the ApplicationHubController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.delete)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
+  
 }

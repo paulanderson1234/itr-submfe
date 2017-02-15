@@ -16,13 +16,15 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/DateOfIncorporationControllerSpec.scala
 import controllers.helpers.ControllerSpec
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/DateOfIncorporationControllerSpec.scala
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -30,10 +32,10 @@ import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class DateOfIncorporationControllerSpec extends ControllerSpec {
+class DateOfIncorporationControllerSpec extends BaseSpec {
 
   object DateOfIncorporationControllerTest extends DateOfIncorporationController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -58,7 +60,7 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
   "Sending a GET request to DateOfIncorporationController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
@@ -66,13 +68,14 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(DateOfIncorporationControllerTest.show())(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/DateOfIncorporationControllerSpec.scala
   "Sending a GET request to DateOfIncorporationController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(dateOfIncorporationModel))
@@ -123,12 +126,14 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/DateOfIncorporationControllerSpec.scala
   "Sending a valid form submit to the DateOfIncorporationController when authenticated and enrolled" should {
     "redirect to first commercial sale page" in {
       when(mockS4lConnector.fetchAndGetFormData[KiProcessingModel](Matchers.eq(KeystoreKeys.kiProcessingModel))
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(Option(kiProcessingModelMet)))
       setupMocks(Some(dateOfIncorporationModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
 
       val formInput = Seq(
         "incorporationDay" -> "23",
@@ -146,7 +151,7 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
 
   "Sending an invalid form submission with validation errors to the DateOfIncorporationController when authenticated and enrolled" should {
     "return a bad request" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "incorporationDay" -> "",
         "incorporationMonth" -> "",
@@ -160,6 +165,7 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/DateOfIncorporationControllerSpec.scala
   "Sending a submission to the DateOfIncorporationController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -208,4 +214,6 @@ class DateOfIncorporationControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/DateOfIncorporationControllerSpec.scala
 }

@@ -16,13 +16,13 @@
 
 package controllers.seis
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
-import controllers.featureSwitch.SEISFeatureSwitch
+import controllers.predicates.FeatureSwitch
 import forms.ConfirmCorrespondAddressForm._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.mvc.Result
@@ -36,18 +36,20 @@ import scala.concurrent.Future
 
 object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressController{
   val subscriptionService = SubscriptionService
-  val s4lConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with SEISFeatureSwitch {
+trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  val s4lConnector: S4LConnector
+  override val acceptedFlows = Seq(Seq(SEIS))
+
+
   val subscriptionService: SubscriptionService
 
-  val show = seisFeatureSwitch {
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def getContactAddress: Future[Option[AddressModel]] = for {
@@ -73,7 +75,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
     }
   }
 
-  val submit = seisFeatureSwitch {
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest: Option[String] => Future[Result] = {

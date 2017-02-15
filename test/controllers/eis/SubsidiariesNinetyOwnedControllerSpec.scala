@@ -16,24 +16,31 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesNinetyOwnedControllerSpec.scala
+=======
+import config.FrontendAuthConnector
+import models.SubsidiariesNinetyOwnedModel
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesNinetyOwnedControllerSpec.scala
 import common.Constants
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesNinetyOwnedControllerSpec.scala
 import controllers.helpers.ControllerSpec
 import models.SubsidiariesNinetyOwnedModel
+=======
+import helpers.BaseSpec
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesNinetyOwnedControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 
-class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
+class SubsidiariesNinetyOwnedControllerSpec extends BaseSpec {
 
   object TestController extends SubsidiariesNinetyOwnedController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -58,7 +65,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(subsidiariesNinetyOwnedModelYes))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -66,13 +73,14 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
 
     "provide an empty model and return a 200 when nothing is fetched using keystore" in {
       setupMocks()
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesNinetyOwnedControllerSpec.scala
   "Sending a GET request to SubsidiariesNinetyOwnedController when authenticated and NOT enrolled" should {
     "redirect to the Subscription Service" in {
       setupMocks(Some(subsidiariesNinetyOwnedModelYes))
@@ -123,9 +131,11 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
     }
   }
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesNinetyOwnedControllerSpec.scala
   "Sending a valid form submission to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to the how-plan-to-use-investment page" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "ownNinetyPercent" -> Constants.StandardRadioButtonYesValue
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -138,7 +148,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
 
   "Sending an empty invalid form submission with validation errors to the SubsidiariesNinetyOwnedController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = "ownNinetyPercent" -> ""
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
@@ -148,6 +158,7 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/SubsidiariesNinetyOwnedControllerSpec.scala
   "Sending a submission to the SubsidiariesNinetyOwnedController when not authenticated" should {
 
     "redirect to the GG login page when having a session but not authenticated" in {
@@ -195,4 +206,6 @@ class SubsidiariesNinetyOwnedControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesNinetyOwnedControllerSpec.scala
 }

@@ -16,31 +16,39 @@
 
 package controllers.eis
 
+<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
 import java.net.URLEncoder
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
 import controllers.helpers.ControllerSpec
 import data.SubscriptionTestData._
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
+=======
+import controllers.helpers.BaseSpec
+import models.{ConfirmContactDetailsModel, ContactDetailsModel, SubscriptionDetailsModel}
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.SubscriptionService
 
-class ConfirmContactDetailsControllerSpec extends ControllerSpec {
+class ConfirmContactDetailsControllerSpec extends BaseSpec {
 
   implicit lazy val actorSystem = ActorSystem()
   implicit lazy val mat = ActorMaterializer()
 
   object TestController extends ConfirmContactDetailsController {
     override lazy val subscriptionService = mock[SubscriptionService]
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -80,7 +88,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       "return a Status OK (200) when something is fetched from keystore" in {
         mockSaveForLaterResponse(Some(confirmContactDetailsModel))
         mockSubscriptionServiceResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         status(result) shouldBe OK
       }
 
@@ -108,7 +116,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
       "return Status OK (200)" in {
         mockSaveForLaterResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         mockSubscriptionServiceResponse(Some(expectedContactDetailsFull))
         status(result) shouldBe OK
       }
@@ -141,13 +149,14 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
 
       "return Status INTERNAL_SERVER_ERROR (500)" in {
         mockSaveForLaterResponse()
-        mockEnrolledRequest()
+        mockEnrolledRequest(eisSchemeTypesModel)
         mockSubscriptionServiceResponse()
         status(result) shouldBe INTERNAL_SERVER_ERROR
       }
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
   "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
 
     "return a 303 to the subscription url" in {
@@ -200,10 +209,12 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   }
 
 
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect Confirm Correspondence Address Page when the Yes option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonYesValue,
         "contactDetails.forename" -> "first",
@@ -222,7 +233,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to Contact Address page when the 'No' option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> Constants.StandardRadioButtonNoValue,
         "contactDetails.forename" -> "first",
@@ -242,7 +253,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
   "Submitting a invalid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect to itself when there is validation errors" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockEnrolledRequest()
+      mockEnrolledRequest(eisSchemeTypesModel)
       val formInput = Seq(
         "contactDetailsUse" -> "",
         "contactDetails.forename" -> "first",
@@ -258,6 +269,7 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
     }
   }
 
+<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
   "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
 
     val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
@@ -317,4 +329,6 @@ class ConfirmContactDetailsControllerSpec extends ControllerSpec {
       )
     }
   }
+=======
+>>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 }

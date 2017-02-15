@@ -17,7 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.CommercialSaleController
 import controllers.routes
@@ -45,7 +45,7 @@ class CommercialSaleSpec extends ViewSpec {
   }
 
   def setupMocks(commercialSaleModel: Option[CommercialSaleModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(commercialSaleModel))
 
   "The Contact Details page" should {

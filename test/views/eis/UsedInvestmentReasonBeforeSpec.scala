@@ -17,6 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.UsedInvestmentReasonBeforeController
 import controllers.routes
@@ -42,8 +43,8 @@ class UsedInvestmentReasonBeforeSpec extends ViewSpec {
   }
   
   def setupMocks(usedInvestmentReasonBeforeModel: Option[UsedInvestmentReasonBeforeModel] = None): Unit =
-    when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(usedInvestmentReasonBeforeModel))
+    when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(usedInvestmentReasonBeforeModel))
 
   "Verify that the UsedInvestmentReasonBefore page contains the correct elements " +
     "when a valid UsedInvestmentReasonBeforeModel is passed as returned from keystore" in new Setup {

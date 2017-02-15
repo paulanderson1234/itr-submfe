@@ -16,20 +16,19 @@
 
 package controllers.seis
 
-import java.net.URLEncoder
-
 import auth.{MockAuthConnector, MockConfig}
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
-class InvalidPreviousSchemeControllerSpec extends ControllerSpec {
+class InvalidPreviousSchemeControllerSpec extends BaseSpec {
 
   object TestController extends InvalidPreviousSchemeController{
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val s4lConnector = mockS4lConnector
   }
 
   "InvalidPreviousSchemeController" should {
@@ -43,58 +42,9 @@ class InvalidPreviousSchemeControllerSpec extends ControllerSpec {
 
   "Sending a GET request to InvalidPreviousSchemeController when authenticated and enrolled" should {
     "return a 200" in {
-      mockEnrolledRequest()
+      mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
-      )
-    }
-  }
-
-  "Sending a GET request to InvalidPreviousSchemeController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to InvalidPreviousSchemeController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to InvalidPreviousSchemeController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to InvalidPreviousSchemeController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
       )
     }
   }
