@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{ALLFLOWS, AuthorisedAndEnrolledForTAVC}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import play.api.mvc.{Action, AnyContent}
@@ -36,7 +36,7 @@ object SignOutController extends SignOutController {
 
 trait SignOutController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq()
+  override val acceptedFlows = Seq(Seq(ALLFLOWS))
 
   def signout(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(s"${applicationConfig.ggSignOutUrl}?continue=${applicationConfig.signOutPageUrl}"))

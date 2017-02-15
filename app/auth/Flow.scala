@@ -21,3 +21,4 @@ case object EIS extends Flow
 case object SEIS extends Flow
 case object VCT extends Flow
 case object SITR extends Flow
+case object ALLFLOWS extends Flow

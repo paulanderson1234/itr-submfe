@@ -18,17 +18,17 @@ package controllers.feedback
 
 import java.net.URLEncoder
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{ALLFLOWS, AuthorisedAndEnrolledForTAVC}
 import play.api.Logger
 import play.api.http.{Status => HttpStatus}
 import play.api.mvc.{Action, AnyContent, Request, RequestHeader}
 import play.twirl.api.Html
-import config.{AppConfig, FrontendAppConfig, FrontendAuthConnector, WSHttp}
+import config.{FrontendAppConfig, FrontendAuthConnector, WSHttp}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import views.html.feedback.feedback_thankyou
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.frontend.controller.{FrontendController, UnauthorisedAction}
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, _}
 import uk.gov.hmrc.play.partials._
@@ -64,7 +64,7 @@ object FeedbackController extends FeedbackController with PartialRetriever {
 
 trait FeedbackController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq()
+  override val acceptedFlows = Seq(Seq(ALLFLOWS))
 
   implicit val formPartialRetriever: FormPartialRetriever
   implicit val cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever
