@@ -19,11 +19,7 @@ package controllers.eis
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/CheckAnswersControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CheckAnswersControllerSpec.scala
+import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -125,75 +121,5 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
         }
       )
     }
-
-<<<<<<< HEAD:test/controllers/eis/CheckAnswersControllerSpec.scala
-  "Sending a timed-out request to CheckAnswersController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show(Some(enevleopId)))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
   }
-
-  "Sending a submission to the CheckAnswersController" should {
-
-      "redirect to the acknowledgement page when authenticated and enrolled" in {
-        when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-          .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
-        submitWithSessionAndAuth(TestController.submit)(
-          result => {
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/acknowledgement")
-          }
-        )
-      }
-
-      "redirect to the subscription service when authenticated and NOT enrolled" in {
-        mockNotEnrolledRequest()
-        submitWithSessionAndAuth(TestController.submit)(
-          result => {
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-          }
-        )
-      }
-
-      "redirect to the GG login page when having a session but not authenticated" in {
-        submitWithSessionWithoutAuth(TestController.submit)(
-          result => {
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-            }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-          }
-        )
-      }
-
-      "redirect to the GG login page with no session" in {
-        submitWithoutSession(TestController.submit)(
-          result => {
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-              URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-            }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-          }
-        )
-      }
-
-      "redirect to the Timeout page when session has timed out" in {
-        submitWithTimeout(TestController.submit)(
-          result => {
-            status(result) shouldBe SEE_OTHER
-            redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-          }
-        )
-      }
-    }
-=======
-  }
-
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/CheckAnswersControllerSpec.scala
 }

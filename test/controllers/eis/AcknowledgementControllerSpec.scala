@@ -20,11 +20,8 @@ import auth._
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-<<<<<<< HEAD:test/controllers/eis/AcknowledgementControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AcknowledgementControllerSpec.scala
+import controllers.helpers.{BaseSpec}
+
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -268,60 +265,6 @@ class AcknowledgementControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/AcknowledgementControllerSpec.scala
-  "Sending an Authenticated and NOT Enrolled GET request with a session to AcknowledgementController" should {
-    "redirect to the TAVC Subscription Service" in new SetupPageFull {
-      setupMocks()
-      mockNotEnrolledRequest()
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe SEE_OTHER
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a request with no session to AcknowledgementController" should {
-    "return a 302" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequest)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequest)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to AcknowledgementController" should {
-    "return a 302" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequestWithSession)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in new SetupPageFull {
-      val result = TestController.show.apply(fakeRequestWithSession)
-      redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to AcknowledgementController" should {
-
-    "return a 303 in" in new SetupPageFull {
-      val result = TestController.show.apply(timedOutFakeRequest)
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      val result = TestController.show.apply(timedOutFakeRequest)
-      redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AcknowledgementControllerSpec.scala
   "Sending a POST request to the Acknowledgement controller when authenticated and enrolled" should {
     "redirect to the feedback page" in {
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -333,56 +276,4 @@ class AcknowledgementControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/AcknowledgementControllerSpec.scala
-  "Sending a POST request to the Acknowledgement controller when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a POST request to the Acknowledgement controller when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a POST request to the Acknowledgement controller when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AcknowledgementControllerSpec.scala
 }

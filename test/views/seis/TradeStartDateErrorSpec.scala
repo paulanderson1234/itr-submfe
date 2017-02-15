@@ -17,8 +17,8 @@
 package views.seis
 
 import auth.MockAuthConnector
-import config.FrontendAppConfig
 import controllers.seis.{TradeStartDateErrorController, routes}
+import fixtures.MockSeisConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -29,7 +29,7 @@ import play.api.i18n.Messages.Implicits._
 class TradeStartDateErrorSpec extends ViewSpec {
 
   object TestController extends TradeStartDateErrorController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockSeisConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector

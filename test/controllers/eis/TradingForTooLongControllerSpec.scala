@@ -19,11 +19,7 @@ package controllers.eis
 import auth.{MockAuthConnector, MockConfig}
 import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
-<<<<<<< HEAD:test/controllers/eis/TradingForTooLongControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TradingForTooLongControllerSpec.scala
+import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
 
@@ -61,55 +57,4 @@ class TradingForTooLongControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/TradingForTooLongControllerSpec.scala
-
-  "Sending a request with no session to TradingForTooLongController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to TradingForTooLongController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-      }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to TradingForTooLongController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a request to TradingForTooLongController when NOT enrolled" should {
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TradingForTooLongControllerSpec.scala
 }

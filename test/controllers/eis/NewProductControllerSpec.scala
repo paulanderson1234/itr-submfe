@@ -17,17 +17,10 @@
 package controllers.eis
 
 import auth.{MockAuthConnector, MockConfig}
-<<<<<<< HEAD:test/controllers/eis/NewProductControllerSpec.scala
-import common.Constants
-import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
-=======
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
-import connectors.{EnrolmentConnector, S4LConnector}
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewProductControllerSpec.scala
+import connectors.{S4LConnector, EnrolmentConnector}
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -96,59 +89,6 @@ class NewProductControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/NewProductControllerSpec.scala
-  "Sending a GET request to NewProductController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      setupMocks(Some(newProductMarketModelYes))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to NewProductController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to NewProductController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to NewProductController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewProductControllerSpec.scala
   "Sending a valid 'Yes' form submit to the NewProductController" when {
     "NewGeograhic is 'No' or 'Yes' and the request is authenticated and enrolled" should {
 
@@ -234,56 +174,4 @@ class NewProductControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/NewProductControllerSpec.scala
-  "Sending a submission to the NewProductController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NewProductController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the NewProductController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/NewProductControllerSpec.scala
 }

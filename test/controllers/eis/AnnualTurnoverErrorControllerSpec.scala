@@ -19,11 +19,7 @@ package controllers.eis
 import auth.{MockAuthConnector, MockConfig}
 import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
-<<<<<<< HEAD:test/controllers/eis/AnnualTurnoverErrorControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AnnualTurnoverErrorControllerSpec.scala
+import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
 class AnnualTurnoverErrorControllerSpec extends BaseSpec {
@@ -52,56 +48,4 @@ class AnnualTurnoverErrorControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/AnnualTurnoverErrorControllerSpec.scala
-  "Sending a GET request to AnnualTurnoverErrorController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to AnnualTurnoverErrorController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to AnnualTurnoverErrorController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to AnnualTurnoverErrorController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/AnnualTurnoverErrorControllerSpec.scala
 }

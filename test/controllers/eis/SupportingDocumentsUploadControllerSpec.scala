@@ -20,18 +20,11 @@ import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
+import controllers.helpers.BaseSpec
 import models.SupportingDocumentsUploadModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
 import play.api.test.Helpers._
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
 import services.FileUploadService
 
 import scala.concurrent.Future
@@ -41,15 +34,9 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
   object TestController extends SupportingDocumentsUploadController {
     override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
-    override val s4lConnector = mockS4lConnector
-    override val fileUploadService = mockFileUploadService
     override val attachmentsFrontEndUrl = MockConfig.attachmentFileUploadUrl("eis")
-=======
     override lazy val s4lConnector = mockS4lConnector
     override lazy val fileUploadService = mockFileUploadService
-    override lazy val attachmentsFrontEndUrl = MockConfig.tempAttachmentFileUploadEISUrl
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
@@ -143,11 +130,7 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
         setupMocks()
         submitWithSessionAndAuth(TestController.submit, "doUpload" -> Constants.StandardRadioButtonNoValue){
           result => status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
-            redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/check-your-answers")
-=======
             redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
         }
       }
     }
@@ -168,114 +151,8 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
       setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/commercial-sale")
-=======
           redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
       }
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/SupportingDocumentsUploadControllerSpec.scala
-  "Sending a request with no session to SupportingDocumentsUploadController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to SupportingDocumentsUploadController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to SupportingDocumentsUploadController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a SupportingDocumentsUploadController when NOT enrolled" should {
-
-    lazy val result = TestController.show(authorisedFakeRequest)
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(result) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SupportingDocumentsUploadController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SupportingDocumentsUploadControllerSpec.scala
 }

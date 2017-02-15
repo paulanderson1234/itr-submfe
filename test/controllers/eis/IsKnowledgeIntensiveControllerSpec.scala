@@ -16,15 +16,13 @@
 
 package controllers.eis
 
+import java.net.URLEncoder
+
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
-import config.FrontendAuthConnector
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -82,59 +80,6 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-  "Sending a GET request to IsKnowledgeIntensiveController when authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      setupShowMocks(Some(isKnowledgeIntensiveModelYes))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to IsKnowledgeIntensiveController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to IsKnowledgeIntensiveController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to IsKnowledgeIntensiveController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(IsKnowledgeIntensiveController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
   "Sending a valid 'Yes' form submit to the IsKnowledgeIntensiveController when authenticated and enrolled" should {
     "redirect to the operating costs page" in {
       setupSubmitMocks(Some(updatedKIModel))
@@ -143,11 +88,7 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/operating-costs")
-=======
           redirectLocation(result) shouldBe Some(routes.OperatingCostsController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
         }
       )
     }
@@ -161,11 +102,7 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
         }
       )
     }
@@ -179,11 +116,7 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
         }
       )
     }
@@ -197,11 +130,7 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
         }
       )
     }
@@ -215,11 +144,7 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
         }
       )
     }
@@ -236,56 +161,4 @@ class IsKnowledgeIntensiveControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/IsKnowledgeIntensiveControllerSpec.scala
-  "Sending a submission to the IsKnowledgeIntensiveController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the IsKnowledgeIntensiveController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the IsKnowledgeIntensiveController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/IsKnowledgeIntensiveControllerSpec.scala
 }

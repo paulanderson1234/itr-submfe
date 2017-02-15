@@ -225,11 +225,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
       showWithSessionAndAuth(TestController.show)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
-=======
           redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -257,11 +253,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
-=======
           redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -289,11 +281,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
-=======
           redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -321,11 +309,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -354,11 +338,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -386,11 +366,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -418,11 +394,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -451,11 +423,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -483,11 +451,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -515,11 +479,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -547,11 +507,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -579,11 +535,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -612,11 +564,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -645,11 +593,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -677,11 +621,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -709,11 +649,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -741,11 +677,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-reason-before")
-=======
           redirectLocation(result) shouldBe Some(routes.UsedInvestmentReasonBeforeController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -773,11 +705,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-reason-before")
-=======
           redirectLocation(result) shouldBe Some(routes.UsedInvestmentReasonBeforeController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -804,11 +732,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
-=======
           redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -836,11 +760,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/commercial-sale")
-=======
           redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -868,11 +788,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
         "investmentAmount" -> "123456")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -896,11 +812,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/lifetime-allowance-exceeded")
-=======
           redirectLocation(result) shouldBe Some(routes.LifetimeAllowanceExceededController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -925,11 +837,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/lifetime-allowance-exceeded")
-=======
           redirectLocation(result) shouldBe Some(routes.LifetimeAllowanceExceededController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -954,11 +862,7 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/used-investment-scheme-before")
-=======
           redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
         }
       )
     }
@@ -978,105 +882,4 @@ class ProposedInvestmentControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/ProposedInvestmentControllerSpec.scala
-
-  "Sending a request with no session to ProposedInvestmentController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ProposedInvestmentController" should {
-    "return a 303" in {
-      status(ProposedInvestmentController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to ProposedInvestmentController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a request to ProposedInvestmentController when NOT enrolled" should {
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest
-      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to the Subscription Service" in {
-      mockNotEnrolledRequest
-      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ProposedInvestmentController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ProposedInvestmentControllerSpec.scala
 }

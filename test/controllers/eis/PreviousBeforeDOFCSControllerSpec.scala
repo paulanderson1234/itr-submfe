@@ -20,11 +20,7 @@ import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -178,62 +174,6 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-  "Sending a GET formInput to PreviousBeforeDOFCSController when Authenticated and NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      setupShowMocks(previousBeforeDOFCSModel = Some(previousBeforeDOFCSModelYes))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated formInput with a session to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
-    "return a 302 and redirect to GG login" in {
-      mockEnrolledRequest()
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a formInput with no session to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
-    "return a 302 and redirect to GG login" in {
-      mockEnrolledRequest()
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out formInput to PreviousBeforeDOFCSController when Authenticated and enrolled" should {
-    "return a 302 and redirect to the timeout page" in {
-      mockEnrolledRequest()
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
   "Sending a valid 'No' form submit to the PreviousBeforeDOFCSController when Authenticated and enrolled" should {
     "redirect to new geographical market" in {
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -241,11 +181,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
-=======
           redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -259,11 +195,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/how-plan-to-use-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.InvestmentGrowController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -277,11 +209,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries-spending-investment")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesSpendingInvestmentController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -295,11 +223,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
-=======
           redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -313,11 +237,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/new-geographical-market")
-=======
           redirectLocation(result) shouldBe Some(routes.NewGeographicalMarketController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -331,11 +251,7 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
         }
       )
     }
@@ -368,56 +284,4 @@ class PreviousBeforeDOFCSControllerSpec extends BaseSpec {
       }
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/PreviousBeforeDOFCSControllerSpec.scala
-
-  "Sending a submission to the PreviousBeforeDOFCSController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the PreviousBeforeDOFCSController when a timeout has occurred" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the PreviousBeforeDOFCSController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/PreviousBeforeDOFCSControllerSpec.scala
 }

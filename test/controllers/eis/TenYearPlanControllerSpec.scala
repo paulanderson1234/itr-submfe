@@ -20,11 +20,8 @@ import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
+import controllers.helpers.BaseSpec
+
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -102,11 +99,7 @@ class TenYearPlanControllerSpec extends BaseSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
-=======
           redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -121,11 +114,7 @@ class TenYearPlanControllerSpec extends BaseSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -140,11 +129,7 @@ class TenYearPlanControllerSpec extends BaseSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -159,11 +144,7 @@ class TenYearPlanControllerSpec extends BaseSpec {
         "tenYearPlanDesc" -> "")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ineligible-for-knowledge-intensive")
-=======
           redirectLocation(result) shouldBe Some(routes.IneligibleForKIController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -178,11 +159,7 @@ class TenYearPlanControllerSpec extends BaseSpec {
         "tenYearPlanDesc" -> "text")(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/subsidiaries")
-=======
           redirectLocation(result) shouldBe Some(routes.SubsidiariesController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
         }
       )
     }
@@ -214,106 +191,4 @@ class TenYearPlanControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/TenYearPlanControllerSpec.scala
-
-
-  "Sending a request with no session to TenYearPlanController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequest)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to TenYearPlanController" should {
-    "return a 303" in {
-      status(TestController.show(fakeRequestWithSession)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to GG login" in {
-      redirectLocation(TestController.show(fakeRequestWithSession)) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-        URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-    }
-  }
-
-  "Sending a timed-out request to TenYearPlanController" should {
-
-    "return a 303 in" in {
-      status(TestController.show(timedOutFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to timeout page" in {
-      redirectLocation(TestController.show(timedOutFakeRequest)) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-    }
-  }
-
-  "Sending a request to TenYearPlanController when NOT enrolled" should {
-
-    "return a 303 in" in {
-      mockNotEnrolledRequest()
-      status(TestController.show(authorisedFakeRequest)) shouldBe SEE_OTHER
-    }
-
-    s"should redirect to Subscription Service" in {
-      mockNotEnrolledRequest()
-      redirectLocation(TestController.show(authorisedFakeRequest)) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController with no session" should {
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl,"UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the TenYearPlanController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/TenYearPlanControllerSpec.scala
 }

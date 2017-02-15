@@ -20,11 +20,7 @@ import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -86,59 +82,6 @@ class OperatingCostsControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-  "Sending a GET request to OperatingCostsController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupShowMocks(Some(operatingCostsModel))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to OperatingCostsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to OperatingCostsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to OperatingCostsController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
   "Sending a valid form submit to the OperatingCostsController when authenticated and enrolled" should {
     "redirect to the Percentage Of Staff With Masters page (for now)" in {
       setupSubmitMocks(Some(true), Some(trueKIModel))
@@ -158,11 +101,7 @@ class OperatingCostsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/percentage-of-staff-with-masters")
-=======
           redirectLocation(result) shouldBe Some(routes.PercentageStaffWithMastersController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
         }
       )
     }
@@ -187,11 +126,7 @@ class OperatingCostsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/ineligible-for-knowledge-intensive")
-=======
           redirectLocation(result) shouldBe Some(routes.IneligibleForKIController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
         }
       )
     }
@@ -240,11 +175,7 @@ class OperatingCostsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
         }
       )
     }
@@ -269,11 +200,7 @@ class OperatingCostsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/date-of-incorporation")
-=======
           redirectLocation(result) shouldBe Some(routes.DateOfIncorporationController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
         }
       )
     }
@@ -298,11 +225,7 @@ class OperatingCostsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
-=======
           redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
         }
       )
     }
@@ -376,31 +299,4 @@ class OperatingCostsControllerSpec extends BaseSpec {
       )
     }
   }
-<<<<<<< HEAD:test/controllers/eis/OperatingCostsControllerSpec.scala
-
-  "Sending a submission to the ContactDetailsController when a timeout has occured" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the ContactDetailsController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/OperatingCostsControllerSpec.scala
 }

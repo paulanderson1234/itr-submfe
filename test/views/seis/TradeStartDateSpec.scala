@@ -16,12 +16,11 @@
 
 package views
 
-
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
-import config.FrontendAppConfig
 import connectors.SubmissionConnector
 import controllers.seis.TradeStartDateController
+import fixtures.MockSeisConfig
 import models.TradeStartDateModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -39,7 +38,7 @@ class TradeStartDateSpec extends ViewSpec {
   val tradeStartDateModelInvalidYes = new TradeStartDateModel(Constants.StandardRadioButtonYesValue, None, Some(25), Some(2015))
 
   object TestController extends TradeStartDateController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockSeisConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

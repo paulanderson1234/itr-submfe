@@ -20,11 +20,7 @@ import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
-import controllers.helpers.ControllerSpec
-=======
-import helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
+import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -89,59 +85,6 @@ class SubsidiariesSpendingInvestmentControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
-  "Sending a GET request to SubsidiariesSpendingInvestmentController when authenticated and NOT enrolled" should {
-    "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(subsidiariesSpendingInvestmentModelYes), Some(routes.ProposedInvestmentController.show().url))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.show)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to SubsidiariesSpendingInvestmentController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithSessionWithoutAuth(SubsidiariesSpendingInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to SubsidiariesSpendingInvestmentController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(SubsidiariesSpendingInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to SubsidiariesSpendingInvestmentController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(SubsidiariesSpendingInvestmentControllerTest.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
   "Sending a valid 'Yes' form submit to the SubsidiariesSpendingInvestmentController when authenticated and enrolled" should {
     "redirect to the subsidiaries-ninety-percent-owned page" in {
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -194,55 +137,4 @@ class SubsidiariesSpendingInvestmentControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/SubsidiariesSpendingInvestmentControllerSpec.scala
-  "Sending a submission to the SubsidiariesSpendingInvestmentController when not authenticated" should {
-
-    "redirect to the GG login page when having a session but not authenticated" in {
-      submitWithSessionWithoutAuth(SubsidiariesSpendingInvestmentControllerTest.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-
-    "redirect to the GG login page with no session" in {
-      submitWithoutSession(SubsidiariesSpendingInvestmentControllerTest.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SubsidiariesSpendingInvestmentController when a timeout has occurred" should {
-    "redirect to the Timeout page when session has timed out" in {
-      submitWithTimeout(SubsidiariesSpendingInvestmentControllerTest.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Sending a submission to the SubsidiariesSpendingInvestmentController when NOT enrolled" should {
-    "redirect to the Subscription Service" in {
-      mockNotEnrolledRequest()
-      submitWithSessionAndAuth(SubsidiariesSpendingInvestmentControllerTest.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/SubsidiariesSpendingInvestmentControllerSpec.scala
 }

@@ -16,26 +16,18 @@
 
 package controllers.eis
 
-<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
 import java.net.URLEncoder
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
-import controllers.helpers.ControllerSpec
 import data.SubscriptionTestData._
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
-=======
 import controllers.helpers.BaseSpec
 import models.{ConfirmContactDetailsModel, ContactDetailsModel, SubscriptionDetailsModel}
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -156,61 +148,6 @@ class ConfirmContactDetailsControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
-  "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmContactDetailsController" should {
-
-    "return a 303 to the subscription url" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the GG login page" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ConfirmContactDetailsController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
   "Submitting a valid form submission to ConfirmContactDetailsController while authenticated and enrolled" should {
     "redirect Confirm Correspondence Address Page when the Yes option is selected" in {
       mockSaveForLaterResponse(Some(confirmContactDetailsModel))
@@ -268,67 +205,4 @@ class ConfirmContactDetailsControllerSpec extends BaseSpec {
       )
     }
   }
-
-<<<<<<< HEAD:test/controllers/eis/ConfirmContactDetailsControllerSpec.scala
-  "Submitting a form to ConfirmContactDetailsController with a session but not authenticated" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithSessionWithoutAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController with no session" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the GG login page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithoutSession(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController with a timeout" should {
-
-    val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-    "return a 303 and redirect to the timeout page" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      submitWithTimeout(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-  "Submitting a form to ConfirmContactDetailsController when NOT enrolled" should {
-    "return a 303 and redirect to the Subscription Service" in {
-      mockSaveForLaterResponse(Some(confirmContactDetailsModel))
-      mockNotEnrolledRequest()
-      val formInput = "contactAddressUse" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(TestController.submit, formInput)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmContactDetailsControllerSpec.scala
 }

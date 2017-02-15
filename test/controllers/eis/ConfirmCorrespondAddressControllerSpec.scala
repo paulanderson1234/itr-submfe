@@ -15,24 +15,16 @@
  */
 
 package controllers.eis
-
-<<<<<<< HEAD:test/controllers/eis/ConfirmCorrespondAddressControllerSpec.scala
 import java.net.URLEncoder
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmCorrespondAddressControllerSpec.scala
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
-<<<<<<< HEAD:test/controllers/eis/ConfirmCorrespondAddressControllerSpec.scala
-import controllers.helpers.ControllerSpec
 import data.SubscriptionTestData._
-=======
 import controllers.helpers.BaseSpec
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmCorrespondAddressControllerSpec.scala
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -175,61 +167,6 @@ class ConfirmCorrespondAddressControllerSpec extends BaseSpec {
     }
   }
 
-<<<<<<< HEAD:test/controllers/eis/ConfirmCorrespondAddressControllerSpec.scala
-  "Sending an Authenticated and NOT Enrolled GET request with a session to ConfirmCorrespondAddressController" should {
-
-    "return a 303 to the subscription url" in {
-      setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
-      mockNotEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(FrontendAppConfig.subscriptionUrl)
-        }
-      )
-    }
-  }
-
-  "Sending an Unauthenticated request with a session to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to the GG login page" in {
-      showWithSessionWithoutAuth(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a request with no session to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to GG login" in {
-      showWithoutSession(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(s"${FrontendAppConfig.ggSignInUrl}?continue=${
-            URLEncoder.encode(MockConfig.introductionUrl, "UTF-8")
-          }&origin=investment-tax-relief-submission-frontend&accountType=organisation")
-        }
-      )
-    }
-  }
-
-  "Sending a timed-out request to ConfirmCorrespondAddressController" should {
-    "return a 302 and redirect to the timeout page" in {
-      showWithTimeout(TestController.show())(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-        }
-      )
-    }
-  }
-
-
-=======
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmCorrespondAddressControllerSpec.scala
   "Submitting a valid form submission to ConfirmCorrespondAddressController while authenticated and enrolled" should {
     "redirect Supporting Documents when the Yes option is selected" in {
       setupSaveForLaterMocks(Some(confirmCorrespondAddressModel),Some("backLink"))
@@ -288,12 +225,7 @@ class ConfirmCorrespondAddressControllerSpec extends BaseSpec {
         "address.countryCode" -> "GB")
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
-<<<<<<< HEAD:test/controllers/eis/ConfirmCorrespondAddressControllerSpec.scala
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.TimeoutController.timeout().url)
-=======
           status(result) shouldBe BAD_REQUEST
->>>>>>> 790bbb8a2c7610e9682aaf069dc37315ab8a0b7f:test/controllers/ConfirmCorrespondAddressControllerSpec.scala
         }
       )
     }
