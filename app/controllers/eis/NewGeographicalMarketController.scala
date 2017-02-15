@@ -41,8 +41,6 @@ trait NewGeographicalMarketController extends FrontendController with Authorised
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
@@ -64,7 +62,7 @@ trait NewGeographicalMarketController extends FrontendController with Authorised
     newGeographicalMarketForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkNewGeoMarket, s4lConnector).flatMap {
-          case Some(data) => Future.successful(BadRequest(views.html.eis.investment.NewGeographicalMarket(invalidForm, data)))
+          case Some(data) => Future.successful(BadRequest(NewGeographicalMarket(invalidForm, data)))
           case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
 
       },

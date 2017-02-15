@@ -17,7 +17,7 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -27,7 +27,6 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html._
 
 object IneligibleForKIController extends IneligibleForKIController{
   override lazy val s4lConnector = S4LConnector
@@ -39,8 +38,6 @@ object IneligibleForKIController extends IneligibleForKIController{
 trait IneligibleForKIController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
-
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
@@ -58,7 +55,7 @@ trait IneligibleForKIController extends FrontendController with AuthorisedAndEnr
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request => {
-    s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().toString())
+    s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().url)
     Future.successful(Redirect(routes.SubsidiariesController.show()))
     }
   }

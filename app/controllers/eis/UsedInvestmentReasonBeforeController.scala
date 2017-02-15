@@ -23,7 +23,6 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -61,7 +60,7 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Autho
           }
           case Constants.StandardRadioButtonNoValue => {
             s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
-              routes.UsedInvestmentReasonBeforeController.show().toString())
+              routes.UsedInvestmentReasonBeforeController.show().url)
             Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
           }
         }

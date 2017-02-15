@@ -22,7 +22,7 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models._
+import models.{ProposedInvestmentModel, KiProcessingModel, CommercialSaleModel, HadPreviousRFIModel, SubsidiariesModel}
 import common._
 import common.Constants._
 import config.FrontendGlobal._
@@ -48,7 +48,6 @@ object ProposedInvestmentController extends ProposedInvestmentController
 trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
 
   val submissionConnector: SubmissionConnector
 
@@ -151,7 +150,6 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     }
   }
 
-
   def getAgeLimit(isKI: Boolean): Int = {
     if (isKI) Constants.IsKnowledgeIntensiveYears
     else Constants.IsNotKnowledgeIntensiveYears
@@ -161,16 +159,16 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     hasSub match {
       case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
         s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,
-          routes.ProposedInvestmentController.show().toString())
+          routes.ProposedInvestmentController.show().url)
         Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
       } else {
         s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
-          routes.ProposedInvestmentController.show().toString())
+          routes.ProposedInvestmentController.show().url)
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
       case None => {
         s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
-          routes.ProposedInvestmentController.show().toString())
+          routes.ProposedInvestmentController.show().url)
         Future.successful(Redirect(routes.SubsidiariesController.show()))
       }
     }
@@ -187,7 +185,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
         // this is first scheme
         if (dateWithinRangeRule) {
           s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
-            routes.ProposedInvestmentController.show().toString())
+            routes.ProposedInvestmentController.show().url)
           Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
         }
         else subsidiariesCheck(hasSub)

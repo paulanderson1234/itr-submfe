@@ -20,11 +20,9 @@ import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import models.NatureOfBusinessModel
 import common._
 import forms.NatureOfBusinessForm._
-import models.submission.SchemeTypesModel
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -42,8 +40,6 @@ object NatureOfBusinessController extends NatureOfBusinessController
 trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
-
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {

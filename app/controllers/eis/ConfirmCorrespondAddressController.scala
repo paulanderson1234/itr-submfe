@@ -23,7 +23,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import forms.ConfirmCorrespondAddressForm._
-import models.{AddressModel, ConfirmCorrespondAddressModel, ContactDetailsModel}
+import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.mvc.Result
 import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -86,7 +86,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
             validFormData.contactAddressUse match {
               case Constants.StandardRadioButtonYesValue => {
                 s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
-                  routes.ConfirmCorrespondAddressController.show().toString())
+                  routes.ConfirmCorrespondAddressController.show().url)
                 s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
                 Future.successful(Redirect(routes.SupportingDocumentsController.show()))
               }

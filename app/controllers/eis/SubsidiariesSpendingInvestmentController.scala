@@ -40,7 +40,7 @@ import controllers.Helpers.ControllerHelpers
 import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.eis._
+import views.html.eis.investment.SubsidiariesSpendingInvestment
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -57,14 +57,12 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
       if(backUrl.isDefined) {
         s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
-          case Some(data) => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
-          case None => Ok(investment.SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
+          case Some(data) => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
+          case None => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
         }
       }
       else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
@@ -90,7 +88,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
             Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
           case  Constants.StandardRadioButtonNoValue =>
             s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
-              routes.SubsidiariesSpendingInvestmentController.show().toString())
+              routes.SubsidiariesSpendingInvestmentController.show().url)
             Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }
       }

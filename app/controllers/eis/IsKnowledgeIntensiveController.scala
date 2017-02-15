@@ -21,14 +21,14 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import forms.IsKnowledgeIntensiveForm._
-import models._
+import models.{IsKnowledgeIntensiveModel, KiProcessingModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html.eis._
+import views.html.eis.companyDetails
 import views.html.eis.companyDetails.IsKnowledgeIntensive
 
 object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
@@ -41,8 +41,6 @@ object IsKnowledgeIntensiveController extends IsKnowledgeIntensiveController{
 trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
-
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive).map {
@@ -71,7 +69,7 @@ trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedA
             //s4lConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, PercentageStaffWithMastersModel] = None)
 
             // go to subsidiaries
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().url)
             Future.successful(Redirect(routes.SubsidiariesController.show()))
 
           }
@@ -79,7 +77,7 @@ trait IsKnowledgeIntensiveController extends FrontendController with AuthorisedA
             s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateCondition.copy(companyAssertsIsKi = Some(isKnowledgeIntensive)))
             if (isKnowledgeIntensive) Future.successful(Redirect(routes.OperatingCostsController.show()))
             else {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().toString())
+              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsKnowledgeIntensiveController.show().url)
               Future.successful(Redirect(routes.SubsidiariesController.show()))
             }
           }

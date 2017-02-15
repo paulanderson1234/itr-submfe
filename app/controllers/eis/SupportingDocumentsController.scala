@@ -17,7 +17,7 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
@@ -41,14 +41,13 @@ object SupportingDocumentsController extends SupportingDocumentsController
 
 trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
 
-
-  val attachmentsFrontEndUrl : String
+  val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if(fileUploadService.getUploadFeatureEnabled) {
+    if (fileUploadService.getUploadFeatureEnabled) {
       Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
     }
     else {
@@ -60,7 +59,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.CheckAnswersController.show()))
+    Future.successful(Redirect(routes.CheckAnswersController.show()))
   }
 
 }

@@ -40,8 +40,6 @@ trait SubsidiariesNinetyOwnedController extends FrontendController with Authoris
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
       case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
@@ -56,7 +54,7 @@ trait SubsidiariesNinetyOwnedController extends FrontendController with Authoris
       },
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
-        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().toString())
+        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().url)
         Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
     )

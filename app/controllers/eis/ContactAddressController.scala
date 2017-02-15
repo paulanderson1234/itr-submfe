@@ -21,9 +21,8 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import forms.ContactAddressForm._
-import models.{AddressModel, ContactAddressModel}
+import models.AddressModel
 import play.api.i18n.Messages
-import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.CountriesHelper
 import views.html.eis.contactInformation.ContactAddress
@@ -44,8 +43,6 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -64,7 +61,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
-        s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().toString())
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().url)
         Future.successful(Redirect(routes.SupportingDocumentsController.show()))
       }
     )

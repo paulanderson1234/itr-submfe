@@ -22,6 +22,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.eis.investment.TradingForTooLong
 
 import scala.concurrent.Future
 
@@ -38,6 +39,6 @@ trait TradingForTooLongController extends FrontendController with AuthorisedAndE
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.eis.investment.TradingForTooLong()))
+    Future.successful(Ok(TradingForTooLong()))
   }
 }

@@ -22,12 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import models.SubsidiariesModel
-import forms.SubsidiariesForm._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-
 import scala.concurrent.Future
 import views.html.eis._
 import views.html.eis.companyDetails.Subsidiaries

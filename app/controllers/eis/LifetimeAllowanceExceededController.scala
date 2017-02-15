@@ -25,6 +25,7 @@ import models.KiProcessingModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.eis.investment.LifetimeAllowanceExceeded
 
 import scala.concurrent.Future
 
@@ -39,11 +40,9 @@ trait LifetimeAllowanceExceededController extends FrontendController with Author
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
-      case Some(data) => Ok(views.html.eis.investment.LifetimeAllowanceExceeded(data))
+      case Some(data) => Ok(LifetimeAllowanceExceeded(data))
       case None => InternalServerError(internalServerErrorTemplate)
     }
   }

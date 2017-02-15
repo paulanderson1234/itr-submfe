@@ -20,10 +20,10 @@ import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import models._
 import common._
 import controllers.Helpers.ControllerHelpers
 import forms.InvestmentGrowForm._
+import models.{InvestmentGrowModel, NewGeographicalMarketModel, NewProductModel}
 import play.api.data.Form
 import play.api.mvc._
 import play.api.i18n.Messages.Implicits._
@@ -42,17 +42,15 @@ object InvestmentGrowController extends InvestmentGrowController
 
 trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
-
+  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
     def routeRequest(backUrl: Option[String]) = {
-      if(backUrl.isDefined) {
+      if (backUrl.isDefined) {
         s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
-          case Some(data) => getResponse(Ok,investmentGrowForm.fill(data), backUrl.get)
-          case None => getResponse(Ok,investmentGrowForm, backUrl.get)
+          case Some(data) => getResponse(Ok, investmentGrowForm.fill(data), backUrl.get)
+          case None => getResponse(Ok, investmentGrowForm, backUrl.get)
         }
       }
       else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
@@ -68,7 +66,7 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
     investmentGrowForm.bindFromRequest.fold(
       invalidForm =>
         ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
-          case Some(data) => getResponse(BadRequest,invalidForm, data)
+          case Some(data) => getResponse(BadRequest, invalidForm, data)
           case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         },
       validForm => {
@@ -83,22 +81,22 @@ trait InvestmentGrowController extends FrontendController with AuthorisedAndEnro
 
     def determineResult(newGeographicalMarketModel: Option[NewGeographicalMarketModel],
                         newProductModel: Option[NewProductModel]): Future[Result] = {
-      (newGeographicalMarketModel.isDefined,newProductModel.isDefined) match {
-        case (true,true) => {
+      (newGeographicalMarketModel.isDefined, newProductModel.isDefined) match {
+        case (true, true) => {
           val hasGeoMarket = newGeographicalMarketModel.get.isNewGeographicalMarket.equals(Constants.StandardRadioButtonYesValue)
           val hasNewProduct = newProductModel.get.isNewProduct.equals(Constants.StandardRadioButtonYesValue)
-          Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl,hasGeoMarket,hasNewProduct)))
+          Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl, hasGeoMarket, hasNewProduct)))
         }
-        case(false,false) => Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl,hasGeoMarket = false,hasNewProduct = false)))
-        case(true,false) => Future.successful(Redirect(routes.NewProductController.show()))
-        case(false,true) => Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+        case (false, false) => Future.successful(status(InvestmentGrow(investmentGrowForm, backUrl, hasGeoMarket = false, hasNewProduct = false)))
+        case (true, false) => Future.successful(Redirect(routes.NewProductController.show()))
+        case (false, true) => Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
       }
     }
 
     for {
       geographicMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
       newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      result <- determineResult(geographicMarket,newProduct)
+      result <- determineResult(geographicMarket, newProduct)
     } yield result
   }
 

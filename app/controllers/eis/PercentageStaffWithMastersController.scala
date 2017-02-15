@@ -29,8 +29,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
-import views.html.eis._
-import views.html.eis.knowledgeIntensive.{OperatingCosts, PercentageStaffWithMasters}
+import views.html.eis.knowledgeIntensive._
 
 object PercentageStaffWithMastersController extends PercentageStaffWithMastersController{
   override lazy val s4lConnector = S4LConnector
@@ -44,13 +43,12 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
   val submissionConnector: SubmissionConnector
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
-      case Some(data) => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
-      case None => Ok(knowledgeIntensive.PercentageStaffWithMasters(percentageStaffWithMastersForm))
+      case Some(data) => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
+      case None => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm))
     }
   }
 
@@ -73,7 +71,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
           if (updatedModel.isKi) {
             // it's all good - no need to ask more KI questions
             s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
-              routes.PercentageStaffWithMastersController.show().toString())
+              routes.PercentageStaffWithMastersController.show().url)
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
           else {

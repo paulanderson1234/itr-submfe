@@ -41,8 +41,6 @@ trait ContactDetailsController extends FrontendController with AuthorisedAndEnro
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.manualContactDetails).map {
       case Some(data) => Ok(ContactDetails(contactDetailsForm.fill(data)))

@@ -74,12 +74,12 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
 
           // check the current model to see if valid as this is last page but user could navigate via url out of sequence
           if (updatedModel.isKi) {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().url)
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
           else {
             // KI condition not met. end of the road..
-            s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().url)
             Future.successful(Redirect(routes.IneligibleForKIController.show()))
           }
         }

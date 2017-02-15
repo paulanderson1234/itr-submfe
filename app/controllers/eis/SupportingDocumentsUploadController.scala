@@ -46,7 +46,6 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 

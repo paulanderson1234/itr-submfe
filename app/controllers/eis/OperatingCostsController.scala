@@ -17,14 +17,14 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import forms.OperatingCostsForm._
 import models.{KiProcessingModel, OperatingCostsModel}
 import play.Logger
-import play.api.mvc.{Action, Result}
+import play.api.mvc.Result
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eis.knowledgeIntensive.OperatingCosts
 import play.api.i18n.Messages.Implicits._
