@@ -477,7 +477,7 @@ summaryQuestion.subsidiaries =Own or control any other companies
 
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
-validation.error.ShareIssueDate.Future=Enter a date in the past
+validation.error.ShareIssueDate.Future=Enter a past date or today's date
 page.investment.PreviousScheme.otherSchemeName.label=What was its name?
 
 
@@ -518,7 +518,7 @@ page.contactInformation.ProvideContactAddress.addressline3.label=Address line 3 
 page.contactInformation.ProvideContactAddress.addressline4.label=Address line 4 (optional)
 page.contactInformation.ProvideContactAddress.postcode.label=Postcode
 page.contactInformation.ProvideContactAddress.country.label=Country
-page.address.country.select = Select one country
+page.address.country.select = Selegit ct one country
 #page.address.country.instruction = The ISO country code is internationally recognised and identifies a specific country e.g. United States = ''US''; Germany = ''DE''
 
 #contact details page
