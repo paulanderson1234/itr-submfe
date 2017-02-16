@@ -448,7 +448,9 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
-page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for the Enterprise Investment Scheme.
+page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for:
+page.checkAndSubmit.checkAnswers.scheme.eis=the Enterprise Investment scheme
+page.checkAndSubmit.checkAnswers.scheme.vct=the Venture Capital Trust scheme
 page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
@@ -475,7 +477,7 @@ summaryQuestion.subsidiaries =Own or control any other companies
 
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
-validation.error.ShareIssueDate.Future=Enter a date in the past
+validation.error.ShareIssueDate.Future=Enter a past date or today''s date
 page.investment.PreviousScheme.otherSchemeName.label=What was its name?
 
 

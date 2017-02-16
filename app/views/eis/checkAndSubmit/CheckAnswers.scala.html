@@ -4,17 +4,30 @@
 @import common.Constants
 @import utils.Transformers
 @import utils.CountriesHelper
+@import models.submission.SchemeTypesModel
 
-@(checkAnswersModel: CheckAnswersModel)(implicit request: Request[_], messages: Messages)
+
+@(checkAnswersModel: CheckAnswersModel, schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 
     @backButton(controllers.eis.routes.SupportingDocumentsController.show().toString)
 
     <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
+    <div class="form-group">
+        <p id="description-one">@Messages("page.checkAndSubmit.checkAnswers.description.one")</p>
 
-    <p id="description-one">@Messages("page.checkAndSubmit.checkAnswers.description.one")</p>
-    <p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+        <ul class="bullets" id="schemes">
+            @if(schemeTypesModel.eis){
+            <li id="eis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.eis")</li>}
+            @if(schemeTypesModel.vct){
+            <li id="vct-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.vct")</li>}
+        </ul>
+    </div>
+
+    <div class="form-group">
+        <p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+    </div>
 
     <div id="yourAnswers" class="full-width">
 
