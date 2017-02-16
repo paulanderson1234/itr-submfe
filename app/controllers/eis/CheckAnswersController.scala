@@ -19,9 +19,12 @@ package controllers.eis
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import models._
+import models.submission.SchemeTypesModel
+import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.eis.checkAndSubmit.CheckAnswers
@@ -80,7 +83,19 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
         s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
       }
 
-    checkAnswersModel.flatMap(checkAnswer => Future.successful(Ok(CheckAnswers(checkAnswer))))
+    checkAnswersModel.flatMap {
+      checkAnswer =>
+        s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+          case Some(schemeTypes) => Ok(CheckAnswers(checkAnswer, schemeTypes))
+          case None => Redirect(controllers.routes.ApplicationHubController.show())
+        }.recover {
+          case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling fetchAndGetFormData: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+        }
+    }.recover {
+      case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling checkAnswersModel: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+    }
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>

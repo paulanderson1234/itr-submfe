@@ -448,7 +448,9 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
-page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for the Enterprise Investment Scheme.
+page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for:
+page.checkAndSubmit.checkAnswers.scheme.eis=the Enterprise Investment scheme
+page.checkAndSubmit.checkAnswers.scheme.vct=the Venture Capital Trust scheme
 page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit

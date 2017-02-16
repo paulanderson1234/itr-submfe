@@ -21,12 +21,14 @@ import config.FrontendAppConfig
 import controllers.eis.CheckAnswersController
 import controllers.routes
 import models._
+import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
+import views.html.eis.checkAndSubmit.CheckAnswers
 
 class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
@@ -342,6 +344,86 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsController.show().url
     }
   }
+
+  "The Check Answers page" should {
+
+  "Verify that the scheme description contains only EIS when schemeTypesModel.eis == true" in {
+    val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+    val page = CheckAnswers(model, SchemeTypesModel(eis = true))(fakeRequest, applicationMessages)
+    val document = Jsoup.parse(page.body)
+
+    lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+    lazy val notAvailableMessage = Messages("common.notAvailable")
+
+    document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+    document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+    document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+
+    document.getElementById("schemes").children().size() shouldBe 1
+    document.getElementById("eis-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.eis")
+
+    document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+    //Section 1 table heading
+    document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
+    companyDetailsTableTBody.select("tr").size() shouldBe 0
+
+    document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsController.show().url
+  }
+
+    "Verify that the scheme description contains only VCT when schemeTypesModel.vct == true" in {
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val page = CheckAnswers(model, SchemeTypesModel(vct = true))(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
+      lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
+
+      document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+
+      document.getElementById("schemes").children().size() shouldBe 1
+      document.getElementById("vct-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.vct")
+
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+      //Section 1 table heading
+      document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
+      companyDetailsTableTBody.select("tr").size() shouldBe 0
+
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsController.show().url
+    }
+
+    "Verify that the scheme description contains EIS and VCT when schemeTypesModel.eis == true and schemeTypesModel.vct == true" in {
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val page = CheckAnswers(model, SchemeTypesModel(eis = true, vct = true))(fakeRequest, applicationMessages)
+
+      val document = Jsoup.parse(page.body)
+
+      lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
+
+      document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+
+      document.getElementById("schemes").children().size() shouldBe 2
+      document.getElementById("eis-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.eis")
+      document.getElementById("vct-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.vct")
+
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+      //Section 1 table heading
+      document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
+      companyDetailsTableTBody.select("tr").size() shouldBe 0
+
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsController.show().url
+    }
+}
 
   "The Check Answers page" should {
 
