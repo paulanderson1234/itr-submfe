@@ -33,25 +33,33 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class FlowControlPredicate(s4lConnector: S4LConnector, acceptedFlows: Seq[Seq[Flow]], authConnector: AuthConnector) extends PageVisibilityPredicate {
 
   override def apply(authContext: AuthContext, request: Request[AnyContent]): Future[PageVisibilityResult] = {
+
     implicit val hc = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
-    getInternalId(authContext).flatMap {
-      internalID =>
-      implicit val user = TAVCUser(authContext, internalID)
-      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-        selectedSchemes =>
-          if (acceptedFlows.nonEmpty) {
-            if (selectedSchemes.isDefined) {
-              if (flowToSchemeTypesModel(acceptedFlows).contains(selectedSchemes.get)) PageIsVisible
-              else PageBlocked(redirect)
-            }
-            else PageBlocked(redirect)
-          }
-          else PageIsVisible
-      }.recover {
+
+    if (acceptedFlows.nonEmpty && acceptedFlows.contains(Seq(ALLFLOWS))) {
+      Future(PageIsVisible)
+    } else {
+      getPageVisibility(authContext).recover {
         case e: Exception => PageBlocked(error(request))
       }
-    }.recover {
-      case e: Exception => PageBlocked(error(request))
+    }
+  }
+
+  private def getPageVisibility(authContext: AuthContext)(implicit hc: HeaderCarrier) : Future[PageVisibilityResult] = {
+    getInternalId(authContext).flatMap {
+      internalID =>
+        implicit val user = TAVCUser(authContext, internalID)
+        s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+          selectedSchemes =>
+            if (acceptedFlows.nonEmpty) {
+              if (selectedSchemes.isDefined) {
+                if (flowToSchemeTypesModel(acceptedFlows).contains(selectedSchemes.get)) PageIsVisible
+                else PageBlocked(redirect)
+              }
+              else PageBlocked(redirect)
+            }
+            else PageIsVisible
+        }
     }
   }
 
