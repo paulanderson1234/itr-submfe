@@ -477,7 +477,7 @@ summaryQuestion.subsidiaries =Own or control any other companies
 
 page.investment.PreviousScheme.investmentAmount.OutOfRange=Enter an amount between 1 and 999999999
 page.investment.PreviousScheme.otherScheme.OutOfRange=Other scheme name should be no more than 50 characters
-validation.error.ShareIssueDate.Future=Enter a past date or today's date
+validation.error.ShareIssueDate.Future=Enter a past date or today''s date
 page.investment.PreviousScheme.otherSchemeName.label=What was its name?
 
 
