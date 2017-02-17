@@ -81,7 +81,7 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
       //body
       for((previousScheme, index) <- previousSchemeVectorList.zipWithIndex) {
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-type-$index").text() shouldBe
-          PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)
+          PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc, previousScheme.otherSchemeName)
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-date-$index").text() shouldBe
           PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-amount-raised-$index").text() shouldBe

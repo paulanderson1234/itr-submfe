@@ -52,13 +52,13 @@ object PreviousSchemeModel extends DateFormatter with CostFormatter {
     }
   }
 
-  def getSchemeName(schemeType: String): String = {
+  def getSchemeName(schemeType: String, otherSchemeName: Option[String] = None) = {
     schemeType match {
       case Constants.schemeTypeEis => Messages("page.previousInvestment.schemeType.eis")
       case Constants.schemeTypeSeis => Messages("page.previousInvestment.schemeType.seis")
       case Constants.schemeTypeSitr => Messages("page.previousInvestment.schemeType.sitr")
       case Constants.schemeTypeVct => Messages("page.previousInvestment.schemeType.vct")
-      case _ => schemeType
+      case _ => otherSchemeName.fold("")(_.self)
     }
   }
 

@@ -231,7 +231,7 @@ trait SubmissionFixture {
       processingId = None,
       investmentSpent = Some(20),
       otherSchemeName = None),
-    PreviousSchemeModel(schemeTypeDesc = Constants.schemeTypeEis, investmentAmount = 6000,
+    PreviousSchemeModel(schemeTypeDesc = Constants.schemeTypeOther, investmentAmount = 6000,
       day = Some(4),
       month = Some(5),
       year = Some(2002),
