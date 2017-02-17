@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,19 +21,19 @@ import common.{Constants, KeystoreKeys}
 import connectors.S4LConnector
 import models._
 import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object LifetimeLimitHelper extends LifetimeLimitHelper {
-  val s4lConnector: S4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait LifetimeLimitHelper {
 
-  //implicit val hc = HeaderCarrier()
-
-  val s4lConnector: S4LConnector
+  val s4lConnector : S4LConnector
 
   //Future of all previous schemes as vector
   def previousSchemesFut(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {

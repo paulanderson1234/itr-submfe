@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ class TestModelConversionSpec extends UnitSpec{
 
   val fullCorrespondenceAddress : AddressModel = AddressModel(addressline1 = "line 1",
     addressline2 = "Line 2", addressline3 = Some("Line 3"), addressline4 = Some("Line 4"),
-    postcode = Some("TF1 4NY"), countryCode = "GB")
+    postcode = Some("AA1 1AA"), countryCode = "GB")
 
   val fullContactDetailsModel: ContactDetailsModel = ContactDetailsModel(forename = "Fred",
     surname = "Flinsstone", telephoneNumber = Some("01952 255899"), mobileNumber = None, email = "rubble@jurassic.com")
@@ -97,6 +97,7 @@ val subsidiaryPerformingTradeWithAddress = SubsidiaryPerformingTradeModel(ninety
     correspondenceAddress = fullCorrespondenceAddress,
     schemeTypes = schemeTypes,
     marketInfo = Some(marketInfo),
+    dateTradeCommenced = "2001-01-01",
     annualCosts = Some(costsFull),
     annualTurnover = Some(turnover),
     proposedInvestmentModel = ProposedInvestmentModel(250000),

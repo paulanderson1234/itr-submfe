@@ -1,0 +1,198 @@
+@import models.AnnualTurnoverCostsModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress, input}
+
+@(operatingCostsForm: Form[AnnualTurnoverCostsModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.TurnoverCosts.title")) {
+
+@backButtonWithProgress(controllers.eis.routes.NewProductController.show().toString, Messages("common.section.progress.company.details.three"))
+
+@errorSummary(operatingCostsForm, "TurnoverCosts")
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.TurnoverCosts.heading")</h1>
+
+        @form(action = controllers.eis.routes.TurnoverCostsController.submit()) {
+
+        <p class="form-hint" id="turnover-costs-hint-one">@Messages("page.companyDetails.TurnoverCosts.hint.one")</p>
+        <p class="form-hint" id="turnover-costs-hint-two">@Messages("page.companyDetails.TurnoverCosts.hint.two")</p>
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.companyDetails.TurnoverCosts.help.link")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p id="help-text">@Messages("page.companyDetails.TurnoverCosts.help.text")</p>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <table id="table">
+                <thead>
+                <tr>
+                    <th class="visuallyhidden" id="col-heading-one" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.one")</th>
+                    <th id="col-heading-two" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.two")</th>
+                    <th id="col-heading-three" scope="col">@Messages("page.companyDetails.TurnoverCosts.col.heading.three")</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td class="heading-small" id="row-heading-one">@Messages("page.companyDetails.TurnoverCosts.row.heading.one")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("firstYear"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-firstYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.one.label.year"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        'id -> "firstYear"
+                        )
+                    </td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount1"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-one",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.one.label.turnover"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount1"
+                        )
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="heading-small" id="row-heading-two">@Messages("page.companyDetails.TurnoverCosts.row.heading.two")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("secondYear"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-secondYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.two.label.year"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        'id -> "secondYear"
+                        )
+                    </td>
+                    <td>
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount2"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-two",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.two.label.turnover"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount2"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-three">@Messages("page.companyDetails.TurnoverCosts.row.heading.three")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("thirdYear"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-thirdYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.three.label.year"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        'id -> "thirdYear"
+                        )
+                    </td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount3"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-three",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.three.label.turnover"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount3"
+                        )
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-four">@Messages("page.companyDetails.TurnoverCosts.row.heading.four")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("fourthYear"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-fourthYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.four.label.year"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        'id -> "fourthYear"
+                        )
+                    </td>
+                    <td>
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount4"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-rAndDCosts2ndYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.four.label.turnover"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount4"
+                        )
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="heading-small" id="row-heading-five">@Messages("page.companyDetails.TurnoverCosts.row.heading.five")</td>
+                    <td>
+                        @input(
+                        operatingCostsForm("fifthYear"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-fifthYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.five.label.year"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth",
+                        '_maxlength-> 4,
+                        'id -> "fifthYear"
+                        )
+                    </td>
+                    <td>
+
+                        @inputWithCurrencySymbol(
+                        operatingCostsForm("amount5"),
+                        '_divClass -> "form-label",
+                        '_labelId -> "label-amount-operatingCosts3rdYear",
+                        '_label -> Messages("page.companyDetails.TurnoverCosts.row.five.label.turnover"),
+                        '_labelTextClass -> "visuallyhidden",
+                        '_inputClass -> "input--fullwidth input--no-spinner input--left-padding",
+                        '_type -> "text",
+                        '_maxlength -> "9",
+                        'id -> "amount5"
+                        )
+
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+        }
+    </div>
+
+</div>
+}

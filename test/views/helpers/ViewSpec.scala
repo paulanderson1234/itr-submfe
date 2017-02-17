@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,22 @@ import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
+
 
 import scala.concurrent.Future
 
 trait ViewSpec extends BaseSpec {
 
   class Setup {
-    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
-      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+    mockEnrolledRequest(eisSchemeTypesModel)
+  }
+
+  class SEISSetup {
+    mockEnrolledRequest(seisSchemeTypesModel)
   }
 
   def getExternalLinkText(linkText: String): String = s"""$linkText ${Messages("common.externalLink")}"""
 
   def getExternalEmailText(emailTextPre: String): String = s"$emailTextPre enterprise.centre@hmrc.gsi.gov.uk."
 }
-

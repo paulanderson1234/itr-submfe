@@ -1,8 +1,8 @@
-@(rowId: String, question: String, answer: String, link: Option[String] = None)
+@(rowId: String, question: String, answer: String, link: Option[String] = None)(implicit messages: Messages)
 <tr>
     <td id="@{rowId}-question" class="summaryQuestion">@question</td>
     <td id="@{rowId}-answer" class="summaryAnswer">@answer</td>
-    <td id="@{rowId}-change" class="summaryLink">@if(link.isDefined) {
+    <td id="@{rowId}-change" class="summaryLink align-top">@if(link.isDefined) {
         <a id="@{rowId}-link" href=@link>@Messages("common.base.change")</a>
         }</td>
 </tr>

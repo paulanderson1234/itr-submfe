@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,16 @@ package Forms
 
 import forms.TaxPayerReferenceForm
 import models.{ContactDetailsModel, SubmissionRequest, TaxpayerReferenceModel, YourCompanyNeedModel}
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class TaxPayerReferenceFormSpec extends UnitSpec {
+class TaxPayerReferenceFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     TaxPayerReferenceForm.taxPayerReferenceForm.bindFromRequest()(request).fold(

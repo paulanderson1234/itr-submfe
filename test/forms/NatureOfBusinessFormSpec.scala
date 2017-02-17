@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-package Forms
+package forms
 
-import forms.NatureOfBusinessForm
+import forms.NatureOfBusinessForm.natureOfBusinessForm
 import models.NatureOfBusinessModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class NatureOfBusinessFormSpec extends UnitSpec {
+class NatureOfBusinessFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
-    NatureOfBusinessForm.natureOfBusinessForm.bindFromRequest()(request).fold(
+    natureOfBusinessForm.bindFromRequest()(request).fold(
       formWithErrors => None,
       userData => Some(userData)
     )
   }
 
   private def bindWithError(request: FakeRequest[AnyContentAsFormUrlEncoded]): Option[FormError] = {
-    NatureOfBusinessForm.natureOfBusinessForm.bindFromRequest()(request).fold(
+    natureOfBusinessForm.bindFromRequest()(request).fold(
       formWithErrors => Some(formWithErrors.errors(0)),
       userData => None
     )
@@ -52,7 +54,7 @@ class NatureOfBusinessFormSpec extends UnitSpec {
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "natureofbusiness"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {
@@ -103,15 +105,15 @@ class NatureOfBusinessFormSpec extends UnitSpec {
   "The utr Form model" should {
     "call apply correctly on the model" in {
       implicit val formats = Json.format[NatureOfBusinessModel]
-      val natureOfBusinessForm = NatureOfBusinessForm.natureOfBusinessForm.fill(natureOfBusinessModel)
-      natureOfBusinessForm.get.natureofbusiness shouldBe "I sell cars to car warehouse outets in major towns"
+      val form = natureOfBusinessForm.fill(natureOfBusinessModel)
+      form.get.natureofbusiness shouldBe "I sell cars to car warehouse outets in major towns"
     }
 
     // form json to model - unapply
     "call unapply successfully to create expected Json" in {
       implicit val formats = Json.format[NatureOfBusinessModel]
-      val natureOfBusinessForm = NatureOfBusinessForm.natureOfBusinessForm.fill(natureOfBusinessModel)
-      val formJson = Json.toJson(natureOfBusinessForm.get).toString()
+      val form = natureOfBusinessForm.fill(natureOfBusinessModel)
+      val formJson = Json.toJson(form.get).toString()
       formJson shouldBe natureOfBusinessJson
     }
   }

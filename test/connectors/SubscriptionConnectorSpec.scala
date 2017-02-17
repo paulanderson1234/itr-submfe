@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,14 +70,14 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
       |        "safeId": "XA0000000012345",
       |        "correspondenceDetails": {
       |            "contactName": {
-      |                "name1": "John",
-      |                "name2": "Brown"
+      |                "name1": "first",
+      |                "name2": "last"
       |            },
       |            "contactDetails": {
       |                "phoneNumber": "0000 10000",
       |                "mobileNumber": "0000 2000",
       |                "faxNumber": "0000 30000",
-      |                "emailAddress": "john.smith@noplace.atall.com"
+      |                "emailAddress": "test@test.com"
       |            },
       |            "contactAddress": {
       |                "addressLine1": "12 some street",

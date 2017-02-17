@@ -1,0 +1,52 @@
+@import models.ProposedInvestmentModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, inputWithCurrencySymbol, backButtonWithProgress}
+
+@(proposedInvestmentForm: Form[ProposedInvestmentModel], backlinkUrl: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.seis.investment.proposedInvestment.amount.title")) {
+
+@backButtonWithProgress(backlinkUrl, Messages("common.section.progress.company.details.three"))
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        @errorSummary(proposedInvestmentForm, "proposed-investment", "investmentAmount")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.seis.investment.proposedInvestment.amount.heading")</h1>
+
+        @form(action = controllers.seis.routes.ProposedInvestmentController.submit()) {
+        <div class="form-group">
+            @inputWithCurrencySymbol(
+            proposedInvestmentForm("investmentAmount"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-amount",
+            '_label -> Messages("page.seis.investment.proposedInvestment.amount.heading"),
+            '_labelTextClass -> "visuallyhidden",
+            '_inputClass -> "input--normal input--no-spinner input--left-padding",
+            '_type -> "text",
+            '_maxlength -> "7",
+            'id -> "investmentAmount"
+            )
+
+        </div>
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.seis.investment.proposedInvestment.help.link")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p id="help-text">@Messages("page.seis.investment.proposedInvestment.help.link.text")</p>
+                <ul class="list list-bullet">
+                    <li id="help-bullet-one">@Messages("page.seis.investment.proposedInvestment.help.bullet.one")</li>
+                    <li id="help-bullet-two">@Messages("page.seis.investment.proposedInvestment.help.bullet.two")</li>
+                    <li id="help-bullet-three">@Messages("page.seis.investment.proposedInvestment.help.bullet.three")</li>
+                </ul>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+        }
+    </div>
+</div>
+}

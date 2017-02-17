@@ -1,0 +1,132 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.backButton
+@import views.html.helpers.summary._
+@import common.Constants
+@import models.seis.SEISCheckAnswersModel
+@import utils.Transformers
+@import utils.CountriesHelper
+
+@(checkAnswersModel: SEISCheckAnswersModel)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
+
+@backButton(controllers.seis.routes.SupportingDocumentsController.show().url)
+
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
+
+<p id="description-one">@Messages("page.seis.checkAndSubmit.checkAnswers.description.one")</p>
+<p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+
+<div id="yourAnswers" class="full-width">
+
+    <table id="company-details-table">
+        <!-- Header -->
+        @tableHeaderHelper("companyDetailsSection",Messages("summaryQuestion.companyDetailsSection"))
+        <!-- Data Rows-->
+        <tbody>
+        <!-- Nature Of Business -->
+        @if(checkAnswersModel.natureOfBusinessModel.isDefined){
+        @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.seis.routes.NatureOfBusinessController.show().url))
+        }
+        <!-- Date of Incorporation -->
+        @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
+        @defining(checkAnswersModel.dateOfIncorporationModel.get) { dateOfIncorporationModel =>
+        @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.seis.routes.DateOfIncorporationController.show().url))
+        }
+        }
+        <!-- Trade Start Date -->
+        @if(checkAnswersModel.tradeStartDateModel.isDefined){
+        @defining(checkAnswersModel.tradeStartDateModel.get) { tradeStartDateModel =>
+        @if(tradeStartDateModel.hasTradeStartDate == Messages("common.radioYesLabel")){
+        @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.seis.routes.TradeStartDateController.show().url), None)
+        } else {
+        @textRowHelperBasic("tradeStart", Messages("summaryQuestion.hasTradeStartDate"), tradeStartDateModel.hasTradeStartDate, Some(controllers.seis.routes.TradeStartDateController.show().url))
+        }
+        }
+        }
+        </tbody>
+    </table>
+
+    <table id="previous-rfi-table">
+        <!-- Header -->
+        @tableHeaderHelper("previousRFISection", Messages("summaryQuestion.previousRFISection"))
+        <!-- Data Rows-->
+        <tbody>
+        @if(checkAnswersModel.previousSchemes.length > 0){
+        @for((previousScheme, index) <- checkAnswersModel.previousSchemes.zipWithIndex){
+        @textRowHelperMultiLine(s"previousScheme-$index", previousScheme.otherSchemeName.getOrElse(PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)),
+        PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.seis.routes.ReviewPreviousSchemesController.show().url))
+        }
+        }else{
+        @textRowHelperBasic("noPreviousScheme", Messages("page.summaryQuestion.none.question"), Messages("page.summaryQuestion.none.answer"), Some(controllers.seis.routes.HadPreviousRFIController.show().url))
+        }
+
+        </tbody>
+    </table>
+
+    <table id="investment-table">
+        <!-- Header -->
+        @tableHeaderHelper("investmentSection", Messages("page.summaryQuestion.companyDetailsSectionThree"))
+        <!--Data rows-->
+        <tbody>
+        <!--Proposed Investment-->
+        @if(checkAnswersModel.proposedInvestmentModel.isDefined){
+        @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.seis.routes.ProposedInvestmentController.show().url))
+        }
+        </tbody>
+    </table>
+
+    <table id="contactDetails-table">
+        <!-- Header -->
+        @tableHeaderHelper("contactDetailsSection", Messages("page.summaryQuestion.companyDetailsSectionFour"))
+        <!--Data rows-->
+        <tbody>
+        @if(checkAnswersModel.contactDetailsModel.isDefined){
+        @defining(checkAnswersModel.contactDetailsModel.get) { contactDetails =>
+        @textRowHelperMultiLine("contactDetails", Messages("page.summaryQuestion.contactDetails"), Transformers.contactDetailsModelToFlattenedArray(contactDetails),
+        Some(controllers.seis.routes.ContactDetailsController.show().url))
+        @if(checkAnswersModel.contactAddressModel.isDefined){
+        @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Transformers.addressModelToFlattenedArray(checkAnswersModel.contactAddressModel.get.copy(countryCode = CountriesHelper.getSelectedCountry(checkAnswersModel.contactAddressModel.get.countryCode))),
+        Some(controllers.seis.routes.ContactAddressController.show().url))
+        }
+        }
+        }
+        </tbody>
+    </table>
+
+    <table id="supporting-docs-table">
+        @tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))
+        <tbody>
+        <tr>
+            <td>
+                <div class="form-group">
+                    <p id="supportingDocs-sub-text">@Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")</p>
+                    <ul class="bullets">
+                        <li id="supportingDocs-business-plan" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</li>
+                        <li id="supportingDocs-company-accounts" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</li>
+                        <li id="shareholder-agree" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</li>
+                        <li id="memorandum-docs" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</li>
+                        <li id="supportingDocs-prospectus" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</li>
+                    </ul>
+                </div>
+            </td>
+            <td></td>
+            @if(checkAnswersModel.attachmentsEnabled) {
+            <td class="summaryLink align-top">
+                <a id="supporting-docs-link" href=@controllers.seis.routes.SupportingDocumentsUploadController.show().url>@Messages("common.base.change")</a>
+            </td>
+            } else {
+            <td></td>
+            }
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+@form(action = controllers.seis.routes.CheckAnswersController.submit()) {
+<div class="form-group">
+    <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkAnswers.button.confirm")</button>
+</div>
+}
+
+}

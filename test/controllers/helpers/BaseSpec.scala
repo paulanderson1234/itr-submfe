@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,33 @@
 
 package controllers.helpers
 
-import common.Constants
+import auth.{Enrolment, Identifier}
+import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
-import models.registration.RegistrationDetailsModel
+import models.submission.SchemeTypesModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
+import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import services.{RegistrationDetailsService, SubscriptionService}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import org.scalatestplus.play.OneAppPerSuite
+import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
+import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
+import uk.gov.hmrc.play.http.HeaderCarrier
 
-trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
+import scala.concurrent.Future
+
+
+trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
 
   val mockS4lConnector = mock[S4LConnector]
   val mockEnrolmentConnector = mock[EnrolmentConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
+  val mockFileUploadService = mock[FileUploadService]
 
   override def beforeEach() {
     reset(mockS4lConnector)
@@ -41,10 +50,28 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     reset(mockSubmissionConnector)
   }
 
-  val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", Some("Telford Central"),Some("Shropshire"),
-    Some("tf4 2ls"),"GB"), ContactDetailsModel("Joe","Bloggs",Some("0123324234234"),Some("4567324234324"),"test@gmail.com"))
-  val applicationHubModelMin = ApplicationHubModel("Company ltd", AddressModel("2 Telford Plaxa","Lawn Central", None,None,None,"GB"),
-    ContactDetailsModel("Joe","Bloggs",None,None,"test@gmail.com"))
+  def mockEnrolledRequest(selectedSchemes: Option[SchemeTypesModel] = None): Unit = {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
+    when(mockEnrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(tavcReferenceId))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(selectedSchemes))
+  }
+
+  def mockNotEnrolledRequest(): Unit = {
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+  }
+
+  implicit val hc = HeaderCarrier()
+
+
+  val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
+    Some("tf4 2ls"),"GB"), ContactDetailsModel("Firstname","Lastname",Some("0123324234234"),Some("4567324234324"),"test@test.com"))
+  val applicationHubModelMin = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", None,None,None,"GB"),
+    ContactDetailsModel("Firstname","Lastname",None,None,"test@test.com"))
 
   val addressModel = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AB1 1AB"), "GB")
   val subscriptionDetailsModel = SubscriptionDetailsModel("",contactDetailsModel,contactAddressModel)
@@ -53,7 +80,7 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val contactDetailsOneNumberModel = ContactDetailsModel("Test", "Name", None, Some("0872552488"), "test@test.com")
   val confirmContactDetailsModel = ConfirmContactDetailsModel(Constants.StandardRadioButtonYesValue, contactDetailsModel)
 
-  val contactAddressModel = new AddressModel("Akina Speed Stars", "Mt. Akina", countryCode = "JP")
+  val contactAddressModel = new AddressModel("ABC XYZ", "1 ABCDE Street", countryCode = "JP")
   
   val investmentGrowModel = InvestmentGrowModel("At vero eos et accusamusi et iusto odio dignissimos ducimus qui blanditiis praesentium " +
     "voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique " +
@@ -77,6 +104,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
 
   val kiProcessingModelMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
   val kiProcessingModelNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+
+  val kiProcessingModelIsKi = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
 
   val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
   val falseKIModel = KiProcessingModel(Some(false), Some(false), Some(false), Some(false), None, Some(false))
@@ -119,6 +148,8 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
     Constants.PageInvestmentSchemeAnotherValue, 2356, None, Some("My scheme"), Some(9), Some(8), Some(2010), Some(5))
   val previousSchemeVectorList = Vector(previousSchemeModel1, previousSchemeModel2, previousSchemeModel3)
 
+  val emptyVectorList = Vector[PreviousSchemeModel]()
+
   val registeredAddressModel = RegisteredAddressModel("AB1 1AB")
 
   val taxpayerReferenceModel = TaxpayerReferenceModel("1234567891012")
@@ -135,5 +166,15 @@ trait BaseSpec extends UnitSpec with WithFakeApplication with MockitoSugar with 
   val usedInvestmentReasonBeforeModelNo = UsedInvestmentReasonBeforeModel(Constants.StandardRadioButtonNoValue)
 
   val yourCompanyNeedModel = YourCompanyNeedModel("AA")
+
+  val envelopeId: Option[String] = Some("00000000000000000000000000000000")
+
+  val seisSchemeTypesModel = Some(SchemeTypesModel(seis = true))
+  val eisSchemeTypesModel = Some(SchemeTypesModel(eis = true))
+  val vctSchemeTypesModel = Some(SchemeTypesModel(vct = true))
+
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
+
+  //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,17 @@ object SubscriptionTestData {
       |        "safeId": "$expectedSafeID",
       |        "correspondenceDetails": {
       |            "contactName": {
-      |                "name1": "John",
-      |                "name2": "Brown"
+      |                "name1": "first",
+      |                "name2": "last"
       |            },
       |            "contactDetails": {
-      |                "phoneNumber": "0000 10000",
-      |                "mobileNumber": "0000 2000",
-      |                "faxNumber": "0000 30000",
-      |                "emailAddress": "john.smith@noplace.atall.com"
+      |                "phoneNumber": "0000 00000",
+      |                "mobileNumber": "0000 00000",
+      |                "faxNumber": "0000 00000",
+      |                "emailAddress": "test@test.com"
       |            },
       |            "contactAddress": {
-      |                "addressLine1": "12 some street",
+      |                "addressLine1": "some line 1",
       |                "addressLine2": "some line 2",
       |                "addressLine3": "some line 3",
       |                "addressLine4": "some line 4",
@@ -63,15 +63,15 @@ object SubscriptionTestData {
        |        "safeId": "$expectedSafeID",
        |        "correspondenceDetails": {
        |            "contactName": {
-       |                "name1": "John",
-       |                "name2": "Brown"
+       |                "name1": "first",
+       |                "name2": "last"
        |            },
        |            "contactDetails": {
-       |                "faxNumber": "0000 30000",
-       |                "emailAddress": "john.smith@noplace.atall.com"
+       |                "faxNumber": "0000 00000",
+       |                "emailAddress": "test@test.com"
        |            },
        |            "contactAddress": {
-       |                "addressLine1": "12 some street",
+       |                "addressLine1": "some line 1",
        |                "addressLine2": "some line 2",
        |                "countryCode": "GB"
        |            }
@@ -86,14 +86,14 @@ object SubscriptionTestData {
        |{
        |     "safeId": "$expectedSafeID",
        |     "contactDetails": {
-       |          "forename": "John",
-       |          "surname": "Brown",
-       |          "telephoneNumber": "0000 10000",
-       |          "mobileNumber": "0000 2000",
-       |          "email": "john.smith@noplace.atall.com"
+       |          "forename": "first",
+       |          "surname": "last",
+       |          "telephoneNumber": "0000 00000",
+       |          "mobileNumber": "0000 00000",
+       |          "email": "test@test.com"
        |     },
        |     "contactAddress": {
-       |          "addressline1": "12 some street",
+       |          "addressline1": "some line 1",
        |          "addressline2": "some line 2",
        |          "addressline3": "some line 3",
        |          "addressline4": "some line 4",
@@ -116,15 +116,15 @@ object SubscriptionTestData {
   )
 
   val expectedContactDetailsFull = ContactDetailsModel(
-    forename = "John",
-    surname = "Brown",
-    telephoneNumber = Some("0000 10000"),
-    mobileNumber = Some("0000 2000"),
-    email = "john.smith@noplace.atall.com"
+    forename = "first",
+    surname = "last",
+    telephoneNumber = Some("0000 00000"),
+    mobileNumber = Some("0000 00000"),
+    email = "test@test.com"
   )
 
   val expectedContactAddressFull = AddressModel(
-    addressline1 = "12 some street",
+    addressline1 = "some line 1",
     addressline2 = "some line 2",
     addressline3 = Some("some line 3"),
     addressline4 = Some("some line 4"),
@@ -133,13 +133,13 @@ object SubscriptionTestData {
   )
 
   val expectedContactDetailsMin = ContactDetailsModel(
-    forename = "John",
-    surname = "Brown",
-    email = "john.smith@noplace.atall.com"
+    forename = "first",
+    surname = "last",
+    email = "test@test.com"
   )
 
   val expectedContactAddressMin = AddressModel(
-    addressline1 = "12 some street",
+    addressline1 = "some line 1",
     addressline2 = "some line 2",
     countryCode = "GB"
   )

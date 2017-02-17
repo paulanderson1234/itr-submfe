@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import play.api.i18n.Messages
 import uk.gov.voa.play.form.ConditionalMappings._
 import play.api.data.Form
 import utils.Validation._
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 object PreviousSchemeForm {
 

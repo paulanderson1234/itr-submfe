@@ -1,4 +1,4 @@
-@(href : String, sectionProgress: String)(implicit lang: play.api.i18n.Lang)
+@(href : String, sectionProgress: String)(implicit messages: Messages)
 @import views.html.helpers._
 @backButton(href)
 <span id="progress-section" class="form-hint-breadcrumb leftPadding">@sectionProgress</span>

@@ -1,0 +1,54 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import models.NatureOfBusinessModel
+@import common.Constants
+@import views.html.helpers.{backButtonWithProgress, errorSummary, input}
+
+@(natureOfbusinessForm: Form[NatureOfBusinessModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.natureofbusiness.title")) {
+
+@backButtonWithProgress(controllers.routes.ApplicationHubController.show().url, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(natureOfbusinessForm, "nature-of-business", "natureofbusiness")
+
+    <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.companyDetails.natureofbusiness.heading")</h1>
+
+    <div class="form-hint">
+        <p id="description-two" class="lede">@Messages("page.companyDetails.natureofbusiness.example.text")</p>
+    </div>
+
+
+    <div class="form-hint">
+        <ul class="list list-bullet">
+            <li id="bullet-one">@Messages("page.companyDetails.natureofbusiness.bullet.one")</li>
+            <li id="bullet-two">@Messages("page.companyDetails.natureofbusiness.bullet.two")</li>
+            <li id="bullet-three">@Messages("page.companyDetails.natureofbusiness.bullet.three")</li>
+        </ul>
+    </div>
+
+
+    @form(action = controllers.eis.routes.NatureOfBusinessController.submit()) {
+
+    <fieldset>
+        <legend class="visuallyhidden">@Messages("page.companyDetails.natureofbusiness.heading")</legend>
+        <div class="form-group">
+            @input(
+            natureOfbusinessForm("natureofbusiness"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-natureofbusiness",
+            '_hintId -> "label-natureofbusiness-hint",
+            '_label -> Messages("page.companyDetails.natureofbusiness.heading"),
+            '_labelTextClass -> "visuallyhidden",
+            '_inputClass -> "input--fullwidth",
+            '_maxlength-> Constants.SuggestetNatureOfBusinessLength,
+            '_inputHint -> Messages("page.companyDetails.natureofbusiness.question.hint"),
+            'id -> "utr"
+            )
+
+        </div>
+    </fieldset>
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+    </div>
+    }
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 object ClearCacheController extends ClearCacheController {
-  override lazy val s4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -31,10 +31,12 @@ object ClearCacheController extends ClearCacheController {
 
 trait ClearCacheController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  val s4LConnector: S4LConnector
+  override val acceptedFlows = Seq()
+
+  val s4lConnector: S4LConnector
 
   def clearCache(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4LConnector.clearCache().map {
+    s4lConnector.clearCache().map {
       response => response.status match {
         case NO_CONTENT => Ok("Successfully cleared cache")
         case _ => BadRequest("Failed to clear cache")

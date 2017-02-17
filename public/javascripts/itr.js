@@ -99,15 +99,15 @@ $(document).ready($(function() {
 //        });
 //    });
 
+    var $hiddenOtherScheme = $('#hidden-other-scheme')
+    var $hiddenInvestmentSpent = $('#hidden-investment-spent')
+
+    $hiddenInvestmentSpent.hide();
+    $hiddenOtherScheme.hide();
+
     $("input[name='schemeTypeDesc']").each(function()  {
 
         var $checkbox = $(this)
-
-        var $hiddenOtherScheme = $('#hidden-other-scheme')
-        var $hiddenInvestmentSpent = $('#hidden-investment-spent')
-
-        $hiddenInvestmentSpent.hide();
-        $hiddenOtherScheme.hide();
 
         if ($checkbox.val() === 'Other' && $checkbox.prop('checked')) {
             $hiddenOtherScheme.show();
@@ -183,6 +183,9 @@ $(document).ready($(function() {
          $("#commercialSaleYear").val("");
          $("#otherSchemeName").val("");
          $("#investmentSpent").val("");
+         $("#tradeStartDay").val("");
+         $("#tradeStartMonth").val("");
+         $("#tradeStartYear").val("");
     }
 
     function ClearPageErrors()

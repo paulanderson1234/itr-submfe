@@ -1,0 +1,100 @@
+# microservice specific routes
+
+
+GET        /date-of-incorporation                   controllers.eis.DateOfIncorporationController.show
+POST       /date-of-incorporation                   controllers.eis.DateOfIncorporationController.submit
+
+GET        /commercial-sale                         controllers.eis.CommercialSaleController.show
+POST       /commercial-sale                         controllers.eis.CommercialSaleController.submit
+
+GET        /is-knowledge-intensive                  controllers.eis.IsKnowledgeIntensiveController.show
+POST       /is-knowledge-intensive                  controllers.eis.IsKnowledgeIntensiveController.submit
+
+GET        /ineligible-for-knowledge-intensive      controllers.eis.IneligibleForKIController.show
+POST       /ineligible-for-knowledge-intensive      controllers.eis.IneligibleForKIController.submit
+
+GET        /subsidiaries                            controllers.eis.SubsidiariesController.show
+POST       /subsidiaries                            controllers.eis.SubsidiariesController.submit
+
+GET        /nature-of-business                      controllers.eis.NatureOfBusinessController.show
+POST       /nature-of-business                      controllers.eis.NatureOfBusinessController.submit
+
+GET        /operating-costs                         controllers.eis.OperatingCostsController.show
+POST       /operating-costs                         controllers.eis.OperatingCostsController.submit
+
+GET        /annual-turnover                         controllers.eis.TurnoverCostsController.show
+POST       /annual-turnover                         controllers.eis.TurnoverCostsController.submit
+
+GET        /percentage-of-staff-with-masters        controllers.eis.PercentageStaffWithMastersController.show
+POST       /percentage-of-staff-with-masters        controllers.eis.PercentageStaffWithMastersController.submit
+
+GET        /ten-year-plan                           controllers.eis.TenYearPlanController.show
+POST       /ten-year-plan                           controllers.eis.TenYearPlanController.submit
+
+GET        /proposed-investment                     controllers.eis.ProposedInvestmentController.show
+POST       /proposed-investment                     controllers.eis.ProposedInvestmentController.submit
+
+GET        /new-product                             controllers.eis.NewProductController.show
+POST       /new-product                             controllers.eis.NewProductController.submit
+
+GET        /new-geographical-market		            controllers.eis.NewGeographicalMarketController.show
+POST       /new-geographical-market	                controllers.eis.NewGeographicalMarketController.submit
+
+GET        /used-investment-reason-before           controllers.eis.UsedInvestmentReasonBeforeController.show
+POST       /used-investment-reason-before           controllers.eis.UsedInvestmentReasonBeforeController.submit
+
+GET        /used-investment-scheme-before           controllers.eis.HadPreviousRFIController.show
+POST       /used-investment-scheme-before           controllers.eis.HadPreviousRFIController.submit
+
+GET        /subsidiaries-spending-investment        controllers.eis.SubsidiariesSpendingInvestmentController.show
+POST       /subsidiaries-spending-investment        controllers.eis.SubsidiariesSpendingInvestmentController.submit
+
+GET        /previous-before-dofcs                   controllers.eis.PreviousBeforeDOFCSController.show
+POST       /previous-before-dofcs                   controllers.eis.PreviousBeforeDOFCSController.submit
+
+GET        /subsidiaries-ninety-percent-owned       controllers.eis.SubsidiariesNinetyOwnedController.show
+POST       /subsidiaries-ninety-percent-owned       controllers.eis.SubsidiariesNinetyOwnedController.submit
+
+GET        /how-plan-to-use-investment              controllers.eis.InvestmentGrowController.show
+POST       /how-plan-to-use-investment              controllers.eis.InvestmentGrowController.submit
+
+GET        /contact-details                         controllers.eis.ContactDetailsController.show
+POST       /contact-details                         controllers.eis.ContactDetailsController.submit
+
+GET        /supporting-documents                    controllers.eis.SupportingDocumentsController.show
+POST       /supporting-documents                    controllers.eis.SupportingDocumentsController.submit
+
+GET        /supporting-documents-upload             controllers.eis.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.eis.SupportingDocumentsUploadController.submit
+
+GET        /confirm-correspondence-address          controllers.eis.ConfirmCorrespondAddressController.show
+POST       /confirm-correspondence-address          controllers.eis.ConfirmCorrespondAddressController.submit
+
+GET        /confirm-contact-details                 controllers.eis.ConfirmContactDetailsController.show
+POST       /confirm-contact-details                 controllers.eis.ConfirmContactDetailsController.submit
+
+GET        /check-your-answers                      controllers.eis.CheckAnswersController.show(envelopeId: Option[String]?=None)
+POST       /check-your-answers                      controllers.eis.CheckAnswersController.submit
+
+GET        /previous-investment                     controllers.eis.PreviousSchemeController.show(id: Option[Int]?=None)
+POST       /previous-investment                     controllers.eis.PreviousSchemeController.submit
+
+GET        /contact-address                         controllers.eis.ContactAddressController.show
+POST       /contact-address                         controllers.eis.ContactAddressController.submit
+
+GET        /review-previous-schemes                 controllers.eis.ReviewPreviousSchemesController.show
+POST       /review-previous-schemes                 controllers.eis.ReviewPreviousSchemesController.submit
+
+GET        /review-previous-schemes-add             controllers.eis.ReviewPreviousSchemesController.add
+GET        /review-previous-schemes-change/:Id      controllers.eis.ReviewPreviousSchemesController.change(Id: Int)
+POST       /review-previous-schemes-remove/:Id      controllers.eis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /acknowledgement                         controllers.eis.AcknowledgementController.show
+POST       /acknowledgement                         controllers.eis.AcknowledgementController.submit
+
+GET        /lifetime-allowance-exceeded             controllers.eis.LifetimeAllowanceExceededController.show
+POST       /lifetime-allowance-exceeded             controllers.eis.LifetimeAllowanceExceededController.submit
+
+GET        /annual-turnover-error                   controllers.eis.AnnualTurnoverErrorController.show
+
+GET        /trading-for-too-long                    controllers.eis.TradingForTooLongController.show

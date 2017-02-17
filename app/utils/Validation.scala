@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,12 @@ import play.api.i18n.Messages
 import java.util.{Calendar, Date}
 
 import common.Constants
+import models.submission.SchemeTypesModel
 import org.joda.time.DateTime
 
 import scala.util.{Failure, Success, Try}
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 object Validation {
 
@@ -84,6 +87,35 @@ object Validation {
     })
   }
 
+  def tradeStartDateValidation: Constraint[TradeStartDateModel] = {
+
+    def validateYes(dateForm: TradeStartDateModel) = {
+      anyEmpty(dateForm.tradeStartDay, dateForm.tradeStartMonth, dateForm.tradeStartYear) match {
+        case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+        case false => isValidDate(dateForm.tradeStartDay.get, dateForm.tradeStartMonth.get, dateForm.tradeStartYear.get) match {
+          case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+          case true => dateNotInFuture(dateForm.tradeStartDay.get, dateForm.tradeStartMonth.get, dateForm.tradeStartYear.get) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
+          }
+        }
+      }
+    }
+
+    Constraint("constraints.trade_start_date")({
+      dateForm: TradeStartDateModel =>
+        dateForm.hasTradeStartDate match {
+          case Constants.StandardRadioButtonNoValue => allDatesEmpty(dateForm.tradeStartDay,
+            dateForm.tradeStartMonth, dateForm.tradeStartYear) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
+          }
+          case Constants.StandardRadioButtonYesValue => validateYes(dateForm)
+        }
+    })
+  }
+
+
   def tenYearPlanDescValidation: Constraint[TenYearPlanModel] = {
 
     def validateFields(hasPlan: String, planDesc: Option[String]): Boolean = {
@@ -136,7 +168,7 @@ object Validation {
   }
 
   def mandatoryAddressLineCheck: Mapping[String] = {
-    val validAddressLine = """[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,26}""".r
+    val validAddressLine = """[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,34}""".r
     val addresssLineCheckConstraint: Constraint[String] =
       Constraint("contraints.mandatoryAddressLine")({
         text =>
@@ -178,7 +210,7 @@ object Validation {
   }
 
   def optionalAddressLineCheck: Mapping[String] = {
-    val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,26}""".r
+    val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,34}""".r
     val addresssLineCheckConstraint: Constraint[String] =
       Constraint("contraints.optionalAddressLine")({
         text =>
@@ -192,7 +224,7 @@ object Validation {
   }
 
   def addressLineFourCheck: Mapping[String] = {
-    val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,17}""".r
+    val validAddressLine = """^$|[a-zA-Z0-9,.\(\)/&'"\-]{1}[a-zA-Z0-9, .\(\)/&'"\-]{0,34}""".r
     val addressLineFourCheckConstraint: Constraint[String] =
       Constraint("contraints.addressLineFour")({
         text =>
@@ -292,6 +324,17 @@ object Validation {
       addressForm: AddressModel =>
         if (addressForm.countryCode == "GB" && addressForm.postcode.fold(true)( _.isEmpty)) {
           Invalid(Seq(ValidationError(Messages("validation.error.countrypostcode"))))
+        } else {
+          Valid
+        }
+    })
+  }
+
+  def schemeTypesConstraint: Constraint[SchemeTypesModel] = {
+    Constraint("constraints.schemeSelection")({
+      schemeTypeForm =>
+        if (schemeTypeForm.equals(SchemeTypesModel(false,false,false,false))) {
+          Invalid(Seq(ValidationError(Messages("validation.error.schemeSelection"))))
         } else {
           Valid
         }
@@ -407,6 +450,10 @@ object Validation {
     }
   }
 
+  def dateSinceOtherDate(day: Int, month: Int, year: Int, otherDate:Date): Boolean = {
+    constructDate(day, month, year).compareTo(otherDate) >= 0
+  }
+
   def dateNotInFuture(day: Int, month: Int, year: Int): Boolean = {
     !constructDate(day, month, year).after(DateTime.now.toDate)
   }
@@ -500,5 +547,3 @@ object Validation {
     text().verifying(yearCheckConstraint)
   }
 }
-
-

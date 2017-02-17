@@ -2,7 +2,7 @@
   fieldName: String,
   questionText: Option[String],
   questionHint : String,
-  args: (Symbol,Any)*)(implicit lang: play.api.i18n.Lang)
+  args: (Symbol,Any)*)(implicit messages: Messages)
 
 @import uk.gov.hmrc.play.mappers.DateFields._
 @import play.api.i18n._

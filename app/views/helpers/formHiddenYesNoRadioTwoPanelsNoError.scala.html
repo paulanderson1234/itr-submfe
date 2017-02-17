@@ -4,7 +4,7 @@
 @(form: Form[_], fieldName: String, questionText:String, content:Html, helpText:Option[String] = None,
 legendClass:Option[String] = None, contentNo:Option[Html], helpTextPanel1:Option[String] = None,
 helpTextPanel2:Option[String] = None, headerTextPanel1:Option[String] = None,
-headerTextPanel2:Option[String] = None)(implicit lang: play.api.i18n.Lang)
+headerTextPanel2:Option[String] = None)(implicit messages: Messages)
 
 <div class="form-group" data-hidden="hidden" data-hidden-no="hidden-no">
 

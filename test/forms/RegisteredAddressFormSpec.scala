@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,16 @@
 package forms
 
 import models.RegisteredAddressModel
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class RegisteredAddressFormSpec extends UnitSpec {
+class RegisteredAddressFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     RegisteredAddressForm.registeredAddressForm.bindFromRequest()(request).fold(
@@ -46,7 +48,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if lower case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tf1 3ny"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")
@@ -58,7 +60,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if in mixed case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tF1 3Ny"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")
@@ -70,7 +72,7 @@ class RegisteredAddressFormSpec extends UnitSpec {
   "The Registered Address Form" should {
     "Not return an error if mixed case" in {
       val request = FakeRequest("GET", "/").withFormUrlEncodedBody(
-        "postcode" -> "tF1 3nY"
+        "postcode" -> "AA1 1AA"
       )
       bindWithError(request) match {
         case Some(err) => fail("Validation error not expected")

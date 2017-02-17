@@ -1,6 +1,6 @@
 @import views.html.helpers._
 
-@()(implicit request: Request[_])
+@()(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("session.timeout.message"), userLoggedIn = false) {
 

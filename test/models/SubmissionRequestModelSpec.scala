@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class SubmissionRequestModelSpec extends UnitSpec {
 
-  val testJson = """{"contactDetails":{"forename":"gary","surname":"hull","telephoneNumber":"01952 256555","email":"fred@fred.com"},"yourCompanyNeedModel":{"needAAorCS":"AA"}}"""
+  val testJson = """{"contactDetails":{"forename":"first","surname":"last","telephoneNumber":"07000 111222","email":"test@test.com"},"yourCompanyNeedModel":{"needAAorCS":"AA"}}"""
 
   // form json to model - unapply
   "call unapply successfully to create as Json" in {
     implicit val formats = Json.format[SubmissionRequest]
-    val cd = ContactDetailsModel("gary", "hull", Some("01952 256555"), None , "fred@fred.com")
+    val cd = ContactDetailsModel("first", "last", Some("07000 111222"), None , "test@test.com")
     val yd = YourCompanyNeedModel("AA")
     val sub = new SubmissionRequest(cd, yd)
 
@@ -41,11 +41,10 @@ class SubmissionRequestModelSpec extends UnitSpec {
 
     val request =  Json.parse(testJson.toString).as[SubmissionRequest]
 
-    request.contactDetails.email  shouldBe "fred@fred.com"
-    request.contactDetails.telephoneNumber.get  shouldBe "01952 256555"
-    request.contactDetails.forename  shouldBe "gary"
-    request.contactDetails.surname  shouldBe "hull"
+    request.contactDetails.email  shouldBe "test@test.com"
+    request.contactDetails.telephoneNumber.get  shouldBe "07000 111222"
+    request.contactDetails.forename  shouldBe "first"
+    request.contactDetails.surname  shouldBe "last"
     request.yourCompanyNeedModel.needAAorCS  shouldBe "AA"
   }
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,14 @@ package forms
 
 import models.{DateOfIncorporationModel}
 import forms.DateOfIncorporationForm._
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
+import play.api.i18n.Messages.Implicits._
 
 
-class DateOfIncorporationFormSpec extends UnitSpec {
+class DateOfIncorporationFormSpec extends UnitSpec with OneAppPerSuite{
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,6 +96,34 @@ trait CheckAnswersSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(tenYearPlanModel))
     when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(subsidiariesModel))
+  }
+
+  def seisInvestmentSetup(proposedInvestmentModel: Option[ProposedInvestmentModel] = None,
+                          subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel] = None,
+                          subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(proposedInvestmentModel))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](Matchers.eq(KeystoreKeys.subsidiariesSpendingInvestment))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subsidiariesSpendingInvestmentModel))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](Matchers.eq(KeystoreKeys.subsidiariesNinetyOwned))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subsidiariesNinetyOwnedModel))
+  }
+
+  def seisCompanyDetailsSetup(registeredAddressModel: Option[RegisteredAddressModel] = None,
+                              dateOfIncorporationModel: Option[DateOfIncorporationModel] = None,
+                              natureOfBusinessModel: Option[NatureOfBusinessModel] = None,
+                              subsidiariesModel: Option[SubsidiariesModel] = None,
+                              tradeStartDateModel: Option[TradeStartDateModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[RegisteredAddressModel](Matchers.eq(KeystoreKeys.registeredAddress))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(registeredAddressModel))
+    when(mockS4lConnector.fetchAndGetFormData[DateOfIncorporationModel](Matchers.eq(KeystoreKeys.dateOfIncorporation))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(dateOfIncorporationModel))
+    when(mockS4lConnector.fetchAndGetFormData[NatureOfBusinessModel](Matchers.eq(KeystoreKeys.natureOfBusiness))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(natureOfBusinessModel))
+    when(mockS4lConnector.fetchAndGetFormData[SubsidiariesModel](Matchers.eq(KeystoreKeys.subsidiaries))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(subsidiariesModel))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
   }
 
 }

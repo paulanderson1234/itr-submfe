@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 package forms
 
 import models.ProposedInvestmentModel
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import forms.ProposedInvestmentForm._
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 
-class ProposedInvestmentFormSpec extends UnitSpec {
+class ProposedInvestmentFormSpec extends UnitSpec with OneAppPerSuite{
 
   "Creating a form using an empty model" should {
     lazy val form = proposedInvestmentForm

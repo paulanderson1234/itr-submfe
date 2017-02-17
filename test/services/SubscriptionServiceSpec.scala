@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,9 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndA
     override val s4lConnector = mock[S4LConnector]
   }
 
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
-  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext)
+  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext, internalId)
 
   def setupMockedResponse(data: Option[HttpResponse] = None): OngoingStubbing[Future[Option[HttpResponse]]] = {
     when(TargetSubscriptionService.subscriptionConnector.getSubscriptionDetails(Matchers.eq(validTavcReference))(Matchers.any()))

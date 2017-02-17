@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,14 @@ import java.time.ZoneId
 import java.util.Date
 
 import models.PreviousSchemeModel
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import forms.PreviousSchemeForm._
 import common.Constants
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 
-class PreviousSchemeFormSpec extends UnitSpec {
+class PreviousSchemeFormSpec extends UnitSpec with OneAppPerSuite{
 
   val maxAllowableAmount: Int = 999999999
   val minAllowableAmount: Int = 1
@@ -303,7 +305,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
           form.errors.head.key shouldBe "schemeTypeDesc"
         }
         "associate the correct error message to the error" in {
-          form.error("schemeTypeDesc").get.message shouldBe Messages("error.required")
+          Messages(form.error("schemeTypeDesc").get.message) shouldBe Messages("error.required")
         }
       }
     }
@@ -403,7 +405,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
           form.errors.head.key shouldBe "investmentDay"
         }
         "associate the correct error message to the error" in {
-          form.error("investmentDay").get.message shouldBe Messages("error.number")
+          Messages(form.error("investmentDay").get.message) shouldBe Messages("error.number")
         }
       }
     }
@@ -428,7 +430,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
           form.errors.head.key shouldBe "investmentMonth"
         }
         "associate the correct error message to the error" in {
-          form.error("investmentMonth").get.message shouldBe Messages("error.number")
+          Messages(form.error("investmentMonth").get.message) shouldBe Messages("error.number")
         }
       }
     }
@@ -453,7 +455,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
           form.errors.head.key shouldBe "investmentYear"
         }
         "associate the correct error message to the error" in {
-          form.error("investmentYear").get.message shouldBe Messages("error.number")
+          Messages(form.error("investmentYear").get.message) shouldBe Messages("error.number")
         }
       }
     }
@@ -748,7 +750,7 @@ class PreviousSchemeFormSpec extends UnitSpec {
           form.errors.head.key shouldBe "otherSchemeName"
         }
         "associate the correct error message to the error" in {
-          form.error("otherSchemeName").get.message shouldBe Messages("error.required")
+          Messages(form.error("otherSchemeName").get.message) shouldBe Messages("error.required")
         }
       }
     }

@@ -1,0 +1,39 @@
+@import models.TradeStartDateModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{externalLink, backButtonWithProgress, errorSummary,formHiddenYesNoRadioNoError, formInlineDateInput}
+
+
+@(tradeStartDateForm: Form[TradeStartDateModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.seis.companyDetails.tradeStartDate.title")) {
+
+    @backButtonWithProgress(controllers.seis.routes.DateOfIncorporationController.show().url, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(tradeStartDateForm, "trade-start-date", "tradeStartDay")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.seis.companyDetails.tradeStartDate.heading")</h1>
+
+    <div class="form-hint">
+        <p id="description-two" class="lede">@Messages("page.seis.companyDetails.text")</p>
+    </div>
+
+    @form(action = controllers.seis.routes.TradeStartDateController.submit()) {
+
+
+    @formHiddenYesNoRadioNoError(
+        tradeStartDateForm,
+        "hasTradeStartDate",
+        Messages("page.seis.companyDetails.TradeStartDate.question.hint"),
+        formInlineDateInput(tradeStartDateForm,"tradeStart",Some(Messages("page.seis.companyDetails.TradeStartDate.question.hint")),
+        false, Some(Messages("common.date.hint.example")), None),
+        None,
+        Some("visuallyhidden")
+    )
+
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+    </div>
+
+    }
+}

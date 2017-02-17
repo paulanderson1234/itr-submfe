@@ -1,0 +1,29 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{externalLink, backButton}
+
+@()(implicit request: Request[_], messages: Messages)
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.seis.companyDetails.tradeStartDateError.title"), bodyClasses = None) {
+
+@backButton(controllers.seis.routes.TradeStartDateController.show().url)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div id="main">
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.seis.companyDetails.tradeStartDateError.heading")</h1>
+        </div>
+
+        <div class="form-group">
+            <p id="trading-over-two-years">@Messages("page.seis.companyDetails.tradeStartDateError.trading.over.two.years")</p>
+            <p id="incorrect-info">@Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info")
+                <a href="@controllers.seis.routes.TradeStartDateController.show().url" class="link-style" id="change-answers">
+                @Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers")</a>.</p>
+        </div>
+
+
+
+    </div>
+</div>
+}

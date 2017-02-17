@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package auth
 import org.joda.time.DateTime
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 
-case class TAVCUser(authContext: AuthContext) {
+case class TAVCUser(authContext: AuthContext, internalId: String) {
   def previouslyLoggedInAt: Option[DateTime] = authContext.user.previouslyLoggedInAt
+  def userInternalId: String = internalId
 }

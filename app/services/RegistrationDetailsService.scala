@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,25 +28,25 @@ import scala.concurrent.{ExecutionContext, Future}
 
 object RegistrationDetailsService extends RegistrationDetailsService {
   override lazy val submissionConnector = SubmissionConnector
-  override lazy val s4LConnector = S4LConnector
+  override lazy val s4lConnector = S4LConnector
   override lazy val subscriptionService = SubscriptionService
 }
 
 trait RegistrationDetailsService {
 
   val submissionConnector: SubmissionConnector
-  val s4LConnector: S4LConnector
+  val s4lConnector: S4LConnector
   val subscriptionService: SubscriptionService
 
   def getRegistrationDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser, ec: ExecutionContext): Future[Option[RegistrationDetailsModel]] = {
-    s4LConnector.fetchAndGetFormData[RegistrationDetailsModel](KeystoreKeys.registrationDetails).flatMap[Option[RegistrationDetailsModel]] {
+    s4lConnector.fetchAndGetFormData[RegistrationDetailsModel](KeystoreKeys.registrationDetails).flatMap[Option[RegistrationDetailsModel]] {
       case Some(registrationDetailsModel) => Future.successful(Some(registrationDetailsModel))
       case None => subscriptionService.getEtmpSubscriptionDetails(tavcRef).flatMap[Option[RegistrationDetailsModel]] {
         case Some(subscriptionTypeModel) => submissionConnector.getRegistrationDetails(subscriptionTypeModel.safeId).map {
           registrationDetailsModel =>
             registrationDetailsModel.json.validate[RegistrationDetailsModel](ETMPRegistrationDetailsModel.readsRDM) match {
               case data: JsSuccess[RegistrationDetailsModel] => {
-                s4LConnector.saveFormData(KeystoreKeys.registrationDetails, data.value)
+                s4lConnector.saveFormData(KeystoreKeys.registrationDetails, data.value)
                 Some(data.value)
               }
               case e: JsError => {

@@ -1,0 +1,33 @@
+@import models.CommercialSaleModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formHiddenYesNoRadioNoError, formInlineDateInput}
+
+@(commercialSaleForm: Form[CommercialSaleModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.CommercialSale.title")) {
+
+@backButtonWithProgress(controllers.eis.routes.DateOfIncorporationController.show().url, Messages("common.section.progress.company.details.one"))
+
+@errorSummary(commercialSaleForm, "commercial-sale", "commercialSaleDay")
+
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.CommercialSale.heading")</h1>
+
+@form(action = controllers.eis.routes.CommercialSaleController.submit()) {
+
+@formHiddenYesNoRadioNoError(
+    commercialSaleForm,
+    "hasCommercialSale",
+    Messages("page.companyDetails.CommercialSale.question.hint"),
+    formInlineDateInput(commercialSaleForm,"commercialSale",Some(Messages("page.companyDetails.CommercialSale.question.hint")),
+        false, Some(Messages("common.date.hint.example")), None),
+    None,
+    Some("visuallyhidden")
+    )
+
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+</div>
+
+}
+}

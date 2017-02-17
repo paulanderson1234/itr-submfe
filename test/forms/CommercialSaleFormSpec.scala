@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package forms
 
 import models.CommercialSaleModel
 import forms.CommercialSaleForm._
+import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
-
 import common.Constants
+import play.api.i18n.Messages.Implicits._
 
 
-class CommercialSaleFormSpec extends UnitSpec {
+class CommercialSaleFormSpec extends UnitSpec with OneAppPerSuite {
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,20 +26,22 @@ import models.registration.RegistrationDetailsModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
-import uk.gov.hmrc.play.test.{UnitSpec, WithFakeApplication}
+import uk.gov.hmrc.play.test.{UnitSpec}
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with WithFakeApplication {
+class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockS4LConnector = mock[S4LConnector]
   val mockSubscriptionService = mock[SubscriptionService]
   val tavcRef = "XATAVC000123456"
+  val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
 
   val minimumRegResponse = Json.parse(
     """
@@ -70,11 +72,11 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
   val failedResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
 
   implicit val hc = HeaderCarrier()
-  implicit val user = TAVCUser(allowedAuthContext)
+  implicit val user = TAVCUser(allowedAuthContext, internalId)
 
   object TestService extends RegistrationDetailsService {
     override lazy val submissionConnector = mockSubmissionConnector
-    override lazy val s4LConnector = mockS4LConnector
+    override lazy val s4lConnector = mockS4LConnector
     override lazy val subscriptionService = mockSubscriptionService
   }
 
@@ -99,7 +101,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with Wit
     }
 
     "Use the correct save 4 later connector" in {
-      RegistrationDetailsService.s4LConnector shouldBe S4LConnector
+      RegistrationDetailsService.s4lConnector shouldBe S4LConnector
     }
 
   }

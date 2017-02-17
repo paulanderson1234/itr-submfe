@@ -1,0 +1,36 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{backButton}
+@import common.Constants._
+
+@(kiModel : KiProcessingModel)(implicit request: Request[_], messages: Messages)
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.investment.LifetimeAllowanceExceeded.title"), bodyClasses = None) {
+
+@backButton(controllers.eis.routes.ProposedInvestmentController.show().toString)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div id="main">
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.investment.LifetimeAllowanceExceeded.heading")</h1>
+        </div>
+
+        <div class="form-group">
+            <span id="lifetimeExceedReason">
+                @if(kiModel.isKi){
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
+                }else{
+                     @Messages("page.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitNotKiToString)
+                }
+
+            </span>
+        </div>
+
+        <div>
+            <a class="link-style" id="backInvestmentLink" href="@controllers.eis.routes.ReviewPreviousSchemesController.show()">@Messages("page.investment.LifetimeAllowanceExceeded.link")</a>
+        </div>
+    </div>
+</div>
+}
+

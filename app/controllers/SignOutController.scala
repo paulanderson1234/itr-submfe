@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package controllers
 
-import auth.AuthorisedAndEnrolledForTAVC
+import auth.{ALLFLOWS, AuthorisedAndEnrolledForTAVC}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.EnrolmentConnector
+import connectors.{EnrolmentConnector, S4LConnector}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.signout.SignedOut
+import play.api.i18n.Messages.Implicits._
+import play.api.Play.current
 
 import scala.concurrent.Future
 
@@ -29,9 +31,12 @@ object SignOutController extends SignOutController {
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
+  override lazy val s4lConnector = S4LConnector
 }
 
 trait SignOutController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+
+  override val acceptedFlows = Seq(Seq(ALLFLOWS))
 
   def signout(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(s"${applicationConfig.ggSignOutUrl}?continue=${applicationConfig.signOutPageUrl}"))

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import auth._
 import builders.SessionBuilder
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Action, AnyContent, Result}
 import play.api.test.FakeRequest
+import play.api.test.FakeHeaders
 import uk.gov.hmrc.play.http.SessionKeys
 
 import scala.concurrent.Future
@@ -91,4 +92,3 @@ trait FakeRequestHelper{
   }
 
 }
-

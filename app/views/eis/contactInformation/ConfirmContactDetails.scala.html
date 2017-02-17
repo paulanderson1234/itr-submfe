@@ -1,0 +1,78 @@
+@import models.ConfirmCorrespondAddressModel
+@import common.Constants
+@import utils.CountriesHelper
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress, hiddenField}
+
+@(confirmContactDetailsForm: Form[ConfirmContactDetailsModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.contactInformation.ConfirmContactDetails.title")){
+
+@backButtonWithProgress(controllers.eis.routes.InvestmentGrowController.show().toString, Messages("common.section.progress.company.details.four"))
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        @errorSummary(confirmContactDetailsForm, "confirm-contact-details", "contactDetailsUsed")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ConfirmContactDetails.heading")</h1>
+
+        <div id="storedContactDetailsDiv" class="form-group">
+
+            <span id="name" class="h4-heading form-group">@confirmContactDetailsForm("contactDetails.forename").value @confirmContactDetailsForm("contactDetails.surname").value</span>
+            <span id="telephoneNumber" class="form-group">@confirmContactDetailsForm("contactDetails.telephoneNumber").value</span>
+            @if(confirmContactDetailsForm("contactDetails.mobileNumber").value.isDefined){
+            <span id="mobileNumber" class="form-group">@confirmContactDetailsForm("contactDetails.mobileNumber").value</span>
+            }
+            <span id="email" class="form-group">@confirmContactDetailsForm("contactDetails.email").value</span>
+        </div>
+
+        @form(action = controllers.eis.routes.ConfirmContactDetailsController.submit()) {
+        <div id="radioContactDetailsDiv">
+            <div class="form-group">
+                @formInputRadioGroup(
+                field = confirmContactDetailsForm("contactDetailsUse"),
+                Seq(
+                Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+                Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+                '_legend -> Messages("page.contactInformation.ConfirmContactDetails.heading"),
+                '_legendClass -> "visuallyhidden",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_groupClass -> "inline"
+                )
+            </div>
+        </div>
+
+        <div>
+            @hiddenField(
+            confirmContactDetailsForm("contactDetails.forename"),
+            'id -> "contactDetails.forename"
+            )
+            @hiddenField(
+            confirmContactDetailsForm("contactDetails.surname"),
+            'id -> "contactDetails.surname"
+            )
+            @hiddenField(
+            confirmContactDetailsForm("contactDetails.telephoneNumber"),
+            'id -> "contactDetails.telephoneNumber"
+            )
+            @hiddenField(
+            confirmContactDetailsForm("contactDetails.mobileNumber"),
+            'id -> "contactDetails.mobileNumber"
+            )
+            @hiddenField(
+            confirmContactDetailsForm("contactDetails.email"),
+            'id -> "contactDetails.email"
+            )
+        </div>
+
+        <div class="form-group" id="contactDetailsButtonDiv">
+            <button class="btn button" id="next" type="submit">@Messages("common.button.snc")</button>
+        </div>
+        }
+
+    </div>
+</div>
+
+}

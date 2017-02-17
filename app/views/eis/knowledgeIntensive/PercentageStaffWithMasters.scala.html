@@ -1,0 +1,35 @@
+@import models.PercentageStaffWithMastersModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, formHiddenYesNoRadioNoError, formHint}
+
+@(percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.knowledgeIntensive.PercentageStaffWithMasters.title")) {
+
+@backButtonWithProgress(controllers.eis.routes.OperatingCostsController.show().toString, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(percentageStaffWithMastersForm, "percentage-of-staff-with-masters", "staffWithMasters")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.knowledgeIntensive.PercentageStaffWithMasters.heading")</h1>
+
+    <p class="form-hint" id="condition-for-KI">@Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint")</p>
+
+    @form(action = controllers.eis.routes.PercentageStaffWithMastersController.submit()) {
+
+        <div class="form-group">
+            @formHiddenYesNoRadioNoError(
+            percentageStaffWithMastersForm,
+            "staffWithMasters",
+            Messages("page.knowledgeIntensive.PercentageStaffWithMasters.hint"),
+            formHint("yes-hint", Messages("page.percentageStaffWithMasters.yes.hint")),
+            None,
+            Some("visuallyhidden")
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}

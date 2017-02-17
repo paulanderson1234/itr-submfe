@@ -1,0 +1,82 @@
+@import models.submission.SubmissionResponse
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.backButton
+@import config.FrontendAppConfig
+@import controllers.feedback.routes
+
+@(submissionResponseModel: SubmissionResponse)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.checkAndSubmit.acknowledgement.title"), bodyClasses = None) {
+
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <div class="form-group">
+            <div class="transaction-banner--complete">
+                <span id="submission-confirmation" class="heading-large">@Messages("page.checkAndSubmit.acknowledgement.submissionConfirmation")</span>
+                <p id="ref-number-heading">@Messages("page.checkAndSubmit.acknowledgement.refNumberHeading")</p>
+                <span id="ref-number" class="bold-medium">@submissionResponseModel.formBundleNumber</span>
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <strong id ="legal-not-complete" class="bold-medium">
+                <span class="exclamation"></span>
+                @Messages("page.checkAndSubmit.acknowledgement.application.not.complete")
+            </strong>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <h2 id= "supporting-docs" class="heading-medium">@Messages("page.checkAndSubmit.acknowledgement.supporting.docs.heading")</h2>
+
+                <p id="remember-to-include">@Messages("page.checkAndSubmit.acknowledgement.review")</p>
+
+                <ul class="list list-bullet">
+                    <li id="business-plan">@Messages("page.checkAndSubmit.acknowledgement.doc.one")</li>
+                    <li id="company-accounts">@Messages("page.checkAndSubmit.acknowledgement.doc.two")</li>
+                    <li id="shareholder-agree">@Messages("page.checkAndSubmit.acknowledgement.doc.three")</li>
+                    <li id="memorandum-articles">@Messages("page.checkAndSubmit.acknowledgement.doc.four")</li>
+                    <li id="prospectus-docs">@Messages("page.checkAndSubmit.acknowledgement.doc.five")</li>
+                </ul>
+        </div>
+
+        <div class="form-group">
+            <h2 id= "email-docs" class="heading-medium">@Messages("page.checkAndSubmit.acknowledgement.email.docs.heading")</h2>
+
+                <p id="email-to">
+                    <span id="email-docs-to">@Messages("page.checkAndSubmit.acknowledgement.emailTo")</span>
+                    <span> <a id="email-to-ref" href="mailto:enterprise.centre@@hmrc.gsi.gov.uk">enterprise.centre@@hmrc.gsi.gov.uk </a>.</span>
+                    <span id="email-docs-include">@Messages("page.checkAndSubmit.acknowledgement.email.include")</span>
+                </p>
+
+                <ul class="list list-bullet">
+                    <li id="email-name">@Messages("page.checkAndSubmit.acknowledgement.email.one")</li>
+                    <li id="email-utr">@Messages("page.checkAndSubmit.acknowledgement.email.two")</li>
+                    <li id="email-whitelister">@Messages("page.checkAndSubmit.acknowledgement.email.three")</li>
+                </ul>
+                <p> <span id="email-docs-size">@Messages("page.checkAndSubmit.acknowledgement.email.size")</span></p>
+        </div>
+
+        <div class="form-group">
+            <h2 id="post-docs" class="heading-medium">@Messages("page.checkAndSubmit.acknowledgement.post.docs.heading")</h2>
+                <p id="post-to">@Messages("page.checkAndSubmit.acknowledgement.post.to")</p>
+
+        </div>
+
+        <div class="form-group">
+            <h2 id="waiting-time" class="heading-medium">@Messages("page.checkAndSubmit.acknowledgement.waitingTime.heading")</h2>
+                <p id="course-of-action">@Messages("page.checkAndSubmit.acknowledgement.courseOfAction")</p>
+        </div>
+        <div class="form-group">
+            <a id="submit" class="button" href="@controllers.feedback.routes.FeedbackController.show().url">@Messages("page.checkAndSubmit.acknowledgement.button.confirm")</a>
+        </div>
+    </div>
+</div>
+
+}

@@ -1,0 +1,79 @@
+@import models.ContactDetailsModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButtonWithProgress, input, errorSummary}
+
+@(contactDetailsForm: Form[ContactDetailsModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.contactInformation.contactDetails.title")) {
+
+@backButtonWithProgress(controllers.eis.routes.ConfirmContactDetailsController.show().url, Messages("common.section.progress.company.details.four"))
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        @errorSummary(contactDetailsForm, "contact-details")
+
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.contactDetails.heading")</h1>
+
+        @form(action = controllers.eis.routes.ContactDetailsController.submit()) {
+        <div class="form-group">
+
+            @input(
+            contactDetailsForm("forename"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-forename",
+            '_label -> Messages("page.contactInformation.contactDetails.forename.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "forename"
+            )
+
+            @input(
+            contactDetailsForm("surname"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-surname",
+            '_label -> Messages("page.contactInformation.contactDetails.surname.label"),
+            '_maxlength -> "35",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "surname"
+            )
+
+            @input(
+            contactDetailsForm("telephoneNumber"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-telephoneNumber",
+            '_label -> Messages("page.contactInformation.contactDetails.phoneNumber.label"),
+            '_maxlength -> "24",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "phoneNumber"
+            )
+
+            @input(
+            contactDetailsForm("mobileNumber"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-mobileNumber",
+            '_label -> Messages("page.contactInformation.contactDetails.mobileNumber.label"),
+            '_maxlength -> "24",
+            '_inputClass -> "input--medium input--cleared",
+            'id -> "mobileNumber"
+            )
+
+            @input(
+            contactDetailsForm("email"),
+            '_divClass -> "form-label",
+            '_labelId -> "label-email",
+            '_label -> Messages("page.contactInformation.contactDetails.email.label"),
+            '_inputClass -> "input--medium input--cleared",
+            '_maxlength -> "129",
+            'id -> "email"
+            )
+
+        </div>
+        <div class="form-group">
+            <button class="btn button" id="next">@Messages("common.button.snc")</button>
+        </div>
+        }
+    </div>
+</div>
+
+}

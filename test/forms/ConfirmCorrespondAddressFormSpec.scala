@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,16 @@ package forms
 
 import common.Constants
 import models.{AddressModel, ConfirmCorrespondAddressModel}
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsFormUrlEncoded
 import play.api.test.FakeRequest
 import uk.gov.hmrc.play.test.UnitSpec
+import play.api.i18n.Messages.Implicits._
 
-class ConfirmCorrespondAddressFormSpec extends UnitSpec {
+class ConfirmCorrespondAddressFormSpec extends UnitSpec with OneAppPerSuite{
 
   private def bindSuccess(request: FakeRequest[AnyContentAsFormUrlEncoded]) = {
     ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.bindFromRequest()(request).fold(
@@ -57,8 +59,8 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
     )
   }
 
-  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("TF1 5NY"), "GB")
-  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes","address":{"addressline1":"Line 1","addressline2":"Line 2","addressline3":"Line 3","addressline4":"Line 4","postcode":"TF1 5NY","countryCode":"GB"}}"""
+  val address = AddressModel("Line 1", "Line 2", Some("Line 3"), Some("Line 4"), Some("AA1 1AA"), "GB")
+  val confirmCorrespondAddressJson = """{"contactAddressUse":"Yes","address":{"addressline1":"Line 1","addressline2":"Line 2","addressline3":"Line 3","addressline4":"Line 4","postcode":"AA1 1AA","countryCode":"GB"}}"""
   val confirmCorrespondAddressModel = ConfirmCorrespondAddressModel(Constants.StandardRadioButtonYesValue, address)
 
   "The Confirm Correspondence Address Form" should {
@@ -69,13 +71,13 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
         "address.addressline2" -> "Line 2",
         "address.addressline3" -> "Line 3",
         "address.addressline4" -> "line 4",
-        "address.postcode" -> "TF1 3NY",
+        "address.postcode" -> "AA1 1AA",
         "address.countryCode" -> "GB"
       )
       bindWithError(request) match {
         case Some(err) => {
           err.key shouldBe "contactAddressUse"
-          err.message shouldBe Messages("error.required")
+          Messages(err.message) shouldBe Messages("error.required")
           err.args shouldBe Array()
         }
         case _ => {
@@ -93,7 +95,7 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       "address.addressline2" -> "Line 2",
       "address.addressline3" -> "Line 3",
       "address.addressline4" -> "line 4",
-      "address.postcode" -> "TF1 3NY",
+      "address.postcode" -> "AA1 1AA",
       "address.countryCode" -> "GB"
       )
       bindWithError(request) match {
@@ -118,7 +120,6 @@ class ConfirmCorrespondAddressFormSpec extends UnitSpec {
       implicit val formats = Json.format[ConfirmCorrespondAddressModel]
       val confirmCorrespondAddressForm = ConfirmCorrespondAddressForm.confirmCorrespondAddressForm.fill(confirmCorrespondAddressModel)
       val formJson = Json.toJson(confirmCorrespondAddressForm.get).toString()
-      println(formJson)
       formJson shouldBe confirmCorrespondAddressJson
     }
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package testOnly.controllers
 import auth.MockAuthConnector
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.helpers.ControllerSpec
+import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -27,18 +27,18 @@ import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
-class ClearCacheControllerSpec extends ControllerSpec {
+class ClearCacheControllerSpec extends BaseSpec {
 
   object TestController extends ClearCacheController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
-    override lazy val s4LConnector = mockS4lConnector
+    override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
   }
 
   "ClearCacheController" should {
     "Use the correct s4l connector" in {
-      ClearCacheController.s4LConnector shouldBe S4LConnector
+      ClearCacheController.s4lConnector shouldBe S4LConnector
     }
     "Use the correct auth connector" in {
       ClearCacheController.authConnector shouldBe FrontendAuthConnector

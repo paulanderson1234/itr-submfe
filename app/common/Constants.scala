@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 HM Revenue & Customs
+ * Copyright 2017 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,11 @@ trait Constants {
   val KI10Percent : Int = 10
   val KI15Percent : Int = 15
 
+
   val lifetimeLogicLimitKi : Int = 20000000
   val lifetimeLogicLimitNotKi : Int = 12000000
+  val lifetimeLogicLimitKiToString : String = "£20"
+  val lifetimeLogicLimitNotKiToString : String = "£12"
 
   val schemeTypeEis = "EIS"
   val schemeTypeSeis = "SEIS"
@@ -54,4 +57,5 @@ trait Constants {
   val enrolmentOrgKey = "HMRC-TAVC-ORG"
   val enrolmentTavcRefKey = "TAVCRef"
 
+  val standardIgnoreYearValue = "9999-12-31"
 }
