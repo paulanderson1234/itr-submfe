@@ -49,6 +49,8 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
   }
 
+  val expectedTotalInvestmentAmount = previousSchemeVectorList.foldLeft(0)(_ + _.investmentAmount)
+
 
   "The Review Previous Schemes Spec page" should {
 
@@ -72,16 +74,21 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
         Messages("page.previousInvestment.reviewPreviousSchemes.scheme")
       reviewSchemesTableHead.select("tr").get(0).getElementById("date-table-heading").text() shouldBe
         Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")
-      reviewSchemesTableHead.select("tr").get(0).getElementById("amount-table-heading").text() shouldBe
-        Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmount")
+      reviewSchemesTableHead.select("tr").get(0).getElementById("amount-raised-table-heading").text() shouldBe
+        Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmountRaised")
+      reviewSchemesTableHead.select("tr").get(0).getElementById("amount-spent-table-heading").text() shouldBe
+        Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmountSpent")
       //body
       for((previousScheme, index) <- previousSchemeVectorList.zipWithIndex) {
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-type-$index").text() shouldBe
-          previousScheme.schemeTypeDesc
+          PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc, previousScheme.otherSchemeName)
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-date-$index").text() shouldBe
           PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)
-        reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-amount-$index").text() shouldBe
+        reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-amount-raised-$index").text() shouldBe
           PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)
+        reviewSchemesTableBody.select("tr").get(index).getElementById(s"scheme-amount-spent-$index").text() shouldBe {
+          if(previousScheme.investmentSpent.isDefined) PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentSpent.get) else "N/A"
+        }
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"change-$index").text() shouldBe
           Messages("common.base.change")
         reviewSchemesTableBody.select("tr").get(index).getElementById(s"change-$index").getElementById(s"change-ref-$index").attr("href")shouldBe
@@ -90,6 +97,12 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
           Messages("common.base.remove")
       }
 
+      reviewSchemesTableBody.select("tr").get(previousSchemeVectorList.size).getElementById("total-investment-heading").text() shouldBe
+        Messages("page.previousInvestment.reviewPreviousSchemes.totalInvestment")
+      reviewSchemesTableBody.select("tr").get(previousSchemeVectorList.size).getElementById("total-investment-amount").text() shouldBe
+        PreviousSchemeModel.getAmountAsFormattedString(expectedTotalInvestmentAmount)
+      reviewSchemesTableBody.select("tr").get(previousSchemeVectorList.size + 1).getElementById("add-scheme").attr("href") shouldBe
+        controllers.eis.routes.ReviewPreviousSchemesController.add.toString
       document.body.getElementById("next").text() shouldEqual Messages("common.button.snc")
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
     }

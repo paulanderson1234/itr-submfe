@@ -109,7 +109,7 @@ class PreviousSchemeSpec extends ViewSpec {
       document.getElementById("schemeTypeDesc-sitrLabel").text() shouldBe Messages("page.previousInvestment.schemeType.sitr")
       document.getElementById("schemeTypeDesc-vctLabel").text() shouldBe Messages("page.previousInvestment.schemeType.vct")
       document.getElementById("schemeTypeDesc-otherLabel").text() shouldBe Messages("page.previousInvestment.schemeType.other")
-      document.getElementById("label-amount").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmount")
+      document.getElementById("label-amount").text() shouldBe Messages("page.previousInvestment.reviewPreviousSchemes.investmentAmountRaised")
 
       document.getElementById("label-amount-spent").text() shouldBe Messages("page.previousInvestment.amountSpent.label")
       document.getElementById("label-other-scheme").text() shouldBe Messages("page.investment.PreviousScheme.otherSchemeName.label")
