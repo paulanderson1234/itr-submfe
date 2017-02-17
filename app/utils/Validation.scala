@@ -35,7 +35,7 @@ import play.api.Play.current
 
 object Validation {
 
-  val EmailThresholdLength = 133
+  val EmailThresholdLength = 132
 
   // use new Date() to get the date now
   lazy val sf = new SimpleDateFormat("dd/MM/yyyy")
@@ -299,7 +299,7 @@ object Validation {
       Constraint("constraints.email")({
         text =>
           val error = text match {
-            case validEmailLine() if text.length < EmailThresholdLength => Nil
+            case validEmailLine() if text.length <= EmailThresholdLength => Nil
             case _ => Seq(ValidationError(Messages("validation.error.email")))
           }
           if (error.isEmpty) Valid else Invalid(error)
