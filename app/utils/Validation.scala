@@ -35,6 +35,8 @@ import play.api.Play.current
 
 object Validation {
 
+  val EmailThresholdLength = 133
+
   // use new Date() to get the date now
   lazy val sf = new SimpleDateFormat("dd/MM/yyyy")
   lazy val datePageFormat = new SimpleDateFormat("dd MMMM yyyy")
@@ -250,12 +252,12 @@ object Validation {
     text().verifying(postcodeCheckConstraint)
   }
   def countryCodeCheck: Mapping[String] = {
-    val validEmailLine = """[A-Z]{2}""".r
+    val countryCode = """[A-Z]{2}""".r
     val countryCodeCheckConstraint: Constraint[String] =
       Constraint("constraints.countryCode")({
         text =>
           val error = text match {
-            case validEmailLine() => Nil
+            case countryCode() => Nil
             case _ => Seq(ValidationError(Messages("validation.error.countryCode")))
           }
           if (error.isEmpty) Valid else Invalid(error)
@@ -291,13 +293,13 @@ object Validation {
     text().verifying(countryCheckConstraint)
   }
 
-  def emailCheck: Mapping[String] = {
-    val validEmailLine = """[A-Za-z0-9\-​_.]{1,64}@[A-Za-z0-9\-_​.]{1,64}""".r
+  def emailCheck(maxLength:Option[Int] = Some(EmailThresholdLength)): Mapping[String] = {
+    val validEmailLine = """^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$""".r
     val emailCheckConstraint: Constraint[String] =
-      Constraint("contraints.email")({
+      Constraint("constraints.email")({
         text =>
           val error = text match {
-            case validEmailLine() => Nil
+            case validEmailLine() if text.length < EmailThresholdLength => Nil
             case _ => Seq(ValidationError(Messages("validation.error.email")))
           }
           if (error.isEmpty) Valid else Invalid(error)
