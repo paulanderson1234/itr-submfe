@@ -40,8 +40,6 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
 
   override val acceptedFlows = Seq()
 
-
-
   def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {

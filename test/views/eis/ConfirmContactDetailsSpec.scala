@@ -16,7 +16,6 @@
 
 package views.eis
 
-import controllers.routes
 import forms.ConfirmContactDetailsForm._
 import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup

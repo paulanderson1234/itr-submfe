@@ -22,9 +22,8 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
 import forms.ContactAddressForm._
-import models.{AddressModel, ContactAddressModel}
+import models.AddressModel
 import play.api.i18n.Messages
-import play.api.mvc._
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.CountriesHelper
 import views.html.seis.contactInformation.ContactAddress
@@ -44,8 +43,6 @@ object ContactAddressController extends ContactAddressController
 trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(SEIS))
-
-
 
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 

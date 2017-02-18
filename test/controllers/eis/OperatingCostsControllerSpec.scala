@@ -21,7 +21,7 @@ import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.BaseSpec
-import models._
+import models.{KiProcessingModel, OperatingCostsModel}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._

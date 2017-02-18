@@ -36,7 +36,6 @@ import java.util.UUID
 
 import auth.MockConfig
 import models.{AddressModel, AnnualTurnoverCostsModel, ProposedInvestmentModel}
-import models.submission.{AnnualCostModel, TurnoverCostModel}
 import play.api.test.Helpers._
 import fixtures.SubmissionFixture
 import models.registration.RegistrationDetailsModel

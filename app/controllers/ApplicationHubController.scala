@@ -22,8 +22,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
-import controllers.seis.routes
-import models._
+import models.ApplicationHubModel
 import models.submission.SchemeTypesModel
 import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubscriptionService}
@@ -34,7 +33,6 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.i18n.Messages
 
 import scala.concurrent.Future
 

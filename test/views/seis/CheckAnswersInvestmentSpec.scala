@@ -16,7 +16,7 @@
 
 package views.seis
 
-import models._
+import models.ProposedInvestmentModel
 import models.seis.SEISCheckAnswersModel
 import org.jsoup.Jsoup
 import play.api.i18n.Messages

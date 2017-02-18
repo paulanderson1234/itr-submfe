@@ -17,12 +17,11 @@
 package controllers.seis
 
 import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.mvc._
 import models.NatureOfBusinessModel
-import common._
 import controllers.predicates.FeatureSwitch
 import forms.NatureOfBusinessForm._
 import play.api.i18n.Messages.Implicits._

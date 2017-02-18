@@ -20,7 +20,6 @@ import auth.MockAuthConnector
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.SubsidiariesSpendingInvestmentController
-import controllers.routes
 import models.SubsidiariesSpendingInvestmentModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

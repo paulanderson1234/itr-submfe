@@ -16,7 +16,7 @@
 
 package forms
 
-import models.{CommercialSaleModel, TenYearPlanModel}
+import models.TenYearPlanModel
 import play.api.data.Form
 import play.api.data.Forms._
 import utils.Validation._

@@ -16,13 +16,12 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.BaseSpec
-import models._
+import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._

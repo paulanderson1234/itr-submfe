@@ -16,7 +16,6 @@
 
 package views.hub
 
-import controllers.routes
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import views.helpers.ViewSpec

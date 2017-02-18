@@ -18,8 +18,6 @@ package controllers.eis
 
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
@@ -41,7 +39,6 @@ class SupportingDocumentsControllerSpec extends BaseSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
 
   }
-
 
   def setupMocks(backLink: Option[String] = None, uploadFeatureEnabled: Boolean = false): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(),Matchers.any()))

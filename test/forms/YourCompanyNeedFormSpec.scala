@@ -16,7 +16,7 @@
 
 package forms
 
-import models.{YourCompanyNeedModel}
+import models.YourCompanyNeedModel
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages
