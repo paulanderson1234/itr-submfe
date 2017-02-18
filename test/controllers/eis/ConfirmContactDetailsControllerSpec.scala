@@ -16,7 +16,6 @@
 
 package controllers.eis
 
-import java.net.URLEncoder
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import auth.{MockAuthConnector, MockConfig}
@@ -24,7 +23,6 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import data.SubscriptionTestData._
-import models.{ConfirmContactDetailsModel, ContactDetailsModel}
 import org.jsoup.Jsoup
 import controllers.helpers.BaseSpec
 import models.{ConfirmContactDetailsModel, ContactDetailsModel, SubscriptionDetailsModel}

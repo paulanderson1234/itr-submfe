@@ -16,15 +16,10 @@
 
 package views.helpers
 
-import auth.{Enrolment, Identifier}
 import controllers.helpers.BaseSpec
-import org.mockito.Matchers
-import org.mockito.Mockito._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 
-
-import scala.concurrent.Future
 
 trait ViewSpec extends BaseSpec {
 

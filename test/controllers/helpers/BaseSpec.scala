@@ -29,7 +29,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
 import uk.gov.hmrc.play.test.UnitSpec
-import play.api.i18n.Messages.Implicits._
 import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future

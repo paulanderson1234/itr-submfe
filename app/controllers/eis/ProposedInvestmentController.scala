@@ -22,9 +22,8 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.{ProposedInvestmentModel, KiProcessingModel, CommercialSaleModel, HadPreviousRFIModel, SubsidiariesModel}
-import common._
-import common.Constants._
+import models.{CommercialSaleModel, HadPreviousRFIModel, KiProcessingModel, ProposedInvestmentModel, SubsidiariesModel}
+import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import forms.ProposedInvestmentForm._
 import play.Logger
@@ -125,7 +124,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
           // Call API
           isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
-            if (hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
+            if (hadPrevRFI.get.hadPreviousRFI == Constants.StandardRadioButtonYesValue) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
             validFormData.investmentAmount)
 

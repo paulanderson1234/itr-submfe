@@ -24,9 +24,9 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import controllers.feedback
 import controllers.predicates.FeatureSwitch
+import models._
 import models.registration.RegistrationDetailsModel
 import models.submission._
-import models._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{FileUploadService, RegistrationDetailsService}

@@ -40,7 +40,6 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
-import play.api.Logger
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig

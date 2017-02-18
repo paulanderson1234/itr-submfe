@@ -19,9 +19,9 @@ package controllers.eis
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
-import connectors.{S4LConnector, EnrolmentConnector}
+import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
-import models._
+import models.{NewGeographicalMarketModel, NewProductModel}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._

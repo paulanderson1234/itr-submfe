@@ -17,7 +17,6 @@
 package connectors
 
 import auth.{ggUser, TAVCUser}
-import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
@@ -25,7 +24,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerSuite}
+import org.scalatestplus.play.OneAppPerSuite
 import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -33,8 +32,6 @@ import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
-
-import scala.concurrent.Future
 
 class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 

@@ -16,8 +16,6 @@
 
 package utils
 
-import java.text.NumberFormat
-
 import common.Constants
 
 trait CostFormatter {

@@ -20,7 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import common._
+import common.{Constants, KeystoreKeys}
 import controllers.Helpers.ControllerHelpers
 import forms.InvestmentGrowForm._
 import models.{InvestmentGrowModel, NewGeographicalMarketModel, NewProductModel}

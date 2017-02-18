@@ -16,7 +16,7 @@
 
 package views.seis
 
-import models._
+import models.{DateOfIncorporationModel, TradeStartDateModel}
 import models.seis.SEISCheckAnswersModel
 import org.jsoup.Jsoup
 import play.api.i18n.Messages

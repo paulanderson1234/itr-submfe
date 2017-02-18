@@ -24,10 +24,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
 import models.submission._
-import play.api.libs.json.Json
-import play.api.test.Helpers._
 import services.RegistrationDetailsService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 

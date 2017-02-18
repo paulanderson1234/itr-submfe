@@ -16,10 +16,8 @@
 
 package utils
 
-import java.lang.String
 import java.text.NumberFormat
 
-import akka.actor.Address
 import models.{AddressModel, ContactDetailsModel}
 
 import scala.util.{Failure, Success, Try}

@@ -22,7 +22,6 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
 import play.api.mvc.{AnyContent, Request, RequestHeader}
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.http.ws.WSHttp

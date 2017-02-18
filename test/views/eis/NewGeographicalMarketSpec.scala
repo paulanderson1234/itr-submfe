@@ -20,7 +20,6 @@ import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.NewGeographicalMarketController
-import controllers.routes
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
