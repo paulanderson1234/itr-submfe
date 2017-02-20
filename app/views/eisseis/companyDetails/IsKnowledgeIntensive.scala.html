@@ -1,0 +1,60 @@
+@import models.IsKnowledgeIntensiveModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formInputRadioGroup}
+
+@(isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.IsKnowledgeIntensive.title")) {
+
+    @backButtonWithProgress(controllers.eisseis.routes.CommercialSaleController.show().toString, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(isKnowledgeIntensiveForm, "is-knowledge-intensive", "isKnowledgeIntensive")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.IsKnowledgeIntensive.heading")</h1>
+
+    <div class = "form-hint" id="description-ki">
+        <p>@Messages("page.companyDetails.IsKnowledgeIntensive.description.1")</p>
+        <p>@Messages("page.companyDetails.IsKnowledgeIntensive.description.2")</p>
+    </div>
+
+    <details>
+        <summary><span id="help" class="summary">@Messages("page.companyDetails.IsKnowledgeIntensive.definition")</span></summary>
+        <div class="panel panel-indent panel-border-narrow">
+
+            <p id ="ki-requirement-definition">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")</p>
+            <ul class ="list list-bullet">
+                <li id = "ki-requirement-one">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")</li>
+                <li id = "ki-requirement-two">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")</li>
+            </ul>
+
+            <p id ="ki-requirement-also">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")</p>
+            <ul class ="list list-bullet">
+                <li id ="ki-requirement-three">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")</li>
+                <li id ="ki-requirement-four">@Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")</li>
+            </ul>
+
+        </div>
+    </details>
+
+    @form(action = controllers.eisseis.routes.IsKnowledgeIntensiveController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = isKnowledgeIntensiveForm("isKnowledgeIntensive"),
+            Seq(
+            Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.companyDetails.IsKnowledgeIntensive.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}

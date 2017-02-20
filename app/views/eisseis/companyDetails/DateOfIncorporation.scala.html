@@ -1,0 +1,36 @@
+@import models.DateOfIncorporationModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{externalLink, backButtonWithProgress, errorSummary, formInlineDateInput}
+
+@(dateOfIncorporationForm: Form[DateOfIncorporationModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.DateOfIncorporation.title")) {
+
+    @backButtonWithProgress(controllers.eisseis.routes.NatureOfBusinessController.show().url, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(dateOfIncorporationForm, "date-of-incorporation", "incorporationDay")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.DateOfIncorporation.heading")</h1>
+
+    @form(action = controllers.eisseis.routes.DateOfIncorporationController.submit()) {
+
+        @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some(Messages("page.companyDetails.DateOfIncorporation.heading")),
+          true, Some(Messages("date.hint.dateOfIncorporation")), None)
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.companyDetails.DateOfIncorporation.whereToFind")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p class = "form-hint" id = "date-of-incorporation-where-to-find">@Messages("page.companyDetails.DateOfIncorporation.location")
+                    @externalLink(Messages("page.companyDetails.DateOfIncorporation.companiesHouse"),
+                    "https://www.gov.uk/get-information-about-a-company",
+                    Some("company-house-db"))
+                </p>
+            </div>
+        </details>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+
+    }
+}
