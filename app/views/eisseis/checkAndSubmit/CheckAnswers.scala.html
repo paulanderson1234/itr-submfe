@@ -1,0 +1,205 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.backButton
+@import views.html.helpers.summary._
+@import common.Constants
+@import utils.Transformers
+@import utils.CountriesHelper
+@import models.submission.SchemeTypesModel
+
+
+@(checkAnswersModel: CheckAnswersModel, schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
+
+    @backButton(controllers.eisseis.routes.SupportingDocumentsController.show().toString)
+
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
+    <div class="form-group">
+        <p id="description-one">@Messages("page.checkAndSubmit.checkAnswers.description.one")</p>
+
+        <ul class="bullets" id="schemes">
+            @if(schemeTypesModel.eis){
+            <li id="eis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.eis")</li>}
+            @if(schemeTypesModel.vct){
+            <li id="vct-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.vct")</li>}
+        </ul>
+    </div>
+
+    <div class="form-group">
+        <p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+    </div>
+
+    <div id="yourAnswers" class="full-width">
+
+        <table id="company-details-table">
+            <!-- Header -->
+            @tableHeaderHelper("companyDetailsSection",Messages("summaryQuestion.companyDetailsSection"))
+            <!-- Data Rows-->
+            <tbody>
+            <!-- Nature Of Business -->
+            @if(checkAnswersModel.natureOfBusinessModel.isDefined){
+                @textRowHelperBasic("natureOfBusiness", Messages("summaryQuestion.natureOfBusiness"),checkAnswersModel.natureOfBusinessModel.get.natureofbusiness, Some(controllers.eisseis.routes.NatureOfBusinessController.show().toString))
+            }
+            <!-- Date of Incorporation -->
+            @if(checkAnswersModel.dateOfIncorporationModel.isDefined){
+                @defining(checkAnswersModel.dateOfIncorporationModel.get) { dateOfIncorporationModel =>
+                    @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.eisseis.routes.DateOfIncorporationController.show().toString))
+                }
+            }
+            <!-- Date of First Commercial Sale -->
+            @if(checkAnswersModel.commercialSaleModel.isDefined){
+                @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>
+                    @if(commercialSaleModel.hasCommercialSale == Messages("common.radioYesLabel")){
+                        @textRowHelperMultiLineQuestion("commercialSale", Array(Messages("summaryQuestion.hasCommercialSale"),Messages("summaryQuestion.commercialSaleDate")),Array(commercialSaleModel.hasCommercialSale, CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get)), Some(controllers.eisseis.routes.CommercialSaleController.show().toString), None)
+                    } else {
+                        @textRowHelperBasic("commercialSale", Messages("summaryQuestion.hasCommercialSale"), commercialSaleModel.hasCommercialSale, Some(controllers.eisseis.routes.CommercialSaleController.show().toString))
+                    }
+                }
+            }
+            <!--Is Knowledge Intensive -->
+            @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
+                @textRowHelperBasic("knowledgeIntensive", Messages("summaryQuestion.knowledgeIntensive"),checkAnswersModel.isKnowledgeIntensiveModel.get.isKnowledgeIntensive, Some(controllers.eisseis.routes.IsKnowledgeIntensiveController.show().toString))
+            }
+            <!--If Knowledge Intensive is Yes-->
+            @if(checkAnswersModel.isKnowledgeIntensiveModel.isDefined){
+                @if(checkAnswersModel.isKnowledgeIntensiveModel.get.isKnowledgeIntensive == Messages("common.radioYesLabel")){
+                    <!-- Operating and R&D Costs -->
+                    @if(checkAnswersModel.operatingCostsModel.isDefined){
+                        @defining(checkAnswersModel.operatingCostsModel.get) { operatingAndRDCosts =>
+                            <!-- Operating Costs -->
+                           @textRowHelperMultiLine("operatingCosts", Messages("summaryQuestion.operatingCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
+                                                            OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts2ndYear,Messages("page.companyDetails.OperatingCosts.row.heading.two")),
+                                                            OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.operatingCosts3rdYear,Messages("page.companyDetails.OperatingCosts.row.heading.three"))),
+                                                            Some(controllers.eisseis.routes.OperatingCostsController.show().toString), Some(true) )
+                            <!-- R&D Costs -->
+                           @textRowHelperMultiLine("rdCosts", Messages("summaryQuestion.rdCosts"), Array(OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts1stYear,Messages("page.companyDetails.OperatingCosts.row.heading.one")),
+                                                            OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts2ndYear,Messages("page.companyDetails.OperatingCosts.row.heading.two")),
+                                                            OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(operatingAndRDCosts.rAndDCosts3rdYear,Messages("page.companyDetails.OperatingCosts.row.heading.three"))),
+                                                            Some(controllers.eisseis.routes.OperatingCostsController.show().toString), Some(true))
+                        }
+                    }
+                    <!-- Percentage of Staff with Masters -->
+                    @if(checkAnswersModel.percentageStaffWithMastersModel.isDefined){
+                       @textRowHelperBasic("percentageStaffWithMasters", Messages("summaryQuestion.percentageStaffWithMasters"), PercentageStaffWithMastersModel.staffWithMastersToString(checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters), Some(controllers.eisseis.routes.PercentageStaffWithMastersController.show().toString))
+                        <!--Ten Year Plan-->
+                        @if(checkAnswersModel.tenYearPlanModel.isDefined && checkAnswersModel.percentageStaffWithMastersModel.get.staffWithMasters == Messages("common.radioNoLabel")){
+                            @if(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan == Messages("common.radioYesLabel")){
+                            <!--Ten Year Plan Desc-->
+                            @textRowHelperMultiLineQuestion("tenYearPlan", Array(Messages("summaryQuestion.developmentPlan"),Messages("summaryQuestion.developmentPlanDesc")),Array(checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan,checkAnswersModel.tenYearPlanModel.get.tenYearPlanDesc.get), Some(controllers.eisseis.routes.TenYearPlanController.show().toString), Some(true))
+                            }else{
+                            @textRowHelperBasic("tenYearPlan", Messages("summaryQuestion.developmentPlan"),checkAnswersModel.tenYearPlanModel.get.hasTenYearPlan, Some(controllers.eisseis.routes.TenYearPlanController.show().toString))
+                            }
+                        }
+                    }
+                }
+            }
+
+            </tbody>
+        </table>
+
+        <table id="previous-rfi-table">
+            <!-- Header -->
+            @tableHeaderHelper("previousRFISection", Messages("summaryQuestion.previousRFISection"))
+            <!-- Data Rows-->
+            <tbody>
+            @if(checkAnswersModel.previousSchemes.length > 0){
+                @for((previousScheme, index) <- checkAnswersModel.previousSchemes.zipWithIndex){
+                    @textRowHelperMultiLine(s"previousScheme-$index", PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc, previousScheme.otherSchemeName),
+                        PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.eisseis.routes.ReviewPreviousSchemesController.show().url))
+                }
+            }else{
+                @textRowHelperBasic("noPreviousScheme", Messages("page.summaryQuestion.none.question"), Messages("page.summaryQuestion.none.answer"), Some(controllers.eisseis.routes.HadPreviousRFIController.show().url))
+            }
+
+            </tbody>
+        </table>
+
+        <table id="investment-table">
+            <!-- Header -->
+            @tableHeaderHelper("investmentSection", Messages("page.summaryQuestion.companyDetailsSectionThree"))
+            <!--Data rows-->
+            <tbody>
+            <!--Proposed Investment-->
+            @if(checkAnswersModel.proposedInvestmentModel.isDefined){
+            @textRowHelperBasic("proposedInvestment", Messages("page.summaryQuestion.proposedInvestment"), ProposedInvestmentModel.getAmountAsFormattedString(checkAnswersModel.proposedInvestmentModel.get.investmentAmount), Some(controllers.eisseis.routes.ProposedInvestmentController.show().toString))
+            }
+            <!--Used investment reason before page-->
+            @if(checkAnswersModel.usedInvestmentReasonBeforeModel.isDefined){
+            @textRowHelperBasic("usedInvestReasonBefore", Messages("page.summaryQuestion.usedInvestReasonBefore"), checkAnswersModel.usedInvestmentReasonBeforeModel.get.usedInvestmentReasonBefore, Some(controllers.eisseis.routes.UsedInvestmentReasonBeforeController.show().toString))
+            }
+            <!--Previous before DOFCS page-->
+            @if(checkAnswersModel.previousBeforeDOFCSModel.isDefined){
+            @textRowHelperBasic("previousBeforeDOFCS", Messages("page.summaryQuestion.previousBeforeDOFCS"), checkAnswersModel.previousBeforeDOFCSModel.get.previousBeforeDOFCS, Some(controllers.eisseis.routes.PreviousBeforeDOFCSController.show().toString))
+            }
+            <!-- New Geographical Market page-->
+            @if(checkAnswersModel.newGeographicalMarketModel.isDefined){
+            @textRowHelperBasic("newGeoMarket", Messages("page.summaryQuestion.newGeoMarket"), checkAnswersModel.newGeographicalMarketModel.get.isNewGeographicalMarket, Some(controllers.eisseis.routes.NewGeographicalMarketController.show().toString))
+            }
+            <!-- New product market page-->
+            @if(checkAnswersModel.newProductModel.isDefined){
+            @textRowHelperBasic("newProduct", Messages("page.summaryQuestion.newProduct"), checkAnswersModel.newProductModel.get.isNewProduct, Some(controllers.eisseis.routes.NewProductController.show().toString))
+            }
+            <!-- Investment Grow page-->
+            @if(checkAnswersModel.investmentGrowModel.isDefined){
+            @textRowHelperBasic("investmentGrow", Messages("page.summaryQuestion.investmentGrow"), checkAnswersModel.investmentGrowModel.get.investmentGrowDesc, Some(controllers.eisseis.routes.InvestmentGrowController.show().toString))
+            }
+            </tbody>
+        </table>
+
+        <table id="contactDetails-table">
+            <!-- Header -->
+            @tableHeaderHelper("contactDetailsSection", Messages("page.summaryQuestion.companyDetailsSectionFour"))
+            <!--Data rows-->
+            <tbody>
+                @if(checkAnswersModel.contactDetailsModel.isDefined){
+                @defining(checkAnswersModel.contactDetailsModel.get) { contactDetails =>
+                    @textRowHelperMultiLine("contactDetails", Messages("page.summaryQuestion.contactDetails"), Transformers.contactDetailsModelToFlattenedArray(contactDetails),
+                    Some(controllers.eisseis.routes.ContactDetailsController.show().toString))
+                @if(checkAnswersModel.contactAddressModel.isDefined){
+                    @textRowHelperMultiLine("address", Messages("page.summaryQuestion.contactAddress"), Transformers.addressModelToFlattenedArray(checkAnswersModel.contactAddressModel.get.copy(countryCode = CountriesHelper.getSelectedCountry(checkAnswersModel.contactAddressModel.get.countryCode))),
+                    Some(controllers.eisseis.routes.ContactAddressController.show().toString))
+                }
+            }
+            }
+            </tbody>
+        </table>
+
+        <table id="supporting-docs-table">
+            @tableHeaderHelper("supportingDocsSection",Messages("page.summaryQuestion.supportingDocsSection"))
+            <tbody>
+            <tr>
+                <td>
+                    <div class="form-group">
+                        <p id="supportingDocs-sub-text">@Messages("page.checkAndSubmit.checkAnswers.suportingDocs.desc")</p>
+                        <ul class="bullets">
+                            <li id="supportingDocs-business-plan" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.one")</li>
+                            <li id="supportingDocs-company-accounts" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.two")</li>
+                            <li id="shareholder-agree" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.three")</li>
+                            <li id="memorandum-docs" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.four")</li>
+                            <li id="supportingDocs-prospectus" class="font-xsmall">@Messages("page.supportingDocuments.SupportingDocuments.bullet.five")</li>
+                        </ul>
+                    </div>
+                </td>
+                <td></td>
+                @if(checkAnswersModel.attachmentsEnabled) {
+                <td class="summaryLink align-top">
+                    <a id="supporting-docs-link" href=@controllers.eisseis.routes.SupportingDocumentsUploadController.show().url>@Messages("common.base.change")</a>
+                </td>
+                } else {
+                <td></td>
+                }
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+    @form(action = controllers.eisseis.routes.CheckAnswersController.submit()) {
+        <div class="form-group">
+            <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkAnswers.button.confirm")</button>
+        </div>
+    }
+
+}

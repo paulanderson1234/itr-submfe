@@ -1,0 +1,82 @@
+@import models.ConfirmCorrespondAddressModel
+@import common.Constants
+@import utils.CountriesHelper
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{errorSummary, formInputRadioGroup, textWithConstErrors, backButtonWithProgress, hiddenField}
+
+@(confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], backLink: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.contactInformation.ConfirmCorrespondAddress.title")){
+
+    @backButtonWithProgress(backLink, Messages("common.section.progress.company.details.four"))
+
+    <div class="grid-row">
+        <div class="column-two-thirds">
+
+            @errorSummary(confirmCorrespondAddressForm, "confirm-correspondence-address", "contactAddressUse")
+
+            <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.contactInformation.ConfirmCorrespondAddress.heading")</h1>
+
+            <div id="storedAddressDiv" class="form-group">
+
+                <span id="line1-display" class="h4-heading form-group">@confirmCorrespondAddressForm("address.addressline1").value</span>
+                <span id="line2-display" class="form-group">@confirmCorrespondAddressForm("address.addressline2").value</span>
+                <span id="line3-display" class="form-group">@confirmCorrespondAddressForm("address.addressline3").value</span>
+                <span id="line4-display" class="form-group">@confirmCorrespondAddressForm("address.addressline4").value</span>
+                <span id="postcode-display" class="form-group">@confirmCorrespondAddressForm("address.postcode").value</span>
+                <span id="country-display" class="form-group">@CountriesHelper.getSelectedCountry(  confirmCorrespondAddressForm("address.countryCode").value.getOrElse(""))</span>
+            </div>
+
+            @form(action = controllers.eisseis.routes.ConfirmCorrespondAddressController.submit()) {
+                <div id="radioContactAddressDiv">
+                    <div class="form-group">
+                        @formInputRadioGroup(
+                        field = confirmCorrespondAddressForm("contactAddressUse"),
+                        Seq(
+                        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+                        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+                        '_legend -> Messages("page.contactInformation.ConfirmCorrespondAddress.title"),
+                        '_legendClass -> "visuallyhidden",
+                        '_labelAfter -> true,
+                        '_labelClass -> "block-label",
+                        '_groupClass -> "inline"
+                        )
+                    </div>
+                </div>
+
+                <div>
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline1"),
+                    'id -> "address.addressline1"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline2"),
+                    'id -> "address.addressline2"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline3"),
+                    'id -> "address.addressline3"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.addressline4"),
+                    'id -> "address.addressline4"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.postcode"),
+                    'id -> "address.postcode"
+                    )
+                    @hiddenField(
+                    confirmCorrespondAddressForm("address.countryCode"),
+                    'id -> "address.countryCode"
+                    )
+                </div>
+
+                <div class="form-group" id="contactAddressButtonDiv">
+                    <button class="btn button" id="next" type="submit">@Messages("common.button.snc")</button>
+                </div>
+            }
+
+        </div>
+    </div>
+
+}

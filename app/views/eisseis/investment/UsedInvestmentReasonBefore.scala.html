@@ -1,0 +1,36 @@
+@import models.UsedInvestmentReasonBeforeModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress}
+
+@(usedInvestmentReasonBeforeForm: Form[UsedInvestmentReasonBeforeModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.investment.UsedInvestmentReasonBefore.title")) {
+
+@backButtonWithProgress(controllers.eisseis.routes.ProposedInvestmentController.show().toString, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(usedInvestmentReasonBeforeForm, "used-investment-reason-before", "usedUsedInvestmentReasonBefore")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.investment.UsedInvestmentReasonBefore.heading")</h1>
+
+    @form(action = controllers.eisseis.routes.UsedInvestmentReasonBeforeController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = usedInvestmentReasonBeforeForm("usedInvestmentReasonBefore"),
+            Seq(
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.investment.UsedInvestmentReasonBefore.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}

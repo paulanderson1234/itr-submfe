@@ -1,0 +1,39 @@
+@import models.PreviousBeforeDOFCSModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+@import common.Constants
+
+@(previousBeforeDOFCSForm: Form[PreviousBeforeDOFCSModel], question: String, description: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(question) {
+
+    @backButtonWithProgress(controllers.eisseis.routes.UsedInvestmentReasonBeforeController.show().toString, Messages("common.section.progress.company.details.three"))
+
+    @errorSummary(previousBeforeDOFCSForm, "previous-before-dofcs", "previousBeforeDOFCS")
+
+    <h1 class="heading-xlarge" id="main-heading">@question</h1>
+
+
+    @form(action = controllers.eisseis.routes.PreviousBeforeDOFCSController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = previousBeforeDOFCSForm("previousBeforeDOFCS"),
+            Seq(
+            Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
+            '_legend -> question,
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_legendID -> "previousBeforeDOFCS",
+            '_groupClass -> "inline",
+            '_helpText -> description
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}
