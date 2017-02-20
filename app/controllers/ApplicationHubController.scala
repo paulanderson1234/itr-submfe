@@ -87,7 +87,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       route <- routeRequest(applicationHubModel)
     } yield route ) recover{
       case e: Exception => {
-        Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
+        Logger.warn(s"[ApplicationHubController][getApplicationModel] - Exception occurred: ${e.getMessage}")
         InternalServerError(internalServerErrorTemplate)
       }
     }
@@ -97,9 +97,15 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     if(applicationConfig.seisFlowEnabled) {
       Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
     } else {
-      s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
-      s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
-      Future.successful(Redirect(eis.routes.NatureOfBusinessController.show()))
+      (for {
+        saveApplication <- s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+        saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
+      } yield (saveApplication, saveSchemes)).map {
+        result => Redirect(eis.routes.NatureOfBusinessController.show())
+      }.recover {
+        case e: Exception => Logger.warn(s"[ApplicationHubController][newApplication] Exception when calling saveFormData: ${e.getMessage}")
+          Redirect(eis.routes.NatureOfBusinessController.show())
+      }
     }
   }
 

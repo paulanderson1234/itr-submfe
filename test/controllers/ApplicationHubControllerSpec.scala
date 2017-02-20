@@ -138,6 +138,8 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
     "redirect to 'scheme selection' page if table is not empty" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
       mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.newApplication)(
         result => {

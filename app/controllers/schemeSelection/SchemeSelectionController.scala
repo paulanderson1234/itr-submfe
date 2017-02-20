@@ -24,10 +24,13 @@ import controllers.predicates.FeatureSwitch
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import forms.schemeSelection.SchemeSelectionForm._
 import models.submission.SchemeTypesModel
+import play.api.Logger
 import views.html.schemeSelection.SchemeSelection
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+
+import scala.concurrent.Future
 
 object SchemeSelectionController extends SchemeSelectionController {
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -52,15 +55,21 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
   }
 
   def submit(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
       schemeSelectionForm.bindFromRequest.fold(
         formWithErrors => {
-          BadRequest(SchemeSelection(formWithErrors))
+          Future.successful(BadRequest(SchemeSelection(formWithErrors)))
         },
         validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, validFormData)
-          s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
-          routeToScheme(validFormData)
+          (for {
+            saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, validFormData)
+            saveApplication <-  s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+          } yield (saveSchemes, saveApplication)).map {
+            result => routeToScheme(validFormData)
+          }.recover {
+            case e: Exception => Logger.warn(s"[SchemeSelectionController][submit] Error when calling saveFormData: ${e.getMessage}")
+              routeToScheme(validFormData)
+          }
         }
       )
     }
