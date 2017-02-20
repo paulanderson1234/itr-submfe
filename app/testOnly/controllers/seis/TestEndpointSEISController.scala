@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package testOnly.controllers
+package testOnly.controllers.seis
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.{Constants, KeystoreKeys}
