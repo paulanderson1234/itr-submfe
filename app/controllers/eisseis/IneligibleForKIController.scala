@@ -20,6 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.knowledgeIntensive.IneligibleForKI
 import controllers.Helpers.ControllerHelpers
@@ -35,28 +36,32 @@ object IneligibleForKIController extends IneligibleForKIController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait IneligibleForKIController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait IneligibleForKIController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
-        Future.successful(Ok(IneligibleForKI(backUrl.get)))
-      } else {
-        // no back link - send back to start of flow
-        Future.successful(Redirect(routes.OperatingCostsController.show()))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      def routeRequest(backUrl: Option[String]) = {
+        if (backUrl.isDefined) {
+          Future.successful(Ok(IneligibleForKI(backUrl.get)))
+        } else {
+          // no back link - send back to start of flow
+          Future.successful(Redirect(routes.OperatingCostsController.show()))
+        }
       }
+      for {
+        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, s4lConnector)
+        route <- routeRequest(link)
+      } yield route
     }
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkIneligibleForKI, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request => {
-    s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().url)
-    Future.successful(Redirect(routes.SubsidiariesController.show()))
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request => {
+      s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IneligibleForKIController.show().url)
+      Future.successful(Redirect(routes.SubsidiariesController.show()))
+    }
     }
   }
 

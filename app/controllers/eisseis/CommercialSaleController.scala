@@ -19,6 +19,7 @@ package controllers.eisseis
 import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{CommercialSaleModel, KiProcessingModel}
@@ -37,49 +38,52 @@ object CommercialSaleController extends CommercialSaleController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait CommercialSaleController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait CommercialSaleController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-
-
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
-      case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
-      case None => Ok(CommercialSale(commercialSaleForm))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
+        case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
+        case None => Ok(CommercialSale(commercialSaleForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {
-      kiModel match {
-        case Some(data) if data.dateConditionMet.isEmpty =>
-          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-        case Some(dataWithDateCondition) => {
-          if (dataWithDateCondition.dateConditionMet.get) {
-            Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+      def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {
+        kiModel match {
+          case Some(data) if data.dateConditionMet.isEmpty =>
+            Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+          case Some(dataWithDateCondition) => {
+            if (dataWithDateCondition.dateConditionMet.get) {
+              Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+            }
+            else {
+              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
+              Future.successful(Redirect(routes.SubsidiariesController.show()))
+            }
           }
-          else {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
-            Future.successful(Redirect(routes.SubsidiariesController.show()))
-          }
+          case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         }
-        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
-    }
 
-    commercialSaleForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(CommercialSale(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
-        for {
-          model <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-          route <- routeRequest(model)
-        } yield route
-      }
-    )
+      commercialSaleForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(CommercialSale(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.commercialSale, validFormData)
+          for {
+            model <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+            route <- routeRequest(model)
+          } yield route
+        }
+      )
+    }
   }
+
 }

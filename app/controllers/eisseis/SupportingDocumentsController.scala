@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
+import controllers.predicates.FeatureSwitch
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.supportingDocuments.SupportingDocuments
@@ -39,27 +40,31 @@ object SupportingDocumentsController extends SupportingDocumentsController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if (fileUploadService.getUploadFeatureEnabled) {
-      Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
-    }
-    else {
-      ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-        case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
-        case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      if (fileUploadService.getUploadFeatureEnabled) {
+        Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+      }
+      else {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
+          case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
+          case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+        }
       }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.CheckAnswersController.show()))
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      Future.successful(Redirect(routes.CheckAnswersController.show()))
+    }
   }
 
 }

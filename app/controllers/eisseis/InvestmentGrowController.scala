@@ -22,6 +22,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import common._
 import controllers.Helpers.ControllerHelpers
+import controllers.predicates.FeatureSwitch
 import forms.InvestmentGrowForm._
 import models.{InvestmentGrowModel, NewGeographicalMarketModel, NewProductModel}
 import play.api.data.Form
@@ -40,40 +41,44 @@ object InvestmentGrowController extends InvestmentGrowController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait InvestmentGrowController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
-        s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
-          case Some(data) => getResponse(Ok, investmentGrowForm.fill(data), backUrl.get)
-          case None => getResponse(Ok, investmentGrowForm, backUrl.get)
+      def routeRequest(backUrl: Option[String]) = {
+        if (backUrl.isDefined) {
+          s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow).flatMap {
+            case Some(data) => getResponse(Ok, investmentGrowForm.fill(data), backUrl.get)
+            case None => getResponse(Ok, investmentGrowForm, backUrl.get)
+          }
         }
+        else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       }
-      else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-    }
 
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
+      for {
+        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector)
+        route <- routeRequest(link)
+      } yield route
+    }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    investmentGrowForm.bindFromRequest.fold(
-      invalidForm =>
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
-          case Some(data) => getResponse(BadRequest, invalidForm, data)
-          case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-        },
-      validForm => {
-        s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
-        Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
-      }
-    )
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      investmentGrowForm.bindFromRequest.fold(
+        invalidForm =>
+          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkInvestmentGrow, s4lConnector).flatMap {
+            case Some(data) => getResponse(BadRequest, invalidForm, data)
+            case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+          },
+        validForm => {
+          s4lConnector.saveFormData(KeystoreKeys.investmentGrow, validForm)
+          Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
+        }
+      )
+    }
   }
 
   private def getResponse(status: Status, investmentGrowForm: Form[InvestmentGrowModel], backUrl: String)

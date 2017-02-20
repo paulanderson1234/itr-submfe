@@ -21,6 +21,7 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import controllers.predicates.FeatureSwitch
 import forms.HadPreviousRFIForm._
 import models.HadPreviousRFIModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -37,60 +38,64 @@ object HadPreviousRFIController extends HadPreviousRFIController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
+trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
-        s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
-          case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data), backUrl.getOrElse("")))
-          case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm, backUrl.getOrElse("")))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      def routeRequest(backUrl: Option[String]) = {
+        if (backUrl.isDefined) {
+          s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
+            case Some(data) => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm.fill(data), backUrl.getOrElse("")))
+            case None => Ok(previousInvestment.HadPreviousRFI(hadPreviousRFIForm, backUrl.getOrElse("")))
+          }
         }
+        else Future.successful(Redirect(routes.CommercialSaleController.show()))
       }
-      else Future.successful(Redirect(routes.CommercialSaleController.show()))
+      for {
+        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
+        route <- routeRequest(link)
+      } yield route
     }
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
   }
 
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      hadPreviousRFIForm.bindFromRequest().fold(
+        formWithErrors => {
+          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
+            case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
+            case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
+          }
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
+          validFormData.hadPreviousRFI match {
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    hadPreviousRFIForm.bindFromRequest().fold(
-      formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector).flatMap {
-          case Some(data) => Future.successful(BadRequest(previousInvestment.HadPreviousRFI(formWithErrors, data)))
-          case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
-        }
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-        validFormData.hadPreviousRFI match {
-
-          case Constants.StandardRadioButtonYesValue => {
-            getAllInvestmentFromKeystore(s4lConnector).flatMap {
-              previousSchemes =>
-                if(previousSchemes.nonEmpty) {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
-                  Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-                }
-                else {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().url)
-                  Future.successful(Redirect(routes.PreviousSchemeController.show()))
-                }
+            case Constants.StandardRadioButtonYesValue => {
+              getAllInvestmentFromKeystore(s4lConnector).flatMap {
+                previousSchemes =>
+                  if (previousSchemes.nonEmpty) {
+                    s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
+                    Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+                  }
+                  else {
+                    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().url)
+                    Future.successful(Redirect(routes.PreviousSchemeController.show()))
+                  }
+              }
             }
-          }
-          case Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().url)
-            clearPreviousInvestments(s4lConnector)
-            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-          }
+            case Constants.StandardRadioButtonNoValue => {
+              s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().url)
+              clearPreviousInvestments(s4lConnector)
+              Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+            }
 
+          }
         }
-      }
-    )
+      )
+    }
   }
+
 }
