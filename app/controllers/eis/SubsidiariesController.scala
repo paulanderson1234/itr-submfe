@@ -24,8 +24,6 @@ import controllers.Helpers.ControllerHelpers
 import models.SubsidiariesModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import scala.concurrent.Future
-import views.html.eis._
-import views.html.eis.companyDetails.Subsidiaries
 
 object SubsidiariesController extends SubsidiariesController {
   override lazy val s4lConnector = S4LConnector
@@ -37,8 +35,6 @@ object SubsidiariesController extends SubsidiariesController {
 trait SubsidiariesController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
-
-
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 

@@ -19,10 +19,11 @@ package services
 import auth.TAVCUser
 import common.KeystoreKeys
 import connectors.{S4LConnector, SubscriptionConnector}
-import models._
+import models.{AddressModel, ContactDetailsModel, EtmpSubscriptionDetailsModel, SubscriptionDetailsModel}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.play.http.HeaderCarrier
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 

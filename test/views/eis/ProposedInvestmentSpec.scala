@@ -20,7 +20,6 @@ import auth.MockAuthConnector
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.ProposedInvestmentController
-import controllers.routes
 import models.ProposedInvestmentModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

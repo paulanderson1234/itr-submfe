@@ -19,10 +19,8 @@ package controllers.Helpers
 import auth.TAVCUser
 import common.{Constants, KeystoreKeys}
 import connectors.S4LConnector
-import models._
+import models.{PreviousSchemeModel, ProposedInvestmentModel}
 import uk.gov.hmrc.play.http.HeaderCarrier
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

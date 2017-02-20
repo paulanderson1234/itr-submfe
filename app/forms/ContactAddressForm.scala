@@ -20,7 +20,6 @@ import models.AddressModel
 import utils.Validation._
 import play.api.data.Form
 import play.api.data.Forms._
-import uk.gov.voa.play.form.ConditionalMappings._
 
 object ContactAddressForm {
   val contactAddressForm = Form(

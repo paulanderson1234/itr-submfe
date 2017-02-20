@@ -17,12 +17,12 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{CommercialSaleModel, KiProcessingModel}
-import common._
 import forms.CommercialSaleForm._
 import views.html.eis.companyDetails.CommercialSale
 import play.api.i18n.Messages.Implicits._
@@ -41,8 +41,6 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
 
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
       case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
@@ -56,15 +54,14 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
       kiModel match {
         case Some(data) if data.dateConditionMet.isEmpty =>
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-        case Some(dataWithDateCondition) => {
+        case Some(dataWithDateCondition) =>
           if (dataWithDateCondition.dateConditionMet.get) {
             Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
           }
           else {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().url)
             Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
-        }
         case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
     }

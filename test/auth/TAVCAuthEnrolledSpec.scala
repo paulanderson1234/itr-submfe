@@ -23,11 +23,9 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
 import models.submission.SchemeTypesModel
 import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.OneAppPerSuite
 import play.api.test.FakeRequest
 import play.api.http.Status
 import uk.gov.hmrc.play.frontend.auth.AuthenticationProviderIds
-import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._

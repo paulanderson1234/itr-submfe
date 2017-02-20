@@ -18,11 +18,9 @@ package services
 
 import auth.{ggUser, TAVCUser}
 import connectors.{AttachmentsFrontEndConnector}
-import controllers.helpers.FakeRequestHelper
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
-import org.scalatestplus.play.{OneAppPerTest, OneAppPerSuite}
-import uk.gov.hmrc.play.config.ServicesConfig
+import org.scalatestplus.play.OneAppPerTest
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.SessionId

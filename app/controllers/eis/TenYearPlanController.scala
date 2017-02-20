@@ -22,7 +22,7 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
-import common._
+import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import forms.TenYearPlanForm._
 import views.html.eis.knowledgeIntensive.TenYearPlan

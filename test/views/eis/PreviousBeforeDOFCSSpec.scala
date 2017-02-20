@@ -20,7 +20,6 @@ import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.PreviousBeforeDOFCSController
-import controllers.routes
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel}
 import org.joda.time.DateTime
 import org.jsoup.Jsoup

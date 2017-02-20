@@ -16,7 +16,7 @@
 
 package utils
 
-import models.{OperatingCostsModel}
+import models.OperatingCostsModel
 import org.scalatest.Matchers
 import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.test.UnitSpec
@@ -34,8 +34,8 @@ class CostFormatterSpec extends UnitSpec with MockitoSugar with Matchers{
   "The Cost Formatter" should {
 
     "Return the operating and R&D costs as a formatted string in the form '£xxx in yyy tax year'" in {
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(presentCost._1,presentCost._2) shouldBe (presentCostFormatted)
-      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(pastCost._1,pastCost._2) shouldBe (pastCostFormatted)
+      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(presentCost._1,presentCost._2) shouldBe presentCostFormatted
+      OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(pastCost._1,pastCost._2) shouldBe pastCostFormatted
       intercept[NumberFormatException] {
         OperatingCostsModel.getOperatingAndRDCostsAsFormattedString(invalidCost._1, invalidCost._2)
       }

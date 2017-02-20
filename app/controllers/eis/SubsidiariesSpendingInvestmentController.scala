@@ -43,7 +43,6 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eis.investment.SubsidiariesSpendingInvestment
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
 import scala.concurrent.Future
 
 object SubsidiariesSpendingInvestmentController extends SubsidiariesSpendingInvestmentController{

@@ -28,7 +28,7 @@ class TradeStartDateFormSpec extends UnitSpec with OneAppPerSuite {
 
   // set up border line conditions of today and future date (tomorrow)
   val date = new Date();
-  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+  val localDate = date.toInstant.atZone(ZoneId.systemDefault()).toLocalDate;
   val tomorrow = localDate.plusDays(1)
   val tomorrowDay: String = tomorrow.getDayOfMonth.toString
   val tomorrowMonth: String = tomorrow.getMonthValue.toString

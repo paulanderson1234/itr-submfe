@@ -16,7 +16,7 @@
 
 package views.helpers
 
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._

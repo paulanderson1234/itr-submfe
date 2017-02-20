@@ -20,7 +20,6 @@ import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.SupportingDocumentsController
-import controllers.routes
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers

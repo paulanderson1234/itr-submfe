@@ -16,7 +16,6 @@
 
 package models.submission
 
-import common.Constants
 import models._
 import play.api.libs.json.Json
 

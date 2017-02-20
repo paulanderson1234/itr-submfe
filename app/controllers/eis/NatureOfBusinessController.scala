@@ -21,7 +21,7 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models.NatureOfBusinessModel
-import common._
+import common.KeystoreKeys
 import forms.NatureOfBusinessForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current

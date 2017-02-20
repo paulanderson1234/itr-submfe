@@ -16,10 +16,8 @@
 
 package utils
 
-import java.lang.String
 import java.text.NumberFormat
 
-import akka.actor.Address
 import models.{AddressModel, ContactDetailsModel}
 
 import scala.util.{Failure, Success, Try}
@@ -48,9 +46,14 @@ object Transformers {
 
   val booleanToString: Boolean => String = (input) => if (input) "Yes" else "No"
 
-  val integerToFormattedNumber: Int => String = {
-    (value) => NumberFormat.getNumberInstance.format(value)
+  val numberToFormattedNumber: AnyVal => String = {
+    (value) => value match {
+      case value: Int => NumberFormat.getNumberInstance.format(value)
+      case value: Long => NumberFormat.getNumberInstance.format(value)
+      case _ => "N/A"
+    }
   }
+
 
   val addressModelToFlattenedArray : AddressModel => Array[String] = {
     (contactAddress) => Array(Option(contactAddress.addressline1),Option(contactAddress.addressline2),contactAddress.addressline3,

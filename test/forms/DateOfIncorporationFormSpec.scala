@@ -16,20 +16,18 @@
 
 package forms
 
-import models.{DateOfIncorporationModel}
+import models.DateOfIncorporationModel
 import forms.DateOfIncorporationForm._
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec
 import java.time.ZoneId
 import java.util.Date
-import play.api.i18n.Messages.Implicits._
-
 
 class DateOfIncorporationFormSpec extends UnitSpec with OneAppPerSuite{
 
   // set up border line conditions of today and future date (tomorrow)
-  val date = new Date();
-  val localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+  val date = new Date()
+  val localDate = date.toInstant.atZone(ZoneId.systemDefault()).toLocalDate;
   val tomorrow = localDate.plusDays(1)
   val tomorrowDay: String = tomorrow.getDayOfMonth.toString
   val tomorrowMonth: String = tomorrow.getMonthValue.toString

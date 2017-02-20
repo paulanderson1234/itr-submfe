@@ -18,7 +18,7 @@ package views.seis
 
 import auth.MockAuthConnector
 import common.KeystoreKeys
-import controllers.seis.{NatureOfBusinessController, routes}
+import controllers.seis.NatureOfBusinessController
 import fixtures.MockSeisConfig
 import models.NatureOfBusinessModel
 import org.jsoup.Jsoup
