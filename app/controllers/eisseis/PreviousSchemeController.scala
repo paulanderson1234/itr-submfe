@@ -20,6 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
@@ -38,52 +39,57 @@ object PreviousSchemeController extends PreviousSchemeController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  def show(id: Option[Int]): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    def routeRequest(backUrl: Option[String]) = {
-      if (backUrl.isDefined) {
-        id match {
-          case Some(idVal) => {
-            PreviousSchemesHelper.getExistingInvestmentFromKeystore(s4lConnector, idVal).map {
-              case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data), backUrl.get))
-              case None => Ok(PreviousScheme(previousSchemeForm, backUrl.get))
+  def show(id: Option[Int]): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      def routeRequest(backUrl: Option[String]) = {
+        if (backUrl.isDefined) {
+          id match {
+            case Some(idVal) => {
+              PreviousSchemesHelper.getExistingInvestmentFromKeystore(s4lConnector, idVal).map {
+                case Some(data) => Ok(PreviousScheme(previousSchemeForm.fill(data), backUrl.get))
+                case None => Ok(PreviousScheme(previousSchemeForm, backUrl.get))
+              }
+            }
+            case None => {
+              Future.successful(Ok(PreviousScheme(previousSchemeForm, backUrl.get)))
             }
           }
-          case None => {
-            Future.successful(Ok(PreviousScheme(previousSchemeForm, backUrl.get)))
-          }
+        } else {
+          // no back link - send to beginning of flow
+          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
-      } else {
-        // no back link - send to beginning of flow
-        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
+      for {
+        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector)
+        route <- routeRequest(link)
+      } yield route
     }
-    for {
-      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector)
-      route <- routeRequest(link)
-    } yield route
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    previousSchemeForm.bindFromRequest().fold(
-      formWithErrors => {
-        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector).flatMap(url =>
-          Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
-        validFormData.processingId match {
-          case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
-            _ => Redirect(routes.ReviewPreviousSchemesController.show())
-          }
-          case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
-            _ => Redirect(routes.ReviewPreviousSchemesController.show())
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      previousSchemeForm.bindFromRequest().fold(
+        formWithErrors => {
+          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkPreviousScheme, s4lConnector).flatMap(url =>
+            Future.successful(BadRequest(PreviousScheme(formWithErrors, url.get))))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
+          validFormData.processingId match {
+            case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
+              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+            }
+            case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
+              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
+
 }

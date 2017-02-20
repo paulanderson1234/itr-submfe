@@ -20,6 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, TAVCUser, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import forms.PreviousBeforeDOFCSForm._
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel, SubsidiariesModel}
 import org.joda.time.DateTime
@@ -41,46 +42,50 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter {
+trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with DateFormatter {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    createResponse(None)
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      createResponse(None)
+    }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
-      date match {
-        case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-          s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().url)
-          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-        case Some(_) =>
-          s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().url)
-          Future.successful(Redirect(routes.InvestmentGrowController.show()))
-        case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
-      }
-    }
-
-    previousBeforeDOFCSForm.bindFromRequest().fold(
-      formWithErrors => {
-        createResponse(Some(formWithErrors))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
-        validFormData.previousBeforeDOFCS match {
-          case Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().url)
-            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-          }
-          case Constants.StandardRadioButtonYesValue => for {
-            subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-            route <- routeRequest(subsidiaries)
-          } yield route
+      def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
+        date match {
+          case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().url)
+            Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+          case Some(_) =>
+            s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().url)
+            Future.successful(Redirect(routes.InvestmentGrowController.show()))
+          case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
         }
       }
-    )
+
+      previousBeforeDOFCSForm.bindFromRequest().fold(
+        formWithErrors => {
+          createResponse(Some(formWithErrors))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
+          validFormData.previousBeforeDOFCS match {
+            case Constants.StandardRadioButtonNoValue => {
+              s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().url)
+              Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+            }
+            case Constants.StandardRadioButtonYesValue => for {
+              subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+              route <- routeRequest(subsidiaries)
+            } yield route
+          }
+        }
+      )
+    }
   }
 
   private def generatePage(day: Int, month: Int, year: Int, difference: Int, formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])

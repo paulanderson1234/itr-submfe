@@ -16,7 +16,7 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, TAVCUser, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, TAVCUser, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
@@ -32,6 +32,7 @@ import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import config.FrontendGlobal.internalServerErrorTemplate
+import controllers.predicates.FeatureSwitch
 
 import scala.concurrent.Future
 
@@ -45,7 +46,7 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val fileUploadService = FileUploadService
 }
 
-trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
@@ -56,44 +57,48 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
 
   //noinspection ScalaStyle
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    (for {
-    // minimum required fields to continue
-      kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-      natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
-      contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
-      proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
-      investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
-      dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-      contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
-      tavcRef <- getTavCReferenceNumber()
-      schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
-      registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      (for {
+      // minimum required fields to continue
+        kiProcModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+        natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
+        contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+        proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+        investmentGrow <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
+        dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+        contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
+        tavcRef <- getTavCReferenceNumber()
+        schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
+        registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
-      // potentially optional or required
-      operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
-      turnoverCosts <- s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
-      subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
-      subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
-      previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
-      commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-      newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
-      newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
-      tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
+        // potentially optional or required
+        operatingCosts <- s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts)
+        turnoverCosts <- s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts)
+        subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
+        subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
+        previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
+        commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
+        newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+        newProduct <- s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct)
+        tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
-      result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
-        investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-        previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
-    } yield result) recover {
-      case e: Exception => {
-        Logger.warn(s"[AcknowledgementController][submit] - SEIS - Exception: ${e.getMessage}")
-        InternalServerError(internalServerErrorTemplate)
+        result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
+          investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+          previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
+      } yield result) recover {
+        case e: Exception => {
+          Logger.warn(s"[AcknowledgementController][submit] - SEIS - Exception: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
       }
     }
   }
 
-  def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
-    Redirect(controllers.feedback.routes.FeedbackController.show().url)
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+      Redirect(controllers.feedback.routes.FeedbackController.show().url)
+    }
   }
 
   //noinspection ScalaStyle
@@ -122,7 +127,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                             operatingCosts: Option[OperatingCostsModel],
                                             turnoverCosts: Option[AnnualTurnoverCostsModel],
                                             registrationDetailsModel: Option[RegistrationDetailsModel])
-                                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
+                                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] =
+  {
 
     val tempAddress = None
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
@@ -166,7 +172,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
               }
             }
           }
-        }.recover{
+        }.recover {
           case e: Exception => {
             Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
             InternalServerError(internalServerErrorTemplate)
@@ -195,7 +201,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             }
           }
 
-        }.recover{
+        }.recover {
           case e: Exception => {
             Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
             InternalServerError(internalServerErrorTemplate)

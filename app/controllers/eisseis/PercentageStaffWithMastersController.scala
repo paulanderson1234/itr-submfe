@@ -21,6 +21,7 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import controllers.predicates.FeatureSwitch
 import forms.PercentageStaffWithMastersForm._
 import models.{KiProcessingModel, PercentageStaffWithMastersModel}
 import play.Logger
@@ -39,73 +40,77 @@ object PercentageStaffWithMastersController extends PercentageStaffWithMastersCo
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PercentageStaffWithMastersController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait PercentageStaffWithMastersController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   val submissionConnector: SubmissionConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
-      case Some(data) => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
-      case None => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
+        case Some(data) => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
+        case None => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-    def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,
-                     isSecondaryKiConditionsMet: Option[Boolean]) = {
-      kiModel match {
-        // check previous answers present
-        case Some(data) if isMissingData(data) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
-          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
-        }
-        case Some(dataWithPreviousValid) => {
-          // all good - save the cost condition result returned from API and navigate accordingly
-          val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
-            hasPercentageWithMasters = Some(percentageWithMasters))
-          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+      def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,
+                       isSecondaryKiConditionsMet: Option[Boolean]) = {
+        kiModel match {
+          // check previous answers present
+          case Some(data) if isMissingData(data) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+          case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
+            Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+          }
+          case Some(dataWithPreviousValid) => {
+            // all good - save the cost condition result returned from API and navigate accordingly
+            val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
+              hasPercentageWithMasters = Some(percentageWithMasters))
+            s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
 
-          if (updatedModel.isKi) {
-            // it's all good - no need to ask more KI questions
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
-              routes.PercentageStaffWithMastersController.show().url)
-            Future.successful(Redirect(routes.SubsidiariesController.show()))
+            if (updatedModel.isKi) {
+              // it's all good - no need to ask more KI questions
+              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries,
+                routes.PercentageStaffWithMastersController.show().url)
+              Future.successful(Redirect(routes.SubsidiariesController.show()))
+            }
+            else {
+              // Non cost KI condition not met. Try other conditions.
+              Future.successful(Redirect(routes.TenYearPlanController.show()))
+            }
           }
-          else {
-            // Non cost KI condition not met. Try other conditions.
-            Future.successful(Redirect(routes.TenYearPlanController.show()))
-          }
+          case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         }
-        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
       }
+
+      percentageStaffWithMastersForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(PercentageStaffWithMasters(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
+          val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
+            Constants.StandardRadioButtonYesValue) true
+          else false
+          (for {
+            kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+            // Call API
+            isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
+              if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false)
+            route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
+          } yield route) recover {
+            case e: Exception => {
+              Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+              InternalServerError(internalServerErrorTemplate)
+            }
+          }
+        }
+      )
     }
-
-    percentageStaffWithMastersForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(PercentageStaffWithMasters(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.percentageStaffWithMasters, validFormData)
-        val percentageWithMasters: Boolean = if (validFormData.staffWithMasters ==
-          Constants.StandardRadioButtonYesValue) true
-        else false
-        (for {
-          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-          // Call API
-          isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(percentageWithMasters,
-            if (kiModel.isDefined) kiModel.get.hasTenYearPlan.getOrElse(false) else false)
-          route <- routeRequest(kiModel, percentageWithMasters, isSecondaryKiConditionsMet)
-        } yield route) recover {
-          case e: Exception => {
-            Logger.warn(s"[PercentageStaffWithMastersController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
-            InternalServerError(internalServerErrorTemplate)
-          }
-        }
-      }
-    )
   }
 
   def isMissingData(data: KiProcessingModel): Boolean = {

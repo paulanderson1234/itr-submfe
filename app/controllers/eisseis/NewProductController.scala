@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import controllers.predicates.FeatureSwitch
 import forms.NewProductForm._
 import models.{NewGeographicalMarketModel, NewProductModel}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -39,45 +40,49 @@ object NewProductController extends NewProductController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NewProductController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait NewProductController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-
   val submissionConnector: SubmissionConnector
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct).map {
-      case Some(data) => Ok(NewProduct(newProductForm.fill(data)))
-      case None => Ok(NewProduct(newProductForm))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct).map {
+        case Some(data) => Ok(NewProduct(newProductForm.fill(data)))
+        case None => Ok(NewProduct(newProductForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    newProductForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(NewProduct(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      newProductForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(NewProduct(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.newProduct, validFormData)
 
-        def routeRequest(continue: Option[Boolean]) = {
-          continue match {
-            case Some(bool) if bool => Future.successful(Redirect(routes.TurnoverCostsController.show()))
-            case Some(bool)  => Future.successful(Redirect(routes.TradingForTooLongController.show()))
-            case _ => Future.successful(InternalServerError(internalServerErrorTemplate))
+          def routeRequest(continue: Option[Boolean]) = {
+            continue match {
+              case Some(bool) if bool => Future.successful(Redirect(routes.TurnoverCostsController.show()))
+              case Some(bool) => Future.successful(Redirect(routes.TradingForTooLongController.show()))
+              case _ => Future.successful(InternalServerError(internalServerErrorTemplate))
+            }
+          }
+
+          (for {
+            newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
+            continue <- submissionConnector.checkMarketCriteria(stringToBoolean(newGeographicalMarket.get.isNewGeographicalMarket),
+              stringToBoolean(validFormData.isNewProduct))
+            route <- routeRequest(continue)
+          } yield route).recover {
+            case _ => InternalServerError(internalServerErrorTemplate)
           }
         }
-
-        (for{
-          newGeographicalMarket <- s4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](KeystoreKeys.newGeographicalMarket)
-          continue <- submissionConnector.checkMarketCriteria(stringToBoolean(newGeographicalMarket.get.isNewGeographicalMarket),
-            stringToBoolean(validFormData.isNewProduct))
-          route <- routeRequest(continue)
-        } yield route).recover {
-          case _ => InternalServerError(internalServerErrorTemplate)
-        }
-      }
-    )
+      )
+    }
   }
+
 }

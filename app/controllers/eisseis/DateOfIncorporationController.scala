@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.KnowledgeIntensiveHelper
+import controllers.predicates.FeatureSwitch
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -30,7 +31,6 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-
 object DateOfIncorporationController extends DateOfIncorporationController{
   override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -38,29 +38,34 @@ object DateOfIncorporationController extends DateOfIncorporationController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait DateOfIncorporationController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait DateOfIncorporationController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
  //override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
-      case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
-      case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
+        case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
+        case None => Ok(DateOfIncorporation(dateOfIncorporationForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    dateOfIncorporationForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
-        KnowledgeIntensiveHelper.setKiDateCondition(s4lConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
-        Future.successful(Redirect(routes.CommercialSaleController.show()))
-      }
-    )
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      dateOfIncorporationForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(DateOfIncorporation(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.dateOfIncorporation, validFormData)
+          KnowledgeIntensiveHelper.setKiDateCondition(s4lConnector, validFormData.day.get, validFormData.month.get, validFormData.year.get)
+          Future.successful(Redirect(routes.CommercialSaleController.show()))
+        }
+      )
+    }
   }
+
 }

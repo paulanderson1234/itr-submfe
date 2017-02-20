@@ -20,6 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import forms.UsedInvestmentReasonBeforeForm._
 import models.UsedInvestmentReasonBeforeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -36,35 +37,40 @@ object UsedInvestmentReasonBeforeController extends UsedInvestmentReasonBeforeCo
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait UsedInvestmentReasonBeforeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
-      case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
-      case None => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm))
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
+        case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
+        case None => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm))
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit userr => implicit request =>
-    usedInvestmentReasonBeforeForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))
-      },
-      validFormData => {
-        s4lConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
-        validFormData.usedInvestmentReasonBefore match {
-          case Constants.StandardRadioButtonYesValue => {
-            Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
-          }
-          case Constants.StandardRadioButtonNoValue => {
-            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
-              routes.UsedInvestmentReasonBeforeController.show().url)
-            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit userr => implicit request =>
+      usedInvestmentReasonBeforeForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(UsedInvestmentReasonBefore(formWithErrors)))
+        },
+        validFormData => {
+          s4lConnector.saveFormData(KeystoreKeys.usedInvestmentReasonBefore, validFormData)
+          validFormData.usedInvestmentReasonBefore match {
+            case Constants.StandardRadioButtonYesValue => {
+              Future.successful(Redirect(routes.PreviousBeforeDOFCSController.show()))
+            }
+            case Constants.StandardRadioButtonNoValue => {
+              s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+                routes.UsedInvestmentReasonBeforeController.show().url)
+              Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
+
 }

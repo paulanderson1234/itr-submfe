@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.predicates.FeatureSwitch
 import models.KiProcessingModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
@@ -36,18 +37,23 @@ object LifetimeAllowanceExceededController extends LifetimeAllowanceExceededCont
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait LifetimeAllowanceExceededController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait LifetimeAllowanceExceededController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
-      case Some(data) => Ok(LifetimeAllowanceExceeded(data))
-      case None => InternalServerError(internalServerErrorTemplate)
+  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel).map {
+        case Some(data) => Ok(LifetimeAllowanceExceeded(data))
+        case None => InternalServerError(internalServerErrorTemplate)
+      }
     }
   }
 
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+    }
   }
+
 }
