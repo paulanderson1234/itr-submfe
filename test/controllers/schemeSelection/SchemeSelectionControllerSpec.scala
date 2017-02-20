@@ -27,6 +27,8 @@ import org.jsoup.Jsoup
 import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.Upstream5xxResponse
 
 import scala.concurrent.Future
 
@@ -107,6 +109,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "only EIS is selected in the form" should {
 
       "redirect the user to the first page of the EIS flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
          "EIS" -> "true",
@@ -124,6 +128,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "only SEIS is selected in the form" should {
 
       "redirect the user to the first page of the SEIS flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "false",
@@ -141,6 +147,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "only VCT is selected in the form" should {
 
       "redirect the user to the first page of the VCT flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "false",
@@ -158,6 +166,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "EIS and SEIS are selected in the form" should {
 
       "redirect the user to the first page of the EIS SEIS combined flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "true",
@@ -175,6 +185,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "EIS and VCT are selected in the form" should {
 
       "redirect the user to the first page of the EIS VCT combined flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "true",
@@ -192,6 +204,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "SEIS and VCT are selected in the form" should {
 
       "redirect the user to the first page of the SEIS VCT combined flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "false",
@@ -209,6 +223,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "EIS, SEIS and VCT are selected in the form" should {
 
       "redirect the user to the first page of the EIS SEIS VCT combined flow" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "true",
@@ -226,6 +242,8 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "no options are selected in the form" should {
 
       "return a BAD_REQUEST" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "EIS" -> "false",
@@ -242,12 +260,33 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     "an invalid form is sent" should {
 
       "return a BAD_REQUEST" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestController.submit(),
           "" -> ""
         ){
           result =>
             status(result) shouldBe BAD_REQUEST
+        }
+      }
+
+    }
+
+    "saveFormData returns a failed future" should {
+
+      "redirect the user" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.failed(Upstream5xxResponse("", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
+        mockEnrolledRequest()
+        submitWithSessionAndAuth(TestController.submit(),
+          "EIS" -> "true",
+          "SEIS" -> "false",
+          "VCT" -> "false"
+        ){
+          result =>
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       }
 
