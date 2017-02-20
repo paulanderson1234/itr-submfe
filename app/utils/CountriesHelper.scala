@@ -17,7 +17,6 @@
 package utils
 
 import java.util.Properties
-
 import play.api.Play
 
 import scala.collection.JavaConverters

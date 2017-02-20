@@ -17,11 +17,9 @@
 package controllers.eis
 
 import auth.{MockAuthConnector, MockConfig}
-import config.FrontendAuthConnector
 import controllers.helpers.BaseSpec
-import models.SubsidiariesNinetyOwnedModel
 import common.Constants
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import models.SubsidiariesNinetyOwnedModel
 import org.mockito.Matchers

@@ -18,13 +18,13 @@ package controllers.Helpers
 
 import auth.TAVCUser
 import common.KeystoreKeys
-import models._
+import models.{PreviousSchemeModel, TradeStartDateModel}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 
 object PreviousSchemesHelper extends PreviousSchemesHelper {
 

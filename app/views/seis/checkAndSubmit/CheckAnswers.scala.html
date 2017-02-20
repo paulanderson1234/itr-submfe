@@ -54,7 +54,7 @@
         <tbody>
         @if(checkAnswersModel.previousSchemes.length > 0){
         @for((previousScheme, index) <- checkAnswersModel.previousSchemes.zipWithIndex){
-        @textRowHelperMultiLine(s"previousScheme-$index", previousScheme.otherSchemeName.getOrElse(PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)),
+        @textRowHelperMultiLine(s"previousScheme-$index", PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc, previousScheme.otherSchemeName),
         PreviousSchemeModel.toArrayString(previousScheme), Some(controllers.seis.routes.ReviewPreviousSchemesController.show().url))
         }
         }else{

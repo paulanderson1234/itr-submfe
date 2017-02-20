@@ -18,7 +18,6 @@ package forms
 
 import java.time.ZoneId
 import java.util.Date
-
 import models.PreviousSchemeModel
 import org.scalatestplus.play.OneAppPerSuite
 import uk.gov.hmrc.play.test.UnitSpec

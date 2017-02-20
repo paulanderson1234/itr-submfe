@@ -19,9 +19,8 @@ package controllers.Helpers
 import auth.TAVCUser
 import models.submission.SchemeTypesModel
 import uk.gov.hmrc.play.http.HeaderCarrier
-import play.api.Play.current
 import play.api.i18n.Messages
-import play.api.mvc.{AnyContent, Request, Result}
+import play.api.mvc.{AnyContent, Request}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

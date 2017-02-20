@@ -15,7 +15,6 @@
  */
 
 package controllers.eis
-import java.net.URLEncoder
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer

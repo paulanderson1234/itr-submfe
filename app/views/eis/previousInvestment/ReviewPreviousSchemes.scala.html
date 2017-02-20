@@ -33,7 +33,7 @@
             <tbody>
             @for((previousScheme, index) <- previousSchemes.zipWithIndex) {
                 <tr>
-                    <td id="scheme-type-@{index}">@PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc)</td>
+                    <td id="scheme-type-@{index}">@PreviousSchemeModel.getSchemeName(previousScheme.schemeTypeDesc, previousScheme.otherSchemeName)</td>
                     <td id="scheme-date-@{index}">@PreviousSchemeModel.toDateString(previousScheme.day.get, previousScheme.month.get, previousScheme.year.get)</td>
                     <td id="scheme-amount-raised-@{index}">@PreviousSchemeModel.getAmountAsFormattedString(previousScheme.investmentAmount)</td>
                     <td id="scheme-amount-spent-@{index}">

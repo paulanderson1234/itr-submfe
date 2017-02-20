@@ -19,7 +19,6 @@ package views.eis
 import auth.MockAuthConnector
 import config.FrontendAppConfig
 import controllers.eis.CheckAnswersController
-import controllers.routes
 import models._
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

@@ -17,7 +17,7 @@
 package views.eis
 
 import auth.MockAuthConnector
-import common.{Constants, KeystoreKeys}
+import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.PreviousSchemeController
 import controllers.routes

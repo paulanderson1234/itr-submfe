@@ -17,7 +17,7 @@
 package forms
 
 import common.Constants
-import models.{IsKnowledgeIntensiveModel, PercentageStaffWithMastersModel}
+import models.PercentageStaffWithMastersModel
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.data.FormError
 import play.api.i18n.Messages

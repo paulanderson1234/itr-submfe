@@ -20,8 +20,7 @@ import auth.MockAuthConnector
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.InvestmentGrowController
-import controllers.routes
-import models._
+import models.{InvestmentGrowModel, NewGeographicalMarketModel, NewProductModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers

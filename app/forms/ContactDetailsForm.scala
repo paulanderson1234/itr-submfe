@@ -27,7 +27,7 @@ object ContactDetailsForm {
       "surname" -> nonEmptyText,
       "telephoneNumber" -> optional(utils.Validation.telephoneNumberCheck),
       "mobileNumber" -> optional(utils.Validation.telephoneNumberCheck),
-      "email" -> utils.Validation.emailCheck
+      "email" -> utils.Validation.emailCheck()
     )(ContactDetailsModel.apply)(ContactDetailsModel.unapply)
   )
 }

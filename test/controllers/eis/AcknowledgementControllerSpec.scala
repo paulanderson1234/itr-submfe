@@ -20,16 +20,15 @@ import auth._
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.helpers.{BaseSpec}
-
-import models._
+import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
+import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
+import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
 import models.submission.{SchemeTypesModel, SubmissionResponse}
 
 import scala.concurrent.Future

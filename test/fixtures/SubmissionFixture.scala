@@ -24,10 +24,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, _}
 import models.submission._
-import play.api.libs.json.Json
-import play.api.test.Helpers._
 import services.RegistrationDetailsService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -231,7 +228,7 @@ trait SubmissionFixture {
       processingId = None,
       investmentSpent = Some(20),
       otherSchemeName = None),
-    PreviousSchemeModel(schemeTypeDesc = Constants.schemeTypeEis, investmentAmount = 6000,
+    PreviousSchemeModel(schemeTypeDesc = Constants.schemeTypeOther, investmentAmount = 6000,
       day = Some(4),
       month = Some(5),
       year = Some(2002),

@@ -18,7 +18,6 @@ package builders
 
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.domain.CtUtr
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain._

@@ -25,6 +25,8 @@ import play.api.i18n.Messages.Implicits._
 
 class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
 
+  val chars132 = "thisxx@" + ("12345678911" * 11) + ".com"
+
   "Creating a form using an empty model" should {
     lazy val form = contactDetailsForm
     "return an empty string for forename, surname, telephone number and email" in {
@@ -307,7 +309,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "F",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -322,7 +324,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "L",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -337,7 +339,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "0",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -352,7 +354,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "T@t.")
+      "email" -> "T@t.c")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -367,7 +369,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "Thisnameisthirtyfivecharacterslongg",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -382,7 +384,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "Thisnameisthirtyfivecharacterslongg",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -397,7 +399,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "000000000000000000000005",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -412,7 +414,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "0000000000000000000000006",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -431,7 +433,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "0000000000000 0000000 00003",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -452,7 +454,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "0 00 0 0 0 0 0 0 0 7",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -467,7 +469,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "(00000) 000006",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -482,7 +484,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "+440000000005",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -497,7 +499,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "0/13/84/55/33/82",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise no form errors" in {
       form.hasErrors shouldBe false
@@ -509,7 +511,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "#00000000007",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise no form errors" in {
       form.hasErrors shouldBe false
@@ -521,7 +523,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "#00000000008",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise no form errors" in {
       form.hasErrors shouldBe false
@@ -533,7 +535,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "00000:000007",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -552,7 +554,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "+1 000-000-0007",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -571,7 +573,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "+00(0)000000008",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -590,7 +592,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "+44 0000000000 ext 123",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -609,7 +611,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "00000.00.00.00.00",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -628,7 +630,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> " 07000 111222",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -643,7 +645,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222 ",
-      "email" -> "test@test.com.")
+      "email" -> "test@test.com")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -758,25 +760,6 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
     }
   }
 
-  "email supplied with firstname+lastname@" should {
-    lazy val form = contactDetailsForm.bind(Map(
-      "forename" -> "firstname",
-      "surname" -> "lastname",
-      "telephoneNumber" -> "07000 111222",
-      "email" -> "firstname+lastname@test.com")
-    )
-    "raise form error" in {
-      form.hasErrors shouldBe true
-    }
-    "raise 1 form error" in {
-      form.errors.length shouldBe 1
-      form.errors.head.key shouldBe "email"
-    }
-    "associate the correct error message to the error" in {
-      form.error("email").get.message shouldBe Messages("validation.error.email")
-    }
-  }
-
   "email supplied with firstname_lastname@" should {
     lazy val form = contactDetailsForm.bind(Map(
       "forename" -> "firstname",
@@ -797,7 +780,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "00000 000001",
-      "email" -> "F@test.com")
+      "email" -> "F@t.c")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -812,7 +795,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "00000 000002",
-      "email" -> "@test.com")
+      "email" -> "@t.c")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -831,7 +814,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemail@test.com")
+      "email" -> chars132)
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -846,7 +829,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemailx@test.com")
+      "email" -> s"1$chars132")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -865,7 +848,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "firstname.lastname@P")
+      "email" -> "f@P.c")
     )
     "raise form error" in {
       form.hasErrors shouldBe false
@@ -880,7 +863,7 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
       "forename" -> "firstname",
       "surname" -> "lastname",
       "telephoneNumber" -> "07000 111222",
-      "email" -> "firstname.lastname@")
+      "email" -> "f.f@")
     )
     "raise form error" in {
       form.hasErrors shouldBe true
@@ -894,52 +877,4 @@ class ContactDetailsFormSpec extends UnitSpec with OneAppPerSuite{
     }
   }
 
-  "Part 2 - maximum allowed supplied for email (on boundary) " should {
-    lazy val form = contactDetailsForm.bind(Map(
-      "forename" -> "firstname",
-      "surname" -> "lastname",
-      "telephoneNumber" -> "07000 111222",
-      "email" -> "firstname.lastname@thisisalongemailthisisalongemailthisisalongemai.thisisalongemail")
-    )
-    "raise form error" in {
-      form.hasErrors shouldBe false
-    }
-    "raise 0 form error" in {
-      form.errors.length shouldBe 0
-    }
-  }
-
-  "Part 2 - too many characters supplied for the second part of the email (over the boundary) " should {
-    lazy val form = contactDetailsForm.bind(Map(
-      "forename" -> "firstname",
-      "surname" -> "lastname",
-      "telephoneNumber" -> "07000 111222",
-      "email" -> "firstname.lastname@thisisalongemailthisisalongemailthisisalongemai.thisisalongemailx")
-    )
-    "raise form error" in {
-      form.hasErrors shouldBe true
-    }
-    "raise 1 form error" in {
-      form.errors.length shouldBe 1
-      form.errors.head.key shouldBe "email"
-    }
-    "associate the correct error message to the error" in {
-      form.error("email").get.message shouldBe Messages("validation.error.email")
-    }
-  }
-
-  "Part 3 - max characters supplied for the email (on both boundaries) " should {
-    lazy val form = contactDetailsForm.bind(Map(
-      "forename" -> "firstname",
-      "surname" -> "lastname",
-      "telephoneNumber" -> "07000 111222",
-      "email" -> "thisisalongemailthisisalongemailthisisalongemailthisisalongemail@thisisalongemailthisisalongemailthisisalongemai.thisisalongemail")
-    )
-    "raise form error" in {
-      form.hasErrors shouldBe false
-    }
-    "raise 0 form error" in {
-      form.errors.length shouldBe 0
-    }
-  }
 }

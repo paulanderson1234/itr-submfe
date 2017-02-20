@@ -21,7 +21,6 @@ import common.Constants._
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.LifetimeAllowanceExceededController
-import controllers.routes
 import models.KiProcessingModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
