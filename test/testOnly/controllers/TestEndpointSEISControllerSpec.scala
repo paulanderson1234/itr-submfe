@@ -27,6 +27,7 @@ import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
+import testOnly.controllers.eis.TestEndpointEISController
 import testOnly.forms.TestPreviousSchemesForm
 import testOnly.models.TestPreviousSchemesModel
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
