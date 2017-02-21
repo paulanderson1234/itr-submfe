@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-package testOnly.controllers.seis
+package testOnly.controllers
 
-import auth.{MockAuthConnector, TAVCUser, ggUser, _}
+import auth.{MockAuthConnector, TAVCUser, _}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
-import fixtures.MockSeisConfig
 import forms.NatureOfBusinessForm
 import models._
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
+import testOnly.controllers.eisseis.TestEndpointEISSEISController
 import testOnly.models.TestPreviousSchemesModel
 
 import scala.concurrent.Future
 
-class TestEndpointSEISControllerSpec extends BaseSpec {
+class TestEndpointEISSEISControllerSpec extends BaseSpec {
 
-  object TestController extends TestEndpointSEISController {
+  object TestController extends TestEndpointEISSEISController {
     override lazy val applicationConfig = FrontendAppConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
@@ -49,6 +49,16 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[OperatingCostsModel](Matchers.eq(KeystoreKeys.operatingCosts))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[IsKnowledgeIntensiveModel](Matchers.eq(KeystoreKeys.isKnowledgeIntensive))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](Matchers.eq(KeystoreKeys.percentageStaffWithMasters))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[TenYearPlanModel](Matchers.eq(KeystoreKeys.tenYearPlan))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
@@ -56,6 +66,16 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[ProposedInvestmentModel](Matchers.eq(KeystoreKeys.proposedInvestment))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](Matchers.eq(KeystoreKeys.previousBeforeDOFCS))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[NewGeographicalMarketModel](Matchers.eq(KeystoreKeys.newGeographicalMarket))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[NewProductModel](Matchers.eq(KeystoreKeys.newProduct))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](Matchers.eq(KeystoreKeys.turnoverCosts))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[InvestmentGrowModel](Matchers.eq(KeystoreKeys.investmentGrow))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](Matchers.eq(KeystoreKeys.confirmContactDetails))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
@@ -79,22 +99,22 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemes))
   }
 
-  "TestEndpointSEISController" should {
+  "TestEndpointEISSEISController" should {
     "Use the correct s4l connector" in {
-      TestEndpointSEISController.s4lConnector shouldBe S4LConnector
+      TestEndpointEISSEISController.s4lConnector shouldBe S4LConnector
     }
     "Use the correct auth connector" in {
-      TestEndpointSEISController.authConnector shouldBe FrontendAuthConnector
+      TestEndpointEISSEISController.authConnector shouldBe FrontendAuthConnector
     }
     "Use the correct enrolment connector" in {
-      TestEndpointSEISController.enrolmentConnector shouldBe EnrolmentConnector
+      TestEndpointEISSEISController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "Use the correct app config" in {
-      TestEndpointSEISController.applicationConfig shouldBe FrontendAppConfig
+      TestEndpointEISSEISController.applicationConfig shouldBe FrontendAppConfig
     }
   }
 
-  "TestEndpointSEISController.showPageOne" when {
+  "TestEndpointEISSEISController.showPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -110,7 +130,7 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
   }
 
-  "TestEndpointSEISController.submitPageOne" when {
+  "TestEndpointEISSEISController.submitPageOne" when {
 
     "Called as an authorised and enrolled user" should {
 
@@ -125,7 +145,38 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
   }
 
-  "TestEndpointSEISController.fillForm" when {
+  "TestEndpointEISSEISController.showPageTwo" when {
+
+    "Called as an authorised and enrolled user" should {
+
+      "Return OK" in {
+        mockEnrolledRequest()
+        setupShowMocks()
+        showWithSessionAndAuth(TestController.showPageTwo())(
+          result => status(result) shouldBe OK
+        )
+      }
+
+    }
+
+  }
+
+  "TestEndpointEISSEISController.submitPageTwo" when {
+
+    "Called as an authorised and enrolled user" should {
+
+      "Return OK" in {
+        mockEnrolledRequest()
+        submitWithSessionAndAuth(TestController.submitPageTwo())(
+          result => status(result) shouldBe OK
+        )
+      }
+
+    }
+
+  }
+
+  "TestEndpointEISSEISController.fillForm" when {
 
     "s4lConnector returns data" should {
 
@@ -149,7 +200,7 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
   }
 
-  "TestEndpointSEISController.fillPreviousSchemesForm" when {
+  "TestEndpointEISSEISController.fillPreviousSchemesForm" when {
 
     "s4lConnector returns data" should {
 
@@ -173,7 +224,7 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
   }
 
-  "TestEndpointSEISController.bindForm" when {
+  "TestEndpointEISSEISController.bindForm" when {
 
     "Sent a valid form" should {
 
@@ -198,14 +249,46 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
   }
 
-  "TestEndpointSEISController.bindPreviousSchemesForm" when {
+  "TestEndpointEISSEISController.bindKIForm" when {
+
+    "Sent a valid form with Yes" should {
+
+      "Return the valid form" in {
+        val result = TestController.bindKIForm()(fakeRequest.withFormUrlEncodedBody("isKnowledgeIntensive" -> Constants.StandardRadioButtonYesValue),user)
+        await(result).get shouldBe IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+      }
+
+    }
+
+    "Sent a valid form with No" should {
+
+      "Return the valid form" in {
+        val result = TestController.bindKIForm()(fakeRequest.withFormUrlEncodedBody("isKnowledgeIntensive" -> Constants.StandardRadioButtonNoValue),user)
+        await(result).get shouldBe IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+      }
+
+    }
+
+    "Sent an invalid form" should {
+
+      "Return the invalid form with errors" in {
+
+        val result = TestController.bindKIForm()(fakeRequest,user)
+        await(result).hasErrors shouldBe true
+      }
+
+    }
+
+  }
+
+  "TestEndpointEISSEISController.bindPreviousSchemesForm" when {
 
     "Sent a valid form with a previous scheme" should {
 
       "Return the valid form" in {
         setupFillPreviousSchemesFormMocks(None)
         val result = TestController.bindPreviousSchemesForm()(fakeRequest.withFormUrlEncodedBody(
-          "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeSitr,
+          "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeEis,
           "testPreviousSchemes[0].previousSchemeInvestmentAmount" -> "3",
           "testPreviousSchemes[0].previousSchemeInvestmentSpent" -> "",
           "testPreviousSchemes[0].previousSchemeOtherSchemeName" -> "",
@@ -214,7 +297,8 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
           "testPreviousSchemes[0].previousSchemeInvestmentYear" -> "2008",
           "testPreviousSchemes[0].previousSchemeProcessingId" -> "1"
         ), user)
-        result.get shouldBe TestPreviousSchemesModel(Some(Seq(PreviousSchemeModel(Constants.schemeTypeSitr,
+        //TODO: new contsants entry potentially reuquired for combined flow
+        result.get shouldBe TestPreviousSchemesModel(Some(Seq(PreviousSchemeModel(Constants.schemeTypeEis,
           3, None, None, Some(4), Some(5), Some(2008), Some(1)))))
       }
 
@@ -231,18 +315,10 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
 
     "Sent an invalid form" should {
 
-      "Return the invalid form with errors  when eis" in {
+      "Return the invalid form with errors" in {
         setupFillPreviousSchemesFormMocks(None)
         val result = TestController.bindPreviousSchemesForm()(fakeRequest.withFormUrlEncodedBody(
           "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeEis
-        ), user)
-        result.hasErrors shouldBe true
-      }
-
-      "Return the invalid form with errors when vct" in {
-        setupFillPreviousSchemesFormMocks(None)
-        val result = TestController.bindPreviousSchemesForm()(fakeRequest.withFormUrlEncodedBody(
-          "testPreviousSchemes[0].schemeTypeDesc" -> Constants.schemeTypeVct
         ), user)
         result.hasErrors shouldBe true
       }

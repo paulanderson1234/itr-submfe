@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package testOnly.controllers.eis
+package testOnly.controllers.eisseis
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.{Constants, KeystoreKeys}
@@ -36,7 +36,7 @@ import play.api.Play.current
 
 import scala.concurrent.Future
 
-trait TestEndpointEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait TestEndpointEISSEISController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
 
@@ -51,6 +51,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
       for {
         natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
         dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
+        tradeStartDateForm <- fillForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
         commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
         isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
         operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
@@ -60,9 +61,10 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
       } yield Ok(
-        testOnly.views.html.eis.testEndpointEISPageOne(
+        testOnly.views.html.eisseis.testEndpointEISSEISPageOne(
           natureOfBusinessForm,
           dateOfIncorporationForm,
+          tradeStartDateForm,
           commercialSaleForm,
           isKnowledgeIntensiveForm,
           operatingCostsForm,
@@ -91,7 +93,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
         ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
       contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     } yield Ok(
-      testOnly.views.html.eis.testEndpointEISPageTwo(
+      testOnly.views.html.eisseis.testEndpointEISSEISPageTwo(
         proposedInvestmentForm,
         usedInvestmentReasonBeforeForm,
         previousBeforeDoFCSForm,
@@ -110,6 +112,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
   def submitPageOne: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
+    val tradeStartDate = bindForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
     val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
     val isKnowledgeIntensive = bindKIForm()
     val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
@@ -119,10 +122,12 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
     saveBackLinks()
+    saveSchemeType()
     Future.successful(Ok(
-      testOnly.views.html.eis.testEndpointEISPageOne(
+      testOnly.views.html.eisseis.testEndpointEISSEISPageOne(
         natureOfBusiness,
         dateOfIncorporation,
+        tradeStartDate,
         commercialSale,
         isKnowledgeIntensive,
         testOperatingCosts,
@@ -151,7 +156,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
-      testOnly.views.html.eis.testEndpointEISPageTwo(
+      testOnly.views.html.eisseis.testEndpointEISSEISPageTwo(
         proposedInvestment,
         usedInvestmentReasonBefore,
         previousBeforeDoFCS,
@@ -169,20 +174,20 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
 
   private def saveBackLinks()(implicit hc: HeaderCarrier, user: TAVCUser) = {
     s4lConnector.saveFormData[Boolean](KeystoreKeys.applicationInProgress, true)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointEISController.showPageOne(None).url)
-    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkConfirmCorrespondence, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkIneligibleForKI, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkInvestmentGrow, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkNewGeoMarket, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkPreviousScheme, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkProposedInvestment, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkReviewPreviousSchemes, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubsidiaries, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSubSpendingInvestment, routes.TestEndpointEISSEISController.showPageOne(None).url)
+    s4lConnector.saveFormData[String](KeystoreKeys.backLinkSupportingDocs, routes.TestEndpointEISSEISController.showPageOne(None).url)
   }
 
   private def saveSchemeType()(implicit hc: HeaderCarrier, user: TAVCUser) = {
-    s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
+    s4lConnector.saveFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true, seis = true))
   }
 
   def fillForm[A](s4lKey: String, form: Form[A])(implicit hc: HeaderCarrier, user: TAVCUser, format: Format[A]): Future[Form[A]] = {
@@ -308,7 +313,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
 
 }
 
-object TestEndpointEISController extends TestEndpointEISController
+object TestEndpointEISSEISController extends TestEndpointEISSEISController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector

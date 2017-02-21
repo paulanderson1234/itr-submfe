@@ -12,7 +12,7 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
-    @form(action = testOnly.controllers.routes.TestEndpointSEISController.submitPageOne()) {
+    @form(action = testOnly.controllers.seis.routes.TestEndpointSEISController.submitPageOne()) {
 
     <h2> Nature Of Business</h2>
     <div class="form-group">

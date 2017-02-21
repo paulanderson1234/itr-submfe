@@ -12,15 +12,22 @@
 GET        /investment-tax-relief/test-only/clear-cache                                 testOnly.controllers.ClearCacheController.clearCache
 
 #eis
-GET        /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.TestEndpointEISController.showPageOne(schemes: Option[Int])
-POST       /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.TestEndpointEISController.submitPageOne
+GET        /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.eis.TestEndpointEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.eis.TestEndpointEISController.submitPageOne
 
-GET        /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.TestEndpointEISController.showPageTwo
-POST       /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.TestEndpointEISController.submitPageTwo
+GET        /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.eis.TestEndpointEISController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/eis/page-2                        testOnly.controllers.eis.TestEndpointEISController.submitPageTwo
 
 #seis
-GET        /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.TestEndpointSEISController.showPageOne(schemes: Option[Int])
-POST       /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.TestEndpointSEISController.submitPageOne
+GET        /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.seis.TestEndpointSEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/seis                              testOnly.controllers.seis.TestEndpointSEISController.submitPageOne
+
+#eisseis
+GET        /investment-tax-relief/test-only/test-endpoint/eisseis/page-1                    testOnly.controllers.eisseis.TestEndpointEISSEISController.showPageOne(schemes: Option[Int])
+POST       /investment-tax-relief/test-only/test-endpoint/eisseis/page-1                    testOnly.controllers.eisseis.TestEndpointEISSEISController.submitPageOne
+
+GET        /investment-tax-relief/test-only/test-endpoint/eisseis/page-2                    testOnly.controllers.eisseis.TestEndpointEISSEISController.showPageTwo
+POST       /investment-tax-relief/test-only/test-endpoint/eisseis/page-2                    testOnly.controllers.eisseis.TestEndpointEISSEISController.submitPageTwo
 
 # Add all the application routes to the prod.routes file
 ->         /                          prod.Routes
