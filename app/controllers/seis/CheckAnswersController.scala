@@ -45,8 +45,6 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
-
-
   def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser) : Future[SEISCheckAnswersModel] = for {
     registeredAddress <- s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress)
     dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)

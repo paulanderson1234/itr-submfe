@@ -88,7 +88,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
       } yield result) recover {
         case e: Exception => {
-          Logger.warn(s"[AcknowledgementController][submit] - SEIS - Exception: ${e.getMessage}")
+          Logger.warn(s"[AcknowledgementController][submit] - EISSEIS - Exception: ${e.getMessage}")
           InternalServerError(internalServerErrorTemplate)
         }
       }
