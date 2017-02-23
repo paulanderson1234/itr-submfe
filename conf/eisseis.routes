@@ -4,6 +4,12 @@
 GET        /date-of-incorporation                   controllers.eisseis.DateOfIncorporationController.show
 POST       /date-of-incorporation                   controllers.eisseis.DateOfIncorporationController.submit
 
+GET       /trade-start-date                        controllers.eisseis.TradeStartDateController.show
+POST      /trade-start-date                        controllers.eisseis.TradeStartDateController.submit
+
+GET       /trade-start-date-error                  controllers.eisseis.TradeStartDateErrorController.show
+POST      /trade-start-date-error                  controllers.eisseis.TradeStartDateErrorController.submit
+
 GET        /commercial-sale                         controllers.eisseis.CommercialSaleController.show
 POST       /commercial-sale                         controllers.eisseis.CommercialSaleController.submit
 
