@@ -105,7 +105,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         TradeStartDateModel.toDateString(tradeStartDateModelYes.tradeStartDay.get,
           tradeStartDateModelYes.tradeStartMonth.get, tradeStartDateModelYes.tradeStartYear.get)
       companyDetailsTableTBody.select("tr").get(2).getElementById("tradeStart-link")
-        .attr("href") shouldEqual controllers.eisseis.routes.AnnualTurnoverErrorController.show().url
+        .attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       //Date of first commercial sale
       companyDetailsTableTBody.select("tr").get(3).getElementById("commercialSale-Question0").text() shouldBe
         Messages("summaryQuestion.hasCommercialSale")
@@ -243,7 +243,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").get(0).getElementById("tradeStart-answer").text() shouldBe
         tradeStartDateModelNo.hasTradeStartDate
       companyDetailsTableTBody.select("tr").get(0).getElementById("tradeStart-link")
-        .attr("href") shouldEqual controllers.eisseis.routes.AnnualTurnoverErrorController.show().url
+        .attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
@@ -306,7 +306,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         TradeStartDateModel.toDateString(tradeStartDateModelYes.tradeStartDay.get,
           tradeStartDateModelYes.tradeStartMonth.get, tradeStartDateModelYes.tradeStartYear.get)
       companyDetailsTableTBody.select("tr").get(2).getElementById("tradeStart-link")
-        .attr("href") shouldEqual controllers.eisseis.routes.AnnualTurnoverErrorController.show().url
+        .attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       // Commercial sale
       companyDetailsTableTBody.select("tr").get(3).getElementById("commercialSale-question").text() shouldBe
         Messages("summaryQuestion.hasCommercialSale")

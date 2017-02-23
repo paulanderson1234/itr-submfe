@@ -52,9 +52,9 @@
             @if(tradeStartDateModel.isDefined){
             @defining(tradeStartDateModel.get) { tradeStartDateModel =>
             @if(tradeStartDateModel.hasTradeStartDate == Messages("common.radioYesLabel")){
-                @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.eisseis.routes.AnnualTurnoverErrorController.show().url), None)
+                @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.eisseis.routes.TradeStartDateController.show().url), None)
             } else {
-                @textRowHelperBasic("tradeStart", Messages("summaryQuestion.hasTradeStartDate"), tradeStartDateModel.hasTradeStartDate, Some(controllers.eisseis.routes.AnnualTurnoverErrorController.show().url))
+                @textRowHelperBasic("tradeStart", Messages("summaryQuestion.hasTradeStartDate"), tradeStartDateModel.hasTradeStartDate, Some(controllers.eisseis.routes.TradeStartDateController.show().url))
             }
             }
             }
