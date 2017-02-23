@@ -86,7 +86,7 @@ class DateOfIncorporationControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(DateOfIncorporationControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+          redirectLocation(result) shouldBe Some(routes.TradeStartDateController.show().url)
         }
       )
     }
