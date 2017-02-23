@@ -27,7 +27,9 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
+import play.api.libs.json.Json
 import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
 
@@ -172,6 +174,11 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val eisSchemeTypesModel = Some(SchemeTypesModel(eis = true))
   val vctSchemeTypesModel = Some(SchemeTypesModel(vct = true))
   val eisSeisSchemeTypesModel = Some(SchemeTypesModel(seis = true, eis = true))
+
+  val eisSeisProcessingModelWithIneligible = EisSeisProcessingModel(Some(true), Some(false), Some(false) )
+  val eisSeisProcessingModelEligible = EisSeisProcessingModel(Some(false), Some(false), Some(false) )
+
+  val cacheMapEisSeisProcessingModelEligible: CacheMap = CacheMap("", Map("" -> Json.toJson(EisSeisProcessingModel(Some(false), Some(false), Some(false)))))
 
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"

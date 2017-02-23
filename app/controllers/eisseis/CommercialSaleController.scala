@@ -63,7 +63,7 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
               Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
             }
             else {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().toString())
+              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().url)
               Future.successful(Redirect(routes.SubsidiariesController.show()))
             }
           }
