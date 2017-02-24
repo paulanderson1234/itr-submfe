@@ -44,7 +44,7 @@ object TradeStartDateController extends TradeStartDateController {
 
 trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  override val acceptedFlows = Seq(Seq(ALLFLOWS))
+  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   val submissionConnector: SubmissionConnector
 
