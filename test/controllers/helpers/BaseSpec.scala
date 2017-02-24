@@ -176,6 +176,9 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val eisSeisSchemeTypesModel = Some(SchemeTypesModel(seis = true, eis = true))
 
   val eisSeisProcessingModelWithIneligible = EisSeisProcessingModel(Some(true), Some(false), Some(false) )
+  val eisSeisProcessingModelIneligiblePreviousSchemeType = EisSeisProcessingModel(Some(false), Some(true), Some(false) )
+  val eisSeisProcessingModelIneligibleStartDate= EisSeisProcessingModel(Some(true), Some(false), Some(false) )
+  val eisSeisProcessingModelIneligiblePreviouSchemeThreshold= EisSeisProcessingModel(Some(false), Some(false), Some(true) )
   val eisSeisProcessingModelEligible = EisSeisProcessingModel(Some(false), Some(false), Some(false) )
 
   val cacheMapEisSeisProcessingModelEligible: CacheMap = CacheMap("", Map("" -> Json.toJson(EisSeisProcessingModel(Some(false), Some(false), Some(false)))))

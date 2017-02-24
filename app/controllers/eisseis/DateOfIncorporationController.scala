@@ -16,11 +16,11 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.KnowledgeIntensiveHelper
+import controllers.Helpers.{EisSeisHelper, KnowledgeIntensiveHelper}
 import controllers.predicates.FeatureSwitch
 import forms.DateOfIncorporationForm._
 import models.DateOfIncorporationModel
