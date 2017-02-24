@@ -661,6 +661,12 @@ page.seis.companyDetails.tradeStartDate.heading=Has your company started trading
 page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
 page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
 
+# EISSEIS trade start date
+page.eisseis.companyDetails.tradeStartDate.title=Has your company started trading?
+page.eisseis.companyDetails.tradeStartDate.heading=Has your company started trading?
+page.eisseis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
+page.eisseis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+
 # SEIS trade start date error
 page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
 page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
