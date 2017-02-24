@@ -667,6 +667,16 @@ page.seis.companyDetails.tradeStartDateError.trading.over.two.years=This is beca
 page.seis.companyDetails.tradeStartDateError.incorrect.info=If this information is incorrect, you can
 page.seis.companyDetails.tradeStartDateError.link.changeAnswers=change your answers
 
+#EISSEIS trade start date error
+page.eisseis.companyDetails.tradeStartDateError.title=You don''t qualify for the Seed Enterprise Investment Scheme
+page.esisseis.companyDetails.tradeStartDateError.heading=You don''t qualify for the Seed Enterprise Investment Scheme
+page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
+page.esisseis.companyDetails.tradeStartDateError.whatNext.heading=What happens next
+page.esisseis.companyDetails.tradeStartDateError.whatNext.continue=You can continue with your application for:
+page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.one=the Enterprise Investment Scheme
+
+
+
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
 page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
