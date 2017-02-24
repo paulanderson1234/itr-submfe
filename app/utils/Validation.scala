@@ -452,6 +452,30 @@ object Validation {
     }
   }
 
+  def isSameDate(dateFirst: Date, dateSecond:Date): Boolean = {
+    Try {
+      val fmt = new SimpleDateFormat("dd/MM/yyyy")
+      fmt.setLenient(false)
+      fmt.format(dateFirst).equals(fmt.format(dateSecond))
+
+    } match {
+      case Success(result) => result
+      case Failure(_) => false
+    }
+  }
+
+  def isNotSameDate(dateFirst: Date, dateSecond:Date): Boolean = {
+    Try {
+      val fmt = new SimpleDateFormat("dd/MM/yyyy")
+      fmt.setLenient(false)
+      !fmt.format(dateFirst).equals(fmt.format(dateSecond))
+
+    } match {
+      case Success(result) => result
+      case Failure(_) => false
+    }
+  }
+
   def dateSinceOtherDate(day: Int, month: Int, year: Int, otherDate:Date): Boolean = {
     constructDate(day, month, year).compareTo(otherDate) >= 0
   }

@@ -67,27 +67,33 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
         validFormData => {
           validFormData.hasTradeStartDate match {
             case Constants.StandardRadioButtonYesValue =>
-              s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+              //s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
               submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
                 validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).flatMap {
                 case Some(validated) => if (validated) {
+                  s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
                   EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = false)
                   Future.successful(Redirect(routes.CommercialSaleController.show()))
-                } else EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
+                } else EisSeisHelper.shouldDisplayTradeStartDateError(s4lConnector, validFormData).map {
                   // update start date condition only after checking if already seis ineligible
                   // only show seis error if not already ineligible (as already shown it before otherwise)
-                  case alreadySeisIneligible if alreadySeisIneligible =>
-                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
-                    Redirect(routes.CommercialSaleController.show())
-                  case _ =>
+                  // however show errro if the data has changed
+                  case shouldDisplayError if shouldDisplayError =>
+                    s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
                     EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
                     Redirect(routes.TradeStartDateErrorController.show())
+                  case _ =>
+                    s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
+                    Redirect(routes.CommercialSaleController.show())
                 }
                 case _ =>
+                  s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
                   Future.successful(InternalServerError(internalServerErrorTemplate))
               }.recover {
                 case e: Exception =>
+                  s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
                   Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
                   InternalServerError(internalServerErrorTemplate)
               }

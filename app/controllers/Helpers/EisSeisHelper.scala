@@ -18,6 +18,7 @@ package controllers.Helpers
 
 import akka.pattern.FutureRef
 import auth.TAVCUser
+import utils.Validation
 import common.KeystoreKeys
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
@@ -107,18 +108,28 @@ trait EisSeisHelper {
 
   /** Helper method to set the SEIS ineligibility flag relating to the previous scheme threshold exceeded condition.
     *
-    * @param s4lConnector                               An instance of the Save4Later Connector.
-    * @param previousSchemeThresholdConditionIneligible Boolean indicating how the SEIS previous scheme threshold exceeded ineligibility condition should be set.
+    * @param s4lConnector        An instance of the Save4Later Connector.
+    * @param tradeStartDateModel The current valid trade start date model entered.
     */
   def shouldDisplayTradeStartDateError(s4lConnector: connectors.S4LConnector, tradeStartDateModel: TradeStartDateModel)
                                       (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
 
     def shouldDisplay(existingStartDate: Option[TradeStartDateModel], eisSeisProcessingModel: Option[EisSeisProcessingModel]): Future[Boolean] = {
-      if (existingStartDate.nonEmpty && dateCheck(existingStartDate.get, tradeStartDateModel)) Future(true)
+      if (existingStartDate.nonEmpty && dateChangedCheck(existingStartDate.get, tradeStartDateModel)) {
+        println("========================================NEW DATE")
+        Future(true)
+      }
       else {
         eisSeisProcessingModel match {
-          case Some(data) => Future(data.isSeisIneligible)
-          case _ => Future(false)
+          case Some(data) => {
+            println("========================================existing date eligiblity:  " + data.isSeisIneligible)
+            Future(!data.isSeisIneligible)
+          }
+
+          case _ => {
+            println("========================================Np procesign model so true to show model:  " )
+            Future(true)
+          }
         }
       }
     }
@@ -127,13 +138,16 @@ trait EisSeisHelper {
       existingStartDate: Option[TradeStartDateModel] <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
       processingModel <- s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel)
 
-    } yield shouldDisplay(existingStartDate, processingModel)).flatMap(iseli => iseli)
+    } yield shouldDisplay(existingStartDate, processingModel)).flatMap(result => result)
 
   }
 
-  def dateCheck(tradeStartDateModel: TradeStartDateModel, exisitingStartDateModel: TradeStartDateModel): Boolean = {
-    true
+  private def dateChangedCheck(tradeStartDateModel: TradeStartDateModel, existingStartDateModel: TradeStartDateModel): Boolean = {
+    Validation.isNotSameDate(
+      Validation.constructDate(
+        tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get),
+      Validation.constructDate(
+        existingStartDateModel.tradeStartDay.get, existingStartDateModel.tradeStartMonth.get, existingStartDateModel.tradeStartYear.get))
   }
-
 
 }
