@@ -12,10 +12,19 @@
 
 @backButton(controllers.seis.routes.SupportingDocumentsController.show().url)
 
-<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
 
-<p id="description-one">@Messages("page.seis.checkAndSubmit.checkAnswers.description.one")</p>
-<p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
+<div class="form-group">
+    <p id="description-one">@Messages("page.checkAndSubmit.checkAnswers.description.one")</p>
+
+    <ul class="bullets" id="schemes">
+        <li id="seis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.seis")</li>
+    </ul>
+</div>
+
+<div class="form-group">
+    <p id="description-two">@Messages("page.checkAndSubmit.checkAnswers.description.two")</p>
+</div>
 
 <div id="yourAnswers" class="full-width">
 
