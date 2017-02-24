@@ -30,7 +30,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.companyDetails.TradeStartDate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.mvc.Result
+import play.api.mvc.Result
 
 import scala.concurrent.Future
 
@@ -66,32 +66,36 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
         },
         validFormData => {
           validFormData.hasTradeStartDate match {
-            case Constants.StandardRadioButtonYesValue => {
+            case Constants.StandardRadioButtonYesValue =>
               s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
               submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
-                validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
+                validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).flatMap {
                 case Some(validated) => if (validated) {
-                  EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible =  false)
-                  Redirect(routes.CommercialSaleController.show())
-                } else {
-                  EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
-                  Redirect(routes.TradeStartDateErrorController.show())
+                  EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = false)
+                  Future.successful(Redirect(routes.CommercialSaleController.show()))
+                } else EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
+                  // update start date condition only after checking if already seis ineligible
+                  // only show seis error if not already ineligible (as already shown it before otherwise)
+                  case alreadySeisIneligible if alreadySeisIneligible =>
+                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
+                    Redirect(routes.CommercialSaleController.show())
+                  case _ =>
+                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
+                    Redirect(routes.TradeStartDateErrorController.show())
                 }
-                case _ => {
+                case _ =>
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
-                  InternalServerError(internalServerErrorTemplate)
-                }
+                  Future.successful(InternalServerError(internalServerErrorTemplate))
               }.recover {
-                case e: Exception => {
+                case e: Exception =>
                   Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
                   InternalServerError(internalServerErrorTemplate)
-                }
               }
-            }
-            case Constants.StandardRadioButtonNoValue => {
+            case Constants.StandardRadioButtonNoValue =>
               s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+              // if there is no start date chosen. remove any existing ineligibility for the start date condition
+              EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = false)
               Future.successful(Redirect(routes.CommercialSaleController.show()))
-            }
           }
         }
       )
