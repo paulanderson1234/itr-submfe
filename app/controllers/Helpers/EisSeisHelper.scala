@@ -115,21 +115,11 @@ trait EisSeisHelper {
                                       (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
 
     def shouldDisplay(existingStartDate: Option[TradeStartDateModel], eisSeisProcessingModel: Option[EisSeisProcessingModel]): Future[Boolean] = {
-      if (existingStartDate.nonEmpty && dateChangedCheck(existingStartDate.get, tradeStartDateModel)) {
-        println("========================================NEW DATE")
-        Future(true)
-      }
+      if (existingStartDate.nonEmpty && dateChangedCheck(existingStartDate.get, tradeStartDateModel)) Future(true)
       else {
         eisSeisProcessingModel match {
-          case Some(data) => {
-            println("========================================existing date eligiblity:  " + data.isSeisIneligible)
-            Future(!data.isSeisIneligible)
-          }
-
-          case _ => {
-            println("========================================Np procesign model so true to show model:  " )
-            Future(true)
-          }
+          case Some(data) => Future(!data.isSeisIneligible)
+          case _ => Future(true)
         }
       }
     }
