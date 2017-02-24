@@ -16,8 +16,8 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
-import common.KeystoreKeys
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
@@ -30,6 +30,7 @@ import play.api.Play.current
 import scala.concurrent.Future
 import views.html.eisseis.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
+import models.PreviousSchemeModel
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -70,7 +71,7 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       previousSchemeForm.bindFromRequest().fold(
         formWithErrors => {
@@ -80,16 +81,23 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
         validFormData => {
           s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
           validFormData.processingId match {
-            case Some(id) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
-              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+            case Some(_) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
+              _ => routeRequest(validFormData)
             }
             case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
-              _ => Redirect(routes.ReviewPreviousSchemesController.show())
+              _ => routeRequest(validFormData)
             }
           }
         }
       )
     }
+  }
+
+  private def routeRequest(previousSchemeModel: PreviousSchemeModel): Result = {
+    if (previousSchemeModel.schemeTypeDesc == Constants.schemeTypeVct || previousSchemeModel.schemeTypeDesc == Constants.schemeTypeEis) {
+      //TODO: set boolean to true in model
+      Redirect(routes.InvalidPreviousSchemeController.show())
+    } else Redirect(routes.ReviewPreviousSchemesController.show())
   }
 
 }

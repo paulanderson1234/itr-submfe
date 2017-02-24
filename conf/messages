@@ -704,6 +704,45 @@ page.seis.checkAndSubmit.acknowledgement.waitingTime.heading=How long you''ll ha
 page.seis.checkAndSubmit.acknowledgement.courseOfAction=Once we''ve received your supporting documents we''ll contact you within 4 weeks.
 page.seis.checkAndSubmit.acknowledgement.button.confirm=Finish
 
+# EIS SEIS had previous RFI
+page.eisseis.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme or had other relevant investments?
+page.eisseis.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme or had other relevant investments?
+page.eisseis.previousInvestment.hadPreviousRFI.text=You should include any State aid you''ve received under the de minimis regulation.
+page.eisseis.previousInvestment.hadPreviousRFI.hint=How do I know whether the funding I''ve received is de minimis State aid?
+page.eisseis.previousInvestment.hadPreviousRFI.hint.text=HMRC aren''t able to help you with this. You should contact the person who gave you the aid if you need advice.
+
+
+# EIS SEIS VCT Previous scheme error
+page.eisseis.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the Seed Enterprise Investment Scheme
+page.eisseis.previousInvestment.InvalidPreviousScheme.heading=You don''t qualify for the Seed Enterprise Investment Scheme
+page.eisseis.previousInvestment.InvalidPreviousScheme.reason=This is because your company has already raised investment through the Enterprise Investment Scheme or received investment from a Venture Capital Trust.
+page.eisseis.previousInvestment.InvalidPreviousScheme.next.heading=What happens next
+page.eisseis.previousInvestment.InvalidPreviousScheme.next.text=You can continue with your application for:
+page.eisseis.previousInvestment.InvalidPreviousScheme.next.eis=the Enterprise Investment Scheme
+page.eisseis.previousInvestment.InvalidPreviousScheme.next.vct=the Venture Capital Trust scheme
+page.eisseis.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect, you can
+page.eisseis.previousInvestment.InvalidPreviousScheme.change-link=change your answers
+
+# EIS SEIS lifetime allowance exceeded page
+page.eisseis.investment.LifetimeAllowanceExceeded.title=You don''t qualify for any of the schemes
+page.eisseis.investment.LifetimeAllowanceExceeded.heading=You don''t qualify for any of the schemes
+page.eisseis.investment.LifetimeAllowanceExceeded.reason=This is because you''ve already raised {0} million or more from tax relief investment schemes.
+page.eisseis.investment.LifetimeAllowanceExceeded.change.text=If this information is incorrect you can
+page.eisseis.investment.LifetimeAllowanceExceeded.change.link=change your answers
+
+# EIS SEIS 150k error for SEIS review previous schemes
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.title=You don''t qualify for the Seed Enterprise Investment Scheme
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.heading=You don''t qualify for the Seed Enterprise Investment Scheme
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.reason=This is because your company has already raised £150,000 or more of investment from:
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.one=any previous SEIS investments
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.two=any state aid under the de minimis regulation
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.heading=What happens next
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.text=You can continue with your application for:
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.eis=the Enterprise Investment Scheme
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.vct=the Venture Capital Trust scheme
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect, you can
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
+
 #test
 page.test.clear-cache.button=Clear cache
 page.test.submit-form.button=Submit

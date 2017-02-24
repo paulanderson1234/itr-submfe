@@ -98,3 +98,6 @@ POST       /lifetime-allowance-exceeded             controllers.eisseis.Lifetime
 GET        /annual-turnover-error                   controllers.eisseis.AnnualTurnoverErrorController.show
 
 GET        /trading-for-too-long                    controllers.eisseis.TradingForTooLongController.show
+
+GET        /invalid-scheme-type                     controllers.eisseis.InvalidPreviousSchemeController.show
+GET        /previous-schemes-allowance-exceeded     controllers.eisseis.PreviousInvestmentsAllowanceExceededController.show

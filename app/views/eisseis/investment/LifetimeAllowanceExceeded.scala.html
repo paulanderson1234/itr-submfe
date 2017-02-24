@@ -6,29 +6,31 @@
 
 @import config.FrontendAppConfig
 
-@main_template(title = Messages("page.investment.LifetimeAllowanceExceeded.title"), bodyClasses = None) {
+@main_template(title = Messages("page.eisseis.investment.LifetimeAllowanceExceeded.title"), bodyClasses = None) {
 
-@backButton(controllers.eisseis.routes.ProposedInvestmentController.show().toString)
+@backButton(controllers.eisseis.routes.ProposedInvestmentController.show().url)
 
 <div class="grid-row">
     <div class="column-two-thirds">
         <div id="main">
-            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.investment.LifetimeAllowanceExceeded.heading")</h1>
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.heading")</h1>
         </div>
 
         <div class="form-group">
             <span id="lifetimeExceedReason">
                 @if(kiModel.isKi){
-                     @Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
+                     @Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
                 }else{
-                     @Messages("page.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitNotKiToString)
+                     @Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitNotKiToString)
                 }
 
             </span>
         </div>
 
         <div>
-            <a class="link-style" id="backInvestmentLink" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show()">@Messages("page.investment.LifetimeAllowanceExceeded.link")</a>
+            <p id="change-answers">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.text")
+            <a class="link-style" id="change-answers-link" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show()">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link")</a>.
+            </p>
         </div>
     </div>
 </div>

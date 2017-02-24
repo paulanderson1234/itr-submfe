@@ -63,11 +63,16 @@ class LifetimeAllowanceExceededSpec extends ViewSpec {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
-      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitKiToString)
+      document.title() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.heading")
+      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason", lifetimeLogicLimitKiToString)
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ProposedInvestmentController.show().url
-      document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
+
+      document.getElementById("change-answers").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.text") +
+        " " + Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link") + "."
+      document.getElementById("change-answers-link").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link")
+      document.getElementById("change-answers-link").attr("href") shouldBe controllers.eisseis.routes.ReviewPreviousSchemesController.show().url
+
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
 
     }
@@ -83,12 +88,17 @@ class LifetimeAllowanceExceededSpec extends ViewSpec {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.heading")
-      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitNotKiToString)
+      document.title() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.heading")
+      document.getElementById("lifetimeExceedReason").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason",lifetimeLogicLimitNotKiToString)
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ProposedInvestmentController.show().url
+
+      document.getElementById("change-answers").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.text") +
+        " " + Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link") + "."
+      document.getElementById("change-answers-link").text() shouldBe Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link")
+      document.getElementById("change-answers-link").attr("href") shouldBe controllers.eisseis.routes.ReviewPreviousSchemesController.show().url
+
       document.body.getElementById("get-help-action").text shouldBe  Messages("common.error.help.text")
-      document.getElementById("backInvestmentLink").text() shouldBe Messages("page.investment.LifetimeAllowanceExceeded.link")
 
     }
   }

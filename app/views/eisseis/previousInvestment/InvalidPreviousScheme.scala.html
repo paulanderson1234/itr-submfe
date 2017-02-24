@@ -1,0 +1,50 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{externalLink, backButton}
+@import models.submission.SchemeTypesModel
+
+@(schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.title"), bodyClasses = None) {
+
+@backButton(controllers.eisseis.routes.ReviewPreviousSchemesController.show().url)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div id="main">
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.heading")</h1>
+        </div>
+
+        <div class="form-group">
+            <span id="invalid-scheme-reason">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.reason")</span>
+        </div>
+
+        <div class="form-group">
+            <h2 class="heading-medium" id="invalid-scheme-next">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.next.heading")</h2>
+            <p id="invalid-scheme-next-text">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.next.text")</p>
+            <ul class="list-bullet" id="valid-schemes">
+                @if(schemeTypesModel.eis) {
+                <li id="eis">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.next.eis")</li>
+                }
+                @if(schemeTypesModel.vct) {
+                <li id="vct">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.next.vct")</li>
+                }
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <a class="button" id="continue" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show().url">@Messages("common.button.continue")</a>
+        </div>
+
+        <div class="form-group">
+            <p id="change-answers">
+                @Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.change-text")
+                <a id="change-answers-link" class="link"
+                   href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show().url">@Messages("page.eisseis.previousInvestment.InvalidPreviousScheme.change-link")</a>.
+            </p>
+        </div>
+
+    </div>
+</div>
+}

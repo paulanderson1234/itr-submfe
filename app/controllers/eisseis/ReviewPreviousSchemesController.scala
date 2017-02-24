@@ -16,13 +16,16 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import common.KeystoreKeys
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
-import play.api.mvc.{Action, AnyContent}
+import models.HadPreviousRFIModel
+import play.Logger
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.previousInvestment.ReviewPreviousSchemes
 import play.api.i18n.Messages.Implicits._
@@ -35,13 +38,16 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  override lazy val submissionConnector = SubmissionConnector
 }
 
 trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submissionConnector: SubmissionConnector
+
+  def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -87,12 +93,36 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
+
+      def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean): Future[Result] = {
+        if (!previousSchemesExist) {
+          Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+        }
+        else {
+          isLifeTimeAllowanceExceeded match {
+            case None => Future.successful(InternalServerError(internalServerErrorTemplate))
+            case Some(isExceeded) if isExceeded => Future.successful(Redirect(routes.PreviousInvestmentsAllowanceExceededController.show()))
+            case Some(_) => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+          }
+        }
+      }
+
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
-      PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
-        if (previousSchemes.nonEmpty) Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-        else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show())))
+      (for {
+        previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
+        investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
+        hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+        isLimitExceeded <- submissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(investmentsSinceStartDate)
+        route <- routeRequest(isLimitExceeded, previousSchemesExist)
+      } yield route) recover {
+        case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
+        case e: Exception => {
+          Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
+      }
     }
   }
 

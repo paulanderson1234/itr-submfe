@@ -1,17 +1,28 @@
 @import models.HadPreviousRFIModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
-@import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary}
+@import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary, formHint}
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel], backUrl: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
+@main_template(Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")) {
 
     @backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
 
     @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.heading")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")</h1>
+
+    <div class="form-group">
+        @formHint("de-minimis", Messages("page.eisseis.previousInvestment.hadPreviousRFI.text"))
+    </div>
+
+    <details>
+        <summary><span id="de-minimis-help" class="summary">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")</span></summary>
+        <div class="panel panel-indent panel-border-narrow">
+            <span class = "form-hint" id = "de-minimis-help-text">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")</span>
+        </div>
+    </details>
 
     @form(action = controllers.eisseis.routes.HadPreviousRFIController.submit()) {
 
@@ -21,7 +32,7 @@
         Seq(
         Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
         Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
+        '_legend -> Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading"),
         '_legendClass -> "visuallyhidden",
         '_labelAfter -> true,
         '_labelClass -> "block-label",
