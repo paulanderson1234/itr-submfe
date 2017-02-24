@@ -16,16 +16,16 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
-import common.KeystoreKeys
+import auth._
+import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import controllers.Helpers.{ControllerHelpers, EisSeisHelper, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
 import models.HadPreviousRFIModel
 import play.Logger
-import play.api.mvc.{Action, AnyContent, Result}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.previousInvestment.ReviewPreviousSchemes
 import play.api.i18n.Messages.Implicits._
@@ -93,22 +93,45 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
+  private def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean)
+                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
+    if (!previousSchemesExist) {
+      Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+    }
+    else {
+      isLifeTimeAllowanceExceeded match {
+        case None => Future.successful(InternalServerError(internalServerErrorTemplate))
+        case Some(isExceeded) =>
+          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
+            previousSchemes =>
+              if(!previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct))
+                EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
+              if(isExceeded) {
+                EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
+                  isIneligible =>
+                    EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = true)
+                    if(isIneligible) Redirect(routes.ProposedInvestmentController.show())
+                    else Redirect(routes.PreviousInvestmentsAllowanceExceededController.show())
+                }.recover {
+                  case e: Exception =>
+                    Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
+                    InternalServerError(internalServerErrorTemplate)
+                }
+              } else {
+                EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = false)
+                Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+              }
+          }.recover {
+            case e: Exception =>
+              Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
+              InternalServerError(internalServerErrorTemplate)
+          }
+      }
+    }
+  }
+
   def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-      def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean): Future[Result] = {
-        if (!previousSchemesExist) {
-          Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-        }
-        else {
-          isLifeTimeAllowanceExceeded match {
-            case None => Future.successful(InternalServerError(internalServerErrorTemplate))
-            case Some(isExceeded) if isExceeded => Future.successful(Redirect(routes.PreviousInvestmentsAllowanceExceededController.show()))
-            case Some(_) => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-          }
-        }
-      }
-
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
       (for {
         previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)

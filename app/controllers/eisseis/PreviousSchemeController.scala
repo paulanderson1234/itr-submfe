@@ -16,14 +16,15 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
+import auth._
 import common.{Constants, KeystoreKeys}
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
+import controllers.Helpers.{ControllerHelpers, EisSeisHelper, PreviousSchemesHelper}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
@@ -31,6 +32,7 @@ import scala.concurrent.Future
 import views.html.eisseis.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
 import models.PreviousSchemeModel
+import play.Logger
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -81,10 +83,10 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
         validFormData => {
           s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.PreviousSchemeController.show().url)
           validFormData.processingId match {
-            case Some(_) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).map {
+            case Some(_) => PreviousSchemesHelper.updateKeystorePreviousInvestment(s4lConnector, validFormData).flatMap {
               _ => routeRequest(validFormData)
             }
-            case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).map {
+            case None => PreviousSchemesHelper.addPreviousInvestmentToKeystore(s4lConnector, validFormData).flatMap {
               _ => routeRequest(validFormData)
             }
           }
@@ -93,11 +95,20 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  private def routeRequest(previousSchemeModel: PreviousSchemeModel): Result = {
+  private def routeRequest(previousSchemeModel: PreviousSchemeModel)
+                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
     if (previousSchemeModel.schemeTypeDesc == Constants.schemeTypeVct || previousSchemeModel.schemeTypeDesc == Constants.schemeTypeEis) {
-      //TODO: set boolean to true in model
-      Redirect(routes.InvalidPreviousSchemeController.show())
-    } else Redirect(routes.ReviewPreviousSchemesController.show())
+      EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
+        isIneligible =>
+          EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = true)
+          if(isIneligible) Redirect(routes.ReviewPreviousSchemesController.show())
+          else Redirect(routes.InvalidPreviousSchemeController.show())
+      }.recover {
+        case e: Exception =>
+          Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+      }
+    } else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
   }
 
 }

@@ -166,9 +166,10 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     )
   }
 
-  "redirect to error page if the check previous investmetn exceeds the max value allowed" in {
+  "redirect to error page if the check previous investment exceeds the max value allowed and user is currently eligible for SEIS" in {
     setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
-
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
     when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
     (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
     mockEnrolledRequest(eisSeisSchemeTypesModel)
@@ -176,6 +177,21 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
       result => {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(routes.PreviousInvestmentsAllowanceExceededController.show().url)
+      }
+    )
+  }
+
+  "redirect to proposed investment page if the check previous investment exceeds the max value allowed and user is currently ineligible for SEIS" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelIneligibleStartDate)))
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
+    mockEnrolledRequest(eisSeisSchemeTypesModel)
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
       }
     )
   }
