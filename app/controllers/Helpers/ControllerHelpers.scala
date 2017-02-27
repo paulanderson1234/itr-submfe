@@ -48,13 +48,13 @@ trait ControllerHelpers {
       //VCT Flow
       case SchemeTypesModel(false,false,false,true) => controllers.eis.routes.NatureOfBusinessController.show().url
       //EIS SEIS Flow
-      case SchemeTypesModel(true,true,false,false) => controllers.eis.routes.NatureOfBusinessController.show().url
+      case SchemeTypesModel(true,true,false,false) => controllers.eisseis.routes.NatureOfBusinessController.show().url
       //EIS VCT Flow
       case SchemeTypesModel(true,false,false,true) => controllers.eis.routes.NatureOfBusinessController.show().url
       //SEIS VCT Flow
-      case SchemeTypesModel(false,true,false,true) => controllers.seis.routes.NatureOfBusinessController.show().url
+      case SchemeTypesModel(false,true,false,true) => controllers.eisseis.routes.NatureOfBusinessController.show().url
       //EIS SEIS VCT Flow
-      case SchemeTypesModel(true,true,false,true) => controllers.eis.routes.NatureOfBusinessController.show().url
+      case SchemeTypesModel(true,true,false,true) => controllers.eisseis.routes.NatureOfBusinessController.show().url
       //Assume EIS
       case _ => controllers.eis.routes.NatureOfBusinessController.show().url
     }
