@@ -87,10 +87,13 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
       checkAnswersModel.flatMap {
         checkAnswer =>
-          s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-            case Some(schemeTypes) => Ok(CheckAnswers(checkAnswer, schemeTypes))
-            case None => Redirect(controllers.routes.ApplicationHubController.show())
-          }.recover {
+          (for{
+            selectedSchemes <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
+            tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
+          } yield {
+            if(selectedSchemes.isDefined) Ok(CheckAnswers(checkAnswer,tradeStartDate,selectedSchemes.get))
+            else Redirect(controllers.routes.ApplicationHubController.show())
+          }).recover {
             case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling fetchAndGetFormData: ${e.getMessage}")
               InternalServerError(internalServerErrorTemplate)
           }

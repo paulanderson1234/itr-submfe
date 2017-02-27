@@ -6,8 +6,7 @@
 @import utils.CountriesHelper
 @import models.submission.SchemeTypesModel
 
-
-@(checkAnswersModel: CheckAnswersModel, schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
+@(checkAnswersModel: CheckAnswersModel, tradeStartDateModel: Option[TradeStartDateModel], schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 
@@ -20,6 +19,8 @@
         <ul class="bullets" id="schemes">
             @if(schemeTypesModel.eis){
             <li id="eis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.eis")</li>}
+            @if(schemeTypesModel.seis){
+            <li id="seis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.seis")</li>}
             @if(schemeTypesModel.vct){
             <li id="vct-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.vct")</li>}
         </ul>
@@ -46,6 +47,19 @@
                     @textRowHelperBasic("dateOfIncorporation", Messages("summaryQuestion.dateOfIncorporation"), DateOfIncorporationModel.toDateString(dateOfIncorporationModel.day.get, dateOfIncorporationModel.month.get, dateOfIncorporationModel.year.get),Some(controllers.eisseis.routes.DateOfIncorporationController.show().toString))
                 }
             }
+
+            <!-- Trade Start Date -->
+            @if(tradeStartDateModel.isDefined){
+            @defining(tradeStartDateModel.get) { tradeStartDateModel =>
+            @if(tradeStartDateModel.hasTradeStartDate == Messages("common.radioYesLabel")){
+                @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.eisseis.routes.TradeStartDateController.show().url), None)
+            } else {
+                @textRowHelperBasic("tradeStart", Messages("summaryQuestion.hasTradeStartDate"), tradeStartDateModel.hasTradeStartDate, Some(controllers.eisseis.routes.TradeStartDateController.show().url))
+            }
+            }
+            }
+
+
             <!-- Date of First Commercial Sale -->
             @if(checkAnswersModel.commercialSaleModel.isDefined){
                 @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>

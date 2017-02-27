@@ -126,4 +126,9 @@ trait CheckAnswersSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
   }
 
+  def tradeStartDateSetup(tradeStartDateModel: Option[TradeStartDateModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
+  }
+
 }

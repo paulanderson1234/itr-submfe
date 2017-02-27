@@ -16,7 +16,8 @@
 
 package views.seis
 
-import models.{DateOfIncorporationModel, TradeStartDateModel}
+import models.submission.SchemeTypesModel
+import models.{CheckAnswersModel, DateOfIncorporationModel, TradeStartDateModel}
 import models.seis.SEISCheckAnswersModel
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
@@ -39,7 +40,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
-      document.getElementById("description-one").text() shouldBe Messages("page.seis.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
       document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
 
       //Section 1 table heading
@@ -85,9 +86,10 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
 
+
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
-      document.getElementById("description-one").text() shouldBe Messages("page.seis.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
       document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
 
       //Section 1 table heading
@@ -127,9 +129,10 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
 
+
       document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
       document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
-      document.getElementById("description-one").text() shouldBe Messages("page.seis.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
       document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
 
       //Section 1 table heading
@@ -140,5 +143,38 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
     }
   }
+
+
+  "The Check Answers page" should {
+
+    "Verify that the scheme description contains only SEIS" in {
+
+      val model = SEISCheckAnswersModel(None, None, None, None, None, None, Vector(), None, None, None, None, None, false)
+      val page = CheckAnswers(model)(authorisedFakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
+      lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
+
+
+      document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+      document.getElementById("schemes").children().size() shouldBe 1
+      document.getElementById("seis-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.seis")
+
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+      //Section 1 table heading
+      document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
+      companyDetailsTableTBody.select("tr").size() shouldBe 0
+
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
+    }
+  }
+
 }
 

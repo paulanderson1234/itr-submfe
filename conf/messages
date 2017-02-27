@@ -450,7 +450,8 @@ page.contactInformation.ConfirmCorrespondAddress.title=Is this the correspondenc
 #check your answers page
 page.checkAndSubmit.checkAnswers.heading=Check your answers
 page.checkAndSubmit.checkAnswers.description.one=You''re applying for Advance Assurance for:
-page.checkAndSubmit.checkAnswers.scheme.eis=the Enterprise Investment scheme
+page.checkAndSubmit.checkAnswers.scheme.eis=the Enterprise Investment Scheme
+page.checkAndSubmit.checkAnswers.scheme.seis=the Seed Enterprise Investment Scheme
 page.checkAndSubmit.checkAnswers.scheme.vct=the Venture Capital Trust scheme
 page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct before submitting.
 page.checkAndSubmit.checkAnswers.print.text=Print this page
@@ -659,6 +660,12 @@ page.seis.companyDetails.tradeStartDate.title=Has your company started trading?
 page.seis.companyDetails.tradeStartDate.heading=Has your company started trading?
 page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
 page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+
+# EISSEIS trade start date
+page.eisseis.companyDetails.tradeStartDate.title=Has your company started trading?
+page.eisseis.companyDetails.tradeStartDate.heading=Has your company started trading?
+page.eisseis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
+page.eisseis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
 
 # SEIS trade start date error
 page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme

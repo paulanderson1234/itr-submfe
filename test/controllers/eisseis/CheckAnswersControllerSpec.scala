@@ -17,9 +17,11 @@
 package controllers.eisseis
 
 import auth.{Enrolment, Identifier, MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import models.{AddressModel, TradeStartDateModel}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -59,6 +61,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       companyDetailsSetup(Some(yourCompanyNeedModel),Some(taxpayerReferenceModel),Some(registeredAddressModel),Some(dateOfIncorporationModel),
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
         Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
+      tradeStartDateSetup(Some(tradeStartDateModelYes))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
@@ -72,6 +75,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
+      tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
@@ -86,6 +90,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
+      tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(None))(
@@ -100,6 +105,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       investmentSetup()
       contactDetailsSetup()
       companyDetailsSetup()
+      tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(Some("")))(
