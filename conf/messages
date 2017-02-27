@@ -593,7 +593,7 @@ page.previousInvestment.amountSpent.label=Investment amount spent
 page.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.heading=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.reason=This is because your company has already raised investment through the Enterprise Investment Scheme or received investment from a Venture Capital Trust.
-page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect, you can
+page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect you can
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
 
 #150k error for SEIS review previous schemes
@@ -602,7 +602,7 @@ page.previousInvestment.previousInvestmentsExceededExceeded.heading=You don''t q
 page.previousInvestment.previousInvestmentsExceededExceeded.reason=This is because your company has already raised £150,000 or more of investment from:
 page.previousInvestment.previousInvestmentsExceededExceeded.bullet.one=any previous SEIS investments
 page.previousInvestment.previousInvestmentsExceededExceeded.bullet.two=any state aid under the de minimis regulation
-page.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect, you can
+page.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect you can
 page.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
 
 
@@ -672,7 +672,7 @@ page.eisseis.companyDetails.TradeStartDate.question.hint=When did your company s
 page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
 page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
 page.seis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
-page.seis.companyDetails.tradeStartDateError.incorrect.info=If this information is incorrect, you can
+page.seis.companyDetails.tradeStartDateError.incorrect.info=If this information is incorrect you can
 page.seis.companyDetails.tradeStartDateError.link.changeAnswers=change your answers
 
 #EISSEIS trade start date error
@@ -738,7 +738,7 @@ page.eisseis.previousInvestment.InvalidPreviousScheme.next.heading=What happens 
 page.eisseis.previousInvestment.InvalidPreviousScheme.next.text=You can continue with your application for:
 page.eisseis.previousInvestment.InvalidPreviousScheme.next.eis=the Enterprise Investment Scheme
 page.eisseis.previousInvestment.InvalidPreviousScheme.next.vct=the Venture Capital Trust scheme
-page.eisseis.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect, you can
+page.eisseis.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect you can
 page.eisseis.previousInvestment.InvalidPreviousScheme.change-link=change your answers
 
 # EIS SEIS lifetime allowance exceeded page
@@ -758,7 +758,7 @@ page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.heading
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.text=You can continue with your application for:
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.eis=the Enterprise Investment Scheme
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.vct=the Venture Capital Trust scheme
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect, you can
+page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect you can
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
 
 #test
