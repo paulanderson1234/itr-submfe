@@ -75,7 +75,7 @@ trait ControllerHelpers {
       //SEIS VCT Flow
       case Some(SchemeTypesModel(false,true,false,true)) => Messages("page.introduction.hub.existing.seis-vct.type")
       //EIS SEIS VCT Flow
-      case Some(SchemeTypesModel(true,true,false,true)) => Messages("page.introduction.hub.existing.eis-vct.type")
+      case Some(SchemeTypesModel(true,true,false,true)) => Messages("page.introduction.hub.existing.eis-seis-vct.type")
       //Assume EIS
       case Some(_) => Messages("page.introduction.hub.existing.advanced.assurance.type")
       //Assume EIS
