@@ -64,13 +64,18 @@ class HadPreviousRFISpec extends ViewSpec {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ProposedInvestmentController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
+
+    document.getElementById("de-minimis").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.text")
+    document.getElementById("de-minimis-help").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")
+    document.getElementById("de-minimis-help-text").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")
+
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
     document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
@@ -83,13 +88,18 @@ class HadPreviousRFISpec extends ViewSpec {
       Jsoup.parse(contentAsString(result))
     }
     document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ProposedInvestmentController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
+
+    document.getElementById("de-minimis").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.text")
+    document.getElementById("de-minimis-help").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")
+    document.getElementById("de-minimis-help-text").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")
+
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-no").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("hadPreviousRFI-noLabel").text() shouldBe Messages("common.radioNoLabel")
-    document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.getElementById("hadPreviousRFI-legend").select(".visuallyhidden").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
     document.body.getElementById("progress-section").text shouldBe  Messages("common.section.progress.company.details.two")
     document.getElementById("next").text() shouldBe Messages("common.button.snc")
   }
@@ -105,7 +115,7 @@ class HadPreviousRFISpec extends ViewSpec {
 
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
 
   }
 }

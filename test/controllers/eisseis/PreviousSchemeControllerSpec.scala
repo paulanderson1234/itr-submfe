@@ -83,48 +83,49 @@ class PreviousSchemeControllerSpec extends BaseSpec {
         result => status(result) shouldBe OK
       )
     }
-  }
 
-  "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated and enrolled" in {
-    setupVectorMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    showWithSessionAndAuth(TestController.show(Some(1)))(
-      result => status(result) shouldBe OK
-    )
-  }
+    "provide an empty model and return a 200 when an empty Vector List is fetched using keystore when authenticated and enrolled" in {
+      setupVectorMocks(backLink = Some(routes.ReviewPreviousSchemesController.show().url))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(Some(1)))(
+        result => status(result) shouldBe OK
+      )
+    }
 
-  "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated and enrolled" in {
-    setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    showWithSessionAndAuth(TestController.show(Some(3)))(
+    "provide an populated model and return a 200 when model with matching Id is fetched using keystore when authenticated and enrolled" in {
+      setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(Some(3)))(
 
-      result => status(result) shouldBe OK
-    )
-  }
+        result => status(result) shouldBe OK
+      )
+    }
 
-  "navigate to start of flow if no back link provided even if a valid matching model returned when authenticated and enrolled" in {
-    setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    showWithSessionAndAuth(TestController.show(Some(3)))(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/eisseis/used-investment-scheme-before")
-      }
-    )
-  }
+    "navigate to start of flow if no back link provided even if a valid matching model returned when authenticated and enrolled" in {
+      setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(Some(3)))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+        }
+      )
+    }
 
-  "navigate to start of flow if no back link provided if a new add scheme when authenticated and enrolled" in {
-    setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    showWithSessionAndAuth(TestController.show(None))(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/eisseis/used-investment-scheme-before")
-      }
-    )
+    "navigate to start of flow if no back link provided if a new add scheme when authenticated and enrolled" in {
+      setupVectorMocks(previousSchemeVectorList = Some(previousSchemeVectorList))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.show(None))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.HadPreviousRFIController.show().url)
+        }
+      )
+    }
   }
 
   "Sending a valid new form submit to the PreviousSchemeController when authenticated and enrolled" should {
+
     "create a new item and redirect to the review previous investments page" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -143,13 +144,111 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eisseis/review-previous-schemes")
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
-  }
 
-  "Sending a valid updated form submit to the PreviousSchemeController when authenticated and enrolled" should {
+    "redirect to the invalid previous scheme error page if the scheme type is VCT and the user is currently eligible for SEIS" in {
+      setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      val formInput = Seq(
+        "schemeTypeDesc" -> Constants.schemeTypeVct,
+        "investmentAmount" -> "12345",
+        "investmentSpent" -> "",
+        "otherSchemeName" -> "money making scheme",
+        "investmentDay" -> "3",
+        "investmentMonth" -> "8",
+        "investmentYear" -> "1988",
+        "processingId" -> ""
+      )
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.InvalidPreviousSchemeController.show().url)
+        }
+      )
+    }
+
+    "redirect to the review previous scheme page if the scheme type is VCT and the user is currently ineligible for SEIS" in {
+      setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelIneligibleStartDate)))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      val formInput = Seq(
+        "schemeTypeDesc" -> Constants.schemeTypeVct,
+        "investmentAmount" -> "12345",
+        "investmentSpent" -> "",
+        "otherSchemeName" -> "money making scheme",
+        "investmentDay" -> "3",
+        "investmentMonth" -> "8",
+        "investmentYear" -> "1988",
+        "processingId" -> ""
+      )
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+        }
+      )
+    }
+
+    "redirect to the invalid previous scheme error page if the scheme type is EIS and the user is currently eligible for SEIS" in {
+      setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      val formInput = Seq(
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
+        "investmentAmount" -> "12345",
+        "investmentSpent" -> "",
+        "otherSchemeName" -> "money making scheme",
+        "investmentDay" -> "3",
+        "investmentMonth" -> "8",
+        "investmentYear" -> "1988",
+        "processingId" -> ""
+      )
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.InvalidPreviousSchemeController.show().url)
+        }
+      )
+    }
+
+    "redirect to the review previous scheme error page if the scheme type is EIS and the user is currently ineligible for SEIS" in {
+      setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(cacheMap)
+      when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelIneligibleStartDate)))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      val formInput = Seq(
+        "schemeTypeDesc" -> Constants.schemeTypeEis,
+        "investmentAmount" -> "12345",
+        "investmentSpent" -> "",
+        "otherSchemeName" -> "money making scheme",
+        "investmentDay" -> "3",
+        "investmentMonth" -> "8",
+        "investmentYear" -> "1988",
+        "processingId" -> ""
+      )
+      submitWithSessionAndAuth(TestController.submit, formInput:_*)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+        }
+      )
+    }
+
     "update the item and redirect to the review previous investments page" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -169,7 +268,7 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eisseis/review-previous-schemes")
+          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
@@ -219,4 +318,5 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       )
     }
   }
+
 }

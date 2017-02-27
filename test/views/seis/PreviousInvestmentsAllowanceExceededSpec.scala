@@ -46,7 +46,6 @@ class PreviousInvestmentsAllowanceExceededSpec extends ViewSpec {
 
       }
 
-      println(document.body())
       //document.title shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.title")
       //document.body.getElementById("main-heading").text() shouldEqual Messages("page.previousInvestment.InvalidPreviousScheme.heading")
       document.body.getElementById("investments-exceeded-reason").text() shouldEqual Messages("page.previousInvestment.previousInvestmentsExceededExceeded.reason")

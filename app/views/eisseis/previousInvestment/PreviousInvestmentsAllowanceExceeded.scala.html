@@ -1,0 +1,51 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{externalLink, backButton}
+@import models.submission.SchemeTypesModel
+
+@(schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.title"), bodyClasses = None) {
+
+@backButton(controllers.eisseis.routes.ReviewPreviousSchemesController.show().url)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div id="main">
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.heading")</h1>
+        </div>
+
+        <div class="form-group">
+            <p id="investments-exceeded-reason">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.reason")</p>
+            <ul class="list list-bullet">
+                <li id="previous-seis-investments">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.one")</li>
+                <li id="de-minimis-aid">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.two")</li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <h2 class="heading-medium" id="investments-exceeded-next">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.heading")</h2>
+            <p id="investments-exceeded-next-text">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.text")</p>
+            <ul class="list-bullet" id="valid-schemes">
+                @if(schemeTypesModel.eis) {
+                <li id="eis">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.eis")</li>
+                }
+                @if(schemeTypesModel.vct) {
+                <li id="vct">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.vct")</li>
+                }
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <a class="button" id="continue" href="@controllers.eisseis.routes.ProposedInvestmentController.show().url">@Messages("common.button.continue")</a>
+        </div>
+
+        <p class="form-group" id="change-answers">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text")
+            <a id="change-answers-link" class="link"
+               href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show().url">@Messages("page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-link")</a>.
+        </p>
+
+    </div>
+</div>
+}

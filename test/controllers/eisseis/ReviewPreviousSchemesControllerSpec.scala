@@ -19,7 +19,7 @@ package controllers.eisseis
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
@@ -37,6 +37,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override lazy val submissionConnector = mockSubmissionConnector
   }
 
   val previousSchemeVectorListDeleted = Vector(previousSchemeModel2, previousSchemeModel3)
@@ -59,13 +60,20 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     "use the correct enrolment connector" in {
       ReviewPreviousSchemesController.enrolmentConnector shouldBe EnrolmentConnector
     }
+    "use the correct submission connector" in {
+      ReviewPreviousSchemesController.submissionConnector shouldBe SubmissionConnector
+    }
   }
 
-  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None): Unit = {
-    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(previousSchemes))
+  def setupMocks(previousSchemes: Option[Vector[PreviousSchemeModel]] = None, backLink: Option[String] = None,
+                 tradeStartDate: Option[TradeStartDateModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.any())(Matchers.any(), Matchers.any(),
+      Matchers.any())).thenReturn(Future.successful(previousSchemes))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkReviewPreviousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(
+      if (tradeStartDate.nonEmpty) Future.successful(Option(tradeStartDate.get)) else Future.successful(None))
   }
 
   "Sending a GET request to ReviewPreviousSchemesController when authenticated and enrolled" should {
@@ -102,7 +110,11 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
   "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
     "redirect to 'Proposed Investment' page if table is not empty" in {
-      setupMocks(Some(previousSchemeVectorList))
+      setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+
+      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
+
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -112,8 +124,11 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
       )
     }
 
-    "redirect to itself if table is empty" in {
-      setupMocks()
+    "redirect to itself if no payments table is empty" in {
+      setupMocks(None, None, Some(startDateModelModelYes))
+
+      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -124,10 +139,67 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     }
   }
 
+  "redirect to proposed investment if there is no trade start date" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), None)
+
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
+    mockEnrolledRequest(eisSeisSchemeTypesModel)
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
+      }
+    )
+  }
+
+  "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    mockEnrolledRequest(eisSeisSchemeTypesModel)
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe INTERNAL_SERVER_ERROR
+      }
+    )
+  }
+
+  "redirect to error page if the check previous investment exceeds the max value allowed and user is currently eligible for SEIS" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
+    mockEnrolledRequest(eisSeisSchemeTypesModel)
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.PreviousInvestmentsAllowanceExceededController.show().url)
+      }
+    )
+  }
+
+  "redirect to proposed investment page if the check previous investment exceeds the max value allowed and user is currently ineligible for SEIS" in {
+    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelIneligibleStartDate)))
+    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
+    mockEnrolledRequest(eisSeisSchemeTypesModel)
+    submitWithSessionAndAuth(TestController.submit)(
+      result => {
+        status(result) shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
+      }
+    )
+  }
+
   "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
       setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapDeleted)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
@@ -141,7 +213,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" +
       "when authenticated and enrolled" in {
       setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMap)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(10))(
         result => {
@@ -153,7 +225,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
     "redirect to 'Review previous scheme' when the vector is empty when authenticated and enrolled" in {
       setupMocks()
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapEmpty)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.remove(1))(
         result => {
@@ -166,7 +238,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
   "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.add)(
         result => {
@@ -179,7 +251,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
 
   "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
     "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(cacheMapBackLink)
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.change(testId))(
         result => {
