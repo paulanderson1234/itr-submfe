@@ -42,7 +42,7 @@ class TradeStartDateErrorControllerSpec extends BaseSpec {
   }
 
   "Sending a GET request to TradeStartDateErrorController when authenticated and enrolled" should {
-    "return a 200 OK Swhen something is fetched from keystore" in {
+    "return a 200 OK when something is fetched from keystore" in {
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -64,7 +64,7 @@ class TradeStartDateErrorControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eisseis/commercial-sale")
+          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
         }
       )
     }
