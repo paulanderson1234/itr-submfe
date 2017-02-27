@@ -19,12 +19,14 @@ package views.eisseis
 import auth.MockAuthConnector
 import controllers.eisseis.{TradeStartDateErrorController, routes}
 import fixtures.MockSeiseisConfig
+import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
 import play.api.i18n.Messages.Implicits._
+import views.html.eisseis.companyDetails.TradeStartDateError
 
 class TradeStartDateErrorSpec extends ViewSpec {
 
@@ -35,24 +37,67 @@ class TradeStartDateErrorSpec extends ViewSpec {
     override lazy val s4lConnector = mockS4lConnector
   }
 
-  "The Treade Start Date error page" should {
+  "The Trade Start Date error page" should {
 
-    "Verify that start page contains the correct elements" in new SEISEISSetup {
-      val document: Document = {
-        val result = TestController.show.apply(authorisedFakeRequest)
-        Jsoup.parse(contentAsString(result))
-      }
+    "Verify that start page shows both eis and vct bullet points when eis and vct are true" in {
+      val page = TradeStartDateError(SchemeTypesModel(eis = true, seis = true, vct = true))(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
       document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
       document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
       document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
       document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
       document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
-      document.body.getElementById("bullet-one").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.one")
+
+
+      document.body.getElementById("valid-schemes").children().size() shouldBe 2
+      document.body.getElementById("eis").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
+      document.body.getElementById("vct").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
+
       document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
         " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
       document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
+    }
 
+    "Verify that start page shows only the eis bullet point when eis is true and vct is false" in {
+      val page = TradeStartDateError(SchemeTypesModel(eis = true, seis = true))(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
+      document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
+      document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+
+
+      document.body.getElementById("valid-schemes").children().size() shouldBe 1
+      document.body.getElementById("eis").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
+
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
+      document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
+    }
+
+    "Verify that start page shows only the vct bullet point when vct is true and eis is false" in {
+      val page = TradeStartDateError(SchemeTypesModel(seis = true, vct = true))(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
+      document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
+      document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+
+
+      document.body.getElementById("valid-schemes").children().size() shouldBe 1
+      document.body.getElementById("vct").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
+
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
+      document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     }
   }
 }

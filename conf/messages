@@ -680,8 +680,8 @@ page.esisseis.companyDetails.tradeStartDateError.heading=You don''t qualify for 
 page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
 page.esisseis.companyDetails.tradeStartDateError.whatNext.heading=What happens next
 page.esisseis.companyDetails.tradeStartDateError.whatNext.continue=You can continue with your application for:
-page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.one=the Enterprise Investment Scheme
-
+page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis=the Enterprise Investment Scheme
+page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct=the Venture Capital Trust scheme
 
 
 # SEIS Proposed Investment page

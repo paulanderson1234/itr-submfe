@@ -17,12 +17,16 @@
 package controllers.eisseis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
+import models.submission.SchemeTypesModel
+import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.eisseis.companyDetails.TradeStartDateError
 
 import scala.concurrent.Future
 
@@ -39,10 +43,16 @@ trait TradeStartDateErrorController extends FrontendController with AuthorisedAn
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-      AuthorisedAndEnrolled.async { implicit user => implicit request =>
-        Future.successful(Ok(views.html.eisseis.companyDetails.TradeStartDateError()))
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+        case Some(schemeTypesModel) => Ok(TradeStartDateError(schemeTypesModel))
+        case None => Redirect(controllers.routes.ApplicationHubController.show())
+      }.recover {
+        case e: Exception => Logger.warn(s"[TradeStartDateErrorController][show] Error calling fetchAndGetFormData: ${e.getMessage}")
+          Redirect(controllers.routes.ApplicationHubController.show())
       }
     }
+  }
 
   val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>

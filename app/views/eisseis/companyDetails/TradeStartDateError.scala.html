@@ -1,7 +1,8 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
 @import helpers.{externalLink, backButton}
+@import models.submission.SchemeTypesModel
 
-@()(implicit request: Request[_], messages: Messages)
+@(schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
 
 @import config.FrontendAppConfig
 
@@ -28,8 +29,13 @@
             <p id="continue-text">
                 @Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
             </p>
-            <ul class="list list-bullet">
-                <li id="bullet-one">@Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.one")</li>
+            <ul class="list-bullet" id="valid-schemes">
+                @if(schemeTypesModel.eis) {
+                <li id="eis">@Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")</li>
+                }
+                @if(schemeTypesModel.vct) {
+                <li id="vct">@Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")</li>
+                }
             </ul>
         </div>
 
