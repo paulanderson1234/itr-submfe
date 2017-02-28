@@ -23,9 +23,8 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, EisSeisHelper, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
-import models.HadPreviousRFIModel
 import play.Logger
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.previousInvestment.ReviewPreviousSchemes
 import play.api.i18n.Messages.Implicits._
@@ -51,12 +50,14 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
-          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
+          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).map {
             previousSchemes =>
-              if (previousSchemes.nonEmpty) {
-                Future.successful(Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get)))
+              if(previousSchemes.nonEmpty) {
+                if (!previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct))
+                  EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
+                Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get))
               }
-              else Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+              else Redirect(routes.HadPreviousRFIController.show())
           }
         } else {
           // no back link - send to beginning of flow
@@ -78,9 +79,9 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
   }
 
   def change(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
-      Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
+      Redirect(routes.PreviousSchemeController.show(Some(id)))
     }
   }
 
@@ -93,58 +94,17 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  private def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean)
-                          (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
-    if (!previousSchemesExist) {
-      Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-    }
-    else {
-      isLifeTimeAllowanceExceeded match {
-        case None => Future.successful(InternalServerError(internalServerErrorTemplate))
-        case Some(isExceeded) =>
-          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
-            previousSchemes =>
-              if(!previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct))
-                EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
-              if(isExceeded) {
-                EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
-                  isIneligible =>
-                    EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = true)
-                    if(isIneligible) Redirect(routes.ProposedInvestmentController.show())
-                    else Redirect(routes.PreviousInvestmentsAllowanceExceededController.show())
-                }.recover {
-                  case e: Exception =>
-                    Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
-                    InternalServerError(internalServerErrorTemplate)
-                }
-              } else {
-                EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = false)
-                Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-              }
-          }.recover {
-            case e: Exception =>
-              Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
-              InternalServerError(internalServerErrorTemplate)
-          }
-      }
-    }
-  }
-
   def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
-      (for {
-        previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
-        investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
-        hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-        isLimitExceeded <- submissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(investmentsSinceStartDate)
-        route <- routeRequest(isLimitExceeded, previousSchemesExist)
-      } yield route) recover {
+      PreviousSchemesHelper.previousInvestmentsExist(s4lConnector).map {
+        case true => Redirect(routes.ProposedInvestmentController.show())
+        case false => Redirect(routes.ReviewPreviousSchemesController.show())
+      }.recover {
         case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
-        case e: Exception => {
+        case e: Exception =>
           Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
           InternalServerError(internalServerErrorTemplate)
-        }
       }
     }
   }

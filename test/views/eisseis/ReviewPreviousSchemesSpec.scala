@@ -21,7 +21,7 @@ import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.ReviewPreviousSchemesController
 import controllers.routes
-import models.PreviousSchemeModel
+import models.{EisSeisProcessingModel, PreviousSchemeModel}
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -51,6 +51,8 @@ class ReviewPreviousSchemesSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSeisSchemeTypesModel))
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
   }
 
   val expectedTotalInvestmentAmount = previousSchemeVectorList.foldLeft(0)(_ + _.investmentAmount)
