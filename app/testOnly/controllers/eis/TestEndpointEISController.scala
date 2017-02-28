@@ -119,6 +119,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
     saveBackLinks()
+    saveSchemeType()
     Future.successful(Ok(
       testOnly.views.html.eis.testEndpointEISPageOne(
         natureOfBusiness,
