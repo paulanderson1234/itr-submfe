@@ -93,7 +93,9 @@ POST       /review-previous-schemes                 controllers.eisseis.ReviewPr
 
 GET        /review-previous-schemes-add             controllers.eisseis.ReviewPreviousSchemesController.add
 GET        /review-previous-schemes-change/:Id      controllers.eisseis.ReviewPreviousSchemesController.change(Id: Int)
-POST       /review-previous-schemes-remove/:Id      controllers.eisseis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /delete-previous-scheme/:Id              controllers.eisseis.DeletePreviousSchemeController.show(Id: Int)
+POST       /detele-previous-scheme/:Id              controllers.eisseis.DeletePreviousSchemeController.submit(Id: Int)
 
 GET        /acknowledgement                         controllers.eisseis.AcknowledgementController.show
 POST       /acknowledgement                         controllers.eisseis.AcknowledgementController.submit

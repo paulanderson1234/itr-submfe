@@ -761,6 +761,13 @@ page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.vct=the
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect you can
 page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
 
+#Delete Previous Scheme confirmation
+page.deletePreviousScheme.title=Confirm you want to remove this scheme or investment
+page.deletePreviousScheme.heading=Confirm you want to remove this scheme or investment
+page.deletePreviousScheme.hint=This will permanently remove the {0} (date of investment {1}) from your list of previous schemes and investments.
+page.deletePreviousScheme.confirm=Remove
+page.deletePreviousScheme.cancel=Cancel remove and go back
+
 #test
 page.test.clear-cache.button=Clear cache
 page.test.submit-form.button=Submit

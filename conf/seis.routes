@@ -26,7 +26,9 @@ POST       /review-previous-schemes                 controllers.seis.ReviewPrevi
 
 GET        /review-previous-schemes-add             controllers.seis.ReviewPreviousSchemesController.add
 GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
-POST       /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
+
+GET        /delete-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.show(Id: Int)
+POST       /detele-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.submit(Id: Int)
 
 GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
 POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit

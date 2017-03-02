@@ -88,15 +88,6 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
-      PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
-        _ => Redirect(routes.ReviewPreviousSchemesController.show())
-      }
-    }
-  }
-
   val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
