@@ -81,6 +81,7 @@ trait KeystoreKeys {
 
   //scheme selection
   val selectedSchemes: String = "selectedScheme"
+  val singleSelectedScheme: String = "singleSelectedScheme"
 
   //file upload keys
   val envelopeID: String = "fileUpload:envelopeID"
