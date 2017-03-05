@@ -21,7 +21,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import utils.Validation._
 
-object TradeStartDateForm {
+object  TradeStartDateForm {
   val tradeStartDateForm = Form(
     mapping(
       "hasTradeStartDate" -> nonEmptyText,

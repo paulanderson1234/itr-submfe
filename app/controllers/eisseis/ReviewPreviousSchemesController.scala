@@ -93,40 +93,23 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  private def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean)
+  private def routeRequest(previousSchemesExist: Boolean)
                           (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
     if (!previousSchemesExist) {
       Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
     }
     else {
-      isLifeTimeAllowanceExceeded match {
-        case None => Future.successful(InternalServerError(internalServerErrorTemplate))
-        case Some(isExceeded) =>
-          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
-            previousSchemes =>
-              if(!previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct))
-                EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
-              if(isExceeded) {
-                EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
-                  isIneligible =>
-                    EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = true)
-                    if(isIneligible) Redirect(routes.ProposedInvestmentController.show())
-                    else Redirect(routes.PreviousInvestmentsAllowanceExceededController.show())
-                }.recover {
-                  case e: Exception =>
-                    Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
-                    InternalServerError(internalServerErrorTemplate)
-                }
-              } else {
-                EisSeisHelper.setIneligiblePreviousSchemeThresholdCondition(s4lConnector, previousSchemeThresholdConditionIneligible = false)
-                Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-              }
-          }.recover {
-            case e: Exception =>
-              Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
-              InternalServerError(internalServerErrorTemplate)
-          }
-      }
+      PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
+        previousSchemes =>
+            if(!previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct)) {
+              EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
+            }
+            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+        }.recover {
+          case e: Exception =>
+            Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+        }
     }
   }
 
@@ -137,12 +120,10 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
         previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
         investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
         hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-        isLimitExceeded <- submissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(investmentsSinceStartDate)
-        route <- routeRequest(isLimitExceeded, previousSchemesExist)
+        route <- routeRequest(previousSchemesExist)
       } yield route) recover {
         case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
         case e: Exception => {
-          Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
           InternalServerError(internalServerErrorTemplate)
         }
       }

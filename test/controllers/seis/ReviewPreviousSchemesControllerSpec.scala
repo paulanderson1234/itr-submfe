@@ -109,9 +109,6 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     "redirect to 'Proposed Investment' page if table is not empty" in {
       setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
 
-      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-
       mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -124,8 +121,6 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     "redirect to itself if no payments table is empty" in {
       setupMocks(None, None, Some(startDateModelModelYes))
 
-      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
       mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
@@ -139,40 +134,11 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
   "redirect to proposed investment if there is no trade start date" in {
     setupMocks(Some(previousSchemeVectorList), Some("link"), None)
 
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
     mockEnrolledRequest(seisSchemeTypesModel)
     submitWithSessionAndAuth(TestController.submit)(
       result => {
         status(result) shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
-      }
-    )
-  }
-
-  "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
-
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-    )
-  }
-
-  "redirect to error page if the check previous investmetn exceeds the max value allowed" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
-
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-schemes-allowance-exceeded")
       }
     )
   }

@@ -100,16 +100,12 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
   val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeRequest(isLifeTimeAllowanceExceeded: Option[Boolean], previousSchemesExist: Boolean): Future[Result] = {
+      def routeRequest(previousSchemesExist: Boolean): Future[Result] = {
         if (!previousSchemesExist) {
           Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
         }
         else {
-          isLifeTimeAllowanceExceeded match {
-            case None => Future.successful(InternalServerError(internalServerErrorTemplate))
-            case Some(isExceeded) if isExceeded => Future.successful(Redirect(routes.PreviousInvestmentsAllowanceExceededController.show()))
-            case Some(_) => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-          }
+            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         }
       }
 
@@ -118,12 +114,10 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
         previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
         investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
         hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-        isLimitExceeded <- submissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(investmentsSinceStartDate)
-        route <- routeRequest(isLimitExceeded, previousSchemesExist)
+        route <- routeRequest(previousSchemesExist)
       } yield route) recover {
         case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
         case e: Exception => {
-          Logger.warn(s"[ReviewPreviousSchemesController][submit] - Exception checkPreviousInvestmentSeisAllowanceExceeded: ${e.getMessage}")
           InternalServerError(internalServerErrorTemplate)
         }
       }
