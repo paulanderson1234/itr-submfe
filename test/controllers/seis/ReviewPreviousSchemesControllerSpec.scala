@@ -131,18 +131,6 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     }
   }
 
-  "redirect to proposed investment if there is no trade start date" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), None)
-
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
-      }
-    )
-  }
-
   "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {
     "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
       setupMocks(Some(previousSchemeVectorList))

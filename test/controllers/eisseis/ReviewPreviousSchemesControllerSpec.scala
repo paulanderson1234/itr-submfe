@@ -134,29 +134,6 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
     }
   }
 
-  "redirect to proposed investment if there is no trade start date" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), None)
-
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some(routes.ProposedInvestmentController.show().url)
-      }
-    )
-  }
-
-  "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
-
-    mockEnrolledRequest(eisSeisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe INTERNAL_SERVER_ERROR
-      }
-    )
-  }
-
   "redirect to proposed investment page if the check previous investment exceeds the max value allowed and user is currently ineligible for SEIS" in {
     setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
     when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))

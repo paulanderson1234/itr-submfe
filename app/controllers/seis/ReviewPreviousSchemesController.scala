@@ -112,15 +112,9 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
       (for {
         previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
-        investmentsSinceStartDate <- PreviousSchemesHelper.getPreviousInvestmentsFromStartDateTotal(s4lConnector)
         hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
         route <- routeRequest(previousSchemesExist)
-      } yield route) recover {
-        case e: NoSuchElementException => Redirect(routes.ProposedInvestmentController.show())
-        case e: Exception => {
-          InternalServerError(internalServerErrorTemplate)
-        }
-      }
+      } yield route)
     }
   }
 }
