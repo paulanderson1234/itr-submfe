@@ -73,7 +73,8 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
       )
   }
 
-  private def routeToScheme(schemeTypesModel: SchemeTypesModel, singleSchemeTypesModel: SingleSchemeTypesModel)(implicit request: Request[AnyContent]): Result = {
+  private def routeToScheme(schemeTypesModel: SchemeTypesModel, singleSchemeTypesModel: SingleSchemeTypesModel)
+                           (implicit request: Request[AnyContent]): Result = {
     schemeTypesModel match {
       //EIS Flow
       case SchemeTypesModel(true,false,false,false) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
@@ -82,7 +83,7 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
       //VCT Flow
       case SchemeTypesModel(false,false,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
       //Invalid Flow
-      case _ => BadRequest//(SingleSchemeSelection(singleSchemeSelectionForm.fill(singleSchemeTypesModel)))
+      case _ => BadRequest(SingleSchemeSelection(singleSchemeSelectionForm.fill(singleSchemeTypesModel)))
     }
   }
 }
