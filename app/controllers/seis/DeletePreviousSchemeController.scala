@@ -17,7 +17,7 @@
 package controllers.seis
 
 import config.FrontendGlobal.internalServerErrorTemplate
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
@@ -26,7 +26,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.Logger
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.eisseis.previousInvestment.DeletePreviousScheme
+import views.html.seis.previousInvestment.DeletePreviousScheme
 
 import scala.concurrent.Future
 
@@ -54,7 +54,7 @@ trait DeletePreviousSchemeController extends FrontendController with AuthorisedA
 
   def submit(previousSchemeId: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, previousSchemeId).flatMap{
-      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show))
+      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
     }
   }
 

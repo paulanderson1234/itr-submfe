@@ -16,10 +16,9 @@
 
 package controllers.Helpers
 
-import akka.pattern.FutureRef
 import auth.TAVCUser
 import utils.Validation
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -40,14 +39,10 @@ trait EisSeisHelper {
   def isIneligibleForSeis(s4lConnector: connectors.S4LConnector)
                          (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
 
-    val result = s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
-      case Some(data) =>
-        Future(data.isSeisIneligible)
-      case None => Future(false)
+    s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
+      case Some(data) => data.isSeisIneligible
+      case None => false
     }
-
-    result.flatMap(isEligible => isEligible)
-
   }
 
   /** Helper method to set the SEIS ineligibility flag relating to the trade start condition.
@@ -88,25 +83,38 @@ trait EisSeisHelper {
     result.flatMap(updatedModel => s4lConnector.saveFormData(KeystoreKeys.eisSeisProcessingModel, updatedModel))
   }
 
-  /** Helper method to set the SEIS ineligibility flag relating to the previous scheme threshold exceeded condition.
+  /** Helper method examine the existing set of previous investments and update the EisSeisProcessingModel
+    * previousSchemeTypeConditionIneligible flag based on the types of scheme found
     *
-    * @param s4lConnector                               An instance of the Save4Later Connector.
-    * @param previousSchemeThresholdConditionIneligible Boolean indicating how the SEIS previous scheme threshold exceeded ineligibility condition should be set.
+    * @param s4lConnector                          An instance of the Save4Later Connector.
     */
-  def setIneligiblePreviousSchemeThresholdCondition(s4lConnector: connectors.S4LConnector, previousSchemeThresholdConditionIneligible: Boolean)
-                                                   (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+  def updateIneligiblePreviousSchemeTypeCondition(s4lConnector: connectors.S4LConnector)
+                                                 (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
 
-    // update model (or create first) and set condition
-    val result = s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
-      case Some(data) =>
-        data.copy(ineligiblePreviousSchemeThresholdCondition = Some(previousSchemeThresholdConditionIneligible))
-      case None =>
-        EisSeisProcessingModel(ineligiblePreviousSchemeThresholdCondition = Some(previousSchemeThresholdConditionIneligible))
+    val result = PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).map {
+      previousSchemes => {
+        if (previousSchemes.nonEmpty) {
+          if (previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct)) {
+            println("============================set it as ineligble TRUE as vct or eis found===================")
+            setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = true)
+          } else {
+            println("============================set it as ineligble FALSE no vct or eis found===================")
+
+            setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
+          }
+        } else {
+          println("============================set it as ineligble FALSE as no list===================")
+
+          setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
+        }
+      }
+
     }
-    result.flatMap(updatedModel => s4lConnector.saveFormData(KeystoreKeys.eisSeisProcessingModel, updatedModel))
+
+    result.flatMap(res => res)
   }
 
-  /** Helper method to set the SEIS ineligibility flag relating to the previous scheme threshold exceeded condition.
+  /** Helper method to determine whether to show trade start date error
     *
     * @param s4lConnector        An instance of the Save4Later Connector.
     * @param tradeStartDateModel The current valid trade start date model entered.

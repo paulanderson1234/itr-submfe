@@ -28,7 +28,7 @@ GET        /review-previous-schemes-add             controllers.seis.ReviewPrevi
 GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
 
 GET        /delete-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.show(Id: Int)
-POST       /detele-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.submit(Id: Int)
+POST       /delete-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.submit(Id: Int)
 
 GET        /previous-investment                     controllers.seis.PreviousSchemeController.show(id: Option[Int]?=None)
 POST       /previous-investment                     controllers.seis.PreviousSchemeController.submit
@@ -58,6 +58,5 @@ GET       /acknowledgement                          controllers.seis.Acknowledge
 POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
 
 GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
-GET        /previous-schemes-allowance-exceeded     controllers.seis.PreviousInvestmentsAllowanceExceededController.show
 
 

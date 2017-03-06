@@ -54,7 +54,7 @@ trait DeletePreviousSchemeController extends FrontendController with AuthorisedA
 
   def submit(previousSchemeId: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, previousSchemeId).flatMap{
-      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show))
+      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
     }
   }
 

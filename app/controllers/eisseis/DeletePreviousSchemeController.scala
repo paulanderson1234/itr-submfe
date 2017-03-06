@@ -20,7 +20,7 @@ import config.FrontendGlobal.internalServerErrorTemplate
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.PreviousSchemesHelper
+import controllers.Helpers.{EisSeisHelper, PreviousSchemesHelper}
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.Logger
@@ -53,9 +53,11 @@ trait DeletePreviousSchemeController extends FrontendController with AuthorisedA
   }
 
   def submit(previousSchemeId: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, previousSchemeId).flatMap{
-      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show))
-    }
+    for {
+      delete <- PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, previousSchemeId)
+      update <- EisSeisHelper.updateIneligiblePreviousSchemeTypeCondition(s4lConnector)
+      route <- Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+    } yield route
   }
 
 }

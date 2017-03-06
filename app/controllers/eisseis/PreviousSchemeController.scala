@@ -18,7 +18,6 @@ package controllers.eisseis
 
 import auth._
 import common.{Constants, KeystoreKeys}
-import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
@@ -27,12 +26,10 @@ import play.api.mvc._
 import controllers.Helpers.{ControllerHelpers, EisSeisHelper, PreviousSchemesHelper}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
 import scala.concurrent.Future
 import views.html.eisseis.previousInvestment.PreviousScheme
 import forms.PreviousSchemeForm._
 import models.PreviousSchemeModel
-import play.Logger
 
 object PreviousSchemeController extends PreviousSchemeController
 {
@@ -44,7 +41,7 @@ object PreviousSchemeController extends PreviousSchemeController
 
 trait PreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
   def show(id: Option[Int]): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
@@ -98,17 +95,14 @@ trait PreviousSchemeController extends FrontendController with AuthorisedAndEnro
   private def routeRequest(previousSchemeModel: PreviousSchemeModel)
                           (implicit request: Request[AnyContent], user: TAVCUser): Future[Result] = {
     if (previousSchemeModel.schemeTypeDesc == Constants.schemeTypeVct || previousSchemeModel.schemeTypeDesc == Constants.schemeTypeEis) {
-      EisSeisHelper.isIneligibleForSeis(s4lConnector).map {
-        isIneligible =>
-          EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = true)
-          if(isIneligible) Redirect(routes.ReviewPreviousSchemesController.show())
-          else Redirect(routes.InvalidPreviousSchemeController.show())
-      }.recover {
-        case e: Exception =>
-          Logger.warn(s"[PreviousSchemeController][submit] - Exception: ${e.getMessage}")
-          InternalServerError(internalServerErrorTemplate)
-      }
-    } else Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+      EisSeisHelper.setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = true)
+      Future.successful(Redirect(routes.InvalidPreviousSchemeController.show()))
+
+    } else {
+      EisSeisHelper.updateIneligiblePreviousSchemeTypeCondition(s4lConnector)
+      Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+    }
   }
 
 }
+

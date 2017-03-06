@@ -95,7 +95,7 @@ GET        /review-previous-schemes-add             controllers.eisseis.ReviewPr
 GET        /review-previous-schemes-change/:Id      controllers.eisseis.ReviewPreviousSchemesController.change(Id: Int)
 
 GET        /delete-previous-scheme/:Id              controllers.eisseis.DeletePreviousSchemeController.show(Id: Int)
-POST       /detele-previous-scheme/:Id              controllers.eisseis.DeletePreviousSchemeController.submit(Id: Int)
+POST       /delete-previous-scheme/:Id              controllers.eisseis.DeletePreviousSchemeController.submit(Id: Int)
 
 GET        /acknowledgement                         controllers.eisseis.AcknowledgementController.show
 POST       /acknowledgement                         controllers.eisseis.AcknowledgementController.submit
@@ -108,4 +108,3 @@ GET        /annual-turnover-error                   controllers.eisseis.AnnualTu
 GET        /trading-for-too-long                    controllers.eisseis.TradingForTooLongController.show
 
 GET        /invalid-scheme-type                     controllers.eisseis.InvalidPreviousSchemeController.show
-GET        /previous-schemes-allowance-exceeded     controllers.eisseis.PreviousInvestmentsAllowanceExceededController.show
