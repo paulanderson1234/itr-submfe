@@ -42,7 +42,7 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale).map {
         case Some(data) => Ok(CommercialSale(commercialSaleForm.fill(data)))
@@ -51,7 +51,7 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(kiModel: Option[KiProcessingModel]): Future[Result] = {

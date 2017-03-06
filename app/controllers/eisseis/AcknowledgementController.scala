@@ -57,7 +57,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
 
   //noinspection ScalaStyle
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       (for {
       // minimum required fields to continue
@@ -95,7 +95,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     }
   }
 
-  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.apply { implicit user => implicit request =>
       Redirect(controllers.feedback.routes.FeedbackController.show().url)
     }

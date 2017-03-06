@@ -52,7 +52,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
 
   val submissionConnector: SubmissionConnector
 
-  val show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -73,7 +73,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeReq(kiModel: KiProcessingModel, prevRFI: HadPreviousRFIModel,
