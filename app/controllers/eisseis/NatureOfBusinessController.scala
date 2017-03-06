@@ -42,7 +42,7 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
         case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
@@ -51,7 +51,7 @@ trait NatureOfBusinessController extends FrontendController with AuthorisedAndEn
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       natureOfBusinessForm.bindFromRequest().fold(
         formWithErrors => {

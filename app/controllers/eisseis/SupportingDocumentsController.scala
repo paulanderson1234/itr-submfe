@@ -47,7 +47,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       if (fileUploadService.getUploadFeatureEnabled) {
         Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
@@ -61,7 +61,7 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(routes.CheckAnswersController.show()))
     }

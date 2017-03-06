@@ -44,7 +44,7 @@ trait DateOfIncorporationController extends FrontendController with AuthorisedAn
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation).map {
         case Some(data) => Ok(DateOfIncorporation(dateOfIncorporationForm.fill(data)))
@@ -53,7 +53,7 @@ trait DateOfIncorporationController extends FrontendController with AuthorisedAn
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       dateOfIncorporationForm.bindFromRequest().fold(
         formWithErrors => {

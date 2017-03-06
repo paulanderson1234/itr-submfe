@@ -48,7 +48,7 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
         case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
@@ -57,7 +57,7 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(kiModel: Option[KiProcessingModel], hasTenYearPlan: Boolean,

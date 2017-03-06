@@ -40,7 +40,7 @@ trait InvalidPreviousSchemeController extends FrontendController with Authorised
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def show: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
         case Some(schemeTypesModel) => Ok(InvalidPreviousScheme(schemeTypesModel))

@@ -39,7 +39,7 @@ trait TradingForTooLongController extends FrontendController with AuthorisedAndE
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Ok(TradingForTooLong()))
     }

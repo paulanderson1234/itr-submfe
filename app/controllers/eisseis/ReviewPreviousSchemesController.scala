@@ -47,7 +47,7 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
 
   val submissionConnector: SubmissionConnector
 
-  def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def show: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -70,17 +70,26 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  def add: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def add: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
       Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
     }
   }
 
-  def change(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def change(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
       Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
+    }
+  }
+
+  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+      PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
+        _ => Redirect(routes.ReviewPreviousSchemesController.show())
+      }
     }
   }
 
@@ -121,7 +130,7 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def submit: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
       (for {

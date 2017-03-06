@@ -50,7 +50,7 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
 
@@ -79,7 +79,7 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       supportingDocumentsUploadForm.bindFromRequest().fold(
         formWithErrors => {

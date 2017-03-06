@@ -38,6 +38,8 @@ object MockSeisConfig extends AppConfig {
   override val submissionFrontendServiceBaseUrl = "http://localhost:9635/investment-tax-relief-submission"
   override val uploadFeatureEnabled: Boolean = false
   override val seisFlowEnabled: Boolean = true
+  //DO not enable the eisseisFlowEnabled for this test. If you need to do so your tests are wrong.
+  override val eisseisFlowEnabled: Boolean = true
 
   override lazy val attachmentFileUploadUrl: (String) => String = schemeType =>
     s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
