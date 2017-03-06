@@ -46,7 +46,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
 
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
         case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
@@ -55,7 +55,7 @@ trait ContactAddressController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       contactAddressForm.bindFromRequest().fold(
         formWithErrors => {

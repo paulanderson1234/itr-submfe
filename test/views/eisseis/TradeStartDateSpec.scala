@@ -19,9 +19,9 @@ package views.eisseis
 import auth.MockAuthConnector
 import common.{Constants, KeystoreKeys}
 import connectors.SubmissionConnector
-import controllers.seis.TradeStartDateController
+import controllers.eisseis.TradeStartDateController
 import fixtures.MockSeiseisConfig
-import models.TradeStartDateModel
+import models.{EisSeisProcessingModel, TradeStartDateModel}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -49,11 +49,15 @@ class TradeStartDateSpec extends ViewSpec {
     when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
 
+  when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+    (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
+
   "The Trade Start Date page" should {
 
     "Verify that the Trade start date  page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelYes))
+        mockEnrolledRequest(eisSeisSchemeTypesModel)
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -65,7 +69,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
@@ -74,6 +78,7 @@ class TradeStartDateSpec extends ViewSpec {
     "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelNo))
+        mockEnrolledRequest(eisSeisSchemeTypesModel)
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -85,7 +90,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
@@ -93,6 +98,7 @@ class TradeStartDateSpec extends ViewSpec {
     "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks()
+        mockEnrolledRequest(eisSeisSchemeTypesModel)
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -104,7 +110,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
@@ -113,6 +119,7 @@ class TradeStartDateSpec extends ViewSpec {
     "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new SEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelInvalidYes))
+        mockEnrolledRequest(eisSeisSchemeTypesModel)
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -124,7 +131,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasTradeStartDate-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasTradeStartDate-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.DateOfIncorporationController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.DateOfIncorporationController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

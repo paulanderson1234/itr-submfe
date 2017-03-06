@@ -42,7 +42,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       def routeRequest(backUrl: Option[String]) = {
         if (backUrl.isDefined) {
@@ -60,7 +60,7 @@ trait SubsidiariesSpendingInvestmentController extends FrontendController with A
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
         invalidForm =>

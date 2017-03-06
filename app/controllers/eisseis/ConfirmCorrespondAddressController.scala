@@ -49,7 +49,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
 
   val subscriptionService: SubscriptionService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
 
@@ -76,7 +76,7 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest: Option[String] => Future[Result] = {

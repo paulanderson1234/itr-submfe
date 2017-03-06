@@ -41,7 +41,7 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Autho
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](KeystoreKeys.usedInvestmentReasonBefore).map {
         case Some(data) => Ok(UsedInvestmentReasonBefore(usedInvestmentReasonBeforeForm.fill(data)))
@@ -50,7 +50,7 @@ trait UsedInvestmentReasonBeforeController extends FrontendController with Autho
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit userr => implicit request =>
       usedInvestmentReasonBeforeForm.bindFromRequest().fold(
         formWithErrors => {

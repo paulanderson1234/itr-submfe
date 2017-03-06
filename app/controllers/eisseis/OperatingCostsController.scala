@@ -47,7 +47,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
         case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
@@ -56,7 +56,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(kiModel: Option[KiProcessingModel], isCostConditionMet: Option[Boolean]): Future[Result] = {

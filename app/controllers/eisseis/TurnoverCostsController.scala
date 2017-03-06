@@ -51,7 +51,7 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[AnnualTurnoverCostsModel](KeystoreKeys.turnoverCosts).map {
         case Some(data) => Ok(TurnoverCosts(turnoverCostsForm.fill(data)))
@@ -60,7 +60,7 @@ trait TurnoverCostsController extends FrontendController with AuthorisedAndEnrol
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(subsidiaries: Option[SubsidiariesModel], turnoverCheckRes: Option[Boolean]): Future[Result] = {
