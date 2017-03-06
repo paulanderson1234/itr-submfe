@@ -95,16 +95,11 @@ trait EisSeisHelper {
       previousSchemes => {
         if (previousSchemes.nonEmpty) {
           if (previousSchemes.exists(scheme => scheme.schemeTypeDesc == Constants.schemeTypeEis || scheme.schemeTypeDesc == Constants.schemeTypeVct)) {
-            println("============================set it as ineligble TRUE as vct or eis found===================")
             setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = true)
           } else {
-            println("============================set it as ineligble FALSE no vct or eis found===================")
-
             setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
           }
         } else {
-          println("============================set it as ineligble FALSE as no list===================")
-
           setIneligiblePreviousSchemeTypeCondition(s4lConnector, previousSchemeTypeConditionIneligible = false)
         }
       }
