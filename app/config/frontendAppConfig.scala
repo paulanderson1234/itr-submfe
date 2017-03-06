@@ -39,6 +39,7 @@ trait AppConfig {
   val uploadFeatureEnabled: Boolean
   val submissionFrontendServiceBaseUrl: String
   val seisFlowEnabled: Boolean
+  val eisseisFlowEnabled: Boolean
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -71,4 +72,5 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   }
   override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
   override lazy val seisFlowEnabled: Boolean = getFeature(s"$env.features.seisFlowEnabled")
+  override lazy val eisseisFlowEnabled: Boolean = getFeature(s"$env.features.eisseisFlowEnabled")
 }

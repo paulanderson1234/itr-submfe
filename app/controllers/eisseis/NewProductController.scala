@@ -46,7 +46,7 @@ trait NewProductController extends FrontendController with AuthorisedAndEnrolled
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[NewProductModel](KeystoreKeys.newProduct).map {
         case Some(data) => Ok(NewProduct(newProductForm.fill(data)))
@@ -55,7 +55,7 @@ trait NewProductController extends FrontendController with AuthorisedAndEnrolled
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       newProductForm.bindFromRequest().fold(
         formWithErrors => {

@@ -41,7 +41,7 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
 
 
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(backUrl: Option[String]) = {
@@ -68,7 +68,7 @@ trait SubsidiariesController extends FrontendController with AuthorisedAndEnroll
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       //    subsidiariesForm.bindFromRequest.fold(
       //      invalidForm => ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubsidiaries, s4lConnector)

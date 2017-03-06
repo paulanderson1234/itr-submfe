@@ -48,7 +48,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
         case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
@@ -57,7 +57,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       tradeStartDateForm.bindFromRequest().fold(

@@ -46,7 +46,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[PercentageStaffWithMastersModel](KeystoreKeys.percentageStaffWithMasters).map {
         case Some(data) => Ok(PercentageStaffWithMasters(percentageStaffWithMastersForm.fill(data)))
@@ -55,7 +55,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(kiModel: Option[KiProcessingModel], percentageWithMasters: Boolean,

@@ -47,7 +47,7 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
 
   val subscriptionService: SubscriptionService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def getContactDetails: Future[Option[ContactDetailsModel]] = for {
@@ -70,7 +70,7 @@ trait ConfirmContactDetailsController extends FrontendController with Authorised
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       confirmContactDetailsForm.bindFromRequest().fold(
         formWithErrors => {

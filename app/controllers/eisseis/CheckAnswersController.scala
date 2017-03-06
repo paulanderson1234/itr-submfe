@@ -79,7 +79,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     subsidiariesNinetyOwned,contactDetails,contactAddress,investmentGrowModel, applicationConfig.uploadFeatureEnabled)
 
 
-  def show (envelopeId: Option[String]) : Action[AnyContent]= featureSwitch(applicationConfig.seisFlowEnabled) {
+  def show (envelopeId: Option[String]) : Action[AnyContent]= featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       if (envelopeId.fold("")(_.toString).length > 0) {
         s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
@@ -104,7 +104,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
+  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(routes.AcknowledgementController.show()))
     }
