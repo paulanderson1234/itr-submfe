@@ -136,6 +136,8 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
             'id -> "previousSchemeInvestmentSpent"
             )
         </div>
+
+
         <div class="form-group"></div>
 
         <div class="form-group divider--top--thick"></div>
@@ -144,8 +146,9 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
         Some(Messages("page.previousInvestment.reviewPreviousSchemes.dateOfShareIssue")),
         false, Some(Messages("common.date.hint.example")), Some("heading-small"))
 
+
         <div>
-            <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
+            <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@{previousScheme + 1}" />
         </div>
     </div>
     }
