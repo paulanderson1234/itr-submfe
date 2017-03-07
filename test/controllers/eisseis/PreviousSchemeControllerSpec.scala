@@ -174,7 +174,7 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       )
     }
 
-    "redirect to the review previous scheme page if the scheme type is VCT and the user is currently ineligible for SEIS" in {
+    "redirect to the review invalid scheme page if the scheme type is VCT and the user is currently ineligible for SEIS" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(cacheMap)
@@ -194,7 +194,7 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+          redirectLocation(result) shouldBe Some(routes.InvalidPreviousSchemeController.show().url)
         }
       )
     }
@@ -224,7 +224,7 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       )
     }
 
-    "redirect to the review previous scheme error page if the scheme type is EIS and the user is currently ineligible for SEIS" in {
+    "redirect to the invalid scheme error page if the scheme type is EIS and the user is currently ineligible for SEIS" in {
       setupVectorMocks(Some(routes.ReviewPreviousSchemesController.show().url), Some(previousSchemeVectorList))
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
         .thenReturn(cacheMap)
@@ -244,7 +244,7 @@ class PreviousSchemeControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.ReviewPreviousSchemesController.show().url)
+          redirectLocation(result) shouldBe Some(routes.InvalidPreviousSchemeController.show().url)
         }
       )
     }

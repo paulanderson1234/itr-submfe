@@ -103,143 +103,58 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
         }
       )
     }
-  }
 
-  "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
-    "redirect to 'Proposed Investment' page if table is not empty" in {
-      setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+    "Posting to the continue button on the ReviewPreviousSchemesController when authenticated and enrolled" should {
+      "redirect to 'Proposed Investment' page if table is not empty" in {
+        setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
 
-      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
-        }
-      )
-    }
-
-    "redirect to itself if no payments table is empty" in {
-      setupMocks(None, None, Some(startDateModelModelYes))
-
-      when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/review-previous-schemes")
-        }
-      )
-    }
-  }
-
-  "redirect to proposed investment if there is no trade start date" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), None)
-
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(false)))
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
+        mockEnrolledRequest(seisSchemeTypesModel)
+        submitWithSessionAndAuth(TestController.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/proposed-investment")
+          }
+        )
       }
-    )
-  }
 
-  "redirect to internal error if no true/false value id returned from the service when checking the max limit" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
+      "redirect to itself if no payments table is empty" in {
+        setupMocks(None, None, Some(startDateModelModelYes))
 
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe INTERNAL_SERVER_ERROR
+        mockEnrolledRequest(seisSchemeTypesModel)
+        submitWithSessionAndAuth(TestController.submit)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/review-previous-schemes")
+          }
+        )
       }
-    )
-  }
+    }
 
-  "redirect to error page if the check previous investmetn exceeds the max value allowed" in {
-    setupMocks(Some(previousSchemeVectorList), Some("link"), Some(startDateModelModelYes))
-
-    when(mockSubmissionConnector.checkPreviousInvestmentSeisAllowanceExceeded(Matchers.any())
-    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(Option(true)))
-    mockEnrolledRequest(seisSchemeTypesModel)
-    submitWithSessionAndAuth(TestController.submit)(
-      result => {
-        status(result) shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-schemes-allowance-exceeded")
+    "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
+      "redirect to the previous investment scheme page" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+        mockEnrolledRequest(seisSchemeTypesModel)
+        submitWithSessionAndAuth(TestController.add)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-investment")
+          }
+        )
       }
-    )
-  }
-
-  "Sending a POST request to PreviousSchemeController delete method when authenticated and enrolled" should {
-    "redirect to 'Review previous scheme' and delete element from vector when an element with the given processing id is found" in {
-      setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapDeleted)
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.remove(1))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/review-previous-schemes")
-        }
-      )
     }
 
-
-    "redirect to 'Review previous scheme' and return not delete from vector when an element with the given processing id is not found" +
-      "when authenticated and enrolled" in {
-      setupMocks(Some(previousSchemeVectorList))
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMap)
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.remove(10))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/review-previous-schemes")
-        }
-      )
+    "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
+      "redirect to the previous investment scheme page" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
+        mockEnrolledRequest(seisSchemeTypesModel)
+        submitWithSessionAndAuth(TestController.change(testId))(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-investment?id=" + testId)
+          }
+        )
+      }
     }
 
-    "redirect to 'Review previous scheme' when the vector is empty when authenticated and enrolled" in {
-      setupMocks()
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapEmpty)
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.remove(1))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/review-previous-schemes")
-        }
-      )
-    }
-  }
-
-  "Sending a GET request to ReviewPreviousSchemeController add method when authenticated and enrolled" should {
-    "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.add)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-investment")
-        }
-      )
-    }
-  }
-
-  "Sending a GET request to ReviewPreviousSchemeController change method when authenticated and enrolled" should {
-    "redirect to the previous investment scheme page" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(cacheMapBackLink)
-      mockEnrolledRequest(seisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.change(testId))(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/previous-investment?id=" + testId)
-        }
-      )
-    }
   }
 }

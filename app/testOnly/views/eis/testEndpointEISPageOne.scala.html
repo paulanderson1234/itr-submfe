@@ -333,7 +333,7 @@
             false, Some(Messages("common.date.hint.example")), Some("heading-small"))
 
             <div>
-                <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@previousScheme" />
+                <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@{previousScheme + 1}" />
             </div>
         </div>
     }

@@ -43,7 +43,7 @@
                             @Messages("common.notAvailableAcronym")
                         }</td>
                     <td id="change-@{index}"><a id="change-ref-@{index}" href=@controllers.eis.routes.ReviewPreviousSchemesController.change(previousScheme.processingId.get).toString>@Messages("common.base.change")</a></td>
-                    <td id="remove-@{index}"> @form(action = controllers.eis.routes.ReviewPreviousSchemesController.remove(previousScheme.processingId.getOrElse(0))) {
+                    <td id="remove-@{index}"> @form(action = controllers.eis.routes.DeletePreviousSchemeController.show(previousScheme.processingId.getOrElse(0))) {
                         <button class="button--link-style font-xsmall removeLink" type="submit" id="remove-link-@{index}"> @Messages("common.base.remove")</button>
                         }</td>
                 </tr>

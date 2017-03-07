@@ -71,13 +71,6 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
   }
 
-  def remove(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
-    PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, id).map {
-      _ => Redirect(routes.ReviewPreviousSchemesController.show())
-    }
-  }
-
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
     PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap(previousSchemes =>
