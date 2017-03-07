@@ -66,6 +66,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         tradeStartDateSetup(Some(tradeStartDateModelYes))
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -186,6 +187,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         investmentSetup()
         companyDetailsSetup()
         tradeStartDateSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -221,6 +223,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         investmentSetup()
         companyDetailsSetup()
         tradeStartDateSetup(Some(tradeStartDateModelNo))
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -267,6 +270,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelNo), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         tradeStartDateSetup(Some(tradeStartDateModelYes))
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -390,6 +394,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
           Some(natureOfBusinessModel), Some(commercialSaleModelNo), Some(isKnowledgeIntensiveModelNo), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelYes), Some(tenYearPlanModelYes), Some(subsidiariesModelYes))
         tradeStartDateSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -446,7 +451,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
     setupMocks()
 
     val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
-    val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true))(fakeRequest, applicationMessages)
+    val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true), EisSeisProcessingModel(None, None, None))(fakeRequest, applicationMessages)
     val document = Jsoup.parse(page.body)
 
     lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
@@ -475,7 +480,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       setupMocks()
 
       val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
-      val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, vct = true))(fakeRequest, applicationMessages)
+      val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, vct = true), EisSeisProcessingModel(None))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
@@ -505,7 +510,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       setupMocks()
 
       val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
-      val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true, vct = true))(fakeRequest, applicationMessages)
+      val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true, vct = true), EisSeisProcessingModel(None, None, None))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
       lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
@@ -530,6 +535,36 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
     }
 
+    "Verify that the scheme description contains EIS,  SEIS and VCT when schemeTypesModel.eis == true and  " +
+      "schemeTypesModel.seis == true schemeTypesModel.vct == true but Company is not eligible for SEIS then seis-scheme " +
+      "will be removed from the check answers " in {
+
+      setupMocks()
+
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true, vct = true), EisSeisProcessingModel(ineligibleTradeStartCondition = Some(true), None, None))(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(page.body)
+
+      lazy val companyDetailsTableTBody = document.getElementById("company-details-table").select("tbody")
+      lazy val notAvailableMessage = Messages("common.notAvailable")
+
+      document.title() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.heading")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.one")
+
+      document.getElementById("schemes").children().size() shouldBe 2
+      document.getElementById("eis-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.eis")
+      document.getElementById("vct-scheme").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.scheme.vct")
+
+      document.getElementById("description-two").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.description.two")
+
+      //Section 1 table heading
+      document.getElementById("companyDetailsSection-table-heading").text() shouldBe Messages("summaryQuestion.companyDetailsSection")
+      companyDetailsTableTBody.select("tr").size() shouldBe 0
+
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+    }
 
   }
 
@@ -550,6 +585,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
           Some(natureOfBusinessModel), Some(commercialSaleModelYes), Some(isKnowledgeIntensiveModelYes), Some(operatingCostsModel),
           Some(percentageStaffWithMastersModelNo), Some(tenYearPlanModelNo), Some(subsidiariesModelYes))
         tradeStartDateSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }

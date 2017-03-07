@@ -59,6 +59,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
         companyDetailsSetup()
         tradeStartDateSetup()
         contactAddressSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
@@ -119,6 +120,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
         companyDetailsSetup()
         tradeStartDateSetup()
         contactAddressSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }
