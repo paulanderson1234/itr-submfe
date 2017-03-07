@@ -160,8 +160,9 @@ page.examples.Confirmation.heading=Confirmation
 
 #Scheme selection page
 validation.error.schemeSelection=Please select at least one scheme.
-page.schemeSelection.SchemeSelection.title=Which Advanced Assurance scheme are you applying for?
-page.schemeSelection.SchemeSelection.heading=Which Advanced Assurance scheme are you applying for?
+page.schemeSelection.SchemeSelection.title=Which schemes are you applying for?'
+page.schemeSelection.SchemeSelection.heading=Which schemes are you applying for?'
+page.schemeSelection.SchemeSelction.hint=You can apply for up to 3 schemes
 page.schemeSelection.SchemeSelection.checkbox.seis=Seed Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.checkbox.eis=Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.checkbox.vct=Venture Capital Trust
@@ -175,12 +176,19 @@ page.schemeSelection.SchemeSelection.help.eis.bullet.one=£5 million received in
 page.schemeSelection.SchemeSelection.help.eis.bullet.two=£12 million received over the company''s lifetime
 page.schemeSelection.SchemeSelection.help.eis.findOutMore=Find out more about the
 page.schemeSelection.SchemeSelection.help.eis.link=Enterprise Investment Scheme
-page.schemeSelection.SchemeSelection.help.vct.subHeading=What''s the Venture Capital Trust Scheme?
-page.schemeSelection.SchemeSelection.help.vct.text=The Venture Capital Trust Scheme helps small companies attract investment by offering tax reliefs to individual investors who buy new shares in a Venture Capital Trust. Tax relief is available on a maximum of:
+page.schemeSelection.SchemeSelection.help.vct.subHeading=What''s the Venture Capital Trust scheme?
+page.schemeSelection.SchemeSelection.help.vct.text=The Venture Capital Trust scheme helps small companies attract investment by offering tax reliefs to individual investors who buy new shares in a Venture Capital Trust. Tax relief is available on a maximum of:
 page.schemeSelection.SchemeSelection.help.vct.bullet.one=£5 million received in 1 year
 page.schemeSelection.SchemeSelection.help.vct.bullet.two=£12 million received over the company''s lifetime
 page.schemeSelection.SchemeSelection.help.vct.findOutMore=Find out more about the
-page.schemeSelection.SchemeSelection.help.vct.link=Venture Capital Trust Scheme
+page.schemeSelection.SchemeSelection.help.vct.link=Venture Capital Trust scheme
+
+#single scheme selection page
+page.schemeSelection.SchemeSelection.singlescheme.title=Which scheme are you applying for?'
+page.schemeSelection.SchemeSelection.singlescheme.heading=Which scheme are you applying for?'
+page.schemeSelection.SchemeSelection.radiobutton.seis=Seed Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.radiobutton.eis=Enterprise Investment Scheme
+page.schemeSelection.SchemeSelection.radiobutton.vct=Venture Capital Trust
 
 #Utr page
 page.companyDetails.utr.heading=What''s your Company Unique Taxpayer Reference?

@@ -18,7 +18,7 @@ package auth
 
 import config.AppConfig
 
-object MockConfig extends AppConfig {
+trait MockConfig extends AppConfig {
   override val analyticsToken: String = ""
   override val analyticsHost: String = ""
   override val reportAProblemPartialUrl: String = ""
@@ -45,4 +45,15 @@ object MockConfig extends AppConfig {
     s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
       s"investment-tax-relief/$schemeType/check-your-answers"
 
+}
+
+object MockConfig extends MockConfig
+
+object MockConfigSingleFlow extends MockConfig{
+  override val eisseisFlowEnabled: Boolean = false
+}
+
+object MockConfigEISFlow extends MockConfig{
+  override val seisFlowEnabled: Boolean = false
+  override val eisseisFlowEnabled: Boolean = false
 }

@@ -1,0 +1,89 @@
+@import models.submission.SingleSchemeTypesModel
+@import common.Constants
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{externalLink,backButton,singleRadioButton,errorSummary, formInputRadioGroupSingleScheme}
+
+@(singleSchemeSelectionForm: Form[SingleSchemeTypesModel])(implicit request: Request[_], messages: Messages)
+
+@eisDescription = {
+<details>
+    <summary><span id="EIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.eis.subHeading")</span></summary>
+    <div class="panel panel-indent panel-border-narrow">
+        <p id="EIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.eis.text")</p>
+        <ul class ="list list-bullet">
+            <li id="EIS-bullet-one">@Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.one")</li>
+            <li id="EIS-bullet-two">@Messages("page.schemeSelection.SchemeSelection.help.eis.bullet.two")</li>
+        </ul>
+        <p id="EIS-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.eis.findOutMore")
+            @externalLink(Messages("page.schemeSelection.SchemeSelection.help.eis.link"),
+            "https://www.gov.uk/government/publications/the-enterprise-investment-scheme-introduction/enterprise-investment-scheme",
+            Some("the-enterprise-investment-scheme"))
+        </p>
+    </div>
+</details>
+}
+
+@seisDescription = {
+<details>
+    <summary><span id="SEIS-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.seis.subHeading")</span></summary>
+    <div class="panel panel-indent panel-border-narrow">
+        <p id="SEIS-help-text">@Messages("page.schemeSelection.SchemeSelection.help.seis.text")</p>
+        <p id="SEIS-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.seis.findOutMore")
+            @externalLink(Messages("page.schemeSelection.SchemeSelection.help.seis.link"),
+            "https://www.gov.uk/guidance/seed-enterprise-investment-scheme-background",
+            Some("the-seed-enterprise-investment-scheme"))
+        </p>
+    </div>
+</details>
+}
+
+@vctDescription = {
+<details>
+    <summary><span id="VCT-help" class="summary">@Messages("page.schemeSelection.SchemeSelection.help.vct.subHeading")</span></summary>
+    <div class="panel panel-indent panel-border-narrow">
+        <p id="VCT-help-text">@Messages("page.schemeSelection.SchemeSelection.help.vct.text")</p>
+        <ul class ="list list-bullet">
+            <li id="VCT-bullet-one">@Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.one")</li>
+            <li id="VCT-bullet-two">@Messages("page.schemeSelection.SchemeSelection.help.vct.bullet.two")</li>
+        </ul>
+        <p id="VCT-guidance-link">@Messages("page.schemeSelection.SchemeSelection.help.vct.findOutMore")
+            @externalLink(Messages("page.schemeSelection.SchemeSelection.help.vct.link"),
+            "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/vcm50010",
+            Some("the-venture-capital-trust-scheme"))
+        </p>
+    </div>
+</details>
+}
+
+@main_template(Messages("page.schemeSelection.SchemeSelection.singlescheme.title")) {
+
+@backButton(controllers.routes.ApplicationHubController.show.url)
+
+@errorSummary(singleSchemeSelectionForm, "single-scheme-selection", "singleSchemeSelection")
+
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.schemeSelection.SchemeSelection.singlescheme.heading")</h1>
+
+@form(action = controllers.schemeSelection.routes.SingleSchemeSelectionController.submit()) {
+
+    <div class="form-group">
+        @formInputRadioGroupSingleScheme(
+        field = singleSchemeSelectionForm("singleSchemeSelection"),
+        Seq(Constants.schemeTypeEis -> Messages("page.schemeSelection.SchemeSelection.radiobutton.eis"),
+        Constants.schemeTypeSeis -> Messages("page.schemeSelection.SchemeSelection.radiobutton.seis"),
+        Constants.schemeTypeVct-> Messages("page.schemeSelection.SchemeSelection.radiobutton.vct")),
+        '_legend -> Messages("page.schemeSelection.SchemeSelection.singlescheme.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "block",
+        '_eisDescription -> eisDescription,
+        '_seisDescription -> seisDescription,
+        '_vctDescription -> vctDescription
+        )
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+    </div>
+}
+}

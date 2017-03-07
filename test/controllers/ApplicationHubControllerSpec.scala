@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{MockConfigSingleFlow, MockConfigEISFlow, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -36,13 +36,24 @@ import scala.concurrent.Future
 class ApplicationHubControllerSpec extends BaseSpec{
 
 
-  object TestController extends ApplicationHubController {
-    override lazy val applicationConfig = MockConfig
+  trait TestController extends ApplicationHubController {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val subscriptionService = mockSubscriptionService
     override lazy val registrationDetailsService = mockRegistrationDetailsService
+  }
+
+  object TestControllerCombined extends TestController {
+    override lazy val applicationConfig = MockConfig
+  }
+
+  object TestControllerSingle extends TestController {
+    override lazy val applicationConfig = MockConfigSingleFlow
+  }
+
+  object TestControllerEIS extends TestController {
+    override lazy val applicationConfig = MockConfigEISFlow
   }
 
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
@@ -67,6 +78,8 @@ class ApplicationHubControllerSpec extends BaseSpec{
     when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
       thenReturn(Future.successful(None))
   }
+
+
 
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(true)))
 
@@ -93,7 +106,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when true is fetched from keystore" in {
       setupMocks(Some(true))
       mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
+      showWithSessionAndAuth(TestControllerCombined.show())(
         result => {
           status(result) shouldBe OK
           contentAsString(result) contains ApplicationHubExisting
@@ -104,7 +117,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when false is fetched from keystore" in {
       setupMocks(Some(false))
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestController.show())(
+      showWithSessionAndAuth(TestControllerCombined.show())(
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
@@ -116,7 +129,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when nothing is fetched from keystore" in {
       setupMocks(None)
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestController.show())(
+      showWithSessionAndAuth(TestControllerCombined.show())(
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
@@ -128,7 +141,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 500 when an ApplicationHubModel cannot be composed" in {
       setupMocksNotAvailable()
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestController.show())(
+      showWithSessionAndAuth(TestControllerCombined.show())(
         result => {
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }
@@ -137,14 +150,42 @@ class ApplicationHubControllerSpec extends BaseSpec{
   }
 
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'scheme selection' page if table is not empty" in {
+    "redirect to 'scheme selections' page if eisSeisFlowEnabled is enabled" in {
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
-      mockEnrolledRequest(eisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.newApplication)(
+      mockEnrolledRequest(None)
+      submitWithSessionAndAuth(TestControllerCombined.newApplication)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SchemeSelectionController.show().url)
+        }
+      )
+    }
+  }
+
+  "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
+    "redirect to 'scheme selection' page if eisSeisFlowEnabled is disabled but seisFlowEnabled is enabled" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+      mockEnrolledRequest(None)
+      submitWithSessionAndAuth(TestControllerSingle.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SingleSchemeSelectionController.show().url)
+        }
+      )
+    }
+  }
+
+  "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
+    "redirect to 'nature of business' page in EIS flow if neither seisFlowEnabled or eisSeisFlowEnabled are true" in {
+      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(CacheMap("", Map())))
+      mockEnrolledRequest(None)
+      submitWithSessionAndAuth(TestControllerEIS.newApplication)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       )
     }
@@ -154,7 +195,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "redirect to itself and delete the application currently in progress" in {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       mockEnrolledRequest(eisSchemeTypesModel)
-      submitWithSessionAndAuth(TestController.delete)(
+      submitWithSessionAndAuth(TestControllerCombined.delete)(
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)

@@ -21,59 +21,62 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
-import play.api.mvc.{Action, AnyContent, Request, Result}
 import forms.schemeSelection.SchemeSelectionForm._
-import models.submission.SchemeTypesModel
+import play.api.mvc.{Action, AnyContent, Request, Result}
+import forms.schemeSelection.SingleSchemeSelectionForm._
+import models.submission.{SchemeTypesModel, SingleSchemeTypesModel}
 import play.api.Logger
-import views.html.schemeSelection.SchemeSelection
+import views.html.schemeSelection.SingleSchemeSelection
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object SchemeSelectionController extends SchemeSelectionController {
+object SingleSchemeSelectionController extends SingleSchemeSelectionController {
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val s4lConnector = S4LConnector
 }
 
-trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait SingleSchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq()
 
-  def show(): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+  def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled  && !applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-        case Some(scheme) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
-        case _ => Ok(SchemeSelection(schemeSelectionForm))
+        case Some(scheme) => Ok(SingleSchemeSelection(singleSchemeSelectionForm.fill(SingleSchemeTypesModel.convertToSingleScheme(scheme))))
+        case _ => Ok(SingleSchemeSelection(singleSchemeSelectionForm))
       }
     }
   }
 
-  def submit(): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+  def submit(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled && !applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      schemeSelectionForm.bindFromRequest.fold(
+      singleSchemeSelectionForm.bindFromRequest.fold(
         formWithErrors => {
-          Future.successful(BadRequest(SchemeSelection(formWithErrors)))
+          Future.successful(BadRequest(SingleSchemeSelection(formWithErrors)))
         },
         validFormData => {
+          val convertedData = SingleSchemeTypesModel.convertFromSingleScheme(validFormData)
           (for {
-            saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, validFormData)
-            saveApplication <-  s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+            saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, convertedData)
+            saveApplication <- s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
           } yield (saveSchemes, saveApplication)).map {
-            result => routeToScheme(validFormData)
+            result => routeToScheme(convertedData, validFormData)
           }.recover {
             case e: Exception => Logger.warn(s"[SchemeSelectionController][submit] Error when calling saveFormData: ${e.getMessage}")
-              routeToScheme(validFormData)
+              routeToScheme(convertedData, validFormData)
           }
         }
       )
     }
   }
 
-  private def routeToScheme(schemeTypesModel: SchemeTypesModel)(implicit request: Request[AnyContent]): Result = {
+  private def routeToScheme(schemeTypesModel: SchemeTypesModel, singleSchemeTypesModel: SingleSchemeTypesModel)
+                           (implicit request: Request[AnyContent]): Result = {
     schemeTypesModel match {
       //EIS Flow
       case SchemeTypesModel(true,false,false,false) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
@@ -81,17 +84,11 @@ trait SchemeSelectionController extends FrontendController with AuthorisedAndEnr
       case SchemeTypesModel(false,true,false,false) => Redirect(controllers.seis.routes.NatureOfBusinessController.show().url)
       //VCT Flow
       case SchemeTypesModel(false,false,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
-      //EIS SEIS Flow
-      case SchemeTypesModel(true,true,false,false) => Redirect(controllers.eisseis.routes.NatureOfBusinessController.show().url)
-      //EIS VCT Flow
-      case SchemeTypesModel(true,false,false,true) => Redirect(controllers.eis.routes.NatureOfBusinessController.show().url)
-      //SEIS VCT Flow
-      case SchemeTypesModel(false,true,false,true) => Redirect(controllers.eisseis.routes.NatureOfBusinessController.show().url)
-      //EIS SEIS VCT Flow
-      case SchemeTypesModel(true,true,false,true) => Redirect(controllers.eisseis.routes.NatureOfBusinessController.show().url)
       //Invalid Flow
-      case _ => BadRequest(SchemeSelection(schemeSelectionForm.fill(schemeTypesModel)))
+      case _ => BadRequest(SingleSchemeSelection(singleSchemeSelectionForm.fill(singleSchemeTypesModel)))
     }
   }
-
 }
+
+
+
