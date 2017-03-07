@@ -44,7 +44,7 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
 
   override val acceptedFlows = Seq()
 
-  def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
+  def show(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled  && !applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
         case Some(scheme) => Ok(SingleSchemeSelection(singleSchemeSelectionForm.fill(SingleSchemeTypesModel.convertToSingleScheme(scheme))))
@@ -53,7 +53,8 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
     }
   }
 
-  def submit(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def submit(): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled && !applicationConfig.eisseisFlowEnabled) {
+    AuthorisedAndEnrolled.async { implicit user => implicit request =>
       singleSchemeSelectionForm.bindFromRequest.fold(
         formWithErrors => {
           Future.successful(BadRequest(SingleSchemeSelection(formWithErrors)))
@@ -62,7 +63,7 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
           val convertedData = SingleSchemeTypesModel.convertFromSingleScheme(validFormData)
           (for {
             saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, convertedData)
-            saveApplication <-  s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
+            saveApplication <- s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
           } yield (saveSchemes, saveApplication)).map {
             result => routeToScheme(convertedData, validFormData)
           }.recover {
@@ -71,6 +72,7 @@ trait SingleSchemeSelectionController extends FrontendController with Authorised
           }
         }
       )
+    }
   }
 
   private def routeToScheme(schemeTypesModel: SchemeTypesModel, singleSchemeTypesModel: SingleSchemeTypesModel)

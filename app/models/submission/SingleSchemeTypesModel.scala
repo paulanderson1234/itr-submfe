@@ -39,9 +39,8 @@ object SingleSchemeTypesModel{
   def convertToSingleScheme(schemeTypesModel: SchemeTypesModel): SingleSchemeTypesModel = {
     schemeTypesModel match {
       case SchemeTypesModel(true,false,false,false) => SingleSchemeTypesModel(Constants.schemeTypeEis)
-      case SchemeTypesModel(false,true,false,false) => SingleSchemeTypesModel(Constants.schemeTypeEis)
-      case SchemeTypesModel(false,false,false,true) => SingleSchemeTypesModel(Constants.schemeTypeEis)
-      case _ => SingleSchemeTypesModel("")
+      case SchemeTypesModel(false,true,false,false) => SingleSchemeTypesModel(Constants.schemeTypeSeis)
+      case SchemeTypesModel(false,false,false,true) => SingleSchemeTypesModel(Constants.schemeTypeVct)
     }
   }
 }
