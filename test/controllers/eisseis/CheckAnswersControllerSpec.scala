@@ -62,6 +62,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
         Some(natureOfBusinessModel),Some(commercialSaleModelYes),Some(isKnowledgeIntensiveModelYes),Some(operatingCostsModel),
         Some(percentageStaffWithMastersModelYes),Some(tenYearPlanModelYes),Some(subsidiariesModelYes))
       tradeStartDateSetup(Some(tradeStartDateModelYes))
+      isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
@@ -77,6 +78,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       companyDetailsSetup()
       tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
+      isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(envelopeId))(
         result => status(result) shouldBe OK
@@ -92,6 +94,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       companyDetailsSetup()
       tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
+      isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(None))(
         result => status(result) shouldBe OK
@@ -107,6 +110,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       companyDetailsSetup()
       tradeStartDateSetup(Some(tradeStartDateModelYes))
       contactAddressSetup()
+      isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show(Some("")))(
         result => status(result) shouldBe OK
