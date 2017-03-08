@@ -28,7 +28,7 @@ import play.api.test.Helpers._
 import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
 import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
-import models.{ContactDetailsModel, SubmissionRequest, TradeStartDateModel, YourCompanyNeedModel}
+import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
 import models.submission.{SchemeTypesModel, SubmissionResponse}
 
 import scala.concurrent.Future
@@ -56,8 +56,6 @@ class AcknowledgementControllerSpec extends BaseSpec {
   class SetupPageFull() {
     setUpMocks(mockS4lConnector)
     setUpMocksRegistrationService(mockRegistrationDetailsService)
-    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
   }
 
   class SetupPageMinimum() {
@@ -73,8 +71,6 @@ class AcknowledgementControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
-    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
   }
 
   "AcknowledgementController" should {

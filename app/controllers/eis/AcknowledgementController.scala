@@ -67,7 +67,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
       contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
       tavcRef <- getTavCReferenceNumber()
-      tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
       schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
@@ -83,7 +82,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       tenYearPlan <- s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan)
 
       result <- createSubmissionDetailsModel(kiProcModel, natureOfBusiness, contactDetails, proposedInvestment,
-        investmentGrow, dateOfIncorporation, contactAddress, schemeType, tradeStartDate, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        investmentGrow, dateOfIncorporation, contactAddress, schemeType, tavcRef, subsidiariesSpendInvest, subsidiariesNinetyOwned,
         previousSchemes.toList, commercialSale, newGeographicalMarket, newProduct, tenYearPlan, operatingCosts, turnoverCosts, registrationDetailsModel)
     } yield result) recover {
       case e: Exception => {
@@ -110,7 +109,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                                             dateOfIncorporation: Option[DateOfIncorporationModel],
                                             contactAddress: Option[AddressModel],
                                             schemeType: Option[SchemeTypesModel],
-                                            tradeStartDateModel: Option[TradeStartDateModel],
                                             tavcReferenceNumber: String,
 
                                             // potentially optional or potentially required
@@ -130,9 +128,9 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
     val tempSubsidiaryTradeName = "Subsidiary Company Name Ltd"
 
     (kiProcModel, natOfBusiness, contactDetails, proposedInvestment, investmentGrowModel, dateOfIncorporation,
-      contactAddress, registrationDetailsModel, schemeType, tradeStartDateModel) match {
+      contactAddress, registrationDetailsModel, schemeType) match {
       case (Some(ki), Some(natureBusiness), Some(cntDetail), Some(propInv), Some(howInvGrow), Some(dateIncorp),
-      Some(cntAddress), Some(regDetail), Some(schType), Some(tradeDateModel)) => {
+      Some(cntAddress), Some(regDetail), Some(schType)) => {
 
         // maybe enhance validation here later (validate Ki and description, validate subsid = yes and ninety etc.)
         val submission = Submission(AdvancedAssuranceSubmissionType(
@@ -141,7 +139,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           investmentGrowModel = howInvGrow, correspondenceAddress = cntAddress,
           schemeTypes = schType,
           marketInfo = buildMarketInformation(ki, newGeographicalMarket, newProduct),
-          dateTradeCommenced = getTradeStartDate(tradeDateModel),
+          dateTradeCommenced = Constants.standardIgnoreYearValue,
           annualCosts = if (operatingCosts.nonEmpty)
             Some(Converters.operatingCostsToList(operatingCosts.get))
           else None,
@@ -208,7 +206,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       }
 
       // inconsistent state send to start
-      case (_, _, _, _, _, _, _, _, _, _) => {
+      case (_, _, _, _, _, _, _, _, _) => {
         Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - Submission failed mandatory models check. TAVC Reference Number is: $tavcReferenceNumber")
         Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
       }
@@ -258,11 +256,4 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
       previousRFIs = if (previousSchemes.nonEmpty) Some(previousSchemes) else None)
   }
 
-  private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {
-    if(tradeStartDateModel.hasTradeStartDate.equals(Constants.StandardRadioButtonYesValue)) {
-      Validation.dateToDesFormat(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)
-    } else {
-      Constants.standardIgnoreYearValue
-    }
-  }
 }
