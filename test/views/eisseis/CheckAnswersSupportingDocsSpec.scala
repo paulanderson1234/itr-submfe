@@ -56,6 +56,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
         companyDetailsSetup()
         tradeStartDateSetup()
         contactAddressSetup()
+        isSeisInEligibleSetup(Some(eisSeisProcessingModelEligible))
         val result = TestController.show(None).apply(authorisedFakeRequest.withFormUrlEncodedBody())
         Jsoup.parse(contentAsString(result))
       }

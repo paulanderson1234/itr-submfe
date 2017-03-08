@@ -131,4 +131,9 @@ trait CheckAnswersSpec extends ViewSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(tradeStartDateModel))
   }
 
+  def isSeisInEligibleSetup(eisSeisProcessingModel: Option[EisSeisProcessingModel] = None): Unit = {
+    when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSeisProcessingModel))
+  }
+
 }

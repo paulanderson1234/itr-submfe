@@ -90,8 +90,9 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
           (for{
             selectedSchemes <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
             tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
+            eisSeisProcessingModel <- s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel)
           } yield {
-            if(selectedSchemes.isDefined) Ok(CheckAnswers(checkAnswer,tradeStartDate,selectedSchemes.get))
+            if(selectedSchemes.isDefined) Ok(CheckAnswers(checkAnswer,tradeStartDate,selectedSchemes.get, eisSeisProcessingModel.get))
             else Redirect(controllers.routes.ApplicationHubController.show())
           }).recover {
             case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling fetchAndGetFormData: ${e.getMessage}")
