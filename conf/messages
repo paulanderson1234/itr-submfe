@@ -414,7 +414,7 @@ page.investment.SubsidiariesNinetyOwned.error.one=This makes you ineligible for 
 page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you might still be eligible for other tax relief schemes.
 
 #investment grow description page
-page.investment.InvestmentGrow.heading=How will this investment help your company grow?
+page.investment.InvestmentGrow.heading=How will this investment help your company grow and develop?
 page.investment.InvestmentGrow.title=How will this investment help your company grow and develop
 page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
 page.investment.InvestmentGrow.example.text=For example you may be planning to:

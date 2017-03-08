@@ -53,12 +53,11 @@ class TradingForTooLongSpec extends ViewSpec {
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title shouldEqual Messages("page.investment.TradingForTooLong.title")
-      document.body.getElementById("main-heading").text() shouldEqual Messages("page.investment.TradingForTooLong.heading")
-      document.body.getElementById("trading-too-long-reason").text() shouldEqual Messages("page.investment.TradingForTooLong.reason")
-      document.body.getElementById("trading-too-long").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.one")
-      document.body.getElementById("not-new-business").text() shouldEqual Messages("page.investment.TradingForTooLong.bullet.two")
-      document.body.getElementById("link-text-one").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154"
+      document.title shouldEqual Messages("page.eisseis.investment.TradingForTooLong.title")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.eisseis.investment.TradingForTooLong.heading")
+      document.body.getElementById("trading-too-long-reason").text() shouldEqual Messages("page.eisseis.investment.TradingForTooLong.reason")
+      document.body.getElementById("trading-too-long").text() shouldEqual Messages("page.eisseis.investment.TradingForTooLong.bullet.one")
+      document.body.getElementById("not-new-business").text() shouldEqual Messages("page.eisseis.investment.TradingForTooLong.bullet.two")
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.NewProductController.show().url
 
     }

@@ -5,7 +5,7 @@
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.title")) {
 
     @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.two"))
 
