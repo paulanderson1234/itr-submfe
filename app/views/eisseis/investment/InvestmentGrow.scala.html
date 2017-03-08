@@ -1,7 +1,7 @@
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import models.InvestmentGrowModel
 @import common.Constants
-@import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea}
+@import views.html.helpers.{backButtonWithProgress, errorSummary,formTextInput, textArea, externalLink}
 
 @(investmentGrowForm: Form[InvestmentGrowModel], backUrl: String, hasGeoMarket: Boolean, hasNewProduct: Boolean)(implicit request: Request[_], messages: Messages)
 
@@ -21,6 +21,7 @@
             <li id="bullet-three">@Messages("page.investment.InvestmentGrow.bullet.three")</li>
         </ul>
     </div>
+
     @if(hasGeoMarket || hasNewProduct) {
     <div class="form-group">
         <span id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</span>
@@ -37,6 +38,11 @@
 
     <div class="form-group">
         <p id="description-three">@Messages("page.investment.InvestmentGrow.description.three")</p>
+    </div>
+
+    <div class="form-group">
+        @Messages("page.investment.InvestmentGrow.businessplan.readmore")
+        @externalLink(Messages("page.investment.InvestmentGrow.businessplan.link"),"https://www.gov.uk/write-business-plan",Some("businessplan-link"))
     </div>
 
     @form(action = controllers.eisseis.routes.InvestmentGrowController.submit()) {

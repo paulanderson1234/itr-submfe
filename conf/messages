@@ -352,10 +352,10 @@ page.companyDetails.natureofbusiness.bullet.three=sound recording and music publ
 #proposed investment amount
 page.investment.amount.invalidAmount=Enter an amount in the correct format e.g. 10000
 page.investment.amount.OutOfRange=Enter an amount between 1 and 5000000
-page.investment.amount.title=How much do you want to raise through this investment?
-page.investment.amount.heading=How much do you want to raise through this investment?
-page.investment.amount.hint=The amount can''t be more than £5 million
-page.investment.help.link=What happens if I raise more or less than I''m expecting to?
+page.investment.amount.title=How much investment do you want to raise?
+page.investment.amount.heading=How much investment do you want to raise?
+page.investment.amount.hint=The total amount can''t be more than £5 million
+page.investment.help.link=What happens if I don''t raise this amount?
 page.investment.help.link.text=You might still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
@@ -426,7 +426,7 @@ page.investment.InvestmentGrow.bullet.geographicalMarket=to launch your product 
 page.investment.InvestmentGrow.bullet.productMarket=to enter a new product market
 page.investment.InvestmentGrow.description.three=You should also send a copy of your business plan with your supporting documents.
 page.investment.InvestmentGrow.businessplan.readmore=Read more about
-page.investment.InvestmentGrow.business.plan=how to write a business plan.
+page.investment.InvestmentGrow.businessplan.link=how to write a business plan.
 
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
@@ -644,6 +644,14 @@ page.investment.TradingForTooLong.bullet.one=has been trading for too long to ge
 page.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
 page.investment.TradingForTooLong.link.schemeGuidance=Link back to guidance
 
+#EISSEIS trading for too long error
+page.eisseis.investment.TradingForTooLong.title=You don''t qualify for any of the schemes
+page.eisseis.investment.TradingForTooLong.heading=You don''t qualify for any of the schemes
+page.eisseis.investment.TradingForTooLong.reason=Your company:
+page.eisseis.investment.TradingForTooLong.bullet.one=has been trading for too long to get tax relief on investment
+page.eisseis.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
+page.eisseis.investment.TradingForTooLong.incorrect.info=If this information is incorrect you can
+page.eisseis.investment.TradingForTooLong.link.changeAnswers=change your answers
 
 #signout page
 page.signout.SignedOut.title = You''re signed out
@@ -696,8 +704,8 @@ page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct=the Venture
 
 
 # SEIS Proposed Investment page
-page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
-page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.amount.title=How much investment do you want to raise?
+page.seis.investment.proposedInvestment.amount.heading=How much investment do you want to raise?
 page.seis.investment.proposedInvestment.help.link=What happens if I don''t raise this amount?
 page.seis.investment.proposedInvestment.help.link.text=You can raise more or less than this, but only £150,000 of the investments you''ve received over the past 3 years qualifies for relief. These investments can include:
 page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
