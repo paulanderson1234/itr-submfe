@@ -149,4 +149,16 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
       )
     }
   }
+
+  "Sending a POST request to ReviewPreviousSchemeController remove method when authenticated and enrolled" should {
+    "redirect to the delete previous scheme page" in {
+      mockEnrolledRequest(eisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.remove(testId))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.DeletePreviousSchemeController.show(testId).url)
+        }
+      )
+    }
+  }
 }
