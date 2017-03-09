@@ -20,6 +20,7 @@ import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import controllers.eis.routes
 import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
@@ -169,6 +170,18 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.PreviousSchemeController.show().url + s"?id=$testId")
+        }
+      )
+    }
+  }
+
+  "Sending a POST request to ReviewPreviousSchemeController remove method when authenticated and enrolled" should {
+    "redirect to the delete previous scheme page" in {
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.remove(testId))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.DeletePreviousSchemeController.show(testId).url)
         }
       )
     }

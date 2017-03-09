@@ -40,19 +40,24 @@ class AnnualTurnoverErrorSpec extends ViewSpec {
       lazy val document = Jsoup.parse(contentAsString(page))
 
       "have the title '' " in {
-        document.title() shouldBe Messages("page.investment.AnnualTurnoverError.title")
+        document.title() shouldBe Messages("page.eisseis.investment.AnnualTurnoverError.title")
       }
 
       "have the heading '' " in {
-        document.getElementById("main-heading").text() shouldBe Messages("page.investment.AnnualTurnoverError.heading")
+        document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.investment.AnnualTurnoverError.heading")
       }
 
       "have the description '' " in {
-        document.getElementById("description").text() shouldBe Messages("page.investment.AnnualTurnoverError.description")
+        document.getElementById("description").text() shouldBe Messages("page.eisseis.investment.AnnualTurnoverError.description")
       }
 
-      "have the link text '' " in {
-        document.getElementById("guidance-link").text() shouldBe Messages("page.investment.AnnualTurnoverError.guidance")
+      "have the change link '' " in {
+        document.getElementById("change-answers").text() shouldBe Messages("page.eisseis.investment.AnnualTurnoverError.incorrect.info") +
+          " " + Messages("page.eisseis.investment.AnnualTurnoverError.change.link") + "."
+
+        document.getElementById("change-answers-link").text() shouldBe Messages("page.eisseis.investment.AnnualTurnoverError.change.link")
+
+        document.getElementById("change-answers-link").attr("href") shouldBe controllers.eisseis.routes.TurnoverCostsController.show().toString
       }
   }
 }
