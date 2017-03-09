@@ -595,25 +595,12 @@ page.previousInvestment.schemeType.vct=Venture Capital Trust
 page.previousInvestment.schemeType.other=Other
 page.previousInvestment.amountSpent.label=Investment amount spent
 
-
-
 #Invalid previous scheme SEIS
 page.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.heading=You don''t qualify for the scheme
 page.previousInvestment.InvalidPreviousScheme.reason=This is because your company has already raised investment through the Enterprise Investment Scheme or received investment from a Venture Capital Trust.
 page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect you can
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
-
-#150k error for SEIS review previous schemes
-page.previousInvestment.previousInvestmentsExceededExceeded.title=You don''t qualify for the scheme
-page.previousInvestment.previousInvestmentsExceededExceeded.heading=You don''t qualify for the scheme
-page.previousInvestment.previousInvestmentsExceededExceeded.reason=This is because your company has already raised £150,000 or more of investment from:
-page.previousInvestment.previousInvestmentsExceededExceeded.bullet.one=any previous SEIS investments
-page.previousInvestment.previousInvestmentsExceededExceeded.bullet.two=any state aid under the de minimis regulation
-page.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect you can
-page.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
-
-
 
 #previous schmeme
 page.investment.PreviousScheme.heading=Which schemes has your company used?
@@ -774,7 +761,7 @@ page.deletePreviousScheme.title=Confirm you want to remove this scheme or invest
 page.deletePreviousScheme.heading=Confirm you want to remove this scheme or investment
 page.deletePreviousScheme.hint=This will permanently remove the {0} (date of investment {1}) from your list of previous schemes and investments.
 page.deletePreviousScheme.confirm=Remove
-page.deletePreviousScheme.cancel=Cancel remove and go back
+page.deletePreviousScheme.cancel=Cancel and go back
 
 #test
 page.test.clear-cache.button=Clear cache
