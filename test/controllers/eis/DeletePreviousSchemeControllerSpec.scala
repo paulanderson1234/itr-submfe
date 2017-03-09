@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.eisseis
-
-import java.net.URLEncoder
+package controllers.eis
 
 import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
@@ -29,7 +27,6 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -45,8 +42,6 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
   }
 
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(previousSchemeVectorList)))
-  val cacheMapEisSeisProcessingModel: CacheMap = CacheMap("", Map("" -> Json.toJson(eisSeisProcessingModelEligible)))
-
 
   "DeletePreviousSchemeController" should {
     "use the correct keystore connector" in {
@@ -70,18 +65,16 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
   def setupMocks(previousSchemeModel: Option[Vector[PreviousSchemeModel]] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](Matchers.eq(KeystoreKeys.previousSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(previousSchemeModel))
-    when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.previousSchemes), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+    when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.previousSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMap)
     when(mockS4lConnector.fetchAndGetFormData[EisSeisProcessingModel](Matchers.eq(KeystoreKeys.eisSeisProcessingModel))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
-    when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.eisSeisProcessingModel),Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(cacheMapEisSeisProcessingModel)
+    (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(eisSeisProcessingModelEligible)))
   }
 
 
   "Issuing a GET request to the PreviousSchemeControler when authenticated and enrolled" should {
     "return a 500 if no list of previous schemes is found" in {
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks()
       showWithSessionAndAuth(TestController.show(1))(
         result => {
@@ -94,7 +87,7 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
 
   "Issuing a GET request to the PreviousSchemeControler when authenticated and enrolled" should {
     "return a 200 Ok if previous scheme id is in list of previous schemes" in {
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(previousSchemeVectorList))
       showWithSessionAndAuth(TestController.show(1))(
         result => {
@@ -107,7 +100,7 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
 
   "Issuing a GET request to the PreviousSchemeControler when authenticated and enrolled" should {
     "return a 500 if previous scheme id is not in list of previous schemes" in {
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(previousSchemeVectorList))
       showWithSessionAndAuth(TestController.show(2))(
         result => {
@@ -117,16 +110,15 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
     }
   }
 
-
   "Issuing a POST request to the DeletePreviousSchemeController when authenticated and enrolled" should {
     "redirect to the ReviewPreviousScheme page and delete the selected previous scheme when the scheme exists" in {
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(previousSchemeVectorList))
       val formInput = "previousSchemeId" -> "1"
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.ReviewPreviousSchemesController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eis.routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
@@ -134,13 +126,13 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
 
   "Issuing a POST request to the DeletePreviousSchemeController when authenticated and enrolled" should {
     "redirect to the ReviewPreviousScheme page when the scheme does not exists" in {
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      mockEnrolledRequest(eisSchemeTypesModel)
       setupMocks(Some(previousSchemeVectorList))
       val formInput = "previousSchemeId" -> "2"
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.ReviewPreviousSchemesController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eis.routes.ReviewPreviousSchemesController.show().url)
         }
       )
     }
@@ -150,7 +142,7 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
   "Issuing a POST request to the DeletePreviousSchemeController when authenticated and enrolled" should {
     "error out" when {
       "a minus scheme id is given" in {
-        mockEnrolledRequest(eisSeisSchemeTypesModel)
+        mockEnrolledRequest(eisSchemeTypesModel)
         setupMocks(Some(previousSchemeVectorList))
         val formInput = "" -> "-1"
         submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -161,5 +153,4 @@ class DeletePreviousSchemeControllerSpec extends BaseSpec {
       }
     }
   }
-
 }

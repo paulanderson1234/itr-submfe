@@ -20,7 +20,10 @@ import config.FrontendGlobal.internalServerErrorTemplate
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.PreviousSchemesHelper
+import controllers.Helpers.{EisSeisHelper, PreviousSchemesHelper}
+import controllers.predicates.FeatureSwitch
+import controllers.seis.routes
+import forms.PreviousSchemeDeleteForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.Logger
@@ -37,25 +40,35 @@ object DeletePreviousSchemeController extends DeletePreviousSchemeController {
   override lazy val authConnector = FrontendAuthConnector
 }
 
-trait DeletePreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait DeletePreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch{
   
   override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
 
-  def show (previousSchemeId: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    PreviousSchemesHelper.getExistingInvestmentFromKeystore(s4lConnector,previousSchemeId).flatMap{
-      scheme => Future.successful(Ok(DeletePreviousScheme(scheme.get)))
-    }.recover{
-      case e: Exception => {
-        Logger.warn(s"[DeletePreviousSchemeController][show] - Exception retrieving scheme id: ${e.getMessage}")
-        InternalServerError(internalServerErrorTemplate)
+  def show (previousSchemeId: Int): Action[AnyContent] = { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      PreviousSchemesHelper.getExistingInvestmentFromKeystore(s4lConnector, previousSchemeId).flatMap {
+        scheme => Future.successful(Ok(DeletePreviousScheme(scheme.get)))
+      }.recover {
+        case e: Exception => {
+          Logger.warn(s"[DeletePreviousSchemeController][show] - Exception retrieving scheme id: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
+        }
       }
     }
   }
 
-  def submit(previousSchemeId: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, previousSchemeId).flatMap{
-      _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+  def submit(): Action[AnyContent] =  { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+      previousSchemeDeleteForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(InternalServerError(internalServerErrorTemplate))
+        },
+        validFormData => {
+          PreviousSchemesHelper.removeKeystorePreviousInvestment(s4lConnector, validFormData.previousSchemeId.toInt).flatMap{
+            _ => Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
+          }
+        }
+      )
     }
   }
+
 
 }

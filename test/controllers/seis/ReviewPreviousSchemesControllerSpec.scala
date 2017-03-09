@@ -20,6 +20,7 @@ import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
+import controllers.eis.routes
 import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
@@ -80,6 +81,7 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
+      }
     }
 
     "redirect to HadPreviousRFI when nothing is returned from keystore when authenticated and enrolled" in {
@@ -156,5 +158,16 @@ class ReviewPreviousSchemesControllerSpec extends BaseSpec {
       }
     }
 
+  "Sending a POST request to ReviewPreviousSchemeController remove method when authenticated and enrolled" should {
+    "redirect to the delete previous scheme page" in {
+      mockEnrolledRequest(seisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.remove(testId))(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.DeletePreviousSchemeController.show(testId).url)
+        }
+      )
+    }
   }
+
 }

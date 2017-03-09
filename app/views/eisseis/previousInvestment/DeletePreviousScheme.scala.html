@@ -9,7 +9,7 @@
 
 <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.deletePreviousScheme.heading")</h1>
 
-        @form(action = controllers.eisseis.routes.DeletePreviousSchemeController.submit(previousScheme.processingId.get)){
+        @form(action = controllers.eisseis.routes.DeletePreviousSchemeController.submit){
 
         <div class="panel panel-border-wide">
             <p id="scheme-delete-hint">@Messages("page.deletePreviousScheme.hint",
@@ -20,7 +20,7 @@
         </div>
 
         <div class="form-group">
-            <input type="hidden" id="scheme-id" name="scheme-id" value="@previousScheme.processingId.get">
+            <input type="hidden" id="previousSchemeId" name="previousSchemeId" value="@previousScheme.processingId.get">
         </div>
 
         <div class="form-group">
