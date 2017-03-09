@@ -21,6 +21,7 @@
             <li id="bullet-three">@Messages("page.investment.InvestmentGrow.bullet.three")</li>
         </ul>
     </div>
+
     @if(hasGeoMarket || hasNewProduct) {
     <div class="form-group">
         <span id="description-two">@Messages("page.investment.InvestmentGrow.description.two")</span>
@@ -38,6 +39,7 @@
     <div class="form-group">
         <p id="description-three">@Messages("page.investment.InvestmentGrow.description.three")</p>
     </div>
+
 
     @form(action = controllers.eisseis.routes.InvestmentGrowController.submit()) {
 

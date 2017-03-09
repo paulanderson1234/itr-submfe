@@ -58,7 +58,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
       document.getElementById("send-instruction").text() shouldBe Messages("page.supportingDocumentsUpload.upload.instruction")
       document.getElementById("doUpload-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("doUpload-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ConfirmCorrespondAddressController.show().url
 
@@ -79,7 +79,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
       documentEmpty.getElementById("send-instruction").text() shouldBe Messages("page.supportingDocumentsUpload.upload.instruction")
       documentEmpty.getElementById("doUpload-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       documentEmpty.getElementById("doUpload-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      documentEmpty.getElementById("next").text() shouldBe Messages("common.button.continue")
+      documentEmpty.getElementById("next").text() shouldBe Messages("common.button.snc")
       documentEmpty.getElementById("error-summary-display").hasClass("error-summary--show")
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.five")
       document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.ConfirmCorrespondAddressController.show().url
