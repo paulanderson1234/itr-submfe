@@ -59,7 +59,7 @@ class SupportingDocumentsSpec extends ViewSpec {
       }
       document.title() shouldBe Messages("page.supportingDocuments.SupportingDocuments.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.getElementById("next").text() shouldBe Messages("common.button.continue")
+      document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.body.getElementById("back-link").attr("href") shouldEqual routes.ConfirmCorrespondAddressController.show().url
       document.getElementById("description-one").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.text.one")
       document .select("tr").get(0).getElementById("supportingDocs-business-plan").text() shouldBe

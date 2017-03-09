@@ -167,17 +167,17 @@ page.schemeSelection.SchemeSelection.checkbox.seis=Seed Enterprise Investment Sc
 page.schemeSelection.SchemeSelection.checkbox.eis=Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.checkbox.vct=Venture Capital Trust
 page.schemeSelection.SchemeSelection.help.seis.subHeading=What''s the Seed Enterprise Investment Scheme?
-page.schemeSelection.SchemeSelection.help.seis.text=The Seed Enterprise Investment Scheme helps startup companies attract investors by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of £150,000 received over the last 3 years.
+page.schemeSelection.SchemeSelection.help.seis.text=The Seed Enterprise Investment Scheme helps startup companies raise investment by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of £150,000 received over the last 3 years.
 page.schemeSelection.SchemeSelection.help.seis.findOutMore=Find out more about the
 page.schemeSelection.SchemeSelection.help.seis.link=Seed Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.help.eis.subHeading=What''s the Enterprise Investment Scheme?
-page.schemeSelection.SchemeSelection.help.eis.text=The Enterprise Investment Scheme helps small companies attract investors by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of:
+page.schemeSelection.SchemeSelection.help.eis.text=The Enterprise Investment Scheme helps small and medium sized companies attract investment by offering tax reliefs to individual investors who buy new shares in the company. Tax relief is available on a maximum of:
 page.schemeSelection.SchemeSelection.help.eis.bullet.one=£5 million received in 1 year
 page.schemeSelection.SchemeSelection.help.eis.bullet.two=£12 million received over the company''s lifetime
 page.schemeSelection.SchemeSelection.help.eis.findOutMore=Find out more about the
 page.schemeSelection.SchemeSelection.help.eis.link=Enterprise Investment Scheme
 page.schemeSelection.SchemeSelection.help.vct.subHeading=What''s the Venture Capital Trust scheme?
-page.schemeSelection.SchemeSelection.help.vct.text=The Venture Capital Trust scheme helps small companies attract investment by offering tax reliefs to individual investors who buy new shares in a Venture Capital Trust. Tax relief is available on a maximum of:
+page.schemeSelection.SchemeSelection.help.vct.text=The Venture Capital Trust scheme helps companies raise finance by offering tax reliefs to individual investors who buy new shares in a Venture Capital Trust (VCT). The VCT then uses the money to invest in small & medium sized companies. Tax relief is available on a maximum investment from a VCT of:
 page.schemeSelection.SchemeSelection.help.vct.bullet.one=£5 million received in 1 year
 page.schemeSelection.SchemeSelection.help.vct.bullet.two=£12 million received over the company''s lifetime
 page.schemeSelection.SchemeSelection.help.vct.findOutMore=Find out more about the
@@ -352,10 +352,10 @@ page.companyDetails.natureofbusiness.bullet.three=sound recording and music publ
 #proposed investment amount
 page.investment.amount.invalidAmount=Enter an amount in the correct format e.g. 10000
 page.investment.amount.OutOfRange=Enter an amount between 1 and 5000000
-page.investment.amount.title=How much do you want to raise through this investment?
-page.investment.amount.heading=How much do you want to raise through this investment?
-page.investment.amount.hint=The amount can''t be more than £5 million
-page.investment.help.link=What happens if I raise more or less than I''m expecting to?
+page.investment.amount.title=How much investment do you want to raise?
+page.investment.amount.heading=How much investment do you want to raise?
+page.investment.amount.hint=The total amount can''t be more than £5 million
+page.investment.help.link=What happens if I don''t raise this amount?
 page.investment.help.link.text=You might still be eligible for the scheme, as long as you don''t raise more than £5 million in a year.
 
 #percentage of staff with masters page
@@ -415,7 +415,7 @@ page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you 
 
 #investment grow description page
 page.investment.InvestmentGrow.heading=How will this investment help your company grow and develop?
-page.investment.InvestmentGrow.title=How will this investment help your company grow and develop
+page.investment.InvestmentGrow.title=How will this investment help your company grow and develop?
 page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
 page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
@@ -424,7 +424,9 @@ page.investment.InvestmentGrow.bullet.three=develop a new product
 page.investment.InvestmentGrow.description.two=Make sure you explain how you’ll use the investment:
 page.investment.InvestmentGrow.bullet.geographicalMarket=to launch your product somewhere new
 page.investment.InvestmentGrow.bullet.productMarket=to enter a new product market
-page.investment.InvestmentGrow.description.three=You must provide a business plan with your supporting documents.
+page.investment.InvestmentGrow.description.three=You should also send a copy of your business plan with your supporting documents.
+page.investment.InvestmentGrow.businessplan.readmore=Read more about
+page.investment.InvestmentGrow.businessplan.link=how to write a business plan.
 
 #supporting documents page
 page.supportingDocuments.SupportingDocuments.title=Supporting documents
@@ -438,7 +440,7 @@ page.supportingDocuments.SupportingDocuments.bullet.five=last annual accounts or
 page.supportingDocuments.SupportingDocuments.text.two=If these aren''t up-to-date you should also tell us about any changes you''ll be making to them.
 
 #supporting docs upload
-page.supportingDocumentsUpload.heading=Check and submit your answers on the next page. Once you''ve submitted, you''ll need to separately email your company''s:
+page.supportingDocumentsUpload.heading=To support your application you''ll need to send us your company''s:
 page.supportingDocumentsUpload.bullet.one=business plan
 page.supportingDocumentsUpload.bullet.two=shareholder agreements or drafts
 page.supportingDocumentsUpload.bullet.three=memorandum and articles of association
@@ -602,7 +604,7 @@ page.previousInvestment.InvalidPreviousScheme.reason=This is because your compan
 page.previousInvestment.InvalidPreviousScheme.change-text=If this information is incorrect you can
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
 
-#previous schmeme
+#previous schemes
 page.investment.PreviousScheme.heading=Which schemes has your company used?
 page.investment.PreviousScheme.schemeType=Scheme
 page.investment.PreviousScheme.button.add=Add this scheme
@@ -621,6 +623,14 @@ page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
 page.investment.AnnualTurnoverError.guidance=Link back to guidance
 
+#EISSEIS annual turnover error
+page.eisseis.investment.AnnualTurnoverError.title=You don''t qualify for any of the schemes
+page.eisseis.investment.AnnualTurnoverError.heading=You don''t qualify for any of the schemes
+page.eisseis.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
+page.eisseis.investment.AnnualTurnoverError.incorrect.info=If this information is incorrect you can
+page.eisseis.investment.AnnualTurnoverError.change.link=change your answers
+
+
 #trading for too long error
 page.investment.TradingForTooLong.title=You don''t qualify for the scheme
 page.investment.TradingForTooLong.heading=You don''t qualify for the scheme
@@ -629,6 +639,14 @@ page.investment.TradingForTooLong.bullet.one=has been trading for too long to ge
 page.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
 page.investment.TradingForTooLong.link.schemeGuidance=Link back to guidance
 
+#EISSEIS trading for too long error
+page.eisseis.investment.TradingForTooLong.title=You don''t qualify for any of the schemes
+page.eisseis.investment.TradingForTooLong.heading=You don''t qualify for any of the schemes
+page.eisseis.investment.TradingForTooLong.reason=Your company:
+page.eisseis.investment.TradingForTooLong.bullet.one=has been trading for too long to get tax relief on investment
+page.eisseis.investment.TradingForTooLong.bullet.two=is not starting a new business activity that needs investment
+page.eisseis.investment.TradingForTooLong.incorrect.info=If this information is incorrect you can
+page.eisseis.investment.TradingForTooLong.link.changeAnswers=change your answers
 
 #signout page
 page.signout.SignedOut.title = You''re signed out
@@ -644,7 +662,7 @@ page.introduction.hub.existing.table.heading=Application type
 page.introduction.hub.new.heading=You have no unsubmitted applications
 page.introduction.hub.existing.advanced.assurance.type=Advance Assurance - Enterprise Investment Scheme
 page.introduction.hub.existing.seis.type=Advance Assurance - Seed Enterprise Investment Scheme
-page.introduction.hub.existing.vct.type=Advance Assurance - Venture Capital Trust Scheme
+page.introduction.hub.existing.vct.type=Advance Assurance - Venture Capital Trust scheme
 page.introduction.hub.existing.eis-seis.type=Advance Assurance - Enterprise Investment Scheme and Seed Enterprise Investment Scheme
 page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
@@ -681,8 +699,8 @@ page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct=the Venture
 
 
 # SEIS Proposed Investment page
-page.seis.investment.proposedInvestment.amount.title=How much do you want to raise through this investment?
-page.seis.investment.proposedInvestment.amount.heading=How much do you want to raise through this investment?
+page.seis.investment.proposedInvestment.amount.title=How much investment do you want to raise?
+page.seis.investment.proposedInvestment.amount.heading=How much investment do you want to raise?
 page.seis.investment.proposedInvestment.help.link=What happens if I don''t raise this amount?
 page.seis.investment.proposedInvestment.help.link.text=You can raise more or less than this, but only £150,000 of the investments you''ve received over the past 3 years qualifies for relief. These investments can include:
 page.seis.investment.proposedInvestment.help.bullet.one=this SEIS investment
@@ -743,18 +761,6 @@ page.eisseis.investment.LifetimeAllowanceExceeded.reason=This is because you''ve
 page.eisseis.investment.LifetimeAllowanceExceeded.change.text=If this information is incorrect you can
 page.eisseis.investment.LifetimeAllowanceExceeded.change.link=change your answers
 
-# EIS SEIS 150k error for SEIS review previous schemes
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.title=You don''t qualify for the Seed Enterprise Investment Scheme
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.heading=You don''t qualify for the Seed Enterprise Investment Scheme
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.reason=This is because your company has already raised £150,000 or more of investment from:
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.one=any previous SEIS investments
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.bullet.two=any state aid under the de minimis regulation
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.heading=What happens next
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.text=You can continue with your application for:
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.eis=the Enterprise Investment Scheme
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.next.vct=the Venture Capital Trust scheme
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-text=If this information is incorrect you can
-page.eisseis.previousInvestment.previousInvestmentsExceededExceeded.change-link=change your answers
 
 #Delete Previous Scheme confirmation
 page.deletePreviousScheme.title=Confirm you want to remove this scheme or investment
