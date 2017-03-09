@@ -415,7 +415,7 @@ page.investment.SubsidiariesNinetyOwned.error.two=If your answer''s correct you 
 
 #investment grow description page
 page.investment.InvestmentGrow.heading=How will this investment help your company grow and develop?
-page.investment.InvestmentGrow.title=How will this investment help your company grow and develop
+page.investment.InvestmentGrow.title=How will this investment help your company grow and develop?
 page.investment.InvestmentGrow.question.hint=Suggested limit: 200 words
 page.investment.InvestmentGrow.example.text=For example you may be planning to:
 page.investment.InvestmentGrow.bullet.one=hire more employees
@@ -617,7 +617,7 @@ page.previousInvestment.previousInvestmentsExceededExceeded.change-link=change y
 
 
 
-#previous schmeme
+#previous schemes
 page.investment.PreviousScheme.heading=Which schemes has your company used?
 page.investment.PreviousScheme.schemeType=Scheme
 page.investment.PreviousScheme.button.add=Add this scheme
@@ -635,6 +635,14 @@ page.investment.AnnualTurnoverError.title=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.heading=You don''t qualify for the scheme
 page.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
 page.investment.AnnualTurnoverError.guidance=Link back to guidance
+
+#EISSEIS annual turnover error
+page.eisseis.investment.AnnualTurnoverError.title=You don''t qualify for any of the schemes
+page.eisseis.investment.AnnualTurnoverError.heading=You don''t qualify for any of the schemes
+page.eisseis.investment.AnnualTurnoverError.description=The amount you''re trying to raise must be at least 50% of your average annual turnover.
+page.eisseis.investment.AnnualTurnoverError.incorrect.info=If this information is incorrect you can
+page.eisseis.investment.AnnualTurnoverError.change.link=change your answers
+
 
 #trading for too long error
 page.investment.TradingForTooLong.title=You don''t qualify for the scheme
