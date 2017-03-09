@@ -6,7 +6,7 @@
 @import utils.CountriesHelper
 @import models.submission.SchemeTypesModel
 
-@(checkAnswersModel: CheckAnswersModel, tradeStartDateModel: Option[TradeStartDateModel], schemeTypesModel: SchemeTypesModel)(implicit request: Request[_], messages: Messages)
+@(checkAnswersModel: CheckAnswersModel, tradeStartDateModel: Option[TradeStartDateModel], schemeTypesModel: SchemeTypesModel, eisSeisProcessingModel: EisSeisProcessingModel)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 
@@ -19,7 +19,7 @@
         <ul class="bullets" id="schemes">
             @if(schemeTypesModel.eis){
             <li id="eis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.eis")</li>}
-            @if(schemeTypesModel.seis){
+            @if(schemeTypesModel.seis && !eisSeisProcessingModel.isSeisIneligible){
             <li id="seis-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.seis")</li>}
             @if(schemeTypesModel.vct){
             <li id="vct-scheme">@Messages("page.checkAndSubmit.checkAnswers.scheme.vct")</li>}

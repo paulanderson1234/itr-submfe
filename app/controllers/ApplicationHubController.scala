@@ -92,9 +92,11 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   }
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if(applicationConfig.seisFlowEnabled) {
+    if(applicationConfig.eisseisFlowEnabled) {
       Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
-    } else {
+    } else if(applicationConfig.seisFlowEnabled) {
+      Future.successful(Redirect(controllers.schemeSelection.routes.SingleSchemeSelectionController.show()))
+    }else {
       (for {
         saveApplication <- s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
         saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
