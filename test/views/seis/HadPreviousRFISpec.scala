@@ -55,7 +55,7 @@ class HadPreviousRFISpec extends ViewSpec {
     }
 
     document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
@@ -76,7 +76,7 @@ class HadPreviousRFISpec extends ViewSpec {
     }
     //TODO: replace when ProposedInvestment available...document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
     document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-no").size() shouldBe 1
@@ -98,7 +98,7 @@ class HadPreviousRFISpec extends ViewSpec {
 
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
-    document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
+    document.title() shouldBe Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")
 
   }
 }
