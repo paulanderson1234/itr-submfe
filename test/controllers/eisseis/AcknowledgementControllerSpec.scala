@@ -57,6 +57,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
   class SetupPageFull() {
     setUpMocks(mockS4lConnector)
     setUpMocksRegistrationService(mockRegistrationDetailsService)
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
   }
 
   class SetupPageMinimum() {
@@ -72,6 +74,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
       .thenReturn(Future.successful(HttpResponse(OK, Some(Json.toJson(submissionResponse)))))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
+    when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
   }
 
   "AcknowledgementController" should {
