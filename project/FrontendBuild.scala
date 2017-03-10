@@ -13,22 +13,23 @@ private object AppDependencies {
   import play.sbt.PlayImport._
   import play.core.PlayVersion
 
-  private val playHealthVersion = "2.0.0"
+  private val playHealthVersion = "2.1.0"
   private val logbackJsonLoggerVersion = "3.1.0"
-  private val frontendBootstrapVersion = "7.10.0"
-  private val govukTemplateVersion = "5.0.0"
-  private val playUiVersion = "5.4.0"
-  private val playPartialsVersion = "5.2.0"
-  private val playAuthorisedFrontendVersion = "6.2.0"
-  private val playConfigVersion = "3.0.0"
-  private val hmrcTestVersion = "2.2.0"
-  private val cachingClientVersion = "6.1.0"
+  private val frontendBootstrapVersion = "7.15.0"
+  private val govukTemplateVersion = "5.1.0"
+  private val playUiVersion = "7.0.0"
+  private val playPartialsVersion = "5.3.0"
+  private val playAuthorisedFrontendVersion = "6.3.0"
+  private val playConfigVersion = "4.3.0"
+  private val hmrcTestVersion = "2.3.0"
+  private val cachingClientVersion = "6.2.0"
   private val mongoCachingVersion = "3.2.0"
   private val playConditionalMappingVersion = "0.2.0"
   private val scalaTestVersion = "2.2.6"
   private val scalaTestPlusVersion = "1.5.1"
   private val pegDownVersion = "1.6.0"
   private val jSoupVersion = "1.8.3"
+  private val mockitoAll = "1.9.5"
 
   val compile = Seq(
     ws,
@@ -57,7 +58,7 @@ private object AppDependencies {
         "org.scalatestplus.play" %% "scalatestplus-play" % scalaTestPlusVersion % scope,
         "org.pegdown" % "pegdown" % pegDownVersion % scope,
         "org.jsoup" % "jsoup" % jSoupVersion % scope,
-        "org.mockito" % "mockito-all" % "1.9.5" % "optional",
+        "org.mockito" % "mockito-all" % mockitoAll % "optional",
         "com.typesafe.play" %% "play-test" % PlayVersion.current % scope
       )
     }.test

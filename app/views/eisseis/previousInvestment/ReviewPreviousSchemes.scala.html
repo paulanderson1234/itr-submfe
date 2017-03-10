@@ -51,7 +51,7 @@
             <tr>
                 <td id="total-investment-heading" class="bold-xsmall" colspan="2">@Messages("page.previousInvestment.reviewPreviousSchemes.totalInvestment")</td>
                 <td id="total-investment-amount" class="bold-xsmall">@PreviousSchemeModel.getAmountAsFormattedString(previousSchemes.foldLeft(0)(_ + _.investmentAmount))</td>
-                <td colspan="2"></td>
+                <td colspan="3"></td>
             </tr>
             <tr>
                 <td colspan="6"><a  id="add-scheme" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.add.toString">@Messages("page.previousInvestment.reviewPreviousSchemes.add")</a></td>

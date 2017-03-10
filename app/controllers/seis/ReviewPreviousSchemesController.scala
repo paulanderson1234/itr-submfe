@@ -88,7 +88,7 @@ trait ReviewPreviousSchemesController extends FrontendController with Authorised
     }
   }
 
-  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Redirect(routes.DeletePreviousSchemeController.show(id)))
     }
