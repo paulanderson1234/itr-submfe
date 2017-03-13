@@ -16,9 +16,8 @@
 
 package views.seis
 
-import auth.MockAuthConnector
+import auth.{MockConfigSingleFlow, MockAuthConnector}
 import controllers.seis.{InvalidPreviousSchemeController, routes}
-import fixtures.MockSeisConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -29,7 +28,7 @@ import play.api.i18n.Messages.Implicits._
 class InvalidPreviousSchemeSpec extends ViewSpec {
 
   object TestController extends InvalidPreviousSchemeController {
-    override lazy val applicationConfig = MockSeisConfig
+    override lazy val applicationConfig = MockConfigSingleFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector

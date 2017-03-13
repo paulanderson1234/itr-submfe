@@ -16,7 +16,7 @@
 
 package views.eisseis
 
-import auth.MockAuthConnector
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.CheckAnswersController
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

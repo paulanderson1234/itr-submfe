@@ -16,7 +16,7 @@
 
 package views.eisseis
 
-import auth.MockAuthConnector
+import auth.{MockConfig, MockConfigEISFlow, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.PercentageStaffWithMastersController
@@ -37,7 +37,7 @@ import scala.concurrent.Future
 class PercentageStaffWithMastersSpec extends ViewSpec {
 
   object TestController extends PercentageStaffWithMastersController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector

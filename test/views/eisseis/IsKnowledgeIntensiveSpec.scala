@@ -16,7 +16,7 @@
 
 package views.eisseis
 
-import auth.MockAuthConnector
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.IsKnowledgeIntensiveController
@@ -38,7 +38,7 @@ import scala.concurrent.Future
 class IsKnowledgeIntensiveSpec extends ViewSpec {
 
   object TestController extends IsKnowledgeIntensiveController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

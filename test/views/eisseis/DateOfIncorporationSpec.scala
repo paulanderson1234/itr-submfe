@@ -16,11 +16,10 @@
 
 package views.eisseis
 
-import auth.MockAuthConnector
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.DateOfIncorporationController
-import fixtures.MockSeiseisConfig
 import models.DateOfIncorporationModel
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
@@ -37,7 +36,7 @@ import scala.concurrent.Future
 class DateOfIncorporationSpec extends ViewSpec {
 
   object TestController extends DateOfIncorporationController {
-    override lazy val applicationConfig = MockSeiseisConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

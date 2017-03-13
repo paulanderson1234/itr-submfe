@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.MockAuthConnector
+import auth.{MockConfigEISFlow, MockAuthConnector}
 import config.FrontendAppConfig
 import controllers.eis.TradingForTooLongController
 import org.jsoup.Jsoup
@@ -29,7 +29,7 @@ import views.helpers.ViewSpec
 class TradingForTooLongSpec extends ViewSpec {
 
   object TestController extends TradingForTooLongController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfigEISFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector

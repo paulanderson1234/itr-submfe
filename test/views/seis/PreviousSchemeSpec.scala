@@ -16,10 +16,9 @@
 
 package views.seis
 
-import auth.MockAuthConnector
+import auth.{MockConfigSingleFlow, MockAuthConnector}
 import common.KeystoreKeys
 import controllers.seis.{PreviousSchemeController, routes}
-import fixtures.MockSeisConfig
 import models.PreviousSchemeModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -35,7 +34,7 @@ import scala.concurrent.Future
 class PreviousSchemeSpec extends ViewSpec {
 
   object TestController extends PreviousSchemeController {
-    override lazy val applicationConfig = MockSeisConfig
+    override lazy val applicationConfig = MockConfigSingleFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
