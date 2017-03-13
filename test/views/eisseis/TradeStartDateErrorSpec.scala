@@ -16,9 +16,8 @@
 
 package views.eisseis
 
-import auth.MockAuthConnector
+import auth.{MockConfig, MockAuthConnector}
 import controllers.eisseis.{TradeStartDateErrorController, routes}
-import fixtures.MockSeiseisConfig
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -31,7 +30,7 @@ import views.html.eisseis.companyDetails.TradeStartDateError
 class TradeStartDateErrorSpec extends ViewSpec {
 
   object TestController extends TradeStartDateErrorController {
-    override lazy val applicationConfig = MockSeiseisConfig
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector

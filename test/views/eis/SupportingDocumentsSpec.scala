@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{MockConfigEISFlow, MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.SupportingDocumentsController
@@ -34,7 +34,7 @@ import scala.concurrent.Future
 class SupportingDocumentsSpec extends ViewSpec {
 
   object TestController extends SupportingDocumentsController {
-    override lazy val applicationConfig = FrontendAppConfig
+    override lazy val applicationConfig = MockConfigEISFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val fileUploadService = mockFileUploadService

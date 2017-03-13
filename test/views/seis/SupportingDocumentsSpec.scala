@@ -16,10 +16,9 @@
 
 package views.seis
 
-import auth.{MockAuthConnector, MockConfig}
+import auth.{MockConfigSingleFlow, MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import controllers.seis.{SupportingDocumentsController, routes}
-import fixtures.MockSeisConfig
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.mockito.Matchers
@@ -34,7 +33,7 @@ import scala.concurrent.Future
 class SupportingDocumentsSpec extends ViewSpec {
 
   object TestController extends SupportingDocumentsController {
-    override lazy val applicationConfig = MockSeisConfig
+    override lazy val applicationConfig = MockConfigSingleFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val fileUploadService = mockFileUploadService

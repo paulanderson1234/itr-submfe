@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
-import fixtures.MockSeisConfig
 import forms.NatureOfBusinessForm
 import models._
 import org.mockito.Matchers

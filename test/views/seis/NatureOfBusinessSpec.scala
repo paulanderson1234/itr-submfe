@@ -16,10 +16,9 @@
 
 package views.seis
 
-import auth.MockAuthConnector
+import auth.{MockConfigSingleFlow, MockConfigEISFlow, MockAuthConnector}
 import common.KeystoreKeys
 import controllers.seis.NatureOfBusinessController
-import fixtures.MockSeisConfig
 import models.NatureOfBusinessModel
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -35,7 +34,7 @@ import scala.concurrent.Future
 class NatureOfBusinessSpec extends ViewSpec {
 
   object TestController extends NatureOfBusinessController {
-    override lazy val applicationConfig = MockSeisConfig
+    override lazy val applicationConfig = MockConfigSingleFlow
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
