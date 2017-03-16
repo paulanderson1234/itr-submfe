@@ -100,8 +100,8 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap{
-      x => {
-        if(x.isEmpty)
+      envelopeId => {
+        if(envelopeId.isEmpty)
           Future.successful(Redirect(routes.AcknowledgementController.show()))
         else
           Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
