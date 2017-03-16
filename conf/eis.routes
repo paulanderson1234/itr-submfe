@@ -97,6 +97,7 @@ GET        /acknowledgement                         controllers.eis.Acknowledgem
 POST       /acknowledgement                         controllers.eis.AcknowledgementController.submit
 
 GET        /attachments-acknowledgement             controllers.eis.AttachmentsAcknowledgementController.show
+POST       /attachments-acknowledgement             controllers.eis.AttachmentsAcknowledgementController.submit
 
 
 GET        /lifetime-allowance-exceeded             controllers.eis.LifetimeAllowanceExceededController.show

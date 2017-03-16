@@ -1,0 +1,38 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import models.submission.SubmissionResponse
+@import helpers.backButton
+@import config.FrontendAppConfig
+@import controllers.feedback.routes
+
+@(submissionResponseModel: SubmissionResponse)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.checkAndSubmit.eisseis.attachments.acknowledgement.title"), bodyClasses = None) {
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <div class="form-group">
+            <div class="transaction-banner--complete">
+                <span id="submission-confirmation" class="heading-large">@Messages("page.checkAndSubmit.eisseis.attachments.acknowledgement.submissionConfirmation")</span>
+                <p id="ref-number-heading">@Messages("page.checkAndSubmit.eisseis.attachments.acknowledgement.refNumberHeading")</p>
+                <span id="ref-number" class="bold-medium">@submissionResponseModel.formBundleNumber</span>
+
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <h2 id= "what-happens-next" class="heading-medium">@Messages("page.checkAndSubmit.eisseis.attachments.acknowledgement.what.happens.next.heading")</h2>
+
+            <p id="happens-next">@Messages("page.checkAndSubmit.eisseis.attachments.acknowledgement.happens.next")</p>
+
+        </div>
+
+        <div class="form-group">
+            <a id="submit" class="button" href="@controllers.feedback.routes.FeedbackController.show().url">@Messages("page.checkAndSubmit.acknowledgement.button.confirm")</a>
+        </div>
+
+    </div>
+</div>
+
+}
