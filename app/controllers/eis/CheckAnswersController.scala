@@ -99,7 +99,14 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
   }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.AcknowledgementController.show()))
+    s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap{
+      x => {
+        if(x.isEmpty)
+          Future.successful(Redirect(routes.AcknowledgementController.show()))
+        else
+          Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+      }
+    }
   }
 
 
