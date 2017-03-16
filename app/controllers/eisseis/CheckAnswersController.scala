@@ -16,12 +16,13 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, TAVCUser, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, TAVCUser, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
+import controllers.eis.routes
 import controllers.predicates.FeatureSwitch
 import models._
 import models.submission.SchemeTypesModel
@@ -107,9 +108,15 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.AcknowledgementController.show()))
+      s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap{
+        envelopeId => {
+          if(envelopeId.isEmpty)
+            Future.successful(Redirect(routes.AcknowledgementController.show()))
+          else
+            Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+        }
+      }
     }
   }
-
 
 }

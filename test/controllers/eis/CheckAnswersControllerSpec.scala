@@ -110,7 +110,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     }
   }
 
-  "Sending a submission to the CheckAnswersController with one or more attachments" should {
+  "Sending a submission to the CheckAnswersController with one or more attachments for EIS" should {
 
     "redirect to the acknowledgement page when authenticated and enrolled" in {
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -127,7 +127,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     }
   }
 
-  "Sending a submission to the CheckAnswersController with no attachments" should {
+  "Sending a submission to the CheckAnswersController with no attachments for EIS" should {
 
     "redirect to the acknowledgement page when authenticated and enrolled" in {
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))

@@ -118,11 +118,30 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     }
   }
 
-  "Sending a submission to the CheckAnswersController" should {
+  "Sending a submission to the CheckAnswersController with one or more attachments for Combined" should {
 
     "redirect to the acknowledgement page when authenticated and enrolled" in {
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("test")))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.AttachmentsAcknowledgementController.show().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the CheckAnswersController with no attachments for Combined" should {
+
+    "redirect to the acknowledgement page when authenticated and enrolled" in {
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Some(Enrolment("HMRC-TAVC-ORG",Seq(Identifier("TavcReference","1234")),"Activated"))))
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
