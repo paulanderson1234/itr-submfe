@@ -59,6 +59,9 @@ POST      /check-your-answers                       controllers.seis.CheckAnswer
 GET       /acknowledgement                          controllers.seis.AcknowledgementController.show
 POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
 
+GET        /attachments-acknowledgement             controllers.seis.AttachmentsAcknowledgementController.show
+POST       /attachments-acknowledgement             controllers.seis.AttachmentsAcknowledgementController.submit
+
 GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
 
 
