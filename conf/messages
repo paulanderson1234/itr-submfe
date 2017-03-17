@@ -697,6 +697,15 @@ page.esisseis.companyDetails.tradeStartDateError.whatNext.continue=You can conti
 page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis=the Enterprise Investment Scheme
 page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct=the Venture Capital Trust scheme
 
+# SEIS is first trade
+page.seis.companyDetails.isFirstTrade.title=Is this the first trade your company has carried out?
+page.seis.companyDetails.isFirstTrade.heading=Is this the first trade your company has carried out?
+page.seis.companyDetails.isFirstTrade.legend=Is this the first trade your company has carried out?
+
+# EISSEIS is first trade
+page.eisseis.companyDetails.isFirstTrade.title=Is this the first trade your company has carried out?
+page.eisseis.companyDetails.isFirstTrade.heading=Is this the first trade your company has carried out?
+page.eisseis.companyDetails.isFirstTrade.legend=Is this the first trade your company has carried out?
 
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much investment do you want to raise?

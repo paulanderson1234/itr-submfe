@@ -188,4 +188,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   //val dateOfIncorporationModel = DateOfIncorporationModel(Some(3), Some(4), Some(2013))
 
+  val isFirstTradeIModelYes = IsFirstTradeModel(Constants.StandardRadioButtonYesValue)
+  val isFirstTradeModelNo = IsFirstTradeModel(Constants.StandardRadioButtonNoValue)
+
 }
