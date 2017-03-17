@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
+import auth.{ALLFLOWS, AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
@@ -50,7 +50,6 @@ object AcknowledgementController extends AcknowledgementController{
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(SEIS))
-
 
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
@@ -131,7 +130,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
     (natOfBusiness, contactDetails, proposedInvestment, dateOfIncorporation,
       contactAddress, registrationDetailsModel, tradeStartDateModel, schemeType) match {
-      case (Some(natureBusiness), Some(cntDetail), Some(propInv), Some(dateIncorp), Some(cntAddress), Some(regDetail), Some(tradeDateModel), Some(schemeType)) => {
+      case (Some(natureBusiness), Some(cntDetail), Some(propInv), Some(dateIncorp), Some(cntAddress), Some(regDetail), Some(tradeDateModel), Some(schType)) => {
 
         val submission = Submission(AdvancedAssuranceSubmissionType(
           agentReferenceNumber = None, acknowledgementReference = None,
@@ -140,7 +139,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           proposedInvestmentModel = propInv,
           investmentGrowModel = InvestmentGrowModel("N/A"),
           correspondenceAddress = cntAddress,
-          schemeTypes = schemeType,
+          schemeTypes = schType,
           marketInfo = None,
           dateTradeCommenced = getTradeStartDate(tradeDateModel),
           annualCosts = None,
