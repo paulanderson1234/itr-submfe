@@ -53,7 +53,7 @@ class TradeStartDateSpec extends ViewSpec {
 
   "The Trade Start Date page" should {
 
-    "Verify that the Trade start date  page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new SEISSetup {
+    "Verify that the Trade start date page contains the correct elements when a valid 'Yes' TradeStartDateModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelYes))
         mockEnrolledRequest(eisSeisSchemeTypesModel)
@@ -74,7 +74,7 @@ class TradeStartDateSpec extends ViewSpec {
     }
 
 
-    "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new SEISSetup {
+    "Verify that the Trade start date  page contains the correct elements when a valid 'No' TradeStartDateModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelNo))
         mockEnrolledRequest(eisSeisSchemeTypesModel)
@@ -94,7 +94,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
-    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new SEISSetup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks()
         mockEnrolledRequest(eisSeisSchemeTypesModel)
@@ -115,7 +115,7 @@ class TradeStartDateSpec extends ViewSpec {
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
-    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new SEISSetup {
+    "Verify that the Trade start date  page contains the correct elements when an invalid TradeStartDateYesModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(tradeStartDateModelInvalidYes))
         mockEnrolledRequest(eisSeisSchemeTypesModel)
