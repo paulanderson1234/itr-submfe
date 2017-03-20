@@ -110,3 +110,6 @@ GET        /annual-turnover-error                   controllers.eisseis.AnnualTu
 GET        /trading-for-too-long                    controllers.eisseis.TradingForTooLongController.show
 
 GET        /invalid-scheme-type                     controllers.eisseis.InvalidPreviousSchemeController.show
+
+GET        /not-first-trade                         controllers.eisseis.NotFirstTradeController.show
+POST       /not-first-trade                         controllers.eisseis.NotFirstTradeController.submit
