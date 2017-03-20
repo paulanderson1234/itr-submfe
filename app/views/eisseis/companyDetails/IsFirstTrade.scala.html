@@ -5,14 +5,14 @@
 
 @(isFirstTradeForm: Form[IsFirstTradeModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.seis.companyDetails.isFirstTrade.title")) {
+@main_template(Messages("page.eisseis.companyDetails.isFirstTrade.title")) {
 
-    @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.one"))
+    @backButtonWithProgress(controllers.eisseis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.one"))
 
     @errorSummary(isFirstTradeForm, "is-first-trade", "isFirstTrade")
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.seis.companyDetails.isFirstTrade.heading")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.eisseis.companyDetails.isFirstTrade.heading")</h1>
 
-    @form(action = controllers.seis.routes.IsFirstTradeController.submit()) {
+    @form(action = controllers.eisseis.routes.IsFirstTradeController.submit()) {
 
     <div class="form-group">
         @formInputRadioGroup(
@@ -20,7 +20,7 @@
         Seq(
         Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
         Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.seis.companyDetails.isFirstTrade.legend"),
+        '_legend -> Messages("page.eisseis.companyDetails.isFirstTrade.legend"),
         '_legendClass -> "visuallyhidden",
         '_labelAfter -> true,
         '_labelClass -> "block-label",
