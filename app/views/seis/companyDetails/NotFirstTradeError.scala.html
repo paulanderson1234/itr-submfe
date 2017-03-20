@@ -1,0 +1,33 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.{backButton}
+@import common.Constants._
+
+@()(implicit request: Request[_], messages: Messages)
+
+@import config.FrontendAppConfig
+
+@main_template(title = Messages("page.eisseis.investment.LifetimeAllowanceExceeded.title"), bodyClasses = None) {
+
+@backButton(controllers.eisseis.routes.ProposedInvestmentController.show().url)
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <div id="main">
+            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.heading")</h1>
+        </div>
+
+        <div class="form-group">
+            <span id="lifetimeExceedReason">
+                @Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason")
+            </span>
+        </div>
+
+        <div>
+            <p id="change-answers">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.text")
+                <a class="link-style" id="change-answers-link" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show()">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link")</a>.
+            </p>
+        </div>
+    </div>
+</div>
+}
+

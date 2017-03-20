@@ -770,6 +770,13 @@ page.eisseis.investment.LifetimeAllowanceExceeded.reason=This is because you''ve
 page.eisseis.investment.LifetimeAllowanceExceeded.change.text=If this information is incorrect you can
 page.eisseis.investment.LifetimeAllowanceExceeded.change.link=change your answers
 
+# SEIS Not First Trade Error Page
+page.seis.companyDetails.NotFirstTradeError.title=You don''t qualify for the scheme
+page.seis.companyDetails.NotFirstTradeError.heading=You don''t qualify for the scheme
+page.seis.companyDetails.NotFirstTradeError.reason=This is because your company carried out another trade before the one you’re seeking investment in.
+page.seis.companyDetails.NotFirstTradeError.change.text=If this information is incorrect you can
+page.seis.companyDetails.NotFirstTradeError.change.link=change your answers
+
 
 #Delete Previous Scheme confirmation
 page.deletePreviousScheme.title=Confirm you want to remove this scheme or investment

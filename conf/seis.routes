@@ -62,6 +62,8 @@ POST      /check-your-answers                       controllers.seis.CheckAnswer
 GET       /acknowledgement                          controllers.seis.AcknowledgementController.show
 POST      /acknowledgement                          controllers.seis.AcknowledgementController.submit
 
-GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+GET       /invalid-scheme-type                      controllers.seis.InvalidPreviousSchemeController.show
+
+GET       /not-first-trade                          controllers.seis.NotFirstTradeController.show
 
 
