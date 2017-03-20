@@ -670,16 +670,16 @@ page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise 
 
 
 # SEIS trade start date
-page.seis.companyDetails.tradeStartDate.title=Has your company started trading?
-page.seis.companyDetails.tradeStartDate.heading=Has your company started trading?
-page.seis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
-page.seis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+page.seis.companyDetails.tradeStartDate.title=Has the trade you want investment in started?
+page.seis.companyDetails.tradeStartDate.heading=Has the trade you want investment in started?
+page.seis.companyDetails.text=The trade has started if your goods or services are available to the public. You may not have made a sale yet.
+page.seis.companyDetails.TradeStartDate.question.hint=When did this trade start?
 
 # EISSEIS trade start date
-page.eisseis.companyDetails.tradeStartDate.title=Has your company started trading?
-page.eisseis.companyDetails.tradeStartDate.heading=Has your company started trading?
-page.eisseis.companyDetails.text=This means your goods or services are available to the public. You may not have made a sale yet.
-page.eisseis.companyDetails.TradeStartDate.question.hint=When did your company start trading?
+page.eisseis.companyDetails.tradeStartDate.title=Has the trade you want investment in started?
+page.eisseis.companyDetails.tradeStartDate.heading=Has the trade you want investment in started?
+page.eisseis.companyDetails.text=The trade has started if your goods or services are available to the public. You may not have made a sale yet.
+page.eisseis.companyDetails.TradeStartDate.question.hint=When did this trade start?
 
 # SEIS trade start date error
 page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
@@ -709,6 +709,17 @@ page.eisseis.companyDetails.notFirstTradeError.whatNext.scheme.eis=the Enterpris
 page.eisseis.companyDetails.notFirstTradeError.whatNext.scheme.vct=the Venture Capital Trust scheme
 page.eisseis.companyDetails.notFirstTradeError.incorrect.info=If this information is incorrect you can
 page.eisseis.companyDetails.notFirstTradeError.link.changeAnswers=change your answers
+
+# SEIS is first trade
+page.seis.companyDetails.isFirstTrade.title=Is this the first trade your company has carried out?
+page.seis.companyDetails.isFirstTrade.heading=Is this the first trade your company has carried out?
+page.seis.companyDetails.isFirstTrade.legend=Is this the first trade your company has carried out?
+
+# EISSEIS is first trade
+page.eisseis.companyDetails.isFirstTrade.title=Is this the first trade your company has carried out?
+page.eisseis.companyDetails.isFirstTrade.heading=Is this the first trade your company has carried out?
+page.eisseis.companyDetails.isFirstTrade.legend=Is this the first trade your company has carried out?
+>>>>>>> 498415e8bd33692499bc72b191f5ddc81a452a50
 
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much investment do you want to raise?

@@ -80,7 +80,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
   }
 
   "Sending a valid Yes form submission to the TradeStartDateController when authenticated and enrolled" should {
-    "redirect to the Used Investment Reason Before page if the Trade start date condition is met" in {
+    "redirect to the Is This First Trade Your Company Has Carried Out page if the Trade start date condition is met" in {
       val formInput = Seq(
         "hasTradeStartDate" -> Constants.StandardRadioButtonYesValue,
         "tradeStartDay" -> "23",
@@ -91,14 +91,14 @@ class TradeStartDateControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.seis.routes.HadPreviousRFIController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.seis.routes.IsFirstTradeController.show().url)
         }
       )
     }
   }
 
   "Sending a valid Yes form submission to the TradeStartDateController when authenticated and enrolled" should {
-    "redirect to the Used Investment Reason Before page if the Trade Start date condition is not met" in {
+    "redirect to the Trade Start Date Error page if the Trade Start date condition is not met" in {
       val formInput = Seq(
         "hasTradeStartDate" -> Constants.StandardRadioButtonYesValue,
         "tradeStartDay" -> "23",
@@ -116,7 +116,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
   }
 
   "Sending a valid No form submission to the TradeStartDateController when authenticated and enrolled" should {
-    "redirect to the Used Investment Reason Before page" in {
+    "redirect to the Is This First Trade Your Company Has Carried Out page" in {
       val formInput = Seq(
         "hasTradeStartDate" -> Constants.StandardRadioButtonNoValue)
       setupSubmitMocks(Some(true))
@@ -124,7 +124,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.seis.routes.HadPreviousRFIController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.seis.routes.IsFirstTradeController.show().url)
         }
       )
     }

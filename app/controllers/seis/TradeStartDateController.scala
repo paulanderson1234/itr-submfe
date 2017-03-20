@@ -68,7 +68,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
               s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
               submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
                 validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
-                case Some(validated) => if (validated) Redirect(routes.HadPreviousRFIController.show()) else
+                case Some(validated) => if (validated) Redirect(routes.IsFirstTradeController.show()) else
                   Redirect(routes.TradeStartDateErrorController.show())
                 case _ => {
                   Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
@@ -83,7 +83,7 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
             }
             case Constants.StandardRadioButtonNoValue => {
               s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-              Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+              Future.successful(Redirect(routes.IsFirstTradeController.show()))
             }
           }
         }

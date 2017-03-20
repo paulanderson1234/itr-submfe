@@ -7,6 +7,9 @@ POST       /date-of-incorporation                   controllers.eisseis.DateOfIn
 GET       /trade-start-date                        controllers.eisseis.TradeStartDateController.show
 POST      /trade-start-date                        controllers.eisseis.TradeStartDateController.submit
 
+GET       /is-first-trade                           controllers.eisseis.IsFirstTradeController.show
+POST      /is-first-trade                           controllers.eisseis.IsFirstTradeController.submit
+
 GET       /trade-start-date-error                  controllers.eisseis.TradeStartDateErrorController.show
 POST      /trade-start-date-error                  controllers.eisseis.TradeStartDateErrorController.submit
 
@@ -111,5 +114,5 @@ GET        /trading-for-too-long                    controllers.eisseis.TradingF
 
 GET        /invalid-scheme-type                     controllers.eisseis.InvalidPreviousSchemeController.show
 
-GET        /not-first-trade                         controllers.eisseis.NotFirstTradeController.show
-POST       /not-first-trade                         controllers.eisseis.NotFirstTradeController.submit
+GET        /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.show
+POST       /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.submit

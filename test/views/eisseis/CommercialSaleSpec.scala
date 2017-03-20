@@ -47,14 +47,11 @@ class CommercialSaleSpec extends ViewSpec {
   def setupMocks(commercialSaleModel: Option[CommercialSaleModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[CommercialSaleModel](Matchers.eq(KeystoreKeys.commercialSale))(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(commercialSaleModel))
-
-    when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
-      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSeisSchemeTypesModel))
   }
 
   "The Contact Details page" should {
 
-    "Verify that the commercial sale page contains the correct elements when a valid 'Yes' CommercialSaleModel is passed" in new Setup {
+    "Verify that the commercial sale page contains the correct elements when a valid 'Yes' CommercialSaleModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(commercialSaleModelYes))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -68,13 +65,13 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsFirstTradeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
 
-    "Verify that the commercial sale page contains the correct elements when a valid 'No' CommercialSaleModel is passed" in new Setup {
+    "Verify that the commercial sale page contains the correct elements when a valid 'No' CommercialSaleModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(commercialSaleModelNo))
         val result = TestController.show.apply(authorisedFakeRequest)
@@ -88,12 +85,12 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsFirstTradeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
     }
 
-    "Verify that the commercial sale page contains the correct elements when an invalid CommercialSaleModel is passed" in new Setup {
+    "Verify that the commercial sale page contains the correct elements when an invalid CommercialSaleModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)
@@ -107,13 +104,13 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsFirstTradeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")
     }
 
-    "Verify that the commercial sale page contains the correct elements when an invalid CommercialSaleYesModel is passed" in new Setup {
+    "Verify that the commercial sale page contains the correct elements when an invalid CommercialSaleYesModel is passed" in new SEISEISSetup {
       val document: Document = {
         setupMocks(Some(commercialSaleModelInvalidYes))
         val result = TestController.submit.apply(authorisedFakeRequest)
@@ -127,7 +124,7 @@ class CommercialSaleSpec extends ViewSpec {
       document.getElementById("question-date-text-legend-id").hasClass("visuallyhidden")
       document.getElementById("hasCommercialSale-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       document.getElementById("hasCommercialSale-noLabel").text() shouldBe Messages("common.radioNoLabel")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsFirstTradeController.show().url
       document.body.getElementById("progress-section").text shouldBe Messages("common.section.progress.company.details.one")
       document.getElementById("next").text() shouldBe Messages("common.button.snc")
       document.getElementById("error-summary-display").hasClass("error-summary--show")

@@ -90,7 +90,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
   }
 
   "Sending a valid Yes form submission to the TradeStartDateController when authenticated and enrolled" should {
-    "redirect to the Used Investment Reason Before page if the Trade start date condition is met" in {
+    "redirect to Is this the first trade page if the Trade start date condition is met" in {
       val formInput = Seq(
         "hasTradeStartDate" -> Constants.StandardRadioButtonYesValue,
         "tradeStartDay" -> "23",
@@ -101,7 +101,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.CommercialSaleController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.IsFirstTradeController.show().url)
         }
       )
     }
@@ -181,7 +181,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
 //  }
 
   "Sending a valid No form submission to the TradeStartDateController when authenticated and enrolled" should {
-    "redirect to the Used Investment Reason Before page" in {
+    "redirect to Is this the first trade page" in {
       val formInput = Seq(
         "hasTradeStartDate" -> Constants.StandardRadioButtonNoValue)
       setupSubmitMocks(Some(true), Some(eisSeisProcessingModelEligible))
@@ -189,7 +189,7 @@ class TradeStartDateControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.CommercialSaleController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.IsFirstTradeController.show().url)
         }
       )
     }
