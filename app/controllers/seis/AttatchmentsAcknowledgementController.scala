@@ -16,17 +16,14 @@
 
 package controllers.seis
 
-import auth.{ALLFLOWS, AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import common.{Constants, KeystoreKeys}
-import config.FrontendGlobal._
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.feedback
-import controllers.predicates.FeatureSwitch
-import models._
 import models.registration.RegistrationDetailsModel
 import models.submission._
+import models._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.{FileUploadService, RegistrationDetailsService}
@@ -34,10 +31,13 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.Validation
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import config.FrontendGlobal.internalServerErrorTemplate
+import controllers.feedback
+import controllers.predicates.FeatureSwitch
 
 import scala.concurrent.Future
 
-object AcknowledgementController extends AcknowledgementController{
+object AttachmentsAcknowledgementController extends AttachmentsAcknowledgementController{
   override lazy val s4lConnector = S4LConnector
   override lazy val submissionConnector = SubmissionConnector
   override lazy val applicationConfig = FrontendAppConfig
@@ -47,7 +47,7 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val fileUploadService = FileUploadService
 }
 
-trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait AttachmentsAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
@@ -157,7 +157,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
             submissionResponse.status match {
               case OK =>
                 s4lConnector.clearCache()
-                Ok(views.html.seis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                Ok(views.html.seis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
                 Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
                 InternalServerError
@@ -180,7 +180,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                     result => result.status match {
                       case OK =>
                         s4lConnector.clearCache()
-                        Ok(views.html.seis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
+                        Ok(views.html.seis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
                       case _ => s4lConnector.clearCache()
                         InternalServerError
                     }

@@ -52,7 +52,7 @@
             @if(tradeStartDateModel.isDefined){
             @defining(tradeStartDateModel.get) { tradeStartDateModel =>
             @if(tradeStartDateModel.hasTradeStartDate == Messages("common.radioYesLabel")){
-                @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.eisseis.routes.TradeStartDateController.show().url), None)
+                @textRowHelperMultiLineQuestion("tradeStart", Array(Messages("summaryQuestion.hasTradeStartDate"),Messages("summaryQuestion.tradeStartDate")),Array(tradeStartDateModel.hasTradeStartDate, TradeStartDateModel.toDateString(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)), Some(controllers.eisseis.routes.TradeStartDateController.show().url), Some(true))
             } else {
                 @textRowHelperBasic("tradeStart", Messages("summaryQuestion.hasTradeStartDate"), tradeStartDateModel.hasTradeStartDate, Some(controllers.eisseis.routes.TradeStartDateController.show().url))
             }
@@ -64,7 +64,7 @@
             @if(checkAnswersModel.commercialSaleModel.isDefined){
                 @defining(checkAnswersModel.commercialSaleModel.get) { commercialSaleModel =>
                     @if(commercialSaleModel.hasCommercialSale == Messages("common.radioYesLabel")){
-                        @textRowHelperMultiLineQuestion("commercialSale", Array(Messages("summaryQuestion.hasCommercialSale"),Messages("summaryQuestion.commercialSaleDate")),Array(commercialSaleModel.hasCommercialSale, CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get)), Some(controllers.eisseis.routes.CommercialSaleController.show().toString), None)
+                        @textRowHelperMultiLineQuestion("commercialSale", Array(Messages("summaryQuestion.hasCommercialSale"),Messages("summaryQuestion.commercialSaleDate")),Array(commercialSaleModel.hasCommercialSale, CommercialSaleModel.toDateString(commercialSaleModel.commercialSaleDay.get, commercialSaleModel.commercialSaleMonth.get, commercialSaleModel.commercialSaleYear.get)), Some(controllers.eisseis.routes.CommercialSaleController.show().toString), Some(true))
                     } else {
                         @textRowHelperBasic("commercialSale", Messages("summaryQuestion.hasCommercialSale"), commercialSaleModel.hasCommercialSale, Some(controllers.eisseis.routes.CommercialSaleController.show().toString))
                     }

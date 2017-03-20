@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
+import controllers.eisseis.routes
 import controllers.predicates.FeatureSwitch
 import models._
 import models.seis.SEISCheckAnswersModel
@@ -45,7 +46,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
-  def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser) : Future[SEISCheckAnswersModel] = for {
+  def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[SEISCheckAnswersModel] = for {
     registeredAddress <- s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress)
     dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
     tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
@@ -62,7 +63,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     previousSchemes, proposedInvestment, subsidiariesSpendingInvestment, subsidiariesNinetyOwned, contactDetails, contactAddress,
     applicationConfig.uploadFeatureEnabled)
 
-  def show (envelopeId: Option[String]) : Action[AnyContent]= featureSwitch(applicationConfig.seisFlowEnabled) {
+  def show(envelopeId: Option[String]): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       if (envelopeId.fold("")(_.toString).length > 0) {
         s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
@@ -74,7 +75,14 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(controllers.seis.routes.AcknowledgementController.show()))
+      s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
+        envelopeId => {
+          if (envelopeId.isEmpty)
+            Future.successful(Redirect(routes.AcknowledgementController.show()))
+          else Future.successful(Redirect(controllers.seis.routes.AttachmentsAcknowledgementController.show()))
+
+        }
+      }
     }
   }
 

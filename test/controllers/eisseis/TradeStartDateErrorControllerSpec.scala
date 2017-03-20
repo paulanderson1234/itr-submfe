@@ -17,6 +17,7 @@
 package controllers.eisseis
 
 import auth.{MockAuthConnector, MockConfig}
+import common.Constants
 import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
 import controllers.helpers.BaseSpec
@@ -58,16 +59,29 @@ class TradeStartDateErrorControllerSpec extends BaseSpec {
     }
   }
 
-  "Posting to the LifetimeAllowanceExceededController when authenticated and enrolled" should {
-    "redirect to 'Proposed investment' page" in {
+  "Sending submission to TradeStartDateErrorController when authenticated and enrolled" should {
+    "redirect to Is this the first trade page" in {
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.IsFirstTradeController.show().url)
         }
       )
     }
   }
+
+//  INVALID TEST
+//  "Posting to the LifetimeAllowanceExceededController when authenticated and enrolled" should {
+//    "redirect to 'Proposed investment' page" in {
+//      mockEnrolledRequest(eisSeisSchemeTypesModel)
+//      submitWithSessionAndAuth(TestController.submit)(
+//        result => {
+//          status(result) shouldBe SEE_OTHER
+//          redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)
+//        }
+//      )
+//    }
+//  }
 
 }

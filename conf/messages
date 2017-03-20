@@ -793,6 +793,27 @@ page.test.page-one.button=Go to Page One
 page.test.page-two.title=Test Endpoint Page Two
 page.test.page-two.button=Go to Page Two
 
+#EIS attachments acknowledgement
+page.checkAndSubmit.eis.attachments.acknowledgement.title=You''ve sent your application
+page.checkAndSubmit.eis.attachments.acknowledgement.what.happens.next.heading=What happens next
+page.checkAndSubmit.eis.attachments.acknowledgement.happens.next=We''ll contact you within 4 weeks to let you know the outcome of your application.
+page.checkAndSubmit.eis.attachments.acknowledgement.submissionConfirmation=You''ve sent your application
+page.checkAndSubmit.eis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
+
+#EISSEIS attachments acknowledgement
+page.checkAndSubmit.eisseis.attachments.acknowledgement.title=You''ve sent your application
+page.checkAndSubmit.eisseis.attachments.acknowledgement.what.happens.next.heading=What happens next
+page.checkAndSubmit.eisseis.attachments.acknowledgement.happens.next=We''ll contact you within 4 weeks to let you know the outcome of your application.
+page.checkAndSubmit.eisseis.attachments.acknowledgement.submissionConfirmation=You''ve sent your application
+page.checkAndSubmit.eisseis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
+
+#SEIS attachments acknowledgement
+page.checkAndSubmit.seis.attachments.acknowledgement.title=You''ve sent your application
+page.checkAndSubmit.seis.attachments.acknowledgement.what.happens.next.heading=What happens next
+page.checkAndSubmit.seis.attachments.acknowledgement.happens.next=We''ll contact you within 4 weeks to let you know the outcome of your application.
+page.checkAndSubmit.seis.attachments.acknowledgement.submissionConfirmation=You''ve sent your application
+page.checkAndSubmit.seis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
+
 ## Feedback ##
 feedback.title = Feedback
 

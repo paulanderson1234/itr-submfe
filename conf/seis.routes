@@ -66,4 +66,10 @@ GET       /invalid-scheme-type                      controllers.seis.InvalidPrev
 
 GET       /not-first-trade                          controllers.seis.NotFirstTradeController.show
 
+GET        /attachments-acknowledgement             controllers.seis.AttachmentsAcknowledgementController.show
+POST       /attachments-acknowledgement             controllers.seis.AttachmentsAcknowledgementController.submit
+
+GET        /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
+
+
 

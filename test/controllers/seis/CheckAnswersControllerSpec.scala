@@ -17,11 +17,16 @@
 package controllers.seis
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import org.mockito.Matchers
+import org.mockito.Mockito.when
 import play.api.test.Helpers._
 import views.helpers.CheckAnswersSpec
+
+import scala.concurrent.Future
 
 class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
   
@@ -101,9 +106,26 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     }
   }
 
-  "Sending a submission to the CheckAnswersController" should {
+  "Sending a submission to the CheckAnswersController with one or more attachments for SEIS" should {
 
     "redirect to the acknowledgement page when authenticated and enrolled" in {
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("test")))
+      mockEnrolledRequest(seisSchemeTypesModel)
+      submitWithSessionAndAuth(TestController.submit)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.seis.routes.AttachmentsAcknowledgementController.show().url)
+        }
+      )
+    }
+  }
+
+  "Sending a submission to the CheckAnswersController with no attachments for SEIS" should {
+
+    "redirect to the acknowledgement page when authenticated and enrolled" in {
+      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit)(
         result => {
