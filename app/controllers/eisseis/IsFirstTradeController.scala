@@ -67,8 +67,8 @@ trait IsFirstTradeController extends FrontendController with AuthorisedAndEnroll
               Future.successful(Redirect(routes.CommercialSaleController.show()))
             }
             case Constants.StandardRadioButtonNoValue => {
-              // to navigate to errorNotFirstTrade for SEIS only flow when available
-              Future.successful(Redirect(routes.IsFirstTradeController.show()))
+              // to navigate to errorNotFirstTrade for combined EISSEIS flow
+              Future.successful(Redirect(routes.NotFirstTradeErrorController.show()))
             }
           }
         }

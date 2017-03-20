@@ -97,7 +97,7 @@ class IsFirstTradeControllerSpec extends BaseSpec {
         result => {
           status(result) shouldBe SEE_OTHER
      // To navigate to IsFirstTradeError page when available for EISSEIS flow
-          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.IsFirstTradeController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.eisseis.routes.NotFirstTradeErrorController.show().url)
         }
       )
     }

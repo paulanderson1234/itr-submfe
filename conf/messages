@@ -684,14 +684,14 @@ page.eisseis.companyDetails.TradeStartDate.question.hint=When did this trade sta
 # SEIS trade start date error
 page.seis.companyDetails.tradeStartDateError.title=You don''t qualify for the scheme
 page.seis.companyDetails.tradeStartDateError.heading=You don''t qualify for the scheme
-page.seis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
+page.seis.companyDetails.tradeStartDateError.trading.over.two.years=This is because the trade you want investment in started more than 2 years ago.
 page.seis.companyDetails.tradeStartDateError.incorrect.info=If this information is incorrect you can
 page.seis.companyDetails.tradeStartDateError.link.changeAnswers=change your answers
 
 #EISSEIS trade start date error
 page.eisseis.companyDetails.tradeStartDateError.title=You don''t qualify for the Seed Enterprise Investment Scheme
 page.eisseis.companyDetails.tradeStartDateError.heading=You don''t qualify for the Seed Enterprise Investment Scheme
-page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years=This is because your company has been trading for over 2 years.
+page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years=This is because the trade you want investment in started more than 2 years ago.
 page.eisseis.companyDetails.tradeStartDateError.whatNext.heading=What happens next
 page.eisseis.companyDetails.tradeStartDateError.whatNext.continue=You can continue with your application for:
 page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis=the Enterprise Investment Scheme
@@ -702,7 +702,7 @@ page.eisseis.companyDetails.tradeStartDateError.link.changeAnswers=change your a
 #EISSEIS not first trade error
 page.eisseis.companyDetails.notFirstTradeError.title=You don''t qualify for the Seed Enterprise Investment Scheme
 page.eisseis.companyDetails.notFirstTradeError.heading=You don''t qualify for the Seed Enterprise Investment Scheme
-page.eisseis.companyDetails.notFirstTradeError.trading.over.two.years=This is because your company has been trading for over 2 years.
+page.eisseis.companyDetails.notFirstTradeError.trading.reason=This is because your company carried out another trade before the one you''re seeking investment in.
 page.eisseis.companyDetails.notFirstTradeError.whatNext.heading=What happens next
 page.eisseis.companyDetails.notFirstTradeError.whatNext.continue=You can continue with your application for:
 page.eisseis.companyDetails.notFirstTradeError.whatNext.scheme.eis=the Enterprise Investment Scheme
@@ -719,7 +719,6 @@ page.seis.companyDetails.isFirstTrade.legend=Is this the first trade your compan
 page.eisseis.companyDetails.isFirstTrade.title=Is this the first trade your company has carried out?
 page.eisseis.companyDetails.isFirstTrade.heading=Is this the first trade your company has carried out?
 page.eisseis.companyDetails.isFirstTrade.legend=Is this the first trade your company has carried out?
->>>>>>> 498415e8bd33692499bc72b191f5ddc81a452a50
 
 # SEIS Proposed Investment page
 page.seis.investment.proposedInvestment.amount.title=How much investment do you want to raise?

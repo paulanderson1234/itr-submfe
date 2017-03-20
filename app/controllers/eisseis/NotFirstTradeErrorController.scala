@@ -56,7 +56,7 @@ trait NotFirstTradeErrorController extends FrontendController with AuthorisedAnd
 
   val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.IsFirstTradeController.show()))
+      Future.successful(Redirect(routes.CommercialSaleController.show()))
     }
   }
 }
