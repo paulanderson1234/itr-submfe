@@ -43,18 +43,18 @@ class TradeStartDateErrorSpec extends ViewSpec {
       val document = Jsoup.parse(page.body)
 
       document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
-      document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
-      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
-      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
-      document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.heading")
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.heading")
+      document.body.getElementById("continue-text").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.continue")
 
 
       document.body.getElementById("valid-schemes").children().size() shouldBe 2
-      document.body.getElementById("eis").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
-      document.body.getElementById("vct").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
+      document.body.getElementById("eis").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
+      document.body.getElementById("vct").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
 
-      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
-        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.eisseis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
       document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     }
@@ -64,17 +64,17 @@ class TradeStartDateErrorSpec extends ViewSpec {
       val document = Jsoup.parse(page.body)
 
       document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
-      document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
-      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
-      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
-      document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.heading")
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.heading")
+      document.body.getElementById("continue-text").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.continue")
 
 
       document.body.getElementById("valid-schemes").children().size() shouldBe 1
-      document.body.getElementById("eis").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
+      document.body.getElementById("eis").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")
 
-      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
-        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.eisseis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
       document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     }
@@ -84,17 +84,17 @@ class TradeStartDateErrorSpec extends ViewSpec {
       val document = Jsoup.parse(page.body)
 
       document.title shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.title")
-      document.body.getElementById("main-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.heading")
-      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")
-      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
-      document.body.getElementById("continue-text").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.heading")
+      document.body.getElementById("trading-over-two-years").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years")
+      document.body.getElementById("what-next-heading").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.heading")
+      document.body.getElementById("continue-text").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.continue")
 
 
       document.body.getElementById("valid-schemes").children().size() shouldBe 1
-      document.body.getElementById("vct").text() shouldEqual Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
+      document.body.getElementById("vct").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")
 
-      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info") +
-        " " + Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
+      document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.eisseis.companyDetails.tradeStartDateError.incorrect.info") +
+        " " + Messages("page.eisseis.companyDetails.tradeStartDateError.link.changeAnswers") + "."
       document.body.getElementById("change-answers").attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
       document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
     }

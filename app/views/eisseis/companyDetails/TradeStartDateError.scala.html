@@ -14,27 +14,27 @@
     <div class="column-two-thirds">
         <div id="main">
             <h1 class="form-title heading-xlarge" id="main-heading">
-                @Messages("page.esisseis.companyDetails.tradeStartDateError.heading")</h1>
+                @Messages("page.eisseis.companyDetails.tradeStartDateError.heading")</h1>
         </div>
 
         <div class="form-group">
             <p id="trading-over-two-years">
-                @Messages("page.esisseis.companyDetails.tradeStartDateError.trading.over.two.years")</p>
+                @Messages("page.eisseis.companyDetails.tradeStartDateError.trading.over.two.years")</p>
         </div>
 
         <div class="form-group">
             <span id="what-next-heading" class="heading-medium">
-                @Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.heading")
+                @Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.heading")
             </span>
             <p id="continue-text">
-                @Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.continue")
+                @Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.continue")
             </p>
             <ul class="list-bullet" id="valid-schemes">
                 @if(schemeTypesModel.eis) {
-                <li id="eis">@Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")</li>
+                <li id="eis">@Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.eis")</li>
                 }
                 @if(schemeTypesModel.vct) {
-                <li id="vct">@Messages("page.esisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")</li>
+                <li id="vct">@Messages("page.eisseis.companyDetails.tradeStartDateError.whatNext.scheme.vct")</li>
                 }
             </ul>
         </div>
@@ -46,10 +46,10 @@
         </div>
 
         <div class="form-group">
-            <p id="incorrect-info">@Messages("page.seis.companyDetails.tradeStartDateError.incorrect.info")
+            <p id="incorrect-info">@Messages("page.eisseis.companyDetails.tradeStartDateError.incorrect.info")
                 <a href="@controllers.eisseis.routes.TradeStartDateController.show().url" class="link-style"
                    id="change-answers">
-                    @Messages("page.seis.companyDetails.tradeStartDateError.link.changeAnswers")</a>.</p>
+                    @Messages("page.eisseis.companyDetails.tradeStartDateError.link.changeAnswers")</a>.</p>
         </div>
 
     </div>
