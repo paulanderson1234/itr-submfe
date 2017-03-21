@@ -764,6 +764,13 @@ page.eisseis.previousInvestment.hadPreviousRFI.text=You should include any State
 page.eisseis.previousInvestment.hadPreviousRFI.hint=How do I know whether the funding I''ve received is de minimis State aid?
 page.eisseis.previousInvestment.hadPreviousRFI.hint.text=HMRC aren''t able to help you with this. You should contact the person who gave you the aid if you need advice.
 
+# SEIS had previous RFI
+page.seis.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme or had other relevant investments?
+page.seis.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme or had other relevant investments?
+page.seis.previousInvestment.hadPreviousRFI.text=You should include any State aid you''ve received under the de minimis regulation.
+page.seis.previousInvestment.hadPreviousRFI.hint=How do I know whether the funding I''ve received is de minimis State aid?
+page.seis.previousInvestment.hadPreviousRFI.hint.text=HMRC aren''t able to help you with this. You should contact the person who gave you the aid if you need advice.
+
 
 # EIS SEIS VCT Previous scheme error
 page.eisseis.previousInvestment.InvalidPreviousScheme.title=You don''t qualify for the Seed Enterprise Investment Scheme
@@ -782,6 +789,13 @@ page.eisseis.investment.LifetimeAllowanceExceeded.heading=You don''t qualify for
 page.eisseis.investment.LifetimeAllowanceExceeded.reason=This is because you''ve already raised {0} million or more from tax relief investment schemes.
 page.eisseis.investment.LifetimeAllowanceExceeded.change.text=If this information is incorrect you can
 page.eisseis.investment.LifetimeAllowanceExceeded.change.link=change your answers
+
+# SEIS Not First Trade Error Page
+page.seis.companyDetails.NotFirstTradeError.title=You don''t qualify for the scheme
+page.seis.companyDetails.NotFirstTradeError.heading=You don''t qualify for the scheme
+page.seis.companyDetails.NotFirstTradeError.reason=This is because your company carried out another trade before the one you''re seeking investment in.
+page.seis.companyDetails.NotFirstTradeError.incorrect.info=If this information is incorrect you can
+page.seis.companyDetails.NotFirstTradeError.change.link.changeAnswers=change your answers
 
 
 #Delete Previous Scheme confirmation

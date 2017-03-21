@@ -28,6 +28,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import views.html.seis.companyDetails.IsFirstTrade
+import views.html.seis.companyDetails.NotFirstTradeError
 
 import scala.concurrent.Future
 
@@ -70,7 +71,7 @@ trait IsFirstTradeController extends FrontendController with AuthorisedAndEnroll
             }
             case Constants.StandardRadioButtonNoValue => {
          // to navigate to errorNotFirstTrade for SEIS only flow
-              Future.successful(Redirect(routes.IsFirstTradeController.show()))
+              Future.successful(Redirect(routes.NotFirstTradeController.show()))
             }
           }
         }
