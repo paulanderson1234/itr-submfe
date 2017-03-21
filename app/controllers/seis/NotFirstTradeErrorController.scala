@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -36,7 +36,7 @@ object NotFirstTradeController extends NotFirstTradeController
 
 trait NotFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+  override val acceptedFlows = Seq(Seq(SEIS))
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Ok(NotFirstTradeError()))

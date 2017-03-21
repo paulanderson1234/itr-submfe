@@ -6,9 +6,9 @@
 
 @import config.FrontendAppConfig
 
-@main_template(title = Messages("page.eisseis.investment.LifetimeAllowanceExceeded.title"), bodyClasses = None) {
+@main_template(title = Messages("page.seis.companyDetails.NotFirstTradeError.title"), bodyClasses = None) {
 
-@backButton(controllers.eisseis.routes.ProposedInvestmentController.show().url)
+@backButton(controllers.seis.routes.IsFirstTradeController.show().url)
 
 <div class="grid-row">
     <div class="column-two-thirds">
@@ -17,16 +17,17 @@
         </div>
 
         <div class="form-group">
-            <span id="lifetimeExceedReason">
-                @Messages("page.eisseis.investment.LifetimeAllowanceExceeded.reason")
+            <span id="error-reason">
+                @Messages("page.seis.companyDetails.NotFirstTradeError.reason")
             </span>
         </div>
 
-        <div>
-            <p id="change-answers">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.text")
-                <a class="link-style" id="change-answers-link" href="@controllers.eisseis.routes.ReviewPreviousSchemesController.show()">@Messages("page.eisseis.investment.LifetimeAllowanceExceeded.change.link")</a>.
-            </p>
+        <div class="form-group">
+           <p id="incorrect-info">@Messages("page.seis.companyDetails.NotFirstTradeError.incorrect.info")
+                <a href="@controllers.seis.routes.IsFirstTradeController.show().url" class="link-style" id="change-answers">
+                    @Messages("page.seis.companyDetails.NotFirstTradeError.change.link.changeAnswers")</a>.</p>
         </div>
+
     </div>
 </div>
 }

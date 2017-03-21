@@ -5,21 +5,21 @@
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")) {
+@main_template(Messages("page.seis.previousInvestment.hadPreviousRFI.title")) {
 
     @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.two"))
 
     @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.seis.previousInvestment.hadPreviousRFI.title")</h1>
 
     <div class="form-group">
-        @formHint("de-minimis", Messages("page.eisseis.previousInvestment.hadPreviousRFI.text"))
+        @formHint("de-minimis", Messages("page.seis.previousInvestment.hadPreviousRFI.text"))
     </div>
 
     <details>
-        <summary><span id="de-minimis-help" class="summary">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")</span></summary>
+        <summary><span id="de-minimis-help" class="summary">@Messages("page.seis.previousInvestment.hadPreviousRFI.hint")</span></summary>
         <div class="panel panel-indent panel-border-narrow">
-            <span class = "form-hint" id = "de-minimis-help-text">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")</span>
+            <span class = "form-hint" id = "de-minimis-help-text">@Messages("page.seis.previousInvestment.hadPreviousRFI.hint.text")</span>
         </div>
     </details>
 
