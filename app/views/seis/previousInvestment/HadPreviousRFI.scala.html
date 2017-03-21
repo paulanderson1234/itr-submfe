@@ -5,43 +5,45 @@
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")) {
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.title")) {
 
-    @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.two"))
+@backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.two"))
 
-    @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")</h1>
+@errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
-    <div class="form-group">
-        @formHint("de-minimis", Messages("page.eisseis.previousInvestment.hadPreviousRFI.text"))
-    </div>
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.title")</h1>
 
-    <details>
-        <summary><span id="de-minimis-help" class="summary">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")</span></summary>
-        <div class="panel panel-indent panel-border-narrow">
-            <span class = "form-hint" id = "de-minimis-help-text">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")</span>
-        </div>
-    </details>
+<div class="form-hint">
+    <p id="bullet-heading">@Messages("page.previousInvestment.hadPreviousRFI.hintTitle")</p>
 
-    @form(action = controllers.seis.routes.HadPreviousRFIController.submit()) {
+    <ul class="list list-bullet">
+        <li id="bullet-one">@Messages("page.previousInvestment.schemes.bullet.one")</li>
+        <li id="bullet-two">@Messages("page.previousInvestment.schemes.bullet.two")</li>
+        <li id="bullet-three">@Messages("page.previousInvestment.schemes.bullet.three")</li>
+        <li id="bullet-four">@Messages("page.previousInvestment.schemes.bullet.four")</li>
+    </ul>
+</div>
+<div class="form-group"></div>
 
-    <div class="form-group">
-        @formInputRadioGroup(
-        field = hadPreviousRFIForm("hadPreviousRFI"),
-        Seq(
-        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
-        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
-        '_legendClass -> "visuallyhidden",
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_legendID -> "hadPreviousRFI",
-        '_groupClass -> "inline"
-        )
-    </div>
+@form(action = controllers.seis.routes.HadPreviousRFIController.submit()) {
 
-    <div class="form-group">
-        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
-    </div>
-    }
+<div class="form-group">
+    @formInputRadioGroup(
+    field = hadPreviousRFIForm("hadPreviousRFI"),
+    Seq(
+    Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+    Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+    '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_legendID -> "hadPreviousRFI",
+    '_groupClass -> "inline"
+    )
+</div>
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+</div>
+}
 }

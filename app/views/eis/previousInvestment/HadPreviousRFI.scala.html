@@ -1,37 +1,49 @@
 @import models.HadPreviousRFIModel
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
-@import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary}
+@import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary, formHint}
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel], backUrl: String)(implicit request: Request[_], messages: Messages)
 
 @main_template(Messages("page.previousInvestment.hadPreviousRFI.heading")) {
 
-    @backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
+@backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
 
-    @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
+@errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.heading")</h1>
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.title")</h1>
 
-    @form(action = controllers.eis.routes.HadPreviousRFIController.submit()) {
+<div class="form-hint">
+    <p id="bullet-heading">@Messages("page.previousInvestment.hadPreviousRFI.hintTitle")</p>
 
-    <div class="form-group">
-        @formInputRadioGroup(
-        field = hadPreviousRFIForm("hadPreviousRFI"),
-        Seq(
-        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
-        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
-        '_legendClass -> "visuallyhidden",
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_legendID -> "hadPreviousRFI",
-        '_groupClass -> "inline"
-        )
-    </div>
+    <ul class="list list-bullet">
+        <li id="bullet-one">@Messages("page.previousInvestment.schemes.bullet.one")</li>
+        <li id="bullet-two">@Messages("page.previousInvestment.schemes.bullet.two")</li>
+        <li id="bullet-three">@Messages("page.previousInvestment.schemes.bullet.three")</li>
+        <li id="bullet-four">@Messages("page.previousInvestment.schemes.bullet.four")</li>
+    </ul>
+</div>
+<div class="form-group"></div>
 
-    <div class="form-group">
-        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
-    </div>
-    }
+@form(action = controllers.eis.routes.HadPreviousRFIController.submit()) {
+
+<div class="form-group">
+    @formInputRadioGroup(
+    field = hadPreviousRFIForm("hadPreviousRFI"),
+    Seq(
+    Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+    Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+    '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_legendID -> "hadPreviousRFI",
+    '_groupClass -> "inline"
+    )
+</div>
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+</div>
+}
 }

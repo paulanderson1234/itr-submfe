@@ -14,7 +14,7 @@
     <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.title")</h1>
 
     <div class="form-hint">
-        <p>@Messages("page.previousInvestment.hadPreviousRFI.hintTitle")</p>
+        <p id="bullet-heading">@Messages("page.previousInvestment.hadPreviousRFI.hintTitle")</p>
 
         <ul class="list list-bullet">
             <li id="bullet-one">@Messages("page.previousInvestment.schemes.bullet.one")</li>
@@ -33,7 +33,7 @@
         Seq(
         Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
         Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.eisseis.previousInvestment.hadPreviousRFI.heading"),
+        '_legend -> Messages("page.previousInvestment.hadPreviousRFI.heading"),
         '_legendClass -> "visuallyhidden",
         '_labelAfter -> true,
         '_labelClass -> "block-label",

@@ -60,6 +60,11 @@ class HadPreviousRFISpec extends ViewSpec {
     document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.getElementById("bullet-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.hintTitle")
+    document.getElementById("bullet-one").text() shouldBe Messages("page.previousInvestment.schemes.bullet.one")
+    document.getElementById("bullet-two").text() shouldBe Messages("page.previousInvestment.schemes.bullet.two")
+    document.getElementById("bullet-three").text() shouldBe Messages("page.previousInvestment.schemes.bullet.three")
+    document.getElementById("bullet-four").text() shouldBe Messages("page.previousInvestment.schemes.bullet.four")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")
@@ -79,6 +84,11 @@ class HadPreviousRFISpec extends ViewSpec {
     document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.ProposedInvestmentController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
+    document.getElementById("bullet-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.hintTitle")
+    document.getElementById("bullet-one").text() shouldBe Messages("page.previousInvestment.schemes.bullet.one")
+    document.getElementById("bullet-two").text() shouldBe Messages("page.previousInvestment.schemes.bullet.two")
+    document.getElementById("bullet-three").text() shouldBe Messages("page.previousInvestment.schemes.bullet.three")
+    document.getElementById("bullet-four").text() shouldBe Messages("page.previousInvestment.schemes.bullet.four")
     document.select("#hadPreviousRFI-yes").size() shouldBe 1
     document.select("#hadPreviousRFI-no").size() shouldBe 1
     document.getElementById("hadPreviousRFI-yesLabel").text() shouldBe Messages("common.radioYesLabel")

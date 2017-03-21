@@ -96,8 +96,8 @@ class IsFirstTradeControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-     // To navigate to IsFirstTradeError page when available
-          redirectLocation(result) shouldBe Some(controllers.seis.routes.IsFirstTradeController.show().url)
+     // To navigate to NotFirstTradeErrir page
+          redirectLocation(result) shouldBe Some(controllers.seis.routes.NotFirstTradeController.show().url)
         }
       )
     }
