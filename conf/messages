@@ -605,11 +605,12 @@ page.previousInvestment.InvalidPreviousScheme.change-text=If this information is
 page.previousInvestment.InvalidPreviousScheme.change-link=change your answers
 
 #previous schemes
-page.investment.PreviousScheme.heading=Which schemes has your company used?
+page.investment.PreviousScheme.heading=Which schemes or investments has your company used?
 page.investment.PreviousScheme.schemeType=Scheme
+page.investment.PreviousScheme.oneAtATime =Add them one at a time.
 page.investment.PreviousScheme.button.add=Add this scheme
 page.investment.PreviousScheme.button.update=Update this scheme
-page.investment.PreviousScheme.title=Which schemes has your company used?
+page.investment.PreviousScheme.title=Which schemes or investments has your company used?
 validation.error.InvestmentSpent.Present=Investment amount raised should not be entered for this scheme type
 validation.error.SchemeName.Present=Scheme name should not be entered for this scheme type
 page.investment.PreviousScheme.location=It should be on the certificates you gave to your shareholders. You can also find it by searching for your company on the

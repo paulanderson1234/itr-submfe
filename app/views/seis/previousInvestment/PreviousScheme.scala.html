@@ -13,6 +13,10 @@
 
     <h1 class="heading-xlarge" id="main-heading">@Messages("page.investment.PreviousScheme.heading")</h1>
 
+    <div class="form-group">
+        <span class = "form-hint" id="guideline">@Messages("page.investment.PreviousScheme.oneAtATime")</span>
+    </div>
+
     @form(action = controllers.seis.routes.PreviousSchemeController.submit()) {
         <div class="form-group" data-previous-investment="hidden-other-scheme" data-previous-investment-spent="hidden-investment-spent">
 
