@@ -49,6 +49,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
         dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
         tradeStartDateForm <- fillForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
+        isFirstStartDateForm <- fillForm[IsFirstTradeModel](KeystoreKeys.isFirstTrade, IsFirstTradeForm.isFirstTradeForm)
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
         proposedInvestmentForm <- fillForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
@@ -61,6 +62,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
           natureOfBusinessForm,
           dateOfIncorporationForm,
           tradeStartDateForm,
+          isFirstStartDateForm,
           hadPreviousRFIForm,
           previousSchemesForm,
           schemes.getOrElse(defaultPreviousSchemesSize),
@@ -77,6 +79,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
     val tradeStartDate = bindForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
+    val isFirstTrade = bindForm[IsFirstTradeModel](KeystoreKeys.isFirstTrade, IsFirstTradeForm.isFirstTradeForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
     val proposedInvestment = bindForm[ProposedInvestmentModel](KeystoreKeys.proposedInvestment, ProposedInvestmentForm.proposedInvestmentForm)
@@ -91,6 +94,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         natureOfBusiness,
         dateOfIncorporation,
         tradeStartDate,
+        isFirstTrade,
         hadPreviousRFI,
         testPreviousSchemes,
         defaultPreviousSchemesSize,

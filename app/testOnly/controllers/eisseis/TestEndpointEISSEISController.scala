@@ -52,6 +52,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         natureOfBusinessForm <- fillForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
         dateOfIncorporationForm <- fillForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
         tradeStartDateForm <- fillForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
+        isFirstStartDateForm <- fillForm[IsFirstTradeModel](KeystoreKeys.isFirstTrade, IsFirstTradeForm.isFirstTradeForm)
         commercialSaleForm <- fillForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
         isKnowledgeIntensiveForm <- fillForm[IsKnowledgeIntensiveModel](KeystoreKeys.isKnowledgeIntensive, IsKnowledgeIntensiveForm.isKnowledgeIntensiveForm)
         operatingCostsForm <- fillForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
@@ -65,6 +66,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
           natureOfBusinessForm,
           dateOfIncorporationForm,
           tradeStartDateForm,
+          isFirstStartDateForm,
           commercialSaleForm,
           isKnowledgeIntensiveForm,
           operatingCostsForm,
@@ -113,6 +115,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
     val natureOfBusiness = bindForm[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness, NatureOfBusinessForm.natureOfBusinessForm)
     val dateOfIncorporation = bindForm[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation, DateOfIncorporationForm.dateOfIncorporationForm)
     val tradeStartDate = bindForm[TradeStartDateModel](KeystoreKeys.tradeStartDate, TradeStartDateForm.tradeStartDateForm)
+    val isFirstTrade = bindForm[IsFirstTradeModel](KeystoreKeys.isFirstTrade, IsFirstTradeForm.isFirstTradeForm)
     val commercialSale = bindForm[CommercialSaleModel](KeystoreKeys.commercialSale, CommercialSaleForm.commercialSaleForm)
     val isKnowledgeIntensive = bindKIForm()
     val testOperatingCosts = bindForm[OperatingCostsModel](KeystoreKeys.operatingCosts, TestOperatingCostsForm.testOperatingCostsForm)
@@ -128,6 +131,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         natureOfBusiness,
         dateOfIncorporation,
         tradeStartDate,
+        isFirstTrade,
         commercialSale,
         isKnowledgeIntensive,
         testOperatingCosts,

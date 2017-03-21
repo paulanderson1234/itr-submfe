@@ -48,6 +48,8 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[IsFirstTradeModel](Matchers.eq(KeystoreKeys.isFirstTrade))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[HadPreviousRFIModel](Matchers.eq(KeystoreKeys.hadPreviousRFI))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[UsedInvestmentReasonBeforeModel](Matchers.eq(KeystoreKeys.usedInvestmentReasonBefore))
