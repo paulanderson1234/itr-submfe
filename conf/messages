@@ -396,6 +396,11 @@ validation.error.DescriptionEnteredForNoOption=If ''No'' is selected description
 #had previous RFI
 page.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme before?
 page.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme before?
+page.previousInvestment.hadPreviousRFI.hintTitle=We only need to know about:
+page.previousInvestment.schemes.bullet.one=the Enterprise Investment Scheme
+page.previousInvestment.schemes.bullet.two=the Seed Enterprise Investment Scheme
+page.previousInvestment.schemes.bullet.three=Social Investment Tax Relief
+page.previousInvestment.schemes.bullet.four=the Venture Capital Trust scheme
 
 #subsidiaries spending investment
 page.investment.SubsidiariesSpendingInvestment.title = Will another company that''s owned or controlled by [your company name] spend this investment?
@@ -756,13 +761,6 @@ page.seis.checkAndSubmit.acknowledgement.post.to=If you need to send by post, ca
 page.seis.checkAndSubmit.acknowledgement.waitingTime.heading=How long you''ll have to wait
 page.seis.checkAndSubmit.acknowledgement.courseOfAction=Once we''ve received your supporting documents we''ll contact you within 4 weeks.
 page.seis.checkAndSubmit.acknowledgement.button.confirm=Finish
-
-# EIS SEIS had previous RFI
-page.eisseis.previousInvestment.hadPreviousRFI.title=Has your company used a tax relief investment scheme or had other relevant investments?
-page.eisseis.previousInvestment.hadPreviousRFI.heading=Has your company used a tax relief investment scheme or had other relevant investments?
-page.eisseis.previousInvestment.hadPreviousRFI.text=You should include any State aid you''ve received under the de minimis regulation.
-page.eisseis.previousInvestment.hadPreviousRFI.hint=How do I know whether the funding I''ve received is de minimis State aid?
-page.eisseis.previousInvestment.hadPreviousRFI.hint.text=HMRC aren''t able to help you with this. You should contact the person who gave you the aid if you need advice.
 
 
 # EIS SEIS VCT Previous scheme error

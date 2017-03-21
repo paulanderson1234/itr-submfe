@@ -5,24 +5,25 @@
 
 @(hadPreviousRFIForm: Form[HadPreviousRFIModel], backUrl: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")) {
+@main_template(Messages("page.previousInvestment.hadPreviousRFI.title")) {
 
     @backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
 
     @errorSummary(hadPreviousRFIForm, "had-previous-rfi", "hadPreviousRFI")
 
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.title")</h1>
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadPreviousRFI.title")</h1>
 
-    <div class="form-group">
-        @formHint("de-minimis", Messages("page.eisseis.previousInvestment.hadPreviousRFI.text"))
+    <div class="form-hint">
+        <p>@Messages("page.previousInvestment.hadPreviousRFI.hintTitle")</p>
+
+        <ul class="list list-bullet">
+            <li id="bullet-one">@Messages("page.previousInvestment.schemes.bullet.one")</li>
+            <li id="bullet-two">@Messages("page.previousInvestment.schemes.bullet.two")</li>
+            <li id="bullet-three">@Messages("page.previousInvestment.schemes.bullet.three")</li>
+            <li id="bullet-four">@Messages("page.previousInvestment.schemes.bullet.four")</li>
+        </ul>
     </div>
-
-    <details>
-        <summary><span id="de-minimis-help" class="summary">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint")</span></summary>
-        <div class="panel panel-indent panel-border-narrow">
-            <span class = "form-hint" id = "de-minimis-help-text">@Messages("page.eisseis.previousInvestment.hadPreviousRFI.hint.text")</span>
-        </div>
-    </details>
+    <div class="form-group"></div>
 
     @form(action = controllers.eisseis.routes.HadPreviousRFIController.submit()) {
 
