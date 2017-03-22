@@ -71,5 +71,8 @@ POST      /attachments-acknowledgement             controllers.seis.AttachmentsA
 
 GET       /invalid-scheme-type                     controllers.seis.InvalidPreviousSchemeController.show
 
+GET        /had-other-investments-before           controllers.seis.HadOtherInvestmentsController.show
+POST       /had-other-investments-before          controllers.seis.HadOtherInvestmentsController.submit
+
 
 

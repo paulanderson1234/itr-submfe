@@ -119,3 +119,6 @@ GET        /invalid-scheme-type                     controllers.eisseis.InvalidP
 
 GET        /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.show
 POST       /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.submit
+
+GET        /had-other-investments-before           controllers.eisseis.HadOtherInvestmentsController.show
+POST       /had-other-investments-before          controllers.eisseis.HadOtherInvestmentsController.submit
