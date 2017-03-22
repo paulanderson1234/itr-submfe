@@ -65,6 +65,7 @@ class PreviousSchemeSpec extends ViewSpec {
 
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.PreviousScheme.heading")
 
+      document.getElementById("guideline").text() shouldBe Messages("page.investment.PreviousScheme.oneAtATime")
       document.getElementById("scheme-type-legend").text() shouldBe Messages("page.investment.PreviousScheme.schemeType")
       document.getElementById("schemeTypeDesc-eisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
       document.getElementById("schemeTypeDesc-seisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
@@ -103,6 +104,7 @@ class PreviousSchemeSpec extends ViewSpec {
 
       document.getElementById("main-heading").text() shouldBe Messages("page.investment.PreviousScheme.heading")
 
+      document.getElementById("guideline").text() shouldBe Messages("page.investment.PreviousScheme.oneAtATime")
       document.getElementById("scheme-type-legend").text() shouldBe Messages("page.investment.PreviousScheme.schemeType")
       document.getElementById("schemeTypeDesc-eisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.eis")
       document.getElementById("schemeTypeDesc-seisLabel").text() shouldBe Messages("page.previousInvestment.schemeType.seis")
