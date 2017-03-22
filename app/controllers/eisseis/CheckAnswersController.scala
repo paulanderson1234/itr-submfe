@@ -22,7 +22,6 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.eis.routes
 import controllers.predicates.FeatureSwitch
 import models._
 import models.submission.SchemeTypesModel

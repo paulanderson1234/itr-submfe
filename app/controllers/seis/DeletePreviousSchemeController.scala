@@ -16,15 +16,12 @@
 
 package controllers.seis
 
-import common.KeystoreKeys
 import config.FrontendGlobal.internalServerErrorTemplate
 import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.{EisSeisHelper, ControllerHelpers, PreviousSchemesHelper}
-import controllers.eisseis.routes
+import controllers.Helpers.{EisSeisHelper, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
-import forms.PreviousSchemeForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.Logger

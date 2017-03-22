@@ -21,7 +21,6 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.eisseis.routes
 import controllers.predicates.FeatureSwitch
 import models._
 import models.seis.SEISCheckAnswersModel

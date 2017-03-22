@@ -20,9 +20,8 @@ import config.FrontendGlobal.internalServerErrorTemplate
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.{EisSeisHelper, PreviousSchemesHelper}
+import controllers.Helpers.PreviousSchemesHelper
 import controllers.predicates.FeatureSwitch
-import controllers.seis.routes
 import forms.PreviousSchemeDeleteForm._
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController

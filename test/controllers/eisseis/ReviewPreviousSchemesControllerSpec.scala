@@ -20,7 +20,6 @@ import auth.{MockAuthConnector, MockConfig}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.eis.routes
 import controllers.helpers.BaseSpec
 import models._
 import org.mockito.Matchers
