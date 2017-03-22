@@ -1,12 +1,12 @@
 @import models._
-@import testOnly.models.TestPreviousSchemesModel
+@import testOnly.models.{TestPreviousSchemesModel, TestEisSeisProcessingModel}
 @import uk.gov.hmrc.play.views.html.helpers.form
 @import common.Constants
 @import views.html.helpers.{externalLink,formHint, formInputRadioGroup, backButtonWithProgress, input, inputWithCurrencySymbol, formInlineDateInput, hiddenField, errorSummary, formHiddenYesNoRadioNoError, textArea, dropdown}
 
 @(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], tradeStartDateForm: Form[TradeStartDateModel], isFirstTradeForm: Form[IsFirstTradeModel], commercialSaleForm: Form[CommercialSaleModel],
   isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
-  tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int)(implicit request: Request[_], messages: Messages)
+  tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int, testEisSeisProcessingForm: Form[TestEisSeisProcessingModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
@@ -281,6 +281,23 @@
         )
     </div>
 
+    <h2>Are you eligible for SEIS</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = testEisSeisProcessingForm("eisSeisProcessing"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> "EIS SEIS Processing",
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "eisSeisProcessing",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+
     <h2>Add Previous Scheme</h2>
 
     @for(previousScheme <- 0 to previousSchemesSize - 1) {
@@ -363,8 +380,10 @@
             <div>
                 <input type="hidden" name="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" id="testPreviousSchemes[@previousScheme].previousSchemeProcessingId" value="@{previousScheme + 1}" />
             </div>
+
         </div>
     }
+
 
 
     <div class="form-group">
