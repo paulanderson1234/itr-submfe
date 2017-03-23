@@ -43,7 +43,7 @@ class NotFirstTradeErrorSpec extends ViewSpec {
         Jsoup.parse(contentAsString(result))
       }
       document.title shouldEqual Messages("page.seis.companyDetails.NotFirstTradeError.title")
-      document.body.getElementById("main-heading").text() shouldEqual Messages("page.eisseis.investment.LifetimeAllowanceExceeded.heading")
+      document.body.getElementById("main-heading").text() shouldEqual Messages("page.seis.companyDetails.NotFirstTradeError.heading")
       document.body.getElementById("error-reason").text() shouldEqual Messages("page.seis.companyDetails.NotFirstTradeError.reason")
       document.body.getElementById("incorrect-info").text() shouldEqual Messages("page.seis.companyDetails.NotFirstTradeError.incorrect.info") +
         " " + Messages("page.seis.companyDetails.NotFirstTradeError.change.link.changeAnswers") + "."
