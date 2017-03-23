@@ -1,0 +1,1022 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (mmap) failed to map 251133952 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2627), pid=15232, tid=140710096357120
+#
+# JRE version: Java(TM) SE Runtime Environment (8.0_66-b17) (build 1.8.0_66-b17)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (25.66-b17 mixed mode linux-amd64 compressed oops)
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007ff9c413e800):  VMThread [stack: 0x00007ff99f3f4000,0x00007ff99f4f5000] [id=15238]
+
+Stack: [0x00007ff99f3f4000,0x00007ff99f4f5000],  sp=0x00007ff99f4f3160,  free space=1020k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0xab9a1a]  VMError::report_and_die()+0x2ba
+V  [libjvm.so+0x4f9e0b]  report_vm_out_of_memory(char const*, int, unsigned long, VMErrorType, char const*)+0x8b
+V  [libjvm.so+0x91a8a3]  os::Linux::commit_memory_impl(char*, unsigned long, bool)+0x103
+V  [libjvm.so+0x91adf9]  os::pd_commit_memory(char*, unsigned long, unsigned long, bool)+0x29
+V  [libjvm.so+0x91510a]  os::commit_memory(char*, unsigned long, unsigned long, bool)+0x2a
+V  [libjvm.so+0x9887a3]  PSVirtualSpace::expand_by(unsigned long)+0x53
+V  [libjvm.so+0x979090]  PSOldGen::expand(unsigned long)+0x170
+V  [libjvm.so+0x97929b]  PSOldGen::resize(unsigned long)+0x1cb
+V  [libjvm.so+0x980f71]  PSParallelCompact::invoke_no_policy(bool)+0x991
+V  [libjvm.so+0x9868cd]  PSScavenge::invoke()+0x1ad
+V  [libjvm.so+0x93e500]  ParallelScavengeHeap::failed_mem_allocate(unsigned long)+0x70
+V  [libjvm.so+0xabb437]  VM_ParallelGCFailedAllocation::doit()+0x97
+V  [libjvm.so+0xac2e65]  VM_Operation::evaluate()+0x55
+V  [libjvm.so+0xac123a]  VMThread::evaluate_operation(VM_Operation*)+0xba
+V  [libjvm.so+0xac15be]  VMThread::loop()+0x1ce
+V  [libjvm.so+0xac1a30]  VMThread::run()+0x70
+V  [libjvm.so+0x91cc68]  java_start(Thread*)+0x108
+
+VM_Operation (0x00007ff95fef9cc0): ParallelGCFailedAllocation, mode: safepoint, requested by thread 0x00007ff9c5839800
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007ff9c5839800 JavaThread "pool-6-thread-2" [_thread_blocked, id=15291, stack(0x00007ff95fdfe000,0x00007ff95feff000)]
+  0x00007ff964032000 JavaThread "sbt-web-akka.actor.default-dispatcher-4" [_thread_blocked, id=15289, stack(0x00007ff99c079000,0x00007ff99c17a000)]
+  0x00007ff9c4d29000 JavaThread "sbt-web-scheduler-1" [_thread_blocked, id=15286, stack(0x00007ff95feff000,0x00007ff960000000)]
+  0x00007ff9c4189800 JavaThread "Service Thread" daemon [_thread_blocked, id=15245, stack(0x00007ff99e60b000,0x00007ff99e70c000)]
+  0x00007ff9c4184800 JavaThread "C1 CompilerThread2" daemon [_thread_blocked, id=15244, stack(0x00007ff99e70c000,0x00007ff99e80d000)]
+  0x00007ff9c4182800 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=15243, stack(0x00007ff99e80d000,0x00007ff99e90e000)]
+  0x00007ff9c417f800 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=15242, stack(0x00007ff99e90e000,0x00007ff99ea0f000)]
+  0x00007ff9c417e000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=15241, stack(0x00007ff99ea0f000,0x00007ff99eb10000)]
+  0x00007ff9c4146000 JavaThread "Finalizer" daemon [_thread_blocked, id=15240, stack(0x00007ff99f1f2000,0x00007ff99f2f3000)]
+  0x00007ff9c4144000 JavaThread "Reference Handler" daemon [_thread_blocked, id=15239, stack(0x00007ff99f2f3000,0x00007ff99f3f4000)]
+  0x00007ff9c4009800 JavaThread "main" [_thread_blocked, id=15233, stack(0x00007ff9cae37000,0x00007ff9caf38000)]
+
+Other Threads:
+=>0x00007ff9c413e800 VMThread [stack: 0x00007ff99f3f4000,0x00007ff99f4f5000] [id=15238]
+  0x00007ff9c418c800 WatcherThread [stack: 0x00007ff99e50a000,0x00007ff99e60b000] [id=15246]
+
+VM state:at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread:  ([mutex/lock_event])
+[0x00007ff9c4005900] ExpandHeap_lock - owner thread: 0x00007ff9c413e800
+[0x00007ff9c4005f80] Threads_lock - owner thread: 0x00007ff9c413e800
+[0x00007ff9c4006480] Heap_lock - owner thread: 0x00007ff9c5839800
+
+Heap:
+ PSYoungGen      total 349696K, used 596K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 0% used [0x00000000eab00000,0x00000000eab95288,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 699392K, used 699376K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 99% used [0x00000000a0000000,0x00000000caafc278,0x00000000cab00000)
+ Metaspace       used 98009K, capacity 98693K, committed 99824K, reserved 1132544K
+  class space    used 16351K, capacity 16581K, committed 16880K, reserved 1048576K
+
+Card table byte_map: [0x00007ff9b4724000,0x00007ff9b4a25000] byte_map_base: 0x00007ff9b4224000
+
+Marking Bits: (ParMarkBitMap*) 0x00007ff9ca313020
+ Begin Bits: [0x00007ff9ad000000, 0x00007ff9ae800000)
+ End Bits:   [0x00007ff9ae800000, 0x00007ff9b0000000)
+
+Polling page: 0x00007ff9caf5d000
+
+CodeCache: size=245760Kb used=69826Kb max_used=69837Kb free=175933Kb
+ bounds [0x00007ff9b4de5000, 0x00007ff9b9285000, 0x00007ff9c3de5000]
+ total_blobs=19890 nmethods=19368 adapters=428
+ compilation: enabled
+
+Compilation events (10 events):
+Event: 116.945 Thread 0x00007ff9c417f800 nmethod 28099 0x00007ff9b9278350 code [0x00007ff9b92785a0, 0x00007ff9b9278e98]
+Event: 116.945 Thread 0x00007ff9c417f800 28101       4       scala.tools.nsc.backend.icode.ICodes::EQ (19 bytes)
+Event: 116.946 Thread 0x00007ff9c417f800 nmethod 28101 0x00007ff9b88748d0 code [0x00007ff9b8874a20, 0x00007ff9b8874ab8]
+Event: 116.946 Thread 0x00007ff9c417f800 28102       4       scala.tools.nsc.backend.ScalaPrimitives::isReferenceEqualityOp (18 bytes)
+Event: 116.947 Thread 0x00007ff9c417f800 nmethod 28102 0x00007ff9b9270fd0 code [0x00007ff9b9271120, 0x00007ff9b9271198]
+Event: 116.962 Thread 0x00007ff9c417f800 28103       4       scala.tools.nsc.backend.icode.ICodes::ObjectReference (23 bytes)
+Event: 116.963 Thread 0x00007ff9c417f800 nmethod 28103 0x00007ff9b924d290 code [0x00007ff9b924d3e0, 0x00007ff9b924d488]
+Event: 116.979 Thread 0x00007ff9c4182800 nmethod 28100 0x00007ff9b927d950 code [0x00007ff9b927de00, 0x00007ff9b927fb88]
+Event: 116.989 Thread 0x00007ff9c4184800 28104       3       scala.tools.nsc.backend.icode.TypeKinds$ARRAY::$less$colon$less (152 bytes)
+Event: 116.991 Thread 0x00007ff9c4184800 nmethod 28104 0x00007ff9b9274550 code [0x00007ff9b92747c0, 0x00007ff9b9275ca8]
+
+GC Heap History (10 events):
+Event: 110.062 GC heap after
+Heap after GC invocations=53 (full 7):
+ PSYoungGen      total 349696K, used 95680K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 54% used [0x00000000f5580000,0x00000000fb2f0000,0x0000000100000000)
+  to   space 174592K, 0% used [0x00000000eab00000,0x00000000eab00000,0x00000000f5580000)
+ ParOldGen       total 506368K, used 441141K [0x00000000a0000000, 0x00000000bee80000, 0x00000000e0000000)
+  object space 506368K, 87% used [0x00000000a0000000,0x00000000baecd788,0x00000000bee80000)
+ Metaspace       used 97823K, capacity 98553K, committed 99056K, reserved 1132544K
+  class space    used 16509K, capacity 16745K, committed 16880K, reserved 1048576K
+}
+Event: 111.976 GC heap before
+{Heap before GC invocations=54 (full 7):
+ PSYoungGen      total 349696K, used 270784K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 100% used [0x00000000e0000000,0x00000000eab00000,0x00000000eab00000)
+  from space 174592K, 54% used [0x00000000f5580000,0x00000000fb2f0000,0x0000000100000000)
+  to   space 174592K, 0% used [0x00000000eab00000,0x00000000eab00000,0x00000000f5580000)
+ ParOldGen       total 506368K, used 441141K [0x00000000a0000000, 0x00000000bee80000, 0x00000000e0000000)
+  object space 506368K, 87% used [0x00000000a0000000,0x00000000baecd788,0x00000000bee80000)
+ Metaspace       used 98489K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+Event: 112.204 GC heap after
+Heap after GC invocations=54 (full 7):
+ PSYoungGen      total 349696K, used 86476K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 49% used [0x00000000eab00000,0x00000000eff73268,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 506368K, used 488701K [0x00000000a0000000, 0x00000000bee80000, 0x00000000e0000000)
+  object space 506368K, 96% used [0x00000000a0000000,0x00000000bdd3f788,0x00000000bee80000)
+ Metaspace       used 98489K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+}
+Event: 112.204 GC heap before
+{Heap before GC invocations=55 (full 8):
+ PSYoungGen      total 349696K, used 86476K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 49% used [0x00000000eab00000,0x00000000eff73268,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 506368K, used 488701K [0x00000000a0000000, 0x00000000bee80000, 0x00000000e0000000)
+  object space 506368K, 96% used [0x00000000a0000000,0x00000000bdd3f788,0x00000000bee80000)
+ Metaspace       used 98489K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+Event: 114.953 GC heap after
+Heap after GC invocations=55 (full 8):
+ PSYoungGen      total 349696K, used 64133K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 36% used [0x00000000eab00000,0x00000000ee9a17e0,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 699392K, used 506332K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 72% used [0x00000000a0000000,0x00000000bee77258,0x00000000cab00000)
+ Metaspace       used 98489K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+}
+Event: 116.054 GC heap before
+{Heap before GC invocations=56 (full 8):
+ PSYoungGen      total 349696K, used 239237K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 100% used [0x00000000e0000000,0x00000000eab00000,0x00000000eab00000)
+  from space 174592K, 36% used [0x00000000eab00000,0x00000000ee9a17e0,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 699392K, used 506332K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 72% used [0x00000000a0000000,0x00000000bee77258,0x00000000cab00000)
+ Metaspace       used 98493K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+Event: 116.406 GC heap after
+Heap after GC invocations=56 (full 8):
+ PSYoungGen      total 349696K, used 91392K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 52% used [0x00000000f5580000,0x00000000faec0000,0x0000000100000000)
+  to   space 174592K, 0% used [0x00000000eab00000,0x00000000eab00000,0x00000000f5580000)
+ ParOldGen       total 699392K, used 545172K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 77% used [0x00000000a0000000,0x00000000c1465258,0x00000000cab00000)
+ Metaspace       used 98493K, capacity 99225K, committed 99568K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+}
+Event: 117.031 GC heap before
+{Heap before GC invocations=57 (full 8):
+ PSYoungGen      total 349696K, used 266496K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 100% used [0x00000000e0000000,0x00000000eab00000,0x00000000eab00000)
+  from space 174592K, 52% used [0x00000000f5580000,0x00000000faec0000,0x0000000100000000)
+  to   space 174592K, 0% used [0x00000000eab00000,0x00000000eab00000,0x00000000f5580000)
+ ParOldGen       total 699392K, used 545172K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 77% used [0x00000000a0000000,0x00000000c1465258,0x00000000cab00000)
+ Metaspace       used 98534K, capacity 99289K, committed 99824K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+Event: 117.350 GC heap after
+Heap after GC invocations=57 (full 8):
+ PSYoungGen      total 349696K, used 64160K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 36% used [0x00000000eab00000,0x00000000ee9a8010,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 699392K, used 636762K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 91% used [0x00000000a0000000,0x00000000c6dd68e8,0x00000000cab00000)
+ Metaspace       used 98534K, capacity 99289K, committed 99824K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+}
+Event: 117.350 GC heap before
+{Heap before GC invocations=58 (full 9):
+ PSYoungGen      total 349696K, used 64160K [0x00000000e0000000, 0x0000000100000000, 0x0000000100000000)
+  eden space 175104K, 0% used [0x00000000e0000000,0x00000000e0000000,0x00000000eab00000)
+  from space 174592K, 36% used [0x00000000eab00000,0x00000000ee9a8010,0x00000000f5580000)
+  to   space 174592K, 0% used [0x00000000f5580000,0x00000000f5580000,0x0000000100000000)
+ ParOldGen       total 699392K, used 636762K [0x00000000a0000000, 0x00000000cab00000, 0x00000000e0000000)
+  object space 699392K, 91% used [0x00000000a0000000,0x00000000c6dd68e8,0x00000000cab00000)
+ Metaspace       used 98534K, capacity 99289K, committed 99824K, reserved 1132544K
+  class space    used 16530K, capacity 16777K, committed 16880K, reserved 1048576K
+
+Deoptimization events (10 events):
+Event: 116.418 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b91dc56c method=scala.tools.nsc.backend.icode.GenICode$ICodePhase.genCond(Lscala/reflect/internal/Trees$Tree;Lscala/tools/nsc/backend/icode/GenICode$ICodePhase$Context;Lscala/tools/nsc/
+Event: 116.621 Thread 0x00007ff9c5839800 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007ff9b91dbc60 method=scala.tools.nsc.backend.icode.GenICode$ICodePhase.genCond(Lscala/reflect/internal/Trees$Tree;Lscala/tools/nsc/backend/icode/GenICode$ICodePhase$Context;Lscala/tools/nsc/back
+Event: 116.662 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b91cd7d4 method=scala.tools.nsc.backend.icode.GenICode$ICodePhase.genLoadIf(Lscala/reflect/internal/Trees$If;Lscala/tools/nsc/backend/icode/GenICode$ICodePhase$Context;Lscala/tools/nsc/
+Event: 116.672 Thread 0x00007ff9c5839800 Uncommon trap: reason=bimorphic action=maybe_recompile pc=0x00007ff9b884c6a4 method=scala.tools.nsc.transform.AddInterfaces.transformMixinInfo(Lscala/reflect/internal/Types$Type;)Lscala/reflect/internal/Types$Type; @ 171
+Event: 116.802 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b741c070 method=scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$getMaxType$2.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; @ 2
+Event: 116.803 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b741c070 method=scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$getMaxType$2.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; @ 2
+Event: 116.916 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b888b39c method=scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$getMaxType$2.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; @ 2
+Event: 116.916 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b741c070 method=scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$getMaxType$2.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; @ 2
+Event: 116.916 Thread 0x00007ff9c5839800 Uncommon trap: reason=class_check action=maybe_recompile pc=0x00007ff9b888b39c method=scala.tools.nsc.backend.icode.GenICode$ICodePhase$$anonfun$getMaxType$2.apply(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object; @ 2
+Event: 117.004 Thread 0x00007ff9c5839800 Uncommon trap: reason=bimorphic action=maybe_recompile pc=0x00007ff9b8b1acd4 method=scala.reflect.internal.Symbols$ModuleSymbol.name()Lscala/reflect/internal/Names$TermName; @ 42
+
+Internal exceptions (10 events):
+Event: 49.105 Thread 0x00007ff9c5839800 Implicit null exception at 0x00007ff9b62e3f50 to 0x00007ff9b62e40c1
+Event: 49.105 Thread 0x00007ff9c5839800 Implicit null exception at 0x00007ff9b71e46fd to 0x00007ff9b71e4f89
+Event: 49.105 Thread 0x00007ff9c5839800 Implicit null exception at 0x00007ff9b7832ea2 to 0x00007ff9b7833429
+Event: 68.683 Thread 0x00007ff9c5839800 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 1> (0x00000000e38d2348) thrown at [/HUDSON/workspace/8-2-build-linux-amd64/jdk8u66/4988/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]
+Event: 68.733 Thread 0x00007ff9c5839800 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 1> (0x00000000e397e220) thrown at [/HUDSON/workspace/8-2-build-linux-amd64/jdk8u66/4988/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]
+Event: 68.734 Thread 0x00007ff9c5839800 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 1> (0x00000000e3995d68) thrown at [/HUDSON/workspace/8-2-build-linux-amd64/jdk8u66/4988/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]
+Event: 68.736 Thread 0x00007ff9c5839800 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 1> (0x00000000e39afa38) thrown at [/HUDSON/workspace/8-2-build-linux-amd64/jdk8u66/4988/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]
+Event: 68.737 Thread 0x00007ff9c5839800 Exception <a 'java/lang/ArrayIndexOutOfBoundsException': 1> (0x00000000e39c7580) thrown at [/HUDSON/workspace/8-2-build-linux-amd64/jdk8u66/4988/hotspot/src/share/vm/interpreter/interpreterRuntime.cpp, line 366]
+Event: 89.470 Thread 0x00007ff9c5839800 Implicit null exception at 0x00007ff9b6300057 to 0x00007ff9b630278f
+Event: 89.470 Thread 0x00007ff9c5839800 Implicit null exception at 0x00007ff9b83b0061 to 0x00007ff9b83b3101
+
+Events (10 events):
+Event: 116.916 Thread 0x00007ff9c5839800 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007ff9b741c070
+Event: 116.916 Thread 0x00007ff9c5839800 DEOPT PACKING pc=0x00007ff9b741c070 sp=0x00007ff95fef9510
+Event: 116.916 Thread 0x00007ff9c5839800 DEOPT UNPACKING pc=0x00007ff9b4dea229 sp=0x00007ff95fef92f8 mode 2
+Event: 116.916 Thread 0x00007ff9c5839800 Uncommon trap: trap_request=0xffffffde fr.pc=0x00007ff9b888b39c
+Event: 116.917 Thread 0x00007ff9c5839800 DEOPT PACKING pc=0x00007ff9b888b39c sp=0x00007ff95fefa830
+Event: 116.917 Thread 0x00007ff9c5839800 DEOPT UNPACKING pc=0x00007ff9b4dea229 sp=0x00007ff95fefa580 mode 2
+Event: 117.004 Thread 0x00007ff9c5839800 Uncommon trap: trap_request=0xffffffc6 fr.pc=0x00007ff9b8b1acd4
+Event: 117.004 Thread 0x00007ff9c5839800 DEOPT PACKING pc=0x00007ff9b8b1acd4 sp=0x00007ff95fefa000
+Event: 117.004 Thread 0x00007ff9c5839800 DEOPT UNPACKING pc=0x00007ff9b4dea229 sp=0x00007ff95fef9f58 mode 2
+Event: 117.030 Executing VM operation: ParallelGCFailedAllocation
+
+
+Dynamic libraries:
+00400000-00401000 r-xp 00000000 fc:01 441074                             /usr/lib/jvm/java-8-oracle/jre/bin/java
+00600000-00601000 rw-p 00000000 fc:01 441074                             /usr/lib/jvm/java-8-oracle/jre/bin/java
+01142000-01163000 rw-p 00000000 00:00 0                                  [heap]
+a0000000-cab00000 rw-p 00000000 00:00 0 
+d9a80000-e0000000 ---p 00000000 00:00 0 
+e0000000-100000000 rw-p 00000000 00:00 0 
+100000000-10107c000 rw-p 00000000 00:00 0 
+10107c000-140000000 ---p 00000000 00:00 0 
+7ff943c00000-7ff943d00000 rw-p 00000000 00:00 0 
+7ff943d00000-7ff943e00000 ---p 00000000 00:00 0 
+7ff943e00000-7ff944000000 rw-p 00000000 00:00 0 
+7ff944000000-7ff94467e000 rw-p 00000000 00:00 0 
+7ff94467e000-7ff948000000 ---p 00000000 00:00 0 
+7ff948000000-7ff94868e000 rw-p 00000000 00:00 0 
+7ff94868e000-7ff94c000000 ---p 00000000 00:00 0 
+7ff94c000000-7ff94c3f1000 rw-p 00000000 00:00 0 
+7ff94c3f1000-7ff950000000 ---p 00000000 00:00 0 
+7ff950000000-7ff9505b6000 rw-p 00000000 00:00 0 
+7ff9505b6000-7ff954000000 ---p 00000000 00:00 0 
+7ff954000000-7ff954543000 rw-p 00000000 00:00 0 
+7ff954543000-7ff958000000 ---p 00000000 00:00 0 
+7ff958000000-7ff958323000 rw-p 00000000 00:00 0 
+7ff958323000-7ff95c000000 ---p 00000000 00:00 0 
+7ff95c1e5000-7ff95c3e6000 rw-p 00000000 00:00 0 
+7ff95c3e6000-7ff95c5e6000 rw-p 00000000 00:00 0 
+7ff95c5e6000-7ff95c7e6000 rw-p 00000000 00:00 0 
+7ff95c7e6000-7ff95c7ec000 r--s 00047000 fc:04 18336812                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.jsoup/jsoup/jsoup-1.8.3.jar
+7ff95c7ec000-7ff95c7f0000 r--s 0002d000 fc:04 18402108                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scalatestplus.play/scalatestplus-play_2.11/scalatestplus-play_2.11-1.5.1.jar
+7ff95c7f0000-7ff95c7f1000 r--s 0000a000 fc:04 18336789                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.ow2.asm/asm-util/asm-util-5.0.3.jar
+7ff95c7f1000-7ff95c7f2000 r--s 00004000 fc:04 18336939                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.ow2.asm/asm-analysis/asm-analysis-5.0.3.jar
+7ff95c7f2000-7ff95c7f4000 r--s 00006000 fc:04 18337280                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.ow2.asm/asm-tree/asm-tree-5.0.3.jar
+7ff95c7f4000-7ff95c7f5000 r--s 0000c000 fc:04 18307457                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.ow2.asm/asm/asm-5.0.3.jar
+7ff95c7f5000-7ff95c7fa000 r--s 00029000 fc:04 18369720                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.parboiled/parboiled-core/parboiled-core-1.1.7.jar
+7ff95c7fa000-7ff95c7fc000 r--s 00010000 fc:04 18336864                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.parboiled/parboiled-java/parboiled-java-1.1.7.jar
+7ff95c7fc000-7ff95c7ff000 r--s 00011000 fc:04 18272557                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.pegdown/pegdown/pegdown-1.6.0.jar
+7ff95c7ff000-7ff95c866000 r--s 006b2000 fc:04 18629578                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.scalatest/scalatest_2.11/scalatest_2.11-2.2.6.jar
+7ff95c866000-7ff95c869000 r--s 00019000 fc:04 18307407                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/hmrctest_2.11/hmrctest_2.11-2.3.0.jar
+7ff95c869000-7ff95c86f000 r--s 0005c000 fc:04 18629546                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-leg-rc/selenium-leg-rc-2.48.2.jar
+7ff95c86f000-7ff95c874000 r--s 00024000 fc:04 18401838                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.webbitserver/webbit/webbit-0.4.14.jar
+7ff95c874000-7ff95c875000 r--s 00014000 fc:04 18629560                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-safari-driver/selenium-safari-driver-2.48.2.jar
+7ff95c875000-7ff95c876000 r--s 00002000 fc:04 18629565                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-ie-driver/selenium-ie-driver-2.48.2.jar
+7ff95c876000-7ff95c878000 r--s 000c5000 fc:04 18629544                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-firefox-driver/selenium-firefox-driver-2.48.2.jar
+7ff95c878000-7ff95c87d000 r--s 0001f000 fc:04 18434332                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-support/selenium-support-2.48.2.jar
+7ff95c87d000-7ff95c87f000 r--s 0000e000 fc:04 18307376                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-htmlunit-driver/selenium-htmlunit-driver-2.48.2.jar
+7ff95c87f000-7ff95c880000 r--s 00001000 fc:04 18467074                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-edge-driver/selenium-edge-driver-2.48.2.jar
+7ff95c880000-7ff95c891000 r--s 00155000 fc:04 18337172                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.java.dev.jna/jna-platform/jna-platform-4.1.0.jar
+7ff95c891000-7ff95c895000 r--s 000dc000 fc:04 18466962                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.java.dev.jna/jna/jna-4.1.0.jar
+7ff95c895000-7ff95c897000 r--s 0000c000 fc:04 18336887                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.commons/commons-exec/commons-exec-1.3.jar
+7ff95c897000-7ff95c89c000 r--s 0001e000 fc:04 18337126                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-api/selenium-api-2.48.2.jar
+7ff95c89c000-7ff95c8a1000 r--s 0002f000 fc:04 18307424                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.google.code.gson/gson/gson-2.3.1.jar
+7ff95c8a1000-7ff95c8a8000 r--s 00049000 fc:04 18467045                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/cglib/cglib-nodep/cglib-nodep-2.1_3.jar
+7ff95c8a8000-7ff95c8ad000 r--s 00034000 fc:04 18369824                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-remote-driver/selenium-remote-driver-2.48.2.jar
+7ff95c8ad000-7ff95c8ae000 r--s 00002000 fc:04 18467105                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-chrome-driver/selenium-chrome-driver-2.48.2.jar
+7ff95c8ae000-7ff95c8af000 r--s 00000000 fc:04 18629549                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.seleniumhq.selenium/selenium-java/selenium-java-2.48.2.jar
+7ff95c8af000-7ff95c8b2000 r--s 00014000 fc:04 18629570                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.fluentlenium/fluentlenium-core/fluentlenium-core-0.10.9.jar
+7ff95c8b2000-7ff95c8b4000 r--s 00009000 fc:04 18402026                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.eclipse.jetty.websocket/websocket-api/websocket-api-9.2.15.v20160210.jar
+7ff95c8b4000-7ff95c8b9000 r--s 00028000 fc:04 18336870                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.eclipse.jetty.websocket/websocket-common/websocket-common-9.2.15.v20160210.jar
+7ff95c8b9000-7ff95c8bc000 r--s 00018000 fc:04 18272535                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.eclipse.jetty/jetty-io/jetty-io-9.2.15.v20160210.jar
+7ff95c8bc000-7ff95c8c2000 r--s 00054000 fc:04 18336783                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.eclipse.jetty/jetty-util/jetty-util-9.2.15.v20160210.jar
+7ff95c8c2000-7ff95c8c3000 r--s 00008000 fc:04 18336879                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.eclipse.jetty.websocket/websocket-client/websocket-client-9.2.15.v20160210.jar
+7ff95c8c3000-7ff95c8c4000 r--s 00003000 fc:04 18401958                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.w3c.css/sac/sac-1.3.jar
+7ff95c8c4000-7ff95c8c8000 r--s 00058000 fc:04 18336799                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.sourceforge.cssparser/cssparser/cssparser-0.9.18.jar
+7ff95c8c8000-7ff95c8ca000 r--s 0001d000 fc:04 18402094                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.sourceforge.nekohtml/nekohtml/nekohtml-1.9.22.jar
+7ff95c8ca000-7ff95c8d8000 r--s 000fc000 fc:04 18434359                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.sourceforge.htmlunit/htmlunit-core-js/htmlunit-core-js-2.17.jar
+7ff95c8d8000-7ff95c8da000 r--s 00009000 fc:04 18434367                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.httpcomponents/httpmime/httpmime-4.5.2.jar
+7ff95c8da000-7ff95c8de000 r--s 00040000 fc:04 18434329                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/xalan/serializer/serializer-2.7.2.jar
+7ff95c8de000-7ff95c903000 r--s 002de000 fc:04 18307445                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/xalan/xalan/xalan-2.7.2.jar
+7ff95c903000-7ff95c929000 r--s 0019d000 fc:04 18629567                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.sourceforge.htmlunit/htmlunit/htmlunit-2.20.jar
+7ff95c929000-7ff95c92b000 r--s 00003000 fc:04 18467242                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.google.code.findbugs/jsr305/jsr305-3.0.1.jar
+7ff95c92b000-7ff95c92d000 r--s 00002000 fc:04 18336780                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-sbt/test-interface/test-interface-1.0.jar
+7ff95c92d000-7ff95c92f000 r--s 00006000 fc:04 18401951                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.novocode/junit-interface/junit-interface-0.11.jar
+7ff95c92f000-7ff95c931000 r--s 00009000 fc:04 18272539                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.hamcrest/hamcrest-core/hamcrest-core-1.3.jar
+7ff95c931000-7ff95c939000 r--s 00045000 fc:04 18467199                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/junit/junit/junit-4.12.jar
+7ff95c939000-7ff95c93c000 r--s 0001f000 fc:04 18466996                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-test_2.11/play-test_2.11-2.5.12.jar
+7ff95c93c000-7ff95cb3c000 rw-p 00000000 00:00 0 
+7ff95cb3c000-7ff95cd3c000 rw-p 00000000 00:00 0 
+7ff95cd3c000-7ff95cf3c000 rw-p 00000000 00:00 0 
+7ff95cf3c000-7ff95d13c000 rw-p 00000000 00:00 0 
+7ff95d13c000-7ff95d33c000 rw-p 00000000 00:00 0 
+7ff95d33c000-7ff95d53c000 rw-p 00000000 00:00 0 
+7ff95d53c000-7ff95d73c000 rw-p 00000000 00:00 0 
+7ff95d73c000-7ff95d742000 r--s 0003f000 fc:01 441417                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/sunjce_provider.jar
+7ff95d742000-7ff95d743000 r--s 0000a000 fc:01 441416                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/jaccess.jar
+7ff95d743000-7ff95d747000 r--s 0003a000 fc:01 441415                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/sunpkcs11.jar
+7ff95d747000-7ff95d762000 r--s 001d2000 fc:01 441414                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/nashorn.jar
+7ff95d762000-7ff95d763000 r--s 00010000 fc:01 441413                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/zipfs.jar
+7ff95d763000-7ff95d76d000 r--s 00116000 fc:01 441412                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/localedata.jar
+7ff95d76d000-7ff95d802000 r--s 01108000 fc:01 441411                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/jfxrt.jar
+7ff95d802000-7ff95d803000 r--s 00009000 fc:01 441409                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/sunec.jar
+7ff95d803000-7ff95d81f000 r--s 00393000 fc:01 441408                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/cldrdata.jar
+7ff95d81f000-7ff95d821000 r--s 00001000 fc:01 441407                     /usr/lib/jvm/java-8-oracle/jre/lib/ext/dnsns.jar
+7ff95d821000-7ff95d826000 r--s 00083000 fc:01 441202                     /usr/lib/jvm/java-8-oracle/jre/lib/jfr.jar
+7ff95d826000-7ff95d82c000 r--s 002f8000 fc:01 441193                     /usr/lib/jvm/java-8-oracle/jre/lib/charsets.jar
+7ff95d82c000-7ff95da2c000 rw-p 00000000 00:00 0 
+7ff95da2c000-7ff95dc2c000 rw-p 00000000 00:00 0 
+7ff95dc2c000-7ff95de2c000 rw-p 00000000 00:00 0 
+7ff95de2c000-7ff95e02c000 rw-p 00000000 00:00 0 
+7ff95e02c000-7ff95e22c000 rw-p 00000000 00:00 0 
+7ff95e22c000-7ff95e232000 r--s 00038000 fc:03 18044170                   /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/org.scala-sbt-compiler-interface-0.13.11-bin_2.11.8__52.0/org.scala-sbt-compiler-interface-0.13.11-bin_2.11.8__52.0.jar
+7ff95e232000-7ff95e236000 r--s 00031000 fc:04 18337049                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/jline/jline/jline-2.12.1.jar
+7ff95e236000-7ff95e241000 r--s 00094000 fc:04 18307478                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.scala-lang.modules/scala-xml_2.11/scala-xml_2.11-1.0.4.jar
+7ff95e241000-7ff95e28d000 r--s 00411000 fc:04 18307454                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-lang/scala-reflect/scala-reflect-2.11.8.jar
+7ff95e28d000-7ff95e399000 r--s 00dba000 fc:04 18337197                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-lang/scala-compiler/scala-compiler-2.11.8.jar
+7ff95e399000-7ff95e39e000 r--s 00039000 fc:04 18337192                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scoverage/scalac-scoverage-plugin_2.11/scalac-scoverage-plugin_2.11-1.1.1.jar
+7ff95e39e000-7ff95e39f000 r--s 00001000 fc:04 18336808                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scoverage/scalac-scoverage-runtime_2.11/scalac-scoverage-runtime_2.11-1.1.1.jar
+7ff95e39f000-7ff95e3c0000 r--s 00162000 fc:04 18369666                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.mockito/mockito-all/mockito-all-1.9.5.jar
+7ff95e3c0000-7ff95e3c2000 r--s 0000f000 fc:04 18401975                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-conditional-form-mapping_2.11/play-conditional-form-mapping_2.11-0.2.0.jar
+7ff95e3c2000-7ff95e3c4000 r--s 00008000 fc:04 18402105                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/time_2.11/time_2.11-2.1.0.jar
+7ff95e3c4000-7ff95e3d5000 r--s 000af000 fc:04 18467047                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.logging.log4j/log4j-core/log4j-core-2.0.2.jar
+7ff95e3d5000-7ff95e3d8000 r--s 0001b000 fc:04 18434805                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.logging.log4j/log4j-api/log4j-api-2.0.2.jar
+7ff95e3d8000-7ff95e3f1000 r--s 00127000 fc:04 18532250                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/io.netty/netty/netty-3.9.4.Final.jar
+7ff95e3f1000-7ff95e3f9000 r--s 00051000 fc:04 18336929                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/reactivemongo-bson_2.11/reactivemongo-bson_2.11-0.11.8.jar
+7ff95e3f9000-7ff95e404000 r--s 00094000 fc:04 18307455                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.scala-lang.modules/scala-xml_2.11/scala-xml_2.11-1.0.3.jar
+7ff95e404000-7ff95e4ff000 r--s 00c99000 fc:04 18337281                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-lang/scala-compiler/scala-compiler-2.11.6.jar
+7ff95e4ff000-7ff95e502000 r--s 00022000 fc:04 18307409                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/reactivemongo-bson-macros_2.11/reactivemongo-bson-macros_2.11-0.11.8.jar
+7ff95e502000-7ff95e533000 r--s 00210000 fc:04 18272549                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/reactivemongo_2.11/reactivemongo_2.11-0.11.8.jar
+7ff95e533000-7ff95e53c000 r--s 00056000 fc:04 18402096                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/reactivemongo-json_2.11/reactivemongo-json_2.11-2.3.0.jar
+7ff95e53c000-7ff95e53f000 r--s 0001f000 fc:04 18467158                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/simple-reactivemongo_2.11/simple-reactivemongo_2.11-4.8.0.jar
+7ff95e53f000-7ff95e542000 r--s 00014000 fc:04 18337122                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-reactivemongo_2.11/play-reactivemongo_2.11-4.8.0.jar
+7ff95e542000-7ff95e545000 r--s 00010000 fc:04 18272546                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/mongo-caching_2.11/mongo-caching_2.11-3.2.0.jar
+7ff95e545000-7ff95e546000 r--s 00003000 fc:04 18336933                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/json-encryption_2.11/json-encryption_2.11-3.2.0.jar
+7ff95e546000-7ff95e549000 r--s 0000d000 fc:04 18337107                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/http-caching-client_2.11/http-caching-client_2.11-6.2.0.jar
+7ff95e549000-7ff95e557000 r--s 0007f000 fc:04 18434388                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-ui_2.11/play-ui_2.11-7.0.0.jar
+7ff95e557000-7ff95e559000 r--s 0000c000 fc:04 18401826                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-health_2.11/play-health_2.11-2.1.0.jar
+7ff95e559000-7ff95e55c000 r--s 000c0000 fc:04 18402264                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/govuk-template_2.11/govuk-template_2.11-5.1.0.jar
+7ff95e55c000-7ff95e561000 r--s 00040000 fc:04 18434871                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.typesafe/config/config-1.3.1.jar
+7ff95e561000-7ff95e565000 r--s 0002a000 fc:04 18402466                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/commons-io/commons-io/commons-io-2.4.jar
+7ff95e565000-7ff95e566000 r--s 00003000 fc:04 18307381                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/logback-json-logger_2.11/logback-json-logger_2.11-3.1.0.jar
+7ff95e566000-7ff95e56a000 r--s 00018000 fc:04 18467103                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/net.ceedubs/ficus_2.11/ficus_2.11-1.1.1.jar
+7ff95e56a000-7ff95e56d000 r--s 0000e000 fc:04 18467109                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-config_2.11/play-config_2.11-4.3.0.jar
+7ff95e56d000-7ff95e572000 r--s 00035000 fc:04 18401822                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/domain_2.11/domain_2.11-4.1.0.jar
+7ff95e572000-7ff95e57c000 r--s 00062000 fc:04 18307373                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-authorised-frontend_2.11/play-authorised-frontend_2.11-6.3.0.jar
+7ff95e57c000-7ff95e57e000 r--s 0000c000 fc:04 18336856                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-partials_2.11/play-partials_2.11-5.3.0.jar
+7ff95e57e000-7ff95e580000 r--s 00000000 fc:04 18336831                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/io.dropwizard.metrics/metrics-logback/metrics-logback-3.1.2.jar
+7ff95e580000-7ff95e582000 r--s 00008000 fc:04 18337186                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/io.dropwizard.metrics/metrics-jvm/metrics-jvm-3.1.2.jar
+7ff95e582000-7ff95e583000 r--s 00003000 fc:04 18337052                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/io.dropwizard.metrics/metrics-json/metrics-json-3.1.2.jar
+7ff95e583000-7ff95e587000 r--s 00018000 fc:04 18402052                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/io.dropwizard.metrics/metrics-core/metrics-core-3.1.2.jar
+7ff95e587000-7ff95e589000 r--s 00008000 fc:04 18401944                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/de.threedimensions/metrics-play_2.11/metrics-play_2.11-2.5.13.jar
+7ff95e589000-7ff95e58c000 r--s 00012000 fc:04 18336858                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.codahale.metrics/metrics-core/metrics-core-3.0.2.jar
+7ff95e58c000-7ff95e58d000 r--s 00002000 fc:04 18272543                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.codahale.metrics/metrics-graphite/metrics-graphite-3.0.2.jar
+7ff95e58d000-7ff95e58e000 r--s 00005000 fc:04 18272532                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-graphite_2.11/play-graphite_2.11-3.2.0.jar
+7ff95e58e000-7ff95e598000 r--s 00079000 fc:04 18402056                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.ning/async-http-client/async-http-client-1.8.15.jar
+7ff95e598000-7ff95e59a000 r--s 0000a000 fc:04 18307364                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/http-exceptions_2.11/http-exceptions_2.11-1.0.0.jar
+7ff95e59a000-7ff95e59f000 r--s 0002d000 fc:04 18336822                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.github.nscala-time/nscala-time_2.11/nscala-time_2.11-2.2.0.jar
+7ff95e59f000-7ff95e5a6000 r--s 0003f000 fc:04 18401860                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/http-verbs_2.11/http-verbs_2.11-6.3.0.jar
+7ff95e5a6000-7ff95e5ad000 r--s 0003f000 fc:04 18337120                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-auditing_2.11/play-auditing_2.11-2.6.0.jar
+7ff95e5ad000-7ff95e5b1000 r--s 0001d000 fc:04 18336894                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/play-filters_2.11/play-filters_2.11-5.11.0.jar
+7ff95e5b1000-7ff95e5fb000 r--s 002f4000 fc:04 18401800                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.bouncycastle/bcprov-jdk15on/bcprov-jdk15on-1.55.jar
+7ff95e5fb000-7ff95e5fd000 r--s 00006000 fc:04 18434371                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/secure_2.11/secure_2.11-7.1.0.jar
+7ff95e5fd000-7ff95e5ff000 r--s 00017000 fc:04 18307386                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/crypto_2.11/crypto_2.11-4.2.0.jar
+7ff95e5ff000-7ff95e608000 r--s 0005e000 fc:04 18337255                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/filters-helpers_2.11/filters-helpers_2.11-2.5.12.jar
+7ff95e608000-7ff95e60b000 r--s 00015000 fc:04 18402060                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/uk.gov.hmrc/frontend-bootstrap_2.11/frontend-bootstrap_2.11-7.16.0.jar
+7ff95e60b000-7ff95e60d000 r--s 0000e000 fc:04 18337118                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/commons-logging/commons-logging/commons-logging-1.2.jar
+7ff95e60d000-7ff95e61a000 r--s 000a7000 fc:04 18434861                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.httpcomponents/httpclient/httpclient-4.5.2.jar
+7ff95e61a000-7ff95e621000 r--s 00049000 fc:04 18337114                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.httpcomponents/httpcore/httpcore-4.4.4.jar
+7ff95e621000-7ff95e622000 r--s 00001000 fc:04 18629562                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/oauth.signpost/signpost-commonshttp4/signpost-commonshttp4-1.2.1.2.jar
+7ff95e622000-7ff95e625000 r--s 00009000 fc:04 18337201                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/oauth.signpost/signpost-core/signpost-core-1.2.1.2.jar
+7ff95e625000-7ff95e62f000 r--s 000aa000 fc:04 18336877                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.javassist/javassist/javassist-3.21.0-GA.jar
+7ff95e62f000-7ff95e630000 r--s 0000b000 fc:04 18307371                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.asynchttpclient/netty-codec-dns/netty-codec-dns-2.0.24.jar
+7ff95e630000-7ff95e631000 r--s 00005000 fc:04 18272555                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.asynchttpclient/netty-resolver/netty-resolver-2.0.24.jar
+7ff95e631000-7ff95e633000 r--s 0000f000 fc:04 18337178                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.asynchttpclient/netty-resolver-dns/netty-resolver-dns-2.0.24.jar
+7ff95e633000-7ff95e636000 r--s 00022000 fc:04 18402469                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-transport-native-epoll/netty-transport-native-epoll-4.0.42.Final-linux-x86_64.jar
+7ff95e636000-7ff95e63c000 r--s 00046000 fc:04 18336802                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-handler/netty-handler-4.0.42.Final.jar
+7ff95e63c000-7ff95e644000 r--s 00054000 fc:04 18337054                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-transport/netty-transport-4.0.42.Final.jar
+7ff95e644000-7ff95e648000 r--s 00021000 fc:04 18402030                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-codec/netty-codec-4.0.42.Final.jar
+7ff95e648000-7ff95e651000 r--s 00067000 fc:04 18307446                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-codec-http/netty-codec-http-4.0.42.Final.jar
+7ff95e651000-7ff95e65b000 r--s 00078000 fc:04 18336907                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-common/netty-common-4.0.42.Final.jar
+7ff95e65b000-7ff95e65f000 r--s 00033000 fc:04 18401928                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/io.netty/netty-buffer/netty-buffer-4.0.42.Final.jar
+7ff95e65f000-7ff95e660000 r--s 00001000 fc:04 18336872                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.asynchttpclient/async-http-client-netty-utils/async-http-client-netty-utils-2.0.24.jar
+7ff95e660000-7ff95e669000 r--s 00060000 fc:04 18467210                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.asynchttpclient/async-http-client/async-http-client-2.0.24.jar
+7ff95e669000-7ff95e695000 r--s 00208000 fc:04 18369984                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.google.guava/guava/guava-19.0.jar
+7ff95e695000-7ff95e6a1000 r--s 00096000 fc:04 18401925                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-ws_2.11/play-ws_2.11-2.5.12.jar
+7ff95e6a1000-7ff95e6ab000 r--s 00069000 fc:04 18336897                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/ch.qos.logback/logback-core/logback-core-1.1.7.jar
+7ff95e6ab000-7ff95e6b2000 r--s 00044000 fc:04 18401986                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/ch.qos.logback/logback-classic/logback-classic-1.1.7.jar
+7ff95e6b2000-7ff95e6b3000 r--s 00005000 fc:04 18401845                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-logback_2.11/play-logback_2.11-2.5.12.jar
+7ff95e6b3000-7ff95e6b5000 r--s 00004000 fc:04 18434365                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.netty/netty-reactive-streams/netty-reactive-streams-1.0.8.jar
+7ff95e6b5000-7ff95e6b6000 r--s 00007000 fc:04 18402100                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.netty/netty-reactive-streams-http/netty-reactive-streams-http-1.0.8.jar
+7ff95e6b6000-7ff95e6bb000 r--s 0002b000 fc:04 18307405                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-netty-server_2.11/play-netty-server_2.11-2.5.12.jar
+7ff95e6bb000-7ff95e6bd000 r--s 00009000 fc:04 18466880                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.google.inject.extensions/guice-assistedinject/guice-assistedinject-4.0.jar
+7ff95e6bd000-7ff95e6bf000 r--s 00000000 fc:04 18336851                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/aopalliance/aopalliance/aopalliance-1.0.jar
+7ff95e6bf000-7ff95e6c0000 r--s 00000000 fc:04 18336854                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/javax.inject/javax.inject/javax.inject-1.jar
+7ff95e6c0000-7ff95e6ce000 r--s 00096000 fc:04 18402063                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.google.inject/guice/guice-4.0.jar
+7ff95e6ce000-7ff95e6cf000 r--s 00003000 fc:04 18307379                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/javax.transaction/jta/jta-1.1.jar
+7ff95e6cf000-7ff95e6d8000 r--s 0002d000 fc:04 18401876                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/xml-apis/xml-apis/xml-apis-1.4.01.jar
+7ff95e6d8000-7ff95e6f1000 r--s 00135000 fc:04 18629556                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/xerces/xercesImpl/xercesImpl-2.11.0.jar
+7ff95e6f1000-7ff95e6f8000 r--s 0003f000 fc:04 18307367                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/commons-codec/commons-codec/commons-codec-1.10.jar
+7ff95e6f8000-7ff95e6f9000 r--s 00004000 fc:04 18336924                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.akka/akka-slf4j_2.11/akka-slf4j_2.11-2.4.14.jar
+7ff95e6f9000-7ff95e704000 r--s 0005d000 fc:04 18629575                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.scala-lang.modules/scala-parser-combinators_2.11/scala-parser-combinators_2.11-1.0.4.jar
+7ff95e704000-7ff95e70c000 r--s 00052000 fc:04 18629541                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.typesafe/ssl-config-core_2.11/ssl-config-core_2.11-0.2.1.jar
+7ff95e70c000-7ff95e71a000 r--s 00081000 fc:04 18336839                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/org.scala-lang.modules/scala-java8-compat_2.11/scala-java8-compat_2.11-0.7.0.jar
+7ff95e71a000-7ff95e749000 r--s 002f8000 fc:04 18629539                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.akka/akka-actor_2.11/akka-actor_2.11-2.4.14.jar
+7ff95e749000-7ff95e794000 r--s 003e1000 fc:04 18337111                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.akka/akka-stream_2.11/akka-stream_2.11-2.4.14.jar
+7ff95e794000-7ff95e795000 r--s 00000000 fc:04 18434346                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.reactivestreams/reactive-streams/reactive-streams-1.0.0.jar
+7ff95e795000-7ff95e79c000 r--s 00043000 fc:04 18402091                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-streams_2.11/play-streams_2.11-2.5.12.jar
+7ff95e79c000-7ff95e79e000 r--s 00003000 fc:04 18307403                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.slf4j/jcl-over-slf4j/jcl-over-slf4j-1.7.21.jar
+7ff95e79e000-7ff95e7a0000 r--s 00000000 fc:04 18307426                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.slf4j/jul-to-slf4j/jul-to-slf4j-1.7.21.jar
+7ff95e7a0000-7ff95e7a2000 r--s 00009000 fc:04 18369670                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.slf4j/slf4j-api/slf4j-api-1.7.21.jar
+7ff95e7a2000-7ff95e7a3000 r--s 00004000 fc:04 18272528                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-netty-utils/play-netty-utils-2.5.12.jar
+7ff95e7a3000-7ff95e7a6000 r--s 00013000 fc:04 18434369                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/jackson-datatype-jsr310-2.7.8.jar
+7ff95e7a6000-7ff95e7a8000 r--s 00005000 fc:04 18307435                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/jackson-datatype-jdk8-2.7.8.jar
+7ff95e7a8000-7ff95e7b9000 r--s 00116000 fc:04 18336861                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.fasterxml.jackson.core/jackson-databind/jackson-databind-2.7.8.jar
+7ff95e7b9000-7ff95e7bc000 r--s 0000a000 fc:04 18434361                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.fasterxml.jackson.core/jackson-annotations/jackson-annotations-2.7.8.jar
+7ff95e7bc000-7ff95e7bf000 r--s 0003b000 fc:04 18629573                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/bundles/com.fasterxml.jackson.core/jackson-core/jackson-core-2.7.8.jar
+7ff95e7bf000-7ff95e80b000 r--s 00412000 fc:04 18307391                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-lang/scala-reflect/scala-reflect-2.11.7.jar
+7ff95e80b000-7ff95e80f000 r--s 00018000 fc:04 18336844                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.joda/joda-convert/joda-convert-1.8.1.jar
+7ff95e80f000-7ff95e820000 r--s 0008a000 fc:04 18336777                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/joda-time/joda-time/joda-time-2.9.6.jar
+7ff95e820000-7ff95e821000 r--s 00001000 fc:04 18337109                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-datacommons_2.11/play-datacommons_2.11-2.5.12.jar
+7ff95e821000-7ff95e82a000 r--s 0005c000 fc:04 18402087                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-functional_2.11/play-functional_2.11-2.5.12.jar
+7ff95e82a000-7ff95e837000 r--s 00092000 fc:04 18434323                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-json_2.11/play-json_2.11-2.5.12.jar
+7ff95e837000-7ff95e840000 r--s 00091000 fc:04 18434320                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-stm/scala-stm_2.11/scala-stm_2.11-0.7.jar
+7ff95e840000-7ff95e853000 r--s 000ad000 fc:04 18434363                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-iteratees_2.11/play-iteratees_2.11-2.5.12.jar
+7ff95e853000-7ff95e855000 r--s 00000000 fc:04 18307388                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-exceptions/play-exceptions-2.5.12.jar
+7ff95e855000-7ff95e856000 r--s 00000000 fc:04 18336874                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/build-link/build-link-2.5.12.jar
+7ff95e856000-7ff95e8a8000 r--s 00399000 fc:04 18401904                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play_2.11/play_2.11-2.5.12.jar
+7ff95e8a8000-7ff95e8af000 r--s 00041000 fc:04 18336889                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/play-server_2.11/play-server_2.11-2.5.12.jar
+7ff95e8af000-7ff95e8b6000 r--s 00064000 fc:04 18466954                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.apache.commons/commons-lang3/commons-lang3-3.4.jar
+7ff95e8b6000-7ff95e8b8000 r--s 0000d000 fc:04 18629551                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/com.typesafe.play/twirl-api_2.11/twirl-api_2.11-1.1.1.jar
+7ff95e8b8000-7ff95e911000 r--s 00522000 fc:04 18307399                   /home/davidg/Applications/hmrc-development-environment/hmrc/investment-tax-relief/investment-tax-relief-submission-frontend/lib_managed/jars/org.scala-lang/scala-library/scala-library-2.11.8.jar
+7ff95e911000-7ff95eb11000 rw-p 00000000 00:00 0 
+7ff95eb11000-7ff95eb14000 ---p 00000000 00:00 0 
+7ff95eb14000-7ff95ec12000 rw-p 00000000 00:00 0 
+7ff95ec12000-7ff95ec15000 ---p 00000000 00:00 0 
+7ff95ec15000-7ff95ed13000 rw-p 00000000 00:00 0 
+7ff95ed13000-7ff95ed16000 ---p 00000000 00:00 0 
+7ff95ed16000-7ff95f014000 rw-p 00000000 00:00 0 
+7ff95f014000-7ff95f214000 rw-p 00000000 00:00 0 
+7ff95f214000-7ff95f414000 rw-p 00000000 00:00 0 
+7ff95f414000-7ff95f417000 r--s 0001a000 fc:01 441303                     /usr/lib/jvm/java-8-oracle/jre/lib/jce.jar
+7ff95f417000-7ff95f617000 rw-p 00000000 00:00 0 
+7ff95f617000-7ff95f63b000 r--s 001bc000 fc:03 7900616                    /home/davidg/.ivy2/cache/org.scalariform/scalariform_2.10/jars/scalariform_2.10-0.1.7.jar
+7ff95f63b000-7ff95f64b000 r--s 000cd000 fc:03 7055279                    /home/davidg/.ivy2/cache/org.scalastyle/scalastyle_2.10/jars/scalastyle_2.10-0.8.0.jar
+7ff95f64b000-7ff95f64d000 r--s 0000f000 fc:03 7055278                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/org.scalastyle/scalastyle-sbt-plugin/jars/scalastyle-sbt-plugin-0.8.0.jar
+7ff95f64d000-7ff95f652000 r--s 00038000 fc:03 6470721                    /home/davidg/.ivy2/cache/org.scoverage/scalac-scoverage-plugin_2.10/jars/scalac-scoverage-plugin_2.10-1.1.1.jar
+7ff95f652000-7ff95f655000 r--s 0000f000 fc:03 6437897                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/org.scoverage/sbt-scoverage/jars/sbt-scoverage-1.3.5.jar
+7ff95f655000-7ff95f6a5000 r--s 0028c000 fc:03 6470832                    /home/davidg/.ivy2/cache/org.webjars/npm/jars/npm-2.11.2.jar
+7ff95f6a5000-7ff95f6a6000 r--s 00001000 fc:03 6437929                    /home/davidg/.ivy2/cache/com.typesafe/npm_2.10/jars/npm_2.10-1.1.1.jar
+7ff95f6a6000-7ff95f6a7000 r--s 00007000 fc:03 6470439                    /home/davidg/.ivy2/cache/org.slf4j/slf4j-api/jars/slf4j-api-1.7.12.jar
+7ff95f6a7000-7ff95f6a8000 r--s 00002000 fc:03 6437935                    /home/davidg/.ivy2/cache/org.slf4j/slf4j-simple/jars/slf4j-simple-1.7.12.jar
+7ff95f6a8000-7ff95f6ac000 r--s 00043000 fc:03 6437934                    /home/davidg/.ivy2/cache/io.spray/spray-json_2.10/bundles/spray-json_2.10-1.3.2.jar
+7ff95f6ac000-7ff95f6b0000 r--s 000ac000 fc:03 6437933                    /home/davidg/.ivy2/cache/io.apigee.trireme/trireme-node10src/jars/trireme-node10src-0.8.5.jar
+7ff95f6b0000-7ff95f6bd000 r--s 0010f000 fc:03 21815977                   /home/davidg/.ivy2/cache/io.apigee/rhino/jars/rhino-1.7R5pre4.jar
+7ff95f6bd000-7ff95f6c5000 r--s 00060000 fc:03 6437932                    /home/davidg/.ivy2/cache/io.apigee.trireme/trireme-core/jars/trireme-core-0.8.5.jar
+7ff95f6c5000-7ff95f6c6000 r--s 0001e000 fc:03 6437664                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-win64/jars/leveldbjni-win64-1.5.jar
+7ff95f6c6000-7ff95f6c7000 r--s 0001b000 fc:03 6437662                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-win32/jars/leveldbjni-win32-1.5.jar
+7ff95f6c7000-7ff95f6c8000 r--s 00044000 fc:03 6437660                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-linux64/jars/leveldbjni-linux64-1.5.jar
+7ff95f6c8000-7ff95f6c9000 r--s 00044000 fc:03 6437658                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-linux32/jars/leveldbjni-linux32-1.5.jar
+7ff95f6c9000-7ff95f6ca000 r--s 00028000 fc:03 6437656                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-osx/jars/leveldbjni-osx-1.5.jar
+7ff95f6ca000-7ff95f6cb000 r--s 00004000 fc:03 6437666                    /home/davidg/.ivy2/cache/org.fusesource.hawtjni/hawtjni-runtime/jars/hawtjni-runtime-1.8.jar
+7ff95f6cb000-7ff95f6cd000 r--s 0000c000 fc:03 6437654                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni/jars/leveldbjni-1.7.jar
+7ff95f6cd000-7ff95f6d0000 r--s 000fa000 fc:03 6437650                    /home/davidg/.ivy2/cache/org.fusesource.leveldbjni/leveldbjni-all/bundles/leveldbjni-all-1.7.jar
+7ff95f6d0000-7ff95f6d3000 r--s 00006000 fc:03 6535490                    /home/davidg/.ivy2/cache/com.google.code.findbugs/jsr305/jars/jsr305-1.3.9.jar
+7ff95f6d3000-7ff95f6f5000 r--s 00195000 fc:03 6925510                    /home/davidg/.ivy2/cache/com.google.guava/guava/jars/guava-12.0.jar
+7ff95f6f5000-7ff95f6f7000 r--s 00001000 fc:03 6437652                    /home/davidg/.ivy2/cache/org.iq80.leveldb/leveldb-api/jars/leveldb-api-0.5.jar
+7ff95f6f7000-7ff95f6fb000 r--s 00034000 fc:03 6437648                    /home/davidg/.ivy2/cache/org.iq80.leveldb/leveldb/jars/leveldb-0.5.jar
+7ff95f6fb000-7ff95f709000 r--s 000bf000 fc:03 6437938                    /home/davidg/.ivy2/cache/com.typesafe.akka/akka-persistence-experimental_2.10/jars/akka-persistence-experimental_2.10-2.3.11.jar
+7ff95f709000-7ff95f719000 r--s 000f7000 fc:03 6437937                    /home/davidg/.ivy2/cache/com.typesafe.akka/akka-cluster_2.10/jars/akka-cluster_2.10-2.3.11.jar
+7ff95f719000-7ff95f71b000 r--s 0000a000 fc:03 6437646                    /home/davidg/.ivy2/cache/org.uncommons.maths/uncommons-maths/jars/uncommons-maths-1.2.2a.jar
+7ff95f71b000-7ff95f723000 r--s 0007b000 fc:03 6437644                    /home/davidg/.ivy2/cache/com.google.protobuf/protobuf-java/bundles/protobuf-java-2.5.0.jar
+7ff95f723000-7ff95f73b000 r--s 00115000 fc:03 6437642                    /home/davidg/.ivy2/cache/io.netty/netty/bundles/netty-3.8.0.Final.jar
+7ff95f73b000-7ff95f751000 r--s 00135000 fc:03 6437936                    /home/davidg/.ivy2/cache/com.typesafe.akka/akka-remote_2.10/jars/akka-remote_2.10-2.3.11.jar
+7ff95f751000-7ff95f760000 r--s 000bf000 fc:03 6437931                    /home/davidg/.ivy2/cache/com.typesafe.akka/akka-contrib_2.10/jars/akka-contrib_2.10-2.3.11.jar
+7ff95f760000-7ff95f786000 r--s 00263000 fc:03 6437930                    /home/davidg/.ivy2/cache/com.typesafe.akka/akka-actor_2.10/jars/akka-actor_2.10-2.3.11.jar
+7ff95f786000-7ff95f78a000 r--s 00022000 fc:03 6437928                    /home/davidg/.ivy2/cache/com.typesafe/jse_2.10/jars/jse_2.10-1.1.2.jar
+7ff95f78a000-7ff95f78e000 r--s 00020000 fc:03 6437922                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.sbt/sbt-js-engine/jars/sbt-js-engine-1.1.3.jar
+7ff95f78e000-7ff95f791000 r--s 0002e000 fc:03 6469900                    /home/davidg/.ivy2/cache/com.fasterxml.jackson.core/jackson-core/bundles/jackson-core-2.3.3.jar
+7ff95f791000-7ff95f793000 r--s 00007000 fc:03 6469898                    /home/davidg/.ivy2/cache/com.fasterxml.jackson.core/jackson-annotations/bundles/jackson-annotations-2.3.0.jar
+7ff95f793000-7ff95f7a4000 r--s 000cf000 fc:03 6469896                    /home/davidg/.ivy2/cache/com.fasterxml.jackson.core/jackson-databind/bundles/jackson-databind-2.3.3.jar
+7ff95f7a4000-7ff95f7a5000 r--s 00006000 fc:03 21815975                   /home/davidg/.ivy2/cache/org.webjars/webjars-locator-core/jars/webjars-locator-core-0.26.jar
+7ff95f7a5000-7ff95f7a7000 r--s 00002000 fc:03 6470831                    /home/davidg/.ivy2/cache/org.webjars/webjars-locator/jars/webjars-locator-0.26.jar
+7ff95f7a7000-7ff95f7af000 r--s 00040000 fc:03 6437921                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.sbt/sbt-web/jars/sbt-web-1.3.0.jar
+7ff95f7af000-7ff95f7b2000 r--s 00011000 fc:03 6437920                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.sbt/sbt-twirl/jars/sbt-twirl-1.1.1.jar
+7ff95f7b2000-7ff95f7b4000 r--s 000a0000 fc:03 6437919                    /home/davidg/.ivy2/cache/net.contentobjects.jnotify/jnotify/jars/jnotify-0.94-play-1.jar
+7ff95f7b4000-7ff95f7b9000 r--s 0003f000 fc:03 6437889                    /home/davidg/.ivy2/cache/com.typesafe/config/bundles/config-1.3.0.jar
+7ff95f7b9000-7ff95f7c1000 r--s 00041000 fc:03 6437927                    /home/davidg/.ivy2/cache/com.typesafe.play/twirl-parser_2.10/jars/twirl-parser_2.10-1.1.1.jar
+7ff95f7c1000-7ff95f7c4000 r--s 00019000 fc:03 6437925                    /home/davidg/.ivy2/cache/com.typesafe.play/twirl-compiler_2.10/jars/twirl-compiler_2.10-1.1.1.jar
+7ff95f7c4000-7ff95f7c6000 r--s 00000000 fc:03 6438020                    /home/davidg/.ivy2/cache/com.typesafe.play/play-exceptions/jars/play-exceptions-2.5.12.jar
+7ff95f7c6000-7ff95f7c7000 r--s 00000000 fc:03 6438019                    /home/davidg/.ivy2/cache/com.typesafe.play/build-link/jars/build-link-2.5.12.jar
+7ff95f7c7000-7ff95f7cb000 r--s 00022000 fc:03 6438018                    /home/davidg/.ivy2/cache/com.typesafe.play/sbt-run-support_2.10/jars/sbt-run-support_2.10-2.5.12.jar
+7ff95f7cb000-7ff95f7cf000 r--s 0002a000 fc:03 6437556                    /home/davidg/.ivy2/cache/commons-io/commons-io/jars/commons-io-2.4.jar
+7ff95f7cf000-7ff95f7df000 r--s 00086000 fc:03 21816029                   /home/davidg/.ivy2/cache/com.typesafe.play/sbt-routes-compiler_2.10/jars/sbt-routes-compiler_2.10-2.5.12.jar
+7ff95f7df000-7ff95f7fe000 r--s 001d1000 fc:03 6437916                    /home/davidg/.ivy2/cache/org.apache.ant/ant/jars/ant-1.9.6.jar
+7ff95f7fe000-7ff95f9fe000 rw-p 00000000 00:00 0 
+7ff95f9fe000-7ff95fbfe000 rw-p 00000000 00:00 0 
+7ff95fbfe000-7ff95fdfe000 rw-p 00000000 00:00 0 
+7ff95fdfe000-7ff95fe01000 ---p 00000000 00:00 0 
+7ff95fe01000-7ff95feff000 rw-p 00000000 00:00 0 
+7ff95feff000-7ff95ff02000 ---p 00000000 00:00 0 
+7ff95ff02000-7ff960000000 rw-p 00000000 00:00 0 
+7ff960000000-7ff960024000 rw-p 00000000 00:00 0 
+7ff960024000-7ff964000000 ---p 00000000 00:00 0 
+7ff964000000-7ff9640e2000 rw-p 00000000 00:00 0 
+7ff9640e2000-7ff968000000 ---p 00000000 00:00 0 
+7ff968000000-7ff9682ff000 rw-p 00000000 00:00 0 
+7ff9682ff000-7ff96c000000 ---p 00000000 00:00 0 
+7ff96c000000-7ff96c0a5000 rw-p 00000000 00:00 0 
+7ff96c0a5000-7ff970000000 ---p 00000000 00:00 0 
+7ff970000000-7ff970021000 rw-p 00000000 00:00 0 
+7ff970021000-7ff974000000 ---p 00000000 00:00 0 
+7ff974000000-7ff974103000 rw-p 00000000 00:00 0 
+7ff974103000-7ff978000000 ---p 00000000 00:00 0 
+7ff978000000-7ff978021000 rw-p 00000000 00:00 0 
+7ff978021000-7ff97c000000 ---p 00000000 00:00 0 
+7ff97c000000-7ff97c021000 rw-p 00000000 00:00 0 
+7ff97c021000-7ff980000000 ---p 00000000 00:00 0 
+7ff980000000-7ff98252b000 rw-p 00000000 00:00 0 
+7ff98252b000-7ff984000000 ---p 00000000 00:00 0 
+7ff984000000-7ff985ee1000 rw-p 00000000 00:00 0 
+7ff985ee1000-7ff988000000 ---p 00000000 00:00 0 
+7ff988000000-7ff988021000 rw-p 00000000 00:00 0 
+7ff988021000-7ff98c000000 ---p 00000000 00:00 0 
+7ff98c000000-7ff98e594000 rw-p 00000000 00:00 0 
+7ff98e594000-7ff990000000 ---p 00000000 00:00 0 
+7ff990000000-7ff990021000 rw-p 00000000 00:00 0 
+7ff990021000-7ff994000000 ---p 00000000 00:00 0 
+7ff994000000-7ff994021000 rw-p 00000000 00:00 0 
+7ff994021000-7ff998000000 ---p 00000000 00:00 0 
+7ff998000000-7ff99828f000 rw-p 00000000 00:00 0 
+7ff99828f000-7ff99c000000 ---p 00000000 00:00 0 
+7ff99c000000-7ff99c007000 r--s 00064000 fc:03 6470339                    /home/davidg/.ivy2/cache/org.apache.commons/commons-lang3/jars/commons-lang3-3.4.jar
+7ff99c007000-7ff99c009000 r--s 0000d000 fc:03 6437923                    /home/davidg/.ivy2/cache/com.typesafe.play/twirl-api_2.10/jars/twirl-api_2.10-1.1.1.jar
+7ff99c009000-7ff99c012000 r--s 00054000 fc:03 6405759                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.play/sbt-plugin/jars/sbt-plugin-2.5.12.jar
+7ff99c012000-7ff99c013000 r--s 00004000 fc:03 6437917                    /home/davidg/.ivy2/cache/org.apache.ant/ant-launcher/jars/ant-launcher-1.9.6.jar
+7ff99c013000-7ff99c031000 r--s 00109000 fc:03 6437915                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.sbt/sbt-native-packager/jars/sbt-native-packager-1.1.0.jar
+7ff99c031000-7ff99c038000 r--s 00056000 fc:03 6469974                    /home/davidg/.ivy2/cache/org.apache.commons/commons-compress/jars/commons-compress-1.9.jar
+7ff99c038000-7ff99c03a000 r--s 00006000 fc:03 6437914                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-distributables/jars/sbt-distributables-1.0.0.jar
+7ff99c03a000-7ff99c03e000 r--s 00019000 fc:03 18889850                   /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.typesafe.sbt/sbt-git/jars/sbt-git-0.8.5.jar
+7ff99c03e000-7ff99c040000 r--s 00003000 fc:03 18889849                   /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-git-versioning/jars/sbt-git-versioning-0.9.0.jar
+7ff99c040000-7ff99c047000 r--s 0004f000 fc:03 6990188                    /home/davidg/.ivy2/cache/org.osgi/org.osgi.core/jars/org.osgi.core-4.3.1.jar
+7ff99c047000-7ff99c066000 r--s 001c5000 fc:03 6470542                    /home/davidg/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit/jars/org.eclipse.jgit-3.7.0.201502260915-r.jar
+7ff99c066000-7ff99c068000 r--s 00004000 fc:03 6990182                    /home/davidg/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit.archive/jars/org.eclipse.jgit.archive-3.7.0.201502260915-r.jar
+7ff99c068000-7ff99c06a000 r--s 0000a000 fc:03 6990180                    /home/davidg/.ivy2/cache/args4j/args4j/jars/args4j-2.0.12.jar
+7ff99c06a000-7ff99c06e000 r--s 0002d000 fc:03 6990178                    /home/davidg/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit.pgm/jars/org.eclipse.jgit.pgm-3.7.0.201502260915-r.jar
+7ff99c06e000-7ff99c070000 r--s 0000d000 fc:03 6469960                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/com.eed3si9n/sbt-buildinfo/jars/sbt-buildinfo-0.3.2.jar
+7ff99c070000-7ff99c079000 r--s 0004e000 fc:03 6470465                    /home/davidg/.ivy2/cache/org.apache.httpcomponents/httpclient/jars/httpclient-4.1.3.jar
+7ff99c079000-7ff99c07c000 ---p 00000000 00:00 0 
+7ff99c07c000-7ff99c17a000 rw-p 00000000 00:00 0 
+7ff99c17a000-7ff99c17d000 ---p 00000000 00:00 0 
+7ff99c17d000-7ff99c47b000 rw-p 00000000 00:00 0 
+7ff99c47b000-7ff99c47e000 ---p 00000000 00:00 0 
+7ff99c47e000-7ff99c57c000 rw-p 00000000 00:00 0 
+7ff99c57c000-7ff99c57f000 ---p 00000000 00:00 0 
+7ff99c57f000-7ff99c67d000 rw-p 00000000 00:00 0 
+7ff99c67d000-7ff99c680000 ---p 00000000 00:00 0 
+7ff99c680000-7ff99c77e000 rw-p 00000000 00:00 0 
+7ff99c77e000-7ff99c781000 ---p 00000000 00:00 0 
+7ff99c781000-7ff99ca7f000 rw-p 00000000 00:00 0 
+7ff99ca7f000-7ff99cc7f000 rw-p 00000000 00:00 0 
+7ff99cc7f000-7ff99ce7f000 rw-p 00000000 00:00 0 
+7ff99ce7f000-7ff99ce91000 r--s 00345000 fc:01 441107                     /usr/lib/jvm/java-8-oracle/jre/lib/resources.jar
+7ff99ce91000-7ff99ce92000 r--s 00006000 fc:03 6990184                    /home/davidg/.ivy2/cache/org.eclipse.jgit/org.eclipse.jgit.ui/jars/org.eclipse.jgit.ui-3.7.0.201502260915-r.jar
+7ff99ce92000-7ff99ce94000 r--s 0000d000 fc:03 6470392                    /home/davidg/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar
+7ff99ce94000-7ff99ce99000 r--s 00028000 fc:03 6470466                    /home/davidg/.ivy2/cache/org.apache.httpcomponents/httpcore/jars/httpcore-4.1.4.jar
+7ff99ce99000-7ff99ce9c000 r--s 0001c000 fc:03 6469970                    /home/davidg/.ivy2/cache/com.googlecode.javaewah/JavaEWAH/bundles/JavaEWAH-0.7.9.jar
+7ff99ce9c000-7ff99cea0000 r--s 0003b000 fc:03 6372804                    /home/davidg/.ivy2/cache/com.jcraft/jsch/jars/jsch-0.1.50.jar
+7ff99cea0000-7ff99cea4000 r--s 0002c000 fc:03 6471026                    /home/davidg/.ivy2/cache/com.github.nscala-time/nscala-time_2.10/jars/nscala-time_2.10-2.2.0.jar
+7ff99cea4000-7ff99cea6000 r--s 00003000 fc:03 6471025                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-git-stamp/jars/sbt-git-stamp-5.3.0.jar
+7ff99cea6000-7ff99cea8000 r--s 00009000 fc:03 6438017                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-settings/jars/sbt-settings-3.3.0.jar
+7ff99cea8000-7ff99ceab000 r--s 0000a000 fc:03 6990176                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/de.heikoseeberger/sbt-header/jars/sbt-header-1.5.0.jar
+7ff99ceab000-7ff99cead000 r--s 0000b000 fc:03 6990125                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-auto-build/jars/sbt-auto-build-1.4.0.jar
+7ff99cead000-7ff99ceb5000 r--s 0004b000 fc:03 7022744                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-bobby/jars/sbt-bobby-0.32.0.jar
+7ff99ceb5000-7ff99ceb9000 r--s 00018000 fc:03 6470567                    /home/davidg/.ivy2/cache/org.joda/joda-convert/jars/joda-convert-1.8.1.jar
+7ff99ceb9000-7ff99cec9000 r--s 00089000 fc:03 6470566                    /home/davidg/.ivy2/cache/joda-time/joda-time/jars/joda-time-2.9.1.jar
+7ff99cec9000-7ff99ced0000 r--s 0003f000 fc:03 6470408                    /home/davidg/.ivy2/cache/commons-codec/commons-codec/jars/commons-codec-1.10.jar
+7ff99ced0000-7ff99ced8000 r--s 0004b000 fc:03 7022819                    /home/davidg/.ivy2/cache/scala_2.10/sbt_0.13/uk.gov.hmrc/sbt-bobby/jars/sbt-bobby-0.30.0.jar
+7ff99ced8000-7ff99d0d8000 rw-p 00000000 00:00 0 
+7ff99d0d8000-7ff99d2d8000 rw-p 00000000 00:00 0 
+7ff99d2d8000-7ff99d4d8000 rw-p 00000000 00:00 0 
+7ff99d4d8000-7ff99d6d8000 rw-p 00000000 00:00 0 
+7ff99d6d8000-7ff99d8d8000 rw-p 00000000 00:00 0 
+7ff99d8d8000-7ff99d950000 r--s 010e3000 fc:01 441520                     /usr/lib/jvm/java-8-oracle/lib/tools.jar
+7ff99d950000-7ff99db50000 rw-p 00000000 00:00 0 
+7ff99db50000-7ff99dd50000 rw-p 00000000 00:00 0 
+7ff99dd50000-7ff99dd55000 r--s 00096000 fc:01 441403                     /usr/lib/jvm/java-8-oracle/jre/lib/jsse.jar
+7ff99dd55000-7ff99dd58000 ---p 00000000 00:00 0 
+7ff99dd58000-7ff99dd8e000 rw-p 00000000 00:00 0 
+7ff99dd8e000-7ff99dd90000 r--s 0000b000 fc:03 6535022                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/xsbti/interface-0.13.11.jar
+7ff99dd90000-7ff99dd92000 r--s 00013000 fc:03 6503088                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/json4s-ast_2.10-3.2.10.jar
+7ff99dd92000-7ff99dd94000 r--s 00002000 fc:03 6503070                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/control-0.13.11.jar
+7ff99dd94000-7ff99dd97000 r--s 0001a000 fc:03 6503099                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/cache-0.13.11.jar
+7ff99dd97000-7ff99dd9b000 r--s 0001b000 fc:03 6503100                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/process-0.13.11.jar
+7ff99dd9b000-7ff99dd9d000 r--s 0000e000 fc:03 6503084                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/logic-0.13.11.jar
+7ff99dd9d000-7ff99dda1000 r--s 00039000 fc:03 6503110                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/jline-2.13.jar
+7ff99dda1000-7ff99dda4000 r--s 0001e000 fc:03 6503074                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/run-0.13.11.jar
+7ff99dda4000-7ff99dda6000 r--s 0000b000 fc:03 6503071                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/tracking-0.13.11.jar
+7ff99dda6000-7ff99dda9000 r--s 0001d000 fc:03 6503098                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/task-system-0.13.11.jar
+7ff99dda9000-7ff99ddaf000 r--s 00040000 fc:03 6503085                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/api-0.13.11.jar
+7ff99ddaf000-7ff99dde4000 r--s 002da000 fc:03 6503081                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/scala-reflect-2.10.6.jar
+7ff99dde4000-7ff99dfe4000 rw-p 00000000 00:00 0 
+7ff99dfe4000-7ff99e0e2000 r--s 00cd0000 fc:03 6535482                    /home/davidg/.sbt/boot/scala-2.10.6/lib/scala-compiler.jar
+7ff99e0e2000-7ff99e0f3000 r-xp 00000000 fc:01 441163                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7ff99e0f3000-7ff99e2f2000 ---p 00011000 fc:01 441163                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7ff99e2f2000-7ff99e2f3000 rw-p 00010000 fc:01 441163                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnio.so
+7ff99e2f3000-7ff99e309000 r-xp 00000000 fc:01 441187                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7ff99e309000-7ff99e509000 ---p 00016000 fc:01 441187                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7ff99e509000-7ff99e50a000 rw-p 00016000 fc:01 441187                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libnet.so
+7ff99e50a000-7ff99e50b000 ---p 00000000 00:00 0 
+7ff99e50b000-7ff99e60b000 rw-p 00000000 00:00 0 
+7ff99e60b000-7ff99e60e000 ---p 00000000 00:00 0 
+7ff99e60e000-7ff99e70c000 rw-p 00000000 00:00 0 
+7ff99e70c000-7ff99e70f000 ---p 00000000 00:00 0 
+7ff99e70f000-7ff99e80d000 rw-p 00000000 00:00 0 
+7ff99e80d000-7ff99e810000 ---p 00000000 00:00 0 
+7ff99e810000-7ff99e90e000 rw-p 00000000 00:00 0 
+7ff99e90e000-7ff99e911000 ---p 00000000 00:00 0 
+7ff99e911000-7ff99ea0f000 rw-p 00000000 00:00 0 
+7ff99ea0f000-7ff99ea12000 ---p 00000000 00:00 0 
+7ff99ea12000-7ff99eb10000 rw-p 00000000 00:00 0 
+7ff99eb10000-7ff99f1f2000 r--p 00000000 fc:01 401041                     /usr/lib/locale/locale-archive
+7ff99f1f2000-7ff99f1f5000 ---p 00000000 00:00 0 
+7ff99f1f5000-7ff99f2f3000 rw-p 00000000 00:00 0 
+7ff99f2f3000-7ff99f2f6000 ---p 00000000 00:00 0 
+7ff99f2f6000-7ff99f3f4000 rw-p 00000000 00:00 0 
+7ff99f3f4000-7ff99f3f5000 ---p 00000000 00:00 0 
+7ff99f3f5000-7ff9a0000000 rw-p 00000000 00:00 0 
+7ff9a0000000-7ff9a0021000 rw-p 00000000 00:00 0 
+7ff9a0021000-7ff9a4000000 ---p 00000000 00:00 0 
+7ff9a4000000-7ff9a4021000 rw-p 00000000 00:00 0 
+7ff9a4021000-7ff9a8000000 ---p 00000000 00:00 0 
+7ff9a8000000-7ff9a802a000 rw-p 00000000 00:00 0 
+7ff9a802a000-7ff9ac000000 ---p 00000000 00:00 0 
+7ff9ac000000-7ff9ac001000 r--p 00000000 fc:01 548862                     /usr/share/locale-langpack/en_GB/LC_MESSAGES/libc.mo
+7ff9ac001000-7ff9ac004000 r--s 00013000 fc:03 6503079                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/classpath-0.13.11.jar
+7ff9ac004000-7ff9ac008000 r--s 0001c000 fc:03 6503097                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/compiler-integration-0.13.11.jar
+7ff9ac008000-7ff9ac00f000 r--s 0003f000 fc:03 6503095                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/io-0.13.11.jar
+7ff9ac00f000-7ff9ac014000 r--s 00024000 fc:03 6503073                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/persist-0.13.11.jar
+7ff9ac014000-7ff9ac016000 r--s 00012000 fc:03 6503105                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/jawn-parser_2.10-0.6.0.jar
+7ff9ac016000-7ff9ac021000 r--s 00097000 fc:03 6503096                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/main-settings-0.13.11.jar
+7ff9ac021000-7ff9ac023000 r--s 00001000 fc:03 6503101                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/cross-0.13.11.jar
+7ff9ac023000-7ff9ac02c000 r--s 0006f000 fc:03 6503106                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/actions-0.13.11.jar
+7ff9ac02c000-7ff9ac059000 r--s 00242000 fc:03 6503104                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/main-0.13.11.jar
+7ff9ac059000-7ff9ac067000 r--s 000bc000 fc:03 6503078                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/scala-pickling_2.10-0.10.1.jar
+7ff9ac067000-7ff9ac089000 r--s 001bc000 fc:03 6503063                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/ivy-0.13.11.jar
+7ff9ac089000-7ff9ac0fc000 r--s 0065b000 fc:03 6535480                    /home/davidg/.sbt/boot/scala-2.10.6/lib/scala-library.jar
+7ff9ac0fc000-7ff9b0000000 rw-p 00000000 00:00 0 
+7ff9b0000000-7ff9b0021000 rw-p 00000000 00:00 0 
+7ff9b0021000-7ff9b4000000 ---p 00000000 00:00 0 
+7ff9b4000000-7ff9b4001000 r--s 00005000 fc:03 6503072                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/test-agent-0.13.11.jar
+7ff9b4001000-7ff9b4003000 r--s 00014000 fc:03 6503087                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/apply-macro-0.13.11.jar
+7ff9b4003000-7ff9b400f000 r--s 000a4000 fc:03 6503094                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/quasiquotes_2.10-2.0.1.jar
+7ff9b400f000-7ff9b4015000 r--s 00038000 fc:03 6503092                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/compile-0.13.11.jar
+7ff9b4015000-7ff9b4016000 r--s 00002000 fc:03 6503108                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/launcher-interface-1.0.0-M1.jar
+7ff9b4016000-7ff9b402b000 r--s 00101000 fc:03 6503091                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/ivy-2.3.0-sbt-2cc8d2761242b072cedb0a04cb39435c4fa24f9a.jar
+7ff9b402b000-7ff9b4032000 r--s 0004b000 fc:03 6503068                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/serialization_2.10-0.1.2.jar
+7ff9b4032000-7ff9b403a000 r--s 00060000 fc:03 6503064                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/collections-0.13.11.jar
+7ff9b403a000-7ff9b403e000 r--s 0001d000 fc:03 6503083                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/tasks-0.13.11.jar
+7ff9b403e000-7ff9b4042000 r--s 00034000 fc:03 6503067                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/jsch-0.1.46.jar
+7ff9b4042000-7ff9b4048000 r--s 00038000 fc:03 6503076                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/compiler-interface-0.13.11.jar
+7ff9b4048000-7ff9b4221000 r--s 03d20000 fc:01 441192                     /usr/lib/jvm/java-8-oracle/jre/lib/rt.jar
+7ff9b4221000-7ff9b4222000 ---p 00000000 00:00 0 
+7ff9b4222000-7ff9b4322000 rw-p 00000000 00:00 0 
+7ff9b4322000-7ff9b4323000 ---p 00000000 00:00 0 
+7ff9b4323000-7ff9b4423000 rw-p 00000000 00:00 0 
+7ff9b4423000-7ff9b4424000 ---p 00000000 00:00 0 
+7ff9b4424000-7ff9b467a000 rw-p 00000000 00:00 0 
+7ff9b467a000-7ff9b4724000 ---p 00000000 00:00 0 
+7ff9b4724000-7ff9b487a000 rw-p 00000000 00:00 0 
+7ff9b487a000-7ff9b4924000 ---p 00000000 00:00 0 
+7ff9b4924000-7ff9b4a24000 rw-p 00000000 00:00 0 
+7ff9b4a24000-7ff9b4b38000 rw-p 00000000 00:00 0 
+7ff9b4b38000-7ff9b4de5000 ---p 00000000 00:00 0 
+7ff9b4de5000-7ff9b9285000 rwxp 00000000 00:00 0 
+7ff9b9285000-7ff9c3de5000 ---p 00000000 00:00 0 
+7ff9c3de5000-7ff9c3dff000 r-xp 00000000 fc:01 441135                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7ff9c3dff000-7ff9c3fff000 ---p 0001a000 fc:01 441135                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7ff9c3fff000-7ff9c4000000 rw-p 0001a000 fc:01 441135                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libzip.so
+7ff9c4000000-7ff9c6053000 rw-p 00000000 00:00 0 
+7ff9c6053000-7ff9c8000000 ---p 00000000 00:00 0 
+7ff9c8000000-7ff9c8002000 r--s 0001a000 fc:03 6503069                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/jansi-1.11.jar
+7ff9c8002000-7ff9c8003000 r--s 00005000 fc:03 6503090                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/sbt-0.13.11.jar
+7ff9c8003000-7ff9c8007000 r--s 00022000 fc:03 6503086                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/sbinary_2.10-0.4.2.jar
+7ff9c8007000-7ff9c8011000 r--s 00085000 fc:03 6503107                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/json4s-core_2.10-3.2.10.jar
+7ff9c8011000-7ff9c8019000 r--s 00057000 fc:03 6503109                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/completion-0.13.11.jar
+7ff9c8019000-7ff9c804e000 r--s 002da000 fc:03 6535484                    /home/davidg/.sbt/boot/scala-2.10.6/lib/scala-reflect.jar
+7ff9c804e000-7ff9c8069000 r--s 0010d000 fc:01 439695                     /usr/share/sbt-launcher-packaging/bin/sbt-launch.jar
+7ff9c8069000-7ff9c80df000 rw-p 00000000 00:00 0 
+7ff9c80df000-7ff9c80e0000 ---p 00000000 00:00 0 
+7ff9c80e0000-7ff9c81e0000 rw-p 00000000 00:00 0 
+7ff9c81e0000-7ff9c81ea000 r-xp 00000000 fc:01 138298                     /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7ff9c81ea000-7ff9c83e9000 ---p 0000a000 fc:01 138298                     /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7ff9c83e9000-7ff9c83ea000 r--p 00009000 fc:01 138298                     /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7ff9c83ea000-7ff9c83eb000 rw-p 0000a000 fc:01 138298                     /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7ff9c83eb000-7ff9c83f6000 r-xp 00000000 fc:01 141060                     /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7ff9c83f6000-7ff9c85f5000 ---p 0000b000 fc:01 141060                     /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7ff9c85f5000-7ff9c85f6000 r--p 0000a000 fc:01 141060                     /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7ff9c85f6000-7ff9c85f7000 rw-p 0000b000 fc:01 141060                     /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7ff9c85f7000-7ff9c860e000 r-xp 00000000 fc:01 141069                     /lib/x86_64-linux-gnu/libnsl-2.19.so
+7ff9c860e000-7ff9c880d000 ---p 00017000 fc:01 141069                     /lib/x86_64-linux-gnu/libnsl-2.19.so
+7ff9c880d000-7ff9c880e000 r--p 00016000 fc:01 141069                     /lib/x86_64-linux-gnu/libnsl-2.19.so
+7ff9c880e000-7ff9c880f000 rw-p 00017000 fc:01 141069                     /lib/x86_64-linux-gnu/libnsl-2.19.so
+7ff9c880f000-7ff9c8811000 rw-p 00000000 00:00 0 
+7ff9c8811000-7ff9c881a000 r-xp 00000000 fc:01 141067                     /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7ff9c881a000-7ff9c8a19000 ---p 00009000 fc:01 141067                     /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7ff9c8a19000-7ff9c8a1a000 r--p 00008000 fc:01 141067                     /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7ff9c8a1a000-7ff9c8a1b000 rw-p 00009000 fc:01 141067                     /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7ff9c8a1b000-7ff9c8a45000 r-xp 00000000 fc:01 441164                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7ff9c8a45000-7ff9c8c45000 ---p 0002a000 fc:01 441164                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7ff9c8c45000-7ff9c8c47000 rw-p 0002a000 fc:01 441164                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libjava.so
+7ff9c8c47000-7ff9c8c54000 r-xp 00000000 fc:01 441181                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7ff9c8c54000-7ff9c8e54000 ---p 0000d000 fc:01 441181                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7ff9c8e54000-7ff9c8e56000 rw-p 0000d000 fc:01 441181                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/libverify.so
+7ff9c8e56000-7ff9c8e5d000 r-xp 00000000 fc:01 141064                     /lib/x86_64-linux-gnu/librt-2.19.so
+7ff9c8e5d000-7ff9c905c000 ---p 00007000 fc:01 141064                     /lib/x86_64-linux-gnu/librt-2.19.so
+7ff9c905c000-7ff9c905d000 r--p 00006000 fc:01 141064                     /lib/x86_64-linux-gnu/librt-2.19.so
+7ff9c905d000-7ff9c905e000 rw-p 00007000 fc:01 141064                     /lib/x86_64-linux-gnu/librt-2.19.so
+7ff9c905e000-7ff9c9163000 r-xp 00000000 fc:01 141062                     /lib/x86_64-linux-gnu/libm-2.19.so
+7ff9c9163000-7ff9c9362000 ---p 00105000 fc:01 141062                     /lib/x86_64-linux-gnu/libm-2.19.so
+7ff9c9362000-7ff9c9363000 r--p 00104000 fc:01 141062                     /lib/x86_64-linux-gnu/libm-2.19.so
+7ff9c9363000-7ff9c9364000 rw-p 00105000 fc:01 141062                     /lib/x86_64-linux-gnu/libm-2.19.so
+7ff9c9364000-7ff9ca022000 r-xp 00000000 fc:01 441144                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7ff9ca022000-7ff9ca221000 ---p 00cbe000 fc:01 441144                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7ff9ca221000-7ff9ca2fa000 rw-p 00cbd000 fc:01 441144                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
+7ff9ca2fa000-7ff9ca33e000 rw-p 00000000 00:00 0 
+7ff9ca33e000-7ff9ca4fc000 r-xp 00000000 fc:01 137881                     /lib/x86_64-linux-gnu/libc-2.19.so
+7ff9ca4fc000-7ff9ca6fb000 ---p 001be000 fc:01 137881                     /lib/x86_64-linux-gnu/libc-2.19.so
+7ff9ca6fb000-7ff9ca6ff000 r--p 001bd000 fc:01 137881                     /lib/x86_64-linux-gnu/libc-2.19.so
+7ff9ca6ff000-7ff9ca701000 rw-p 001c1000 fc:01 137881                     /lib/x86_64-linux-gnu/libc-2.19.so
+7ff9ca701000-7ff9ca706000 rw-p 00000000 00:00 0 
+7ff9ca706000-7ff9ca709000 r-xp 00000000 fc:01 138398                     /lib/x86_64-linux-gnu/libdl-2.19.so
+7ff9ca709000-7ff9ca908000 ---p 00003000 fc:01 138398                     /lib/x86_64-linux-gnu/libdl-2.19.so
+7ff9ca908000-7ff9ca909000 r--p 00002000 fc:01 138398                     /lib/x86_64-linux-gnu/libdl-2.19.so
+7ff9ca909000-7ff9ca90a000 rw-p 00003000 fc:01 138398                     /lib/x86_64-linux-gnu/libdl-2.19.so
+7ff9ca90a000-7ff9ca91f000 r-xp 00000000 fc:01 441175                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7ff9ca91f000-7ff9cab1f000 ---p 00015000 fc:01 441175                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7ff9cab1f000-7ff9cab20000 rw-p 00015000 fc:01 441175                     /usr/lib/jvm/java-8-oracle/jre/lib/amd64/jli/libjli.so
+7ff9cab20000-7ff9cab39000 r-xp 00000000 fc:01 141065                     /lib/x86_64-linux-gnu/libpthread-2.19.so
+7ff9cab39000-7ff9cad38000 ---p 00019000 fc:01 141065                     /lib/x86_64-linux-gnu/libpthread-2.19.so
+7ff9cad38000-7ff9cad39000 r--p 00018000 fc:01 141065                     /lib/x86_64-linux-gnu/libpthread-2.19.so
+7ff9cad39000-7ff9cad3a000 rw-p 00019000 fc:01 141065                     /lib/x86_64-linux-gnu/libpthread-2.19.so
+7ff9cad3a000-7ff9cad3e000 rw-p 00000000 00:00 0 
+7ff9cad3e000-7ff9cad61000 r-xp 00000000 fc:01 138399                     /lib/x86_64-linux-gnu/ld-2.19.so
+7ff9cad61000-7ff9cad63000 r--s 00006000 fc:03 6503093                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/relation-0.13.11.jar
+7ff9cad63000-7ff9cad65000 r--s 00017000 fc:03 6503077                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/testing-0.13.11.jar
+7ff9cad65000-7ff9cad6f000 r--s 0006e000 fc:03 6503080                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/incremental-compiler-0.13.11.jar
+7ff9cad6f000-7ff9cae37000 rw-p 00000000 00:00 0 
+7ff9cae37000-7ff9cae3a000 ---p 00000000 00:00 0 
+7ff9cae3a000-7ff9caf3c000 rw-p 00000000 00:00 0 
+7ff9caf3c000-7ff9caf3d000 r--s 00001000 fc:03 6503065                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/json4s-support_2.10-0.6.0.jar
+7ff9caf3d000-7ff9caf3f000 r--s 00015000 fc:03 6503066                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/classfile-0.13.11.jar
+7ff9caf3f000-7ff9caf41000 r--s 00007000 fc:03 6503082                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/compiler-ivy-integration-0.13.11.jar
+7ff9caf41000-7ff9caf43000 r--s 00007000 fc:03 6503102                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/paranamer-2.6.jar
+7ff9caf43000-7ff9caf48000 r--s 00037000 fc:03 6503089                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/command-0.13.11.jar
+7ff9caf48000-7ff9caf4a000 r--s 00002000 fc:03 6503103                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/test-interface-1.0.jar
+7ff9caf4a000-7ff9caf4d000 r--s 00018000 fc:03 6503075                    /home/davidg/.sbt/boot/scala-2.10.6/org.scala-sbt/sbt/0.13.11/logging-0.13.11.jar
+7ff9caf4d000-7ff9caf51000 r--s 00025000 fc:03 6535483                    /home/davidg/.sbt/boot/scala-2.10.6/lib/jline.jar
+7ff9caf51000-7ff9caf54000 r--s 00018000 fc:03 6535481                    /home/davidg/.sbt/boot/scala-2.10.6/lib/jansi.jar
+7ff9caf54000-7ff9caf5c000 rw-s 00000000 00:15 327000                     /tmp/hsperfdata_davidg/15232
+7ff9caf5c000-7ff9caf5d000 rw-p 00000000 00:00 0 
+7ff9caf5d000-7ff9caf5e000 ---p 00000000 00:00 0 
+7ff9caf5e000-7ff9caf60000 rw-p 00000000 00:00 0 
+7ff9caf60000-7ff9caf61000 r--p 00022000 fc:01 138399                     /lib/x86_64-linux-gnu/ld-2.19.so
+7ff9caf61000-7ff9caf62000 rw-p 00023000 fc:01 138399                     /lib/x86_64-linux-gnu/ld-2.19.so
+7ff9caf62000-7ff9caf63000 rw-p 00000000 00:00 0 
+7fff0772c000-7fff0774e000 rw-p 00000000 00:00 0                          [stack]
+7fff07799000-7fff0779b000 r--p 00000000 00:00 0                          [vvar]
+7fff0779b000-7fff0779d000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -Djava.security.egd=file:/dev/./urandom -XX:MaxMetaspaceSize=512m -Xmx1536m 
+java_command: /usr/share/sbt-launcher-packaging/bin/sbt-launch.jar test
+java_class_path (initial): /usr/share/sbt-launcher-packaging/bin/sbt-launch.jar
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+PATH=/devapp/davidg/.npm-packages/bin:/home/davidg/.rvm/gems/ruby-2.3.0/bin:/home/davidg/.rvm/gems/ruby-2.3.0@global/bin:/home/davidg/.rvm/rubies/ruby-2.3.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/davidg/.rvm/bin:/home/davidg/.rvm/bin:/home/davidg/opt/gradle/bin:/opt/gradle/bin:/home/davidg/.rvm/bin:/home/davidg/.rvm/bin:/home/davidg/.rvm/bin:/home/davidg/.rvm/bin:/home/davidg/opt/gradle/bin
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0xaba2a0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGBUS: [libjvm.so+0xaba2a0], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGFPE: [libjvm.so+0x917710], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGPIPE: [libjvm.so+0x917710], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGXFSZ: [libjvm.so+0x917710], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGILL: [libjvm.so+0x917710], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGUSR1: SIG_DFL, sa_mask[0]=00000000000000000000000000000000, sa_flags=none
+SIGUSR2: [libjvm.so+0x918d40], sa_mask[0]=00100000000000000000000000000000, sa_flags=SA_RESTART|SA_SIGINFO
+SIGHUP: [libjvm.so+0x91a140], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGINT: [libjvm.so+0x91a140], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGTERM: [libjvm.so+0x91a140], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+SIGQUIT: [libjvm.so+0x91a140], sa_mask[0]=11111111011111111101111111111110, sa_flags=SA_RESTART|SA_SIGINFO
+
+
+---------------  S Y S T E M  ---------------
+
+OS:DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=14.04
+DISTRIB_CODENAME=trusty
+DISTRIB_DESCRIPTION="Ubuntu 14.04.3 LTS"
+
+uname:Linux 3.19.0-80-generic #88~14.04.1-Ubuntu SMP Fri Jan 13 14:54:07 UTC 2017 x86_64
+libc:glibc 2.19 NPTL 2.19 
+rlimit: STACK 8192k, CORE 0k, NPROC 39382, NOFILE 4096, AS infinity
+load average:3.17 1.58 0.95
+
+/proc/meminfo:
+MemTotal:       10114244 kB
+MemFree:          152632 kB
+MemAvailable:     140096 kB
+Buffers:            2768 kB
+Cached:           421824 kB
+SwapCached:        51868 kB
+Active:          8181772 kB
+Inactive:        1509172 kB
+Active(anon):    8144628 kB
+Inactive(anon):  1459020 kB
+Active(file):      37144 kB
+Inactive(file):    50152 kB
+Unevictable:        1004 kB
+Mlocked:            1004 kB
+SwapTotal:       1048572 kB
+SwapFree:             64 kB
+Dirty:               212 kB
+Writeback:             0 kB
+AnonPages:       9216128 kB
+Mapped:           184140 kB
+Shmem:            337200 kB
+Slab:             108144 kB
+SReclaimable:      56560 kB
+SUnreclaim:        51584 kB
+KernelStack:       23280 kB
+PageTables:        72760 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     6105692 kB
+Committed_AS:   14917880 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      388448 kB
+VmallocChunk:   34359256636 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:   3854336 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      208184 kB
+DirectMap2M:    10151936 kB
+DirectMap1G:     1048576 kB
+
+
+CPU:total 4 (2 cores per cpu, 2 threads per core) family 6 model 69 stepping 1, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, avx2, aes, clmul, erms, lzcnt, ht, tsc, tscinvbit, bmi1, bmi2
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 69
+model name	: Intel(R) Core(TM) i7-4600U CPU @ 2.10GHz
+stepping	: 1
+microcode	: 0x1c
+cpu MHz		: 2236.992
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 4
+core id		: 0
+cpu cores	: 2
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+bugs		:
+bogomips	: 5387.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 69
+model name	: Intel(R) Core(TM) i7-4600U CPU @ 2.10GHz
+stepping	: 1
+microcode	: 0x1c
+cpu MHz		: 2192.695
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 4
+core id		: 0
+cpu cores	: 2
+apicid		: 1
+initial apicid	: 1
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+bugs		:
+bogomips	: 5387.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 2
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 69
+model name	: Intel(R) Core(TM) i7-4600U CPU @ 2.10GHz
+stepping	: 1
+microcode	: 0x1c
+cpu MHz		: 2206.722
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 4
+core id		: 1
+cpu cores	: 2
+apicid		: 2
+initial apicid	: 2
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+bugs		:
+bogomips	: 5387.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+processor	: 3
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 69
+model name	: Intel(R) Core(TM) i7-4600U CPU @ 2.10GHz
+stepping	: 1
+microcode	: 0x1c
+cpu MHz		: 2499.925
+cache size	: 4096 KB
+physical id	: 0
+siblings	: 4
+core id		: 1
+cpu cores	: 2
+apicid		: 3
+initial apicid	: 3
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid xsaveopt
+bugs		:
+bogomips	: 5387.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 39 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 10114244k(152632k free), swap 1048572k(64k free)
+
+vm_info: Java HotSpot(TM) 64-Bit Server VM (25.66-b17) for linux-amd64 JRE (1.8.0_66-b17), built on Oct  6 2015 17:28:34 by "java_re" with gcc 4.3.0 20080428 (Red Hat 4.3.0-8)
+
+time: Wed Mar 22 15:29:06 2017
+elapsed time: 123 seconds (0d 0h 2m 3s)
+

@@ -61,6 +61,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
+        eisseisProcessingForm <- fillEisSeisProcessingTestForm
       } yield Ok(
         testOnly.views.html.eisseis.testEndpointEISSEISPageOne(
           natureOfBusinessForm,
@@ -74,7 +75,8 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
           tenYearPlanForm,
           hadPreviousRFIForm,
           previousSchemesForm,
-          schemes.getOrElse(defaultPreviousSchemesSize)
+          schemes.getOrElse(defaultPreviousSchemesSize),
+          eisseisProcessingForm
         )
       )
   }
@@ -124,6 +126,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
+    val testEisSeisProcessing = bindTestEisSeisProcessingForm()
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
@@ -139,7 +142,8 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         tenYearPlan,
         hadPreviousRFI,
         testPreviousSchemes,
-        defaultPreviousSchemesSize
+        defaultPreviousSchemesSize,
+        testEisSeisProcessing
       )
     ))
   }
@@ -210,6 +214,16 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         } else {
           TestPreviousSchemesForm.testPreviousSchemesForm.fill(TestPreviousSchemesModel(None))
         }
+    }
+  }
+
+
+  def fillEisSeisProcessingTestForm()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Form[TestEisSeisProcessingModel]] = {
+    s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
+      case Some(data) =>
+        if(data.isSeisIneligible) TestEisSeisProcessingForm.testEisSeisProcessingForm.fill(TestEisSeisProcessingModel(Constants.StandardRadioButtonNoValue))
+        else TestEisSeisProcessingForm.testEisSeisProcessingForm.fill(TestEisSeisProcessingModel(Constants.StandardRadioButtonYesValue))
+      case None => TestEisSeisProcessingForm.testEisSeisProcessingForm
     }
   }
 
@@ -314,6 +328,24 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
       }
     )
   }
+
+  def bindTestEisSeisProcessingForm()(implicit request: Request[AnyContent], user: TAVCUser): Form[TestEisSeisProcessingModel] = {
+    TestEisSeisProcessingForm.testEisSeisProcessingForm.bindFromRequest().fold(
+      formWithErrors => {
+        formWithErrors
+      },
+      validFormData => {
+        validFormData.eisSeisProcessing match {
+          case Constants.StandardRadioButtonYesValue => s4lConnector.saveFormData(KeystoreKeys.eisSeisProcessingModel,
+            EisSeisProcessingModel(Some(false),Some(false), Some(false)))
+          case Constants.StandardRadioButtonNoValue => s4lConnector.saveFormData(KeystoreKeys.eisSeisProcessingModel,
+            EisSeisProcessingModel(Some(true),Some(true), Some(true)))
+        }
+        TestEisSeisProcessingForm.testEisSeisProcessingForm.fill(validFormData)
+      }
+    )
+  }
+
 
 }
 
