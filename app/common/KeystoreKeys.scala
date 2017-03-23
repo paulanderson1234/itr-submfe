@@ -51,7 +51,7 @@ trait KeystoreKeys {
   val supportingDocumentsUpload: String = "attachments:supportingDocumentsUpload"
   val tradeStartDate: String = "companyDetails:tradeStartDate"
   val isFirstTrade: String = "companyDetails:isFirstTrade"
-
+  val hadOtherInvestments: String = "previousInvestmentScheme:hadOtherInvestments"
 
   // processing Keys
   val eisSeisProcessingModel: String = "processing:EisSeisProcessingModel"
@@ -76,6 +76,7 @@ trait KeystoreKeys {
   val backLinkProposedInvestment: String = "backLink:proposedInvestment"
   val backLinkIneligibleForKI: String = "backLink:IneligibleForKI"
   val backLinkConfirmCorrespondence: String = "backLink:ConfirmCorrespondenceAddress"
+  val backLinkHadRFI: String = "backLink:backLinkHadRFI"
 
   //application in progress key
   val applicationInProgress: String = "applicationInProgress"

@@ -402,6 +402,15 @@ page.previousInvestment.schemes.bullet.two=the Seed Enterprise Investment Scheme
 page.previousInvestment.schemes.bullet.three=Social Investment Tax Relief
 page.previousInvestment.schemes.bullet.four=the Venture Capital Trust scheme
 
+#had other investments
+page.previousInvestment.hadOtherInvestments.title=Has your company had any other investments?
+page.previousInvestment.hadOtherInvestments.heading=Has your company had any other investments?
+page.previousInvestment.hadOtherInvestments.info=We only need to know about:
+page.previousInvestment.hadOtherInvestments.info.one=State aid you''ve received under the de minimis regulation
+page.previousInvestment.hadOtherInvestments.info.two=aid given to promote risk finance investment (under European Commission guidelines on state aid)
+page.previousInvestment.hadOtherInvestments.help.subHeading=How do I know if I''ve had de minimis State aid?
+page.previousInvestment.hadOtherInvestments.help.text=HMRC aren''t able to help you with this. You should contact the person who gave you the aid if you need advice.
+
 #subsidiaries spending investment
 page.investment.SubsidiariesSpendingInvestment.title = Will another company that''s owned or controlled by [your company name] spend this investment?
 page.investment.SubsidiariesSpendingInvestment.heading = Will another company that''s owned or controlled by [your company name] spend this investment?

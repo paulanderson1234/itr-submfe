@@ -1,0 +1,51 @@
+@import models.HadOtherInvestmentsModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary}
+
+@(hadOtherInvestmentsForm: Form[HadOtherInvestmentsModel], backUrl: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.previousInvestment.hadOtherInvestments.heading")) {
+
+    @backButtonWithProgress(backUrl, Messages("common.section.progress.company.details.two"))
+
+    @errorSummary(hadOtherInvestmentsForm, "had-other-investments", "hadOtherInvestments")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.previousInvestment.hadOtherInvestments.heading")</h1>
+
+    @form(action = controllers.eis.routes.HadOtherInvestmentsController.submit()) {
+
+    <p class="lede" id="intro">@Messages("page.previousInvestment.hadOtherInvestments.info")</p>
+
+    <ul class="list list-bullet">
+        <li id="bullet-one">@Messages("page.previousInvestment.hadOtherInvestments.info.one")</li>
+        <li id="bullet-two">@Messages("page.previousInvestment.hadOtherInvestments.info.two")</li>
+    </ul>
+
+    <details>
+        <summary><span id="EIS-help" class="summary">@Messages("page.previousInvestment.hadOtherInvestments.help.subHeading")</span></summary>
+        <div class="panel panel-indent panel-border-narrow">
+            <p id="EIS-help-text">@Messages("page.previousInvestment.hadOtherInvestments.help.text")</p>
+        </div>
+    </details>
+
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = hadOtherInvestmentsForm("hadOtherInvestments"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.previousInvestment.hadOtherInvestments.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "hadOtherInvestments",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+    </div>
+    }
+}

@@ -16,7 +16,7 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -71,28 +71,9 @@ trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnro
         },
         validFormData => {
           s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-          validFormData.hadPreviousRFI match {
+          s4lConnector.saveFormData(KeystoreKeys.backLinkHadRFI, routes.HadPreviousRFIController.show().url)
+          Future.successful(Redirect(routes.HadOtherInvestmentsController.show()))
 
-            case Constants.StandardRadioButtonYesValue => {
-              getAllInvestmentFromKeystore(s4lConnector).flatMap {
-                previousSchemes =>
-                  if (previousSchemes.nonEmpty) {
-                    s4lConnector.saveFormData(KeystoreKeys.backLinkReviewPreviousSchemes, routes.HadPreviousRFIController.show().url)
-                    Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-                  }
-                  else {
-                    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.HadPreviousRFIController.show().url)
-                    Future.successful(Redirect(routes.PreviousSchemeController.show()))
-                  }
-              }
-            }
-            case Constants.StandardRadioButtonNoValue => {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.HadPreviousRFIController.show().url)
-              clearPreviousInvestments(s4lConnector)
-              Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-            }
-
-          }
         }
       )
     }
