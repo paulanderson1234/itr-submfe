@@ -78,16 +78,16 @@ trait HadOtherInvestmentsController extends FrontendController with AuthorisedAn
           validFormData => {
             s4lConnector.saveFormData(KeystoreKeys.hadOtherInvestments, validFormData)
             for{
-              f1 <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map(x => x.get)
-              f2 <- process(f1.hadPreviousRFI, validFormData)
-            }yield (f2)
+              hadPreviousRFIModel <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+              root <- process(hadPreviousRFIModel, validFormData)
+            }yield (root)
 
           }
         )
     }
   }
 
-  def process(hadPreviousRFI : String, validFormData:HadOtherInvestmentsModel)
+  def process(hadPreviousRFIModel : Option[HadPreviousRFIModel], validFormData:HadOtherInvestmentsModel)
              (implicit headerCarrier: HeaderCarrier, tavcUser:TAVCUser): Future[Result]= {
     validFormData.hadOtherInvestments match {
       case Constants.StandardRadioButtonYesValue => {
@@ -105,7 +105,7 @@ trait HadOtherInvestmentsController extends FrontendController with AuthorisedAn
       }
       case Constants.StandardRadioButtonNoValue => {
 
-        if (hadPreviousRFI.equals(Constants.StandardRadioButtonYesValue)) {
+        if (hadPreviousRFIModel.nonEmpty && hadPreviousRFIModel.get.hadPreviousRFI.equals(Constants.StandardRadioButtonYesValue)) {
           getAllInvestmentFromKeystore(s4lConnector).flatMap {
             previousSchemes =>
               if (previousSchemes.nonEmpty) {
