@@ -79,15 +79,15 @@ trait HadOtherInvestmentsController extends FrontendController with AuthorisedAn
             s4lConnector.saveFormData(KeystoreKeys.hadOtherInvestments, validFormData)
             for{
               hadPreviousRFIModel <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-              root <- process(hadPreviousRFIModel, validFormData)
-            }yield (root)
+              route <- routeRequest(hadPreviousRFIModel, validFormData)
+            }yield route
 
           }
         )
     }
   }
 
-  def process(hadPreviousRFIModel : Option[HadPreviousRFIModel], validFormData:HadOtherInvestmentsModel)
+  def routeRequest(hadPreviousRFIModel : Option[HadPreviousRFIModel], validFormData:HadOtherInvestmentsModel)
              (implicit headerCarrier: HeaderCarrier, tavcUser:TAVCUser): Future[Result]= {
     validFormData.hadOtherInvestments match {
       case Constants.StandardRadioButtonYesValue => {
