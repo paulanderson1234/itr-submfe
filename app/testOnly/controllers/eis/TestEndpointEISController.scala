@@ -59,6 +59,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
         tenYearPlanForm <- fillForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
+        hadOtherInvestmentsForm <- fillForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
       } yield Ok(
         testOnly.views.html.eis.testEndpointEISPageOne(
           natureOfBusinessForm,
@@ -70,7 +71,8 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
           tenYearPlanForm,
           hadPreviousRFIForm,
           previousSchemesForm,
-          schemes.getOrElse(defaultPreviousSchemesSize)
+          schemes.getOrElse(defaultPreviousSchemesSize),
+          hadOtherInvestmentsForm
         )
       )
   }
@@ -118,6 +120,7 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
     val tenYearPlan = bindForm[TenYearPlanModel](KeystoreKeys.tenYearPlan, TenYearPlanForm.tenYearPlanForm)
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
+    val hadOtherInvestments = bindForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
@@ -131,7 +134,8 @@ trait TestEndpointEISController extends FrontendController with AuthorisedAndEnr
         tenYearPlan,
         hadPreviousRFI,
         testPreviousSchemes,
-        defaultPreviousSchemesSize
+        defaultPreviousSchemesSize,
+        hadOtherInvestments
       )
     ))
   }

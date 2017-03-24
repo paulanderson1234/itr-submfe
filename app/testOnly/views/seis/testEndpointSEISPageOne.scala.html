@@ -8,7 +8,7 @@
 @(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel],tradeStartDateForm: Form[TradeStartDateModel], isFirstTradeForm: Form[IsFirstTradeModel],
 hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int,
 proposedInvestmentForm: Form[ProposedInvestmentModel],confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
-confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel])(implicit request: Request[_], messages: Messages)
+confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel], hadOtherInvestmentsForm: Form[HadOtherInvestmentsModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
@@ -76,6 +76,22 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
         '_labelAfter -> true,
         '_labelClass -> "block-label",
         '_legendID -> "hadPreviousRFI",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Had other previous investments Before</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = hadOtherInvestmentsForm("hadOtherInvestments"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.previousInvestment.hadOtherInvestments.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "hadOtherInvestments",
         '_groupClass -> "inline"
         )
     </div>

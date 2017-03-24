@@ -6,7 +6,7 @@
 
 @(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel], tradeStartDateForm: Form[TradeStartDateModel], isFirstTradeForm: Form[IsFirstTradeModel], commercialSaleForm: Form[CommercialSaleModel],
   isKnowledgeIntensiveForm: Form[IsKnowledgeIntensiveModel], testOperatingCostsForm: Form[OperatingCostsModel], percentageStaffWithMastersForm: Form[PercentageStaffWithMastersModel],
-  tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int, testEisSeisProcessingForm: Form[TestEisSeisProcessingModel])(implicit request: Request[_], messages: Messages)
+  tenYearPlanForm: Form[TenYearPlanModel], hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int, testEisSeisProcessingForm: Form[TestEisSeisProcessingModel], hadOtherInvestmentsForm: Form[HadOtherInvestmentsModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
@@ -277,6 +277,22 @@
         '_labelAfter -> true,
         '_labelClass -> "block-label",
         '_legendID -> "hadPreviousRFI",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+    <h2>Had other previous investments Before</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = hadOtherInvestmentsForm("hadOtherInvestments"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.previousInvestment.hadOtherInvestments.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "hadOtherInvestments",
         '_groupClass -> "inline"
         )
     </div>

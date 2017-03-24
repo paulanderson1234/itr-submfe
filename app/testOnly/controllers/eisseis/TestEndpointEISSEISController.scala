@@ -62,6 +62,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         hadPreviousRFIForm <- fillForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
         previousSchemesForm <- fillPreviousSchemesForm
         eisseisProcessingForm <- fillEisSeisProcessingTestForm
+        hadOtherInvestmentsForm <- fillForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
       } yield Ok(
         testOnly.views.html.eisseis.testEndpointEISSEISPageOne(
           natureOfBusinessForm,
@@ -76,7 +77,8 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
           hadPreviousRFIForm,
           previousSchemesForm,
           schemes.getOrElse(defaultPreviousSchemesSize),
-          eisseisProcessingForm
+          eisseisProcessingForm,
+          hadOtherInvestmentsForm
         )
       )
   }
@@ -127,6 +129,7 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
     val hadPreviousRFI = bindForm[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI, HadPreviousRFIForm.hadPreviousRFIForm)
     val testPreviousSchemes = bindPreviousSchemesForm()
     val testEisSeisProcessing = bindTestEisSeisProcessingForm()
+    val hadOtherInvestments = bindForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
@@ -143,7 +146,8 @@ trait TestEndpointEISSEISController extends FrontendController with AuthorisedAn
         hadPreviousRFI,
         testPreviousSchemes,
         defaultPreviousSchemesSize,
-        testEisSeisProcessing
+        testEisSeisProcessing,
+        hadOtherInvestments
       )
     ))
   }

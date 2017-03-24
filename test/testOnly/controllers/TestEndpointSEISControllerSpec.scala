@@ -66,6 +66,8 @@ class TestEndpointSEISControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[AddressModel](Matchers.eq(KeystoreKeys.manualContactAddress))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(mockS4lConnector.fetchAndGetFormData[HadOtherInvestmentsModel](Matchers.eq(KeystoreKeys.hadOtherInvestments))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.any())
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
   }
