@@ -57,6 +57,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         contactDetailsForm <- fillForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
         confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
         contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
+        hadOtherInvestmentsForm <- fillForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
       } yield Ok(
         testOnly.views.html.seis.testEndpointSEISPageOne(
           natureOfBusinessForm,
@@ -70,7 +71,8 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
           confirmContactDetailsForm,
           contactDetailsForm,
           confirmCorrespondAddressForm,
-          contactAddressForm
+          contactAddressForm,
+          hadOtherInvestmentsForm
         )
       )
   }
@@ -87,6 +89,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
     val contactDetails = bindForm[ContactDetailsModel](KeystoreKeys.manualContactDetails, ContactDetailsForm.contactDetailsForm)
     val confirmCorrespondAddress = bindConfirmContactAddress()
     val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
+    val hadOtherInvestments = bindForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
@@ -102,8 +105,8 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         confirmContactDetails,
         contactDetails,
         confirmCorrespondAddress,
-        contactAddress
-
+        contactAddress,
+        hadOtherInvestments
       )
     ))
   }
