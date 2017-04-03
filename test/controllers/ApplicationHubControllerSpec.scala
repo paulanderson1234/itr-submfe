@@ -203,5 +203,17 @@ class ApplicationHubControllerSpec extends BaseSpec{
       )
     }
   }
+
+  "Sending a GET request to ApplicationHubController attachments method when authenticated and enrolled" should {
+    "redirect to the ITR attachments frontend" in {
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestControllerCombined.attachments)(
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result).get shouldBe MockConfig.attachmentFileUploadOutsideUrl
+        }
+      )
+    }
+  }
   
 }

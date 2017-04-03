@@ -25,6 +25,7 @@ import controllers.Helpers.ControllerHelpers
 import models.ApplicationHubModel
 import models.submission.SchemeTypesModel
 import play.api.mvc.Result
+import play.api.mvc.Results._
 import services.{RegistrationDetailsService, SubscriptionService}
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -48,7 +49,6 @@ object ApplicationHubController extends ApplicationHubController{
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
-
 
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
@@ -113,6 +113,10 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     s4lConnector.clearCache().map {
       case _ => Redirect(routes.ApplicationHubController.show())
     }
+  }
+
+  val attachments = AuthorisedAndEnrolled.async{ implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }
 
 }

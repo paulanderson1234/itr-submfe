@@ -45,6 +45,10 @@ trait MockConfig extends AppConfig {
     s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
       s"investment-tax-relief/$schemeType/check-your-answers"
 
+  override lazy val attachmentFileUploadOutsideUrl =
+    s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
+      s"investment-tax-relief/check-and-submit/check-your-answers"
+
 }
 
 object MockConfig extends MockConfig

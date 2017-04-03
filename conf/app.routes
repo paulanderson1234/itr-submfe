@@ -23,6 +23,7 @@ GET        /sign-out                                controllers.SignOutControlle
 GET        /signed-out                              controllers.SignOutController.show
 
 GET        /hub                                     controllers.ApplicationHubController.show
+GET        /hub-attachments                         controllers.ApplicationHubController.attachments
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 

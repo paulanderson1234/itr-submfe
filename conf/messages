@@ -682,6 +682,8 @@ page.introduction.hub.existing.eis-seis.type=Advance Assurance - Enterprise Inve
 page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme
+page.introduction.hub.upload.link=Upload documents
+page.introduction.hub.upload.desc=to support an application.
 
 
 # SEIS trade start date
