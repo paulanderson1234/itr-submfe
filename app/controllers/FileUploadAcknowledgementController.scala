@@ -26,7 +26,7 @@ import views.html.hubPartials._
 
 import scala.concurrent.Future
 
-object FileUploadAcknowledgementController extends FileUploadAcknowledgementController
+object sbt FileUploadAcknowledgementController extends FileUploadAcknowledgementController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
