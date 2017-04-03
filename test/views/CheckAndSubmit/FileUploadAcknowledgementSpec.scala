@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package views
+package views.CheckAndSubmit
 
-import models.submission.SubmissionResponse
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
-import views.html.hubPartials.FileUploadAcknowledgement
+import views.html.checkAndSubmit.Acknowledgement
 
 
 class FileUploadAcknowledgementSpec extends ViewSpec {
@@ -32,22 +31,22 @@ class FileUploadAcknowledgementSpec extends ViewSpec {
 
     "contain the correct elements when loaded" in {
 
-      lazy val page = FileUploadAcknowledgement()(fakeRequest,applicationMessages)
+      lazy val page = Acknowledgement()(fakeRequest,applicationMessages)
       lazy val document = Jsoup.parse(contentAsString(page))
       //title
-      document.title() shouldBe Messages("page.hubPartials.fileUpload.acknowledgement.title")
+      document.title() shouldBe Messages("page.checkAndsubmit.attachments.acknowledgement.title")
       //banner
-      document.body.getElementById("submission-confirmation").text() shouldBe Messages("page.hubPartials.fileUpload.acknowledgement.submission.confirmation")
+      document.body.getElementById("submission-confirmation").text() shouldBe Messages("page.checkAndsubmit.attachments.acknowledgement.submission.confirmation")
 
       //what happens next
-      document.body.getElementById("what-happens-next").text() shouldBe Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.heading")
-      document.body.getElementById("happens-next").text() shouldBe Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.text")
+      document.body.getElementById("what-happens-next").text() shouldBe Messages("page.checkAndsubmit.attachments.acknowledgement.what.happens.heading")
+      document.body.getElementById("happens-next").text() shouldBe Messages("page.checkAndsubmit.attachments.acknowledgement.what.happens.text")
 
       //get help
       document.body.getElementById("get-help-action").text shouldBe Messages("common.error.help.text")
 
       //finish button
-      document.body.getElementById("submit").text() shouldBe Messages("page.hubPartials.fileUpload.acknowledgement.button.confirm")
+      document.body.getElementById("submit").text() shouldBe Messages("page.checkAndsubmit.attachments.acknowledgement.button.confirm")
     }
   }
 

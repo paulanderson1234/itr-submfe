@@ -53,7 +53,7 @@ class HadPreviousRFISpec extends ViewSpec {
       Jsoup.parse(contentAsString(result))
     }
 
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsFirstTradeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.getElementById("bullet-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.hintTitle")
@@ -79,7 +79,7 @@ class HadPreviousRFISpec extends ViewSpec {
       Jsoup.parse(contentAsString(result))
     }
     //TODO: replace when ProposedInvestment available...document.body.getElementById("back-link").attr("href") shouldEqual routes.ProposedInvestmentController.show().url
-    document.body.getElementById("back-link").attr("href") shouldEqual routes.TradeStartDateController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual routes.IsFirstTradeController.show().url
     document.title() shouldBe Messages("page.previousInvestment.hadPreviousRFI.title")
     document.getElementById("main-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.heading")
     document.getElementById("bullet-heading").text() shouldBe Messages("page.previousInvestment.hadPreviousRFI.hintTitle")

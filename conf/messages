@@ -836,11 +836,11 @@ page.checkAndSubmit.seis.attachments.acknowledgement.submissionConfirmation=You'
 page.checkAndSubmit.seis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
 
 # OUTSIDE FLOW file upload acknowledgement
-page.hubPartials.fileUpload.acknowledgement.title=You''ve uploaded your documents
-page.hubPartials.fileUpload.acknowledgement.submission.confirmation=You''ve uploaded your documents
-page.hubPartials.fileUpload.acknowledgement.what.happens.heading=What happens next
-page.hubPartials.fileUpload.acknowledgement.what.happens.text=Once we''ve received your documents and answers, we''ll contact you within 4 weeks to let you know the outcome of your application.
-page.hubPartials.fileUpload.acknowledgement.button.confirm=Finish
+page.checkAndsubmit.attachments.acknowledgement.title=You''ve uploaded your documents
+page.checkAndsubmit.attachments.acknowledgement.submission.confirmation=You''ve uploaded your documents
+page.checkAndsubmit.attachments.acknowledgement.what.happens.heading=What happens next
+page.checkAndsubmit.attachments.acknowledgement.what.happens.text=Once we''ve received your documents and answers, we''ll contact you within 4 weeks to let you know the outcome of your application.
+page.checkAndsubmit.attachments.acknowledgement.button.confirm=Finish
 
 ## Feedback ##
 feedback.title = Feedback
