@@ -1,0 +1,41 @@
+@import models.fileUpload.EnvelopeFile
+@import views.html.helpers.backButton
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(files: Seq[EnvelopeFile], envelopeID: String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
+
+    @backButton(controllers.routes.SupportingDocumentsUploadController.redirectAttachments().toString)
+
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkDocuments.heading")</h1>
+    <div class="form-group">
+        <p id="description-one">@Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")</p>
+    </div>
+
+    @if(files.size > 0){
+    <div class="form-group">
+        <table id="files-table">
+            <tbody>
+            <tr>
+                <td id="table-heading"><h2 class="heading-small">@Messages("page.checkAndSubmit.checkDocuments.outsideFlow.table.heading")</h2></td>
+                <td class="summaryLink align-top">
+                    <a id="supporting-docs-link" href="@routes.SupportingDocumentsUploadController.redirectAttachments">@Messages("common.base.change")</a>
+                </td>
+            </tr>
+            @for((file, index) <- files.zipWithIndex) {
+            <tr>
+                <td id="file-@{index}">@file.name</td><td></td>
+            </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    }
+
+    @form(action = controllers.routes.CheckDocumentsController.submit()) {
+    <div class="form-group">
+        <button class="btn button" type="submit" id="submit">@Messages("page.checkAndSubmit.checkDocuments.button.confirm")</button>
+    </div>
+    }
+}

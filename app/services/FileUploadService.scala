@@ -18,7 +18,8 @@ package services
 
 import auth.TAVCUser
 import config.FrontendAppConfig
-import connectors.AttachmentsFrontEndConnector
+import connectors.{AttachmentsConnector, AttachmentsFrontEndConnector}
+import models.fileUpload.{Envelope, EnvelopeFile}
 import play.Logger
 import play.mvc.Http.Status._
 import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
@@ -28,11 +29,13 @@ import scala.concurrent.{ExecutionContext, Future}
 object FileUploadService extends FileUploadService {
   override val attachmentsFrontEndConnector = AttachmentsFrontEndConnector
   override def getUploadFeatureEnabled: Boolean = FrontendAppConfig.uploadFeatureEnabled
+  override lazy val attachmentsConnector = AttachmentsConnector
 }
 
 trait FileUploadService {
 
   val attachmentsFrontEndConnector: AttachmentsFrontEndConnector
+  val attachmentsConnector: AttachmentsConnector
 
   def getUploadFeatureEnabled: Boolean
 
@@ -52,6 +55,24 @@ trait FileUploadService {
     }
     else {
       Future(HttpResponse(OK))
+    }
+  }
+
+  def checkEnvelopeStatus(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Option[Envelope]] = {
+    attachmentsConnector.getEnvelopeStatus(envelopeID).map {
+      result => result.status match {
+        case OK => result.json.asOpt[Envelope]
+        case _ =>
+          Logger.warn(s"[FileUploadConnector][checkEnvelopeStatus] Error ${result.status} received.")
+          None
+      }
+    }
+  }
+
+  def getEnvelopeFiles(envelopeID: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[Seq[EnvelopeFile]] = {
+    checkEnvelopeStatus(envelopeID).map {
+      case Some(envelope) => envelope.files.getOrElse(Seq())
+      case _ => Seq()
     }
   }
 }

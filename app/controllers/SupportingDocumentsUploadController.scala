@@ -19,31 +19,40 @@ package controllers
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.supportingDocuments.SupportingDocumentsUpload
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.checkAndSubmit.FileUploadAcknowledgement
-
 import scala.concurrent.Future
 
-object FileUploadAcknowledgementController extends FileUploadAcknowledgementController
+object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
+  override lazy val s4lConnector: S4LConnector = S4LConnector
+  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val s4lConnector = S4LConnector
 }
 
-trait FileUploadAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(FileUploadAcknowledgement()))
+      Future.successful(Ok(SupportingDocumentsUpload("")))
+    }
+
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }
 
-  val finish = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val redirectAttachments = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
+  }
+
+  val cancel = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.ApplicationHubController.show()))
   }
-
 }
