@@ -108,39 +108,4 @@ trait EisSeisHelper {
 
     result.flatMap(res => res)
   }
-
-  /** Helper method to determine whether to show trade start date error
-    *
-    * @param s4lConnector        An instance of the Save4Later Connector.
-    * @param tradeStartDateModel The current valid trade start date model entered.
-    */
-  def shouldDisplayTradeStartDateError(s4lConnector: connectors.S4LConnector, tradeStartDateModel: TradeStartDateModel)
-                                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
-
-    def shouldDisplay(existingStartDate: Option[TradeStartDateModel], eisSeisProcessingModel: Option[EisSeisProcessingModel]): Future[Boolean] = {
-      if (existingStartDate.nonEmpty && dateChangedCheck(existingStartDate.get, tradeStartDateModel)) Future(true)
-      else {
-        eisSeisProcessingModel match {
-          case Some(data) => Future(!data.isSeisIneligible)
-          case _ => Future(true)
-        }
-      }
-    }
-
-    (for {
-      existingStartDate: Option[TradeStartDateModel] <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
-      processingModel <- s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel)
-
-    } yield shouldDisplay(existingStartDate, processingModel)).flatMap(result => result)
-
-  }
-
-  private def dateChangedCheck(tradeStartDateModel: TradeStartDateModel, existingStartDateModel: TradeStartDateModel): Boolean = {
-    Validation.isNotSameDate(
-      Validation.constructDate(
-        tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get),
-      Validation.constructDate(
-        existingStartDateModel.tradeStartDay.get, existingStartDateModel.tradeStartMonth.get, existingStartDateModel.tradeStartYear.get))
-  }
-
 }

@@ -21,11 +21,10 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.Helpers.{ControllerHelpers, EisSeisHelper, PreviousSchemesHelper}
+import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
 import models.HadPreviousRFIModel
-import play.Logger
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{Action, AnyContent, Result}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eisseis.previousInvestment.ReviewPreviousSchemes
 import play.api.i18n.Messages.Implicits._
