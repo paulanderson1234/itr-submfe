@@ -33,6 +33,7 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import views.html.supportingDocuments.SupportingDocumentsUpload
 
 import scala.concurrent.Future
 
@@ -115,4 +116,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     }
   }
 
+  val supportingDocuments = AuthorisedAndEnrolled.async{ implicit user => implicit request =>
+    Future.successful(Ok(SupportingDocumentsUpload("")))
+  }
 }

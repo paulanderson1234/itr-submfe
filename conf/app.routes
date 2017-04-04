@@ -25,7 +25,17 @@ GET        /signed-out                              controllers.SignOutControlle
 GET        /hub                                     controllers.ApplicationHubController.show
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
+GET        /hub-attachments                         controllers.ApplicationHubController.supportingDocuments
 
+GET        /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.show
+
+GET        /check-your-documents                    controllers.CheckDocumentsController.show(envelopeId: Option[String]?=None)
+POST       /check-your-documents                    controllers.CheckDocumentsController.submit
+
+GET        /supporting-documents-upload             controllers.SupportingDocumentsUploadController.show
+POST       /supporting-documents-upload             controllers.SupportingDocumentsUploadController.submit
+GET        /supporting-documents-redirect           controllers.SupportingDocumentsUploadController.redirectAttachments
+GET        /supporting-documents-cancel           controllers.SupportingDocumentsUploadController.cancel
 
 #Feedback routes
 #####################################################################################################################

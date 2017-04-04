@@ -14,52 +14,45 @@
  * limitations under the License.
  */
 
-package controllers.eis
+package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.Helpers.ControllerHelpers
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.eis.supportingDocuments.SupportingDocuments
+import views.html.supportingDocuments.SupportingDocumentsUpload
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-
 import scala.concurrent.Future
 
-object SupportingDocumentsController extends SupportingDocumentsController
+object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
   override lazy val s4lConnector: S4LConnector = S4LConnector
-  val attachmentsFrontEndUrl = applicationConfig.attachmentFileUploadUrl("eis")
   val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
-
-  val attachmentsFrontEndUrl: String
+  override val acceptedFlows = Seq()
   val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if (fileUploadService.getUploadFeatureEnabled) {
-      Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+      Future.successful(Ok(SupportingDocumentsUpload("")))
     }
-    else {
-      ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-        case Some(backlink) => Future.successful(Ok(SupportingDocuments(backlink)))
-        case None => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-      }
-    }
-  }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.CheckAnswersController.show()))
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }
 
+  val redirectAttachments = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
+  }
+
+  val cancel = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.ApplicationHubController.show()))
+  }
 }
