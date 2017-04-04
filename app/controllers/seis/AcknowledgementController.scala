@@ -177,13 +177,8 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
               case OK =>
                 s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
                   envelopeId => fileUploadService.closeEnvelope(tavcReferenceNumber, envelopeId.fold("")(_.toString)).map {
-                    result => result.status match {
-                      case OK =>
-                        s4lConnector.clearCache()
+                   _ => s4lConnector.clearCache()
                         Ok(views.html.seis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-                      case _ => s4lConnector.clearCache()
-                        InternalServerError
-                    }
                   }
                 }
               case _ => {
