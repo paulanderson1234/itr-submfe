@@ -18,7 +18,6 @@ package connectors
 
 import auth.TAVCUser
 import config.{FrontendAppConfig, WSHttp}
-import play.api.libs.json.{Writes, JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
@@ -35,7 +34,7 @@ trait AttachmentsFrontEndConnector {
 
   def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
-    http.POST[JsValue, HttpResponse](s"$internalAttachmentsUrl/internal/$tavcRef/$envelopeId/${user.internalId}/close-envelope", Json.toJson("")
-    )(Writes.JsValueWrites, HttpReads.readRaw, headerCarrier)
+    http.POSTEmpty[HttpResponse](s"$internalAttachmentsUrl/internal/$tavcRef/$envelopeId/${user.internalId}/close-envelope")(
+      HttpReads.readRaw,headerCarrier)
   }
 }
