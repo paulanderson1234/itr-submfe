@@ -63,4 +63,8 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.FileUploadAcknowledgementController.show()))
   }
+
+  val redirectAttachments = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
+  }
 }
