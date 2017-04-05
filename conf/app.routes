@@ -28,6 +28,8 @@ POST       /hub-delete                              controllers.ApplicationHubCo
 
 GET        /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.show
 
+GET        /aa-applications                         controllers.ApplicationsAAController.show
+
 
 #Feedback routes
 #####################################################################################################################

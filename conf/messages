@@ -835,12 +835,27 @@ page.checkAndSubmit.seis.attachments.acknowledgement.happens.next=We''ll contact
 page.checkAndSubmit.seis.attachments.acknowledgement.submissionConfirmation=You''ve sent your application
 page.checkAndSubmit.seis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
 
-# OUTSIDE FLOW file upload acknowledgement
+#OUTSIDE FLOW file upload acknowledgement
 page.checkAndsubmit.attachments.acknowledgement.title=You''ve uploaded your documents
 page.checkAndsubmit.attachments.acknowledgement.submission.confirmation=You''ve uploaded your documents
 page.checkAndsubmit.attachments.acknowledgement.what.happens.heading=What happens next
 page.checkAndsubmit.attachments.acknowledgement.what.happens.text=Once we''ve received your documents and answers, we''ll contact you within 4 weeks to let you know the outcome of your application.
 page.checkAndsubmit.attachments.acknowledgement.button.confirm=Finish
+
+#AA Applications
+page.historicSubmissions.applications.aa.section.dashboard=Dashboard
+page.historicSubmissions.applications.aa.title=Your applications for Advance Assurance
+page.historicSubmissions.applications.aa.advance.assurance.heading=Advance Assurance
+page.historicSubmissions.applications.aa.your.applications.heading=Your applications
+page.historicSubmissions.applications.aa.new.heading=Applications in progress
+page.historicSubmissions.applications.aa.new.text=You have no unsubmitted applications
+page.historicSubmissions.applications.aa.previous.submitted.applications.heading=Previously submitted applications
+page.historicSubmissions.applications.aa.table.schemes.heading=Applicable schemes
+page.historicSubmissions.applications.aa.table.submissionDate.heading=Submission date
+page.historicSubmissions.applications.aa.table.refNo.heading=Reference number
+page.historicSubmissions.applications.aa.table.status.heading=Status
+
+
 
 ## Feedback ##
 feedback.title = Feedback

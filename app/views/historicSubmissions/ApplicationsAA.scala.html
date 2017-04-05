@@ -1,0 +1,58 @@
+@import models.submission.SubmissionResponse
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.backButtonWithProgress
+@import config.FrontendAppConfig
+@import controllers.feedback.routes
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.historicSubmissions.applications.aa.title"), bodyClasses = None) {
+
+@backButtonWithProgress(controllers.routes.ApplicationHubController.show().url, Messages("page.historicSubmissions.applications.aa.section.dashboard"))
+
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <p class="heading-medium faded-text [modifier class]">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</p>
+        <h2 id="main-heading" class="form-title heading-xlarge">@Messages("page.historicSubmissions.applications.aa.your.applications.heading")</h2>
+
+        <div class = "form-group">
+            <h2 class="heading-small" id="aa-application-heading">@Messages("page.historicSubmissions.applications.aa.new.heading")</h2>
+                <p>@Messages("page.historicSubmissions.applications.aa.new.text")</p>
+        </div>
+
+        @form(action = controllers.routes.ApplicationHubController.newApplication()) {
+        <button class="button" type="submit" id="create-new-application">@Messages("page.introduction.hub.button")</button>
+        }
+        <div class = "form-group">
+            <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
+        </div>
+
+        <table id="previous-schemes-table">
+            <thead>
+            <tr>
+                <th id="scheme-table-heading">@Messages("page.historicSubmissions.applications.aa.table.schemes.heading")</th>
+                <th id="date-table-heading">@Messages("page.historicSubmissions.applications.aa.table.submissionDate.heading")</th>
+                <th id="amount-raised-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
+                <th id="amount-spent-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
+                <th>
+                    <span class="visuallyhidden">
+                        @Messages("common.base.change")
+                    </span>
+                </th>
+                <th>
+                    <span class="visuallyhidden">
+                        @Messages("common.base.remove")
+                    </span>
+                </th>
+            </tr>
+            </thead>
+            </table>
+
+
+
+    </div>
+</div>
+
+}
