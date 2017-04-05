@@ -31,11 +31,11 @@ GET        /fileUpload-acknowledgement              controllers.FileUploadAcknow
 
 GET        /check-your-documents                    controllers.CheckDocumentsController.show(envelopeId: Option[String]?=None)
 POST       /check-your-documents                    controllers.CheckDocumentsController.submit
+GET        /check-documents-redirect                controllers.CheckDocumentsController.redirectAttachments
 
 GET        /supporting-documents-upload             controllers.SupportingDocumentsUploadController.show
 POST       /supporting-documents-upload             controllers.SupportingDocumentsUploadController.submit
-GET        /supporting-documents-redirect           controllers.SupportingDocumentsUploadController.redirectAttachments
-GET        /supporting-documents-cancel           controllers.SupportingDocumentsUploadController.cancel
+GET        /supporting-documents-cancel             controllers.SupportingDocumentsUploadController.cancel
 
 #Feedback routes
 #####################################################################################################################

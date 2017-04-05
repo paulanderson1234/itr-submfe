@@ -6,7 +6,7 @@
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 
-    @backButton(controllers.routes.SupportingDocumentsUploadController.redirectAttachments().toString)
+    @backButton(routes.CheckDocumentsController.redirectAttachments().toString)
 
     <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkDocuments.heading")</h1>
     <div class="form-group">
@@ -20,7 +20,7 @@
             <tr>
                 <td id="table-heading"><h2 class="heading-small">@Messages("page.checkAndSubmit.checkDocuments.outsideFlow.table.heading")</h2></td>
                 <td class="summaryLink align-top">
-                    <a id="supporting-docs-link" href="@routes.SupportingDocumentsUploadController.redirectAttachments">@Messages("common.base.change")</a>
+                    <a id="supporting-docs-link" href="@routes.CheckDocumentsController.redirectAttachments">@Messages("common.base.change")</a>
                 </td>
             </tr>
             @for((file, index) <- files.zipWithIndex) {

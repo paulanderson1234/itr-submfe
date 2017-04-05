@@ -22,7 +22,7 @@ import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.hubPartials._
+import views.html.checkAndSubmit.FileUploadAcknowledgement
 
 import scala.concurrent.Future
 
@@ -39,7 +39,7 @@ trait FileUploadAcknowledgementController extends FrontendController with Author
   override val acceptedFlows = Seq()
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(views.html.hubPartials.FileUploadAcknowledgement()))
+    Future.successful(Ok(FileUploadAcknowledgement()))
   }
 
 }

@@ -41,14 +41,10 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
   val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Ok(SupportingDocumentsUpload("")))
+      Future.successful(Ok(SupportingDocumentsUpload()))
     }
 
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
-  }
-
-  val redirectAttachments = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }
 
