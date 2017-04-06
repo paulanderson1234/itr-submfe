@@ -29,7 +29,6 @@ import scala.concurrent.Future
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
   override lazy val s4lConnector: S4LConnector = S4LConnector
-  val fileUploadService: FileUploadService = FileUploadService
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
@@ -38,8 +37,6 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
 trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
-  val fileUploadService: FileUploadService
-
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
       Future.successful(Ok(SupportingDocumentsUpload()))
     }

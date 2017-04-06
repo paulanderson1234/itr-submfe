@@ -27,9 +27,11 @@
             <h2 id="what-happens-next" class="heading-medium">@Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.heading")</h2>
             <p id="happens-next">@Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.text")</p>
         </div>
+        @form(action = controllers.routes.FileUploadAcknowledgementController.finish()) {
         <div class="form-group">
-            <a id="submit" class="button" href="@controllers.feedback.routes.FeedbackController.show().url">@Messages("page.hubPartials.fileUpload.acknowledgement.button.confirm")</a>
+            <button class="btn button" type="submit" id="submit">@Messages("page.hubPartials.fileUpload.acknowledgement.button.confirm")</button>
         </div>
+        }
     </div>
 </div>
 
