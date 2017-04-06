@@ -468,6 +468,7 @@ page.supportingDocumentsUpload.upload.instruction=You can either upload your doc
 page.supportingDocumentsUpload.send.confirm=Send your documents now?
 page.supportingDocumentsUpload.Note=Your application will not be complete until you send us these files
 page.supportingDocumentsUpload.outFlow.heading=If you haven''t already submitted supporting documents, you''ll need to upload your company''s:
+page.supportingDocumentsUpload.outFlow.Note=You must submit these documents to complete your application
 
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
@@ -486,6 +487,7 @@ page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=To support your application you will need to send us your company''s:
 
 #check your answers page
+page.checkAndSubmit.checkDocuments.title=Check your documents
 page.checkAndSubmit.checkDocuments.heading=Check your documents
 page.checkAndSubmit.checkDocuments.outsideFlow.desc=Check you''ve uploaded the correct supporting documents.
 page.checkAndSubmit.checkDocuments.outsideFlow.table.heading=Your supporting documents

@@ -4,11 +4,11 @@
 
 @(files: Seq[EnvelopeFile], envelopeID: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
+@main_template(Messages("page.checkAndSubmit.checkDocuments.title"), articleLayout=false) {
 
     @backButton(routes.CheckDocumentsController.redirectAttachments().toString)
 
-    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkDocuments.heading")</h1>
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkDocuments.heading")</h1>
     <div class="form-group">
         <p id="description-one">@Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")</p>
     </div>
@@ -17,17 +17,22 @@
     <div class="form-group">
         <table id="files-table">
             <tbody>
-            <tr>
-                <td id="table-heading"><h2 class="heading-small">@Messages("page.checkAndSubmit.checkDocuments.outsideFlow.table.heading")</h2></td>
-                <td class="summaryLink align-top">
-                    <a id="supporting-docs-link" href="@routes.CheckDocumentsController.redirectAttachments">@Messages("common.base.change")</a>
-                </td>
-            </tr>
-            @for((file, index) <- files.zipWithIndex) {
-            <tr>
-                <td id="file-@{index}">@file.name</td><td></td>
-            </tr>
-            }
+                <tr><td></td><td></td></tr>
+                <tr>
+                    <td>
+                        @for((file, index) <- files.zipWithIndex) {
+                            <span id="file-@{index}">@file.name</span>
+                            <br>
+                        }
+                    </td>
+                    @for((file, index) <- files.zipWithIndex) {
+                        @if(index == 0) {
+                            <td class="summaryLink align-top" align="right">
+                                <a id="supporting-docs-link" href="@routes.CheckDocumentsController.redirectAttachments">@Messages("common.base.change")</a>
+                            </td>
+                        }
+                    }
+                </tr>
             </tbody>
         </table>
     </div>

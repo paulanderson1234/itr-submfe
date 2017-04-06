@@ -21,13 +21,12 @@ import common.KeystoreKeys
 import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.checkAndSubmit.CheckDocuments
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.{Action, AnyContent}
 
 import scala.concurrent.Future
 
@@ -36,14 +35,14 @@ object CheckDocumentsController extends CheckDocumentsController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val fileUploadService = FileUploadService
+  val fileUploadService: FileUploadService = FileUploadService
 }
 
 trait CheckDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
 
-  lazy val fileUploadService = FileUploadService
+  val fileUploadService: FileUploadService
 
   def show (envelopeId: Option[String]) : Action[AnyContent] = AuthorisedAndEnrolled.async {
     implicit user => implicit request =>
@@ -55,8 +54,7 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
         envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
         files <- fileUploadService.getEnvelopeFiles(envelopeId.get)
       } yield (files, envelopeId) match {
-        case (_, _) => Ok(CheckDocuments(files, envelopeId.get))
-        case (_, None) => InternalServerError(internalServerErrorTemplate)
+        case (_, Some(envelopeId)) => Ok(CheckDocuments(files, envelopeId))
       }
   }
 
