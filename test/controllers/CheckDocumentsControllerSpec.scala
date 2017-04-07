@@ -64,9 +64,7 @@ class CheckDocumentsControllerSpec extends BaseSpec {
     val files = Seq(EnvelopeFile("1","PROCESSING","test.pdf","application/pdf","2016-03-31T12:33:45Z",Metadata(None),"test.url"))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(envelopeId))
-    when(mockFileUploadService.getEnvelopeFiles(Matchers.eq(KeystoreKeys.envelopeId))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(files))
-    when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(CacheMap("", Map())))
+    when(mockFileUploadService.getEnvelopeFiles(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(files))
   }
 
   "Sending a GET request to CheckDocumentsController when authenticated and enrolled" should {

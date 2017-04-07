@@ -17,10 +17,19 @@
 package controllers
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.EnrolmentConnector
 import controllers.helpers.BaseSpec
+import models.fileUpload.{EnvelopeFile, Metadata}
+import org.mockito.Matchers
+import org.mockito.Mockito.when
 import play.api.test.Helpers._
+import services.FileUploadService
+import uk.gov.hmrc.play.http.HttpResponse
+import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.Future
 
 
 class FileUploadAcknowledgementControllerSpec extends BaseSpec {
@@ -30,6 +39,17 @@ class FileUploadAcknowledgementControllerSpec extends BaseSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector
+    val fileUploadService: FileUploadService = mockFileUploadService
+  }
+
+  def setupMocks(): Unit = {
+
+    val files = Seq(EnvelopeFile("1","PROCESSING","test.pdf","application/pdf","2016-03-31T12:33:45Z",Metadata(None),"test.url"))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(envelopeId))
+    when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),
+      Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(CREATED)))
+
   }
 
   "TradingForTooLongController" should {
@@ -43,6 +63,7 @@ class FileUploadAcknowledgementControllerSpec extends BaseSpec {
 
   "Sending a GET request to TradingForTooLongController when authenticated and enrolled" should {
     "return a 200 OK Swhen something is fetched from keystore" in {
+      setupMocks()
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -50,7 +71,7 @@ class FileUploadAcknowledgementControllerSpec extends BaseSpec {
     }
 
     "provide an empty model and return a 200 OK when nothing is fetched using keystore" in {
-
+      setupMocks()
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK

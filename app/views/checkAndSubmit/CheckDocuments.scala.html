@@ -26,8 +26,8 @@
                         }
                     </td>
                     @for((file, index) <- files.zipWithIndex) {
-                        @if(index == 0) {
-                            <td class="summaryLink align-top" align="right">
+                        @if(index == 0) {s
+                            <td class="summaryLink align-top">
                                 <a id="supporting-docs-link" href="@routes.CheckDocumentsController.redirectAttachments">@Messages("common.base.change")</a>
                             </td>
                         }
