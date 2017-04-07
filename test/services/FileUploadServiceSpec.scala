@@ -20,24 +20,21 @@ import auth.{TAVCUser, ggUser}
 import common.KeystoreKeys
 import connectors.{AttachmentsConnector, AttachmentsFrontEndConnector, S4LConnector}
 import controllers.helpers.FakeRequestHelper
+import data.SubscriptionTestData._
+import models.fileUpload.{Envelope, EnvelopeFile, Metadata}
 import org.mockito.Matchers
+import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
+import play.api.libs.json.Json
+import play.api.test.Helpers._
+import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
-import data.SubscriptionTestData._
-import models.fileUpload.{Envelope, EnvelopeFile, Metadata}
-import org.junit.Assert
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import org.mockito.Mockito._
-import play.api.libs.json.Json
-import play.api.test
-import play.api.test.Helpers._
-import uk.gov.hmrc.play.config.ServicesConfig
-
 import scala.concurrent.Future
 
 
@@ -149,8 +146,8 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTes
         result.flatMap {
           files => files.map{
                 file => {
-                  Assert.assertEquals(file.status, "PROCESSING")
-                  Assert.assertEquals(file.id, "1")
+                  assertResult(file.status)("PROCESSING")
+                  assertResult(file.id)("1")
                 }
               }
             }
