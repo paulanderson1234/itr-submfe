@@ -26,7 +26,6 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers.{redirectLocation, _}
 import services.FileUploadService
-import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
