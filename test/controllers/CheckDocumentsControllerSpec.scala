@@ -26,6 +26,7 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers.{redirectLocation, _}
 import services.FileUploadService
+import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
 
@@ -37,7 +38,7 @@ class CheckDocumentsControllerSpec extends BaseSpec {
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val applicationConfig = MockConfig
-    override val fileUploadService = FileUploadService
+    override val fileUploadService = mockFileUploadService
   }
 
   "CheckDocumentsController" should {
@@ -64,6 +65,8 @@ class CheckDocumentsControllerSpec extends BaseSpec {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(envelopeId))
     when(mockFileUploadService.getEnvelopeFiles(Matchers.eq(KeystoreKeys.envelopeId))(Matchers.any(), Matchers.any())).thenReturn(Future.successful(files))
+    when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   "Sending a GET request to CheckDocumentsController when authenticated and enrolled" should {
@@ -71,7 +74,7 @@ class CheckDocumentsControllerSpec extends BaseSpec {
     "return a 200 when a valid envelopeId is received" in {
       setupMocks()
       mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show(envelopeId))(
+      showWithSessionAndAuth(TestController.show(envelopeId.get))(
         result => {
           status(result) shouldBe OK
         }
