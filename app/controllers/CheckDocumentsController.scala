@@ -44,17 +44,14 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
 
   val fileUploadService: FileUploadService
 
-  def show (envelopeId: Option[String]) : Action[AnyContent] = AuthorisedAndEnrolled.async {
+  def show(envelopeId: String): Action[AnyContent] = AuthorisedAndEnrolled.async {
     implicit user => implicit request =>
-      if(envelopeId.fold("")(_.toString).length > 0) {
-        s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
-      }
 
+      s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId)
       for {
-        envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
-        files <- fileUploadService.getEnvelopeFiles(envelopeId.get)
+        files <- fileUploadService.getEnvelopeFiles(envelopeId)
       } yield (files, envelopeId) match {
-        case (_, Some(envelopeId)) => Ok(CheckDocuments(files, envelopeId))
+        case (_, _) => Ok(CheckDocuments(files, envelopeId))
       }
   }
 
