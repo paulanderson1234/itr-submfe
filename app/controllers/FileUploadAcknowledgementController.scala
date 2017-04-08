@@ -47,10 +47,10 @@ trait FileUploadAcknowledgementController extends FrontendController with Author
     for {
       envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
       tavcRef <- getTavCReferenceNumber()
-      response <- fileUploadService.closeEnvelope(tavcRef, envelopeId.get)
-    } yield (envelopeId) match {
-      case (Some(envelopeId)) => Ok(FileUploadAcknowledgement())
-      case None => InternalServerError(internalServerErrorTemplate)
+      response <- fileUploadService.closeEnvelope(tavcRef, envelopeId.getOrElse(""))
+    } yield envelopeId match {
+      case Some(envelopId) if envelopId.length > 0 => Ok(FileUploadAcknowledgement())
+      case _ => InternalServerError(internalServerErrorTemplate)
     }
   }
 
