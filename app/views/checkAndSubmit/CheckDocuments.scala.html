@@ -4,7 +4,7 @@
 
 @(files: Seq[EnvelopeFile], envelopeID: String)(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
+@main_template(Messages("page.checkAndSubmit.checkDocuments.heading"), articleLayout=false) {
 
     @backButton(routes.CheckDocumentsController.redirectAttachments().toString)
 

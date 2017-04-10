@@ -16,31 +16,47 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import auth.AuthorisedAndEnrolledForTAVC
+import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import play.Logger
+import services.SubmissionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.checkAndSubmit.FileUploadAcknowledgement
+import utils.DateFormatter
+import views.html.historicSubmissions.HistoricAASubmission
 
-import scala.concurrent.Future
 
 
-object  FileUploadAcknowledgementController extends FileUploadAcknowledgementController
+object  HistoricAASubmissionController extends HistoricAASubmissionController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val s4lConnector = S4LConnector
+  override val submissionService = SubmissionService
 }
 
-trait FileUploadAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait HistoricAASubmissionController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter{
 
   override val acceptedFlows = Seq()
+  val submissionService: SubmissionService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(FileUploadAcknowledgement()))
+    (for{
+      tavcRef <- getTavCReferenceNumber()
+      submissionDetails <- submissionService.getEtmpSubmissionDetails(tavcRef)
+    } yield Ok(HistoricAASubmission(submissionDetails.get.submissions.map{
+      submission => submission.copy(submissionDate = etmpDateToDateString(submission.submissionDate))
+    }))).recover{
+      case e: Exception => {
+        Logger.warn(s"[HistoricAASubmissionController][show] - Exception retrieving historic AA submissions: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
+      }
+    }
+
   }
 
 }

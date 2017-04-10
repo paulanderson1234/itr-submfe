@@ -37,6 +37,10 @@ GET        /supporting-documents-upload             controllers.SupportingDocume
 POST       /supporting-documents-upload             controllers.SupportingDocumentsUploadController.submit
 GET        /supporting-documents-cancel             controllers.SupportingDocumentsUploadController.cancel
 
+GET        /historic-aa-submission                  controllers.HistoricAASubmissionController.show
+
+
+
 #Feedback routes
 #####################################################################################################################
 GET         /feedback                               controllers.feedback.FeedbackController.show

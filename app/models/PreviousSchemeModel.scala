@@ -52,7 +52,7 @@ object PreviousSchemeModel extends DateFormatter with CostFormatter {
     }
   }
 
-  def getSchemeName(schemeType: String, otherSchemeName: Option[String] = None) = {
+  def getSchemeName(schemeType: String, otherSchemeName: Option[String] = None): String = {
     schemeType match {
       case Constants.schemeTypeEis => Messages("page.previousInvestment.schemeType.eis")
       case Constants.schemeTypeSeis => Messages("page.previousInvestment.schemeType.seis")
@@ -62,4 +62,13 @@ object PreviousSchemeModel extends DateFormatter with CostFormatter {
     }
   }
 
+  def concatSchemeNames(schemeTypes: List[String]): String = {
+    val join = "and"
+    schemeTypes.map {
+      schemeType => getSchemeName(schemeType)}
+      .mkString(", ")
+      .reverse
+      .replaceFirst(" ,", " " + join.reverse + " ")
+      .reverse
+  }
 }

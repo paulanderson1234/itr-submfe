@@ -74,18 +74,10 @@ trait TradeStartDateController extends FrontendController with AuthorisedAndEnro
                   s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
                   EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = false)
                   Future.successful(Redirect(routes.IsFirstTradeController.show()))
-                } else EisSeisHelper.shouldDisplayTradeStartDateError(s4lConnector, validFormData).map {
-                  // update start date condition only after checking if already seis ineligible
-                  // only show seis error if not already ineligible (as already shown it before otherwise)
-                  // however show errro if the data has changed
-                  case shouldDisplayError if shouldDisplayError =>
-                    s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
-                    Redirect(routes.TradeStartDateErrorController.show())
-                  case _ =>
-                    s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-                    EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
-                    Redirect(routes.IsFirstTradeController.show())
+                }else{
+                  s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+                  EisSeisHelper.setStartDateCondition(s4lConnector, tradeStartConditionIneligible = true)
+                  Future.successful(Redirect(routes.TradeStartDateErrorController.show()))
                 }
                 case _ =>
                   s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)

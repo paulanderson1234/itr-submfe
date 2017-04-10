@@ -853,6 +853,19 @@ page.hubPartials.fileUpload.acknowledgement.button.confirm=Finish
 page.introduction.hub.upload.link=Upload documents
 page.introduction.hub.upload.desc=to support an application.
 
+#AA Applications
+page.historicSubmissions.applications.aa.section.dashboard=Dashboard
+page.historicSubmissions.applications.aa.title=Your applications for Advance Assurance
+page.historicSubmissions.applications.aa.advance.assurance.heading=Advance Assurance
+page.historicSubmissions.applications.aa.your.applications.heading=Your applications
+page.historicSubmissions.applications.aa.new.heading=Applications in progress
+page.historicSubmissions.applications.aa.new.text=You have no unsubmitted applications
+page.historicSubmissions.applications.aa.previous.submitted.applications.heading=Previously submitted applications
+page.historicSubmissions.applications.aa.table.schemes.heading=Applicable schemes
+page.historicSubmissions.applications.aa.table.submissionDate.heading=Submission date
+page.historicSubmissions.applications.aa.table.refNo.heading=Reference number
+page.historicSubmissions.applications.aa.table.status.heading=Status
+
 ## Feedback ##
 feedback.title = Feedback
 
