@@ -25,7 +25,6 @@ GET        /signed-out                              controllers.SignOutControlle
 GET        /hub                                     controllers.ApplicationHubController.show
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
-GET        /hub-attachments                         controllers.ApplicationHubController.supportingDocuments
 
 GET        /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.show
 POST       /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.finish
