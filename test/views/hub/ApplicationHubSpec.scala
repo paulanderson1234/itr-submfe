@@ -54,7 +54,7 @@ class ApplicationHubSpec extends ViewSpec {
       //attachments outside
       document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ Messages("page.introduction.hub.upload.desc")
+        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
       document.body.getElementById("attachments-outside-link").text() shouldBe
         Messages("page.introduction.hub.upload.link")
     }
@@ -82,7 +82,7 @@ class ApplicationHubSpec extends ViewSpec {
       //attachments outside
       document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ Messages("page.introduction.hub.upload.desc")
+        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
       document.body.getElementById("attachments-outside-link").text() shouldBe
         Messages("page.introduction.hub.upload.link")
     }
@@ -105,7 +105,7 @@ class ApplicationHubSpec extends ViewSpec {
       //attachments outside
       document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ Messages("page.introduction.hub.upload.desc")
+        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
       document.body.getElementById("attachments-outside-link").text() shouldBe
         Messages("page.introduction.hub.upload.link")
     }
@@ -128,7 +128,7 @@ class ApplicationHubSpec extends ViewSpec {
       //attachments outside
       document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
       document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ Messages("page.introduction.hub.upload.desc")
+        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
       document.body.getElementById("attachments-outside-link").text() shouldBe
         Messages("page.introduction.hub.upload.link")
     }
