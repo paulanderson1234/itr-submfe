@@ -17,6 +17,7 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import config.FrontendGlobal.notFoundTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import services.FileUploadService
@@ -24,6 +25,7 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.supportingDocuments.SupportingDocumentsUpload
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+
 import scala.concurrent.Future
 
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
@@ -32,15 +34,24 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  val fileUploadService: FileUploadService = FileUploadService
 }
 
 trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Ok(SupportingDocumentsUpload()))
-    }
+  val fileUploadService: FileUploadService
 
+  val show = AuthorisedAndEnrolled.async { implicit user =>
+    implicit request =>
+      if (!fileUploadService.getUploadFeatureEnabled) {
+        Future.successful(NotFound(notFoundTemplate))
+      }
+      else {
+        Future.successful(Ok(SupportingDocumentsUpload()))
+      }
+  }
+  
   val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }

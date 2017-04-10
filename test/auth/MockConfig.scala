@@ -16,7 +16,7 @@
 
 package auth
 
-import config.AppConfig
+import config.{AppConfig, FrontendAppConfig}
 
 trait MockConfig extends AppConfig {
   override val analyticsToken: String = ""
@@ -61,4 +61,8 @@ object MockConfigSingleFlow extends MockConfig{
 object MockConfigEISFlow extends MockConfig{
   override val seisFlowEnabled: Boolean = false
   override val eisseisFlowEnabled: Boolean = false
+}
+
+object MockConfigUploadFeature extends MockConfig{
+  override val uploadFeatureEnabled: Boolean = FrontendAppConfig.uploadFeatureEnabled
 }

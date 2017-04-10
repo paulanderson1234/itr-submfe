@@ -32,6 +32,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override val fileUploadService = mockFileUploadService
   }
 
   "The SupportingDocumentsUpload page" should {

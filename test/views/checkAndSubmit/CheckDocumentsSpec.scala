@@ -27,14 +27,6 @@ class CheckDocumentsSpec extends ViewSpec {
 
     val files = Seq(EnvelopeFile("1","PROCESSING","test.pdf","application/pdf","2016-03-31T12:33:45Z",Metadata(None),"test.url"))
 
-    object TestController extends CheckDocumentsController {
-        override lazy val applicationConfig = MockConfigEISFlow
-        override lazy val authConnector = MockAuthConnector
-        override lazy val s4lConnector = mockS4lConnector
-        override lazy val enrolmentConnector = mockEnrolmentConnector
-        override val fileUploadService = mockFileUploadService
-    }
-
     "The CheckDocuments page" should {
 
         "Verify that the check documents page contains the correct documents when a valid envelopeId is passed" in {

@@ -17,10 +17,17 @@
 package controllers
 
 import auth.{MockAuthConnector, MockConfig}
+import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import models.fileUpload.{EnvelopeFile, Metadata}
+import org.mockito.Matchers
+import org.mockito.Mockito.when
+import org.omg.CosNaming.NamingContextPackage.NotFound
 import play.api.test.Helpers._
+
+import scala.concurrent.Future
 
 class SupportingDocumentsUploadControllerSpec extends BaseSpec {
 
@@ -30,6 +37,7 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val applicationConfig = MockConfig
+    override val fileUploadService = mockFileUploadService
   }
 
   "SupportingDocumentsUploadController" should {
@@ -47,12 +55,27 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
     }
   }
 
-  "Sending a GET request to SupportingDocumentsUploadController when authenticated and enrolled" should {
+  "Sending a GET request to SupportingDocumentsUploadController when authenticated and enrolled" +
+    "with UploadFeature Enabled" should {
     "return a 200" in {
+      when(TestController.fileUploadService.getUploadFeatureEnabled).thenReturn(true)
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
+        }
+      )
+    }
+  }
+
+  "Sending a GET request to SupportingDocumentsUploadController when authenticated and enrolled" +
+    "with UploadFeature disabled" should {
+    "return a 404" in {
+      when(TestController.fileUploadService.getUploadFeatureEnabled).thenReturn(false)
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestController.show())(
+        result => {
+          status(result) shouldBe NOT_FOUND
         }
       )
     }
