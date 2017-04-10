@@ -11,6 +11,8 @@ common.button.back=Back
 common.button.start=Start now
 common.button.findAddress=Find address
 common.button.checkAnswers=Check your answers
+common.button.upload=Upload
+common.button.cancel=Cancel and go back
 common.errorSummary.label=The following errors were identified on this page.
 common.radioNoLabel=No
 common.radioYesLabel=Yes
@@ -36,6 +38,7 @@ common.notAvailable=None
 common.notAvailableAcronym=N/A
 common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
+common.back.dashboard=Dashboard
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -460,11 +463,12 @@ page.supportingDocumentsUpload.bullet.two=shareholder agreements or drafts
 page.supportingDocumentsUpload.bullet.three=memorandum and articles of association
 page.supportingDocumentsUpload.bullet.four= prospectuses and other documents for attracting investment
 page.supportingDocumentsUpload.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
-page.supportingDocumentsUpload.docs.current=If your documents aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocumentsUpload.docs.current=If your documents aren''t up-to-date, you need to tell us about any changes you plan to make.
 page.supportingDocumentsUpload.upload.instruction=You can either upload your documents now, or after you have checked and submitted your application.
 page.supportingDocumentsUpload.send.confirm=Send your documents now?
 page.supportingDocumentsUpload.Note=Your application will not be complete until you send us these files
-
+page.supportingDocumentsUpload.outFlow.heading=If you haven''t already submitted supporting documents, you''ll need to upload your company''s:
+page.supportingDocumentsUpload.outFlow.Note=You must submit these documents to complete your application
 
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
@@ -481,6 +485,13 @@ page.checkAndSubmit.checkAnswers.description.two=Check your answers are correct 
 page.checkAndSubmit.checkAnswers.print.text=Print this page
 page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=To support your application you will need to send us your company''s:
+
+#check your answers page
+page.checkAndSubmit.checkDocuments.title=Check your documents
+page.checkAndSubmit.checkDocuments.heading=Check your documents
+page.checkAndSubmit.checkDocuments.outsideFlow.desc=Check you''ve uploaded the correct supporting documents.
+page.checkAndSubmit.checkDocuments.outsideFlow.table.heading=Your supporting documents
+page.checkAndSubmit.checkDocuments.button.confirm=Submit
 
 #summaryQuestions
 summaryQuestion.companyDetailsSection =Section 1: Business details
@@ -836,11 +847,13 @@ page.checkAndSubmit.seis.attachments.acknowledgement.submissionConfirmation=You'
 page.checkAndSubmit.seis.attachments.acknowledgement.refNumberHeading=Make a note of your reference number:
 
 # OUTSIDE FLOW file upload acknowledgement
-page.checkAndsubmit.attachments.acknowledgement.title=You''ve uploaded your documents
-page.checkAndsubmit.attachments.acknowledgement.submission.confirmation=You''ve uploaded your documents
-page.checkAndsubmit.attachments.acknowledgement.what.happens.heading=What happens next
-page.checkAndsubmit.attachments.acknowledgement.what.happens.text=Once we''ve received your documents and answers, we''ll contact you within 4 weeks to let you know the outcome of your application.
-page.checkAndsubmit.attachments.acknowledgement.button.confirm=Finish
+page.hubPartials.fileUpload.acknowledgement.title=You''ve uploaded your documents
+page.hubPartials.fileUpload.acknowledgement.submission.confirmation=You''ve uploaded your documents
+page.hubPartials.fileUpload.acknowledgement.what.happens.heading=What happens next
+page.hubPartials.fileUpload.acknowledgement.what.happens.text=Once we''ve received your documents and answers, we''ll contact you within 4 weeks to let you know the outcome of your application.
+page.hubPartials.fileUpload.acknowledgement.button.confirm=Finish
+page.introduction.hub.upload.link=Upload documents
+page.introduction.hub.upload.desc=to support an application.
 
 ## Feedback ##
 feedback.title = Feedback

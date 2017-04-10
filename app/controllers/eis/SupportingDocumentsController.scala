@@ -63,5 +63,3 @@ trait SupportingDocumentsController extends FrontendController with AuthorisedAn
   }
 
 }
-
-

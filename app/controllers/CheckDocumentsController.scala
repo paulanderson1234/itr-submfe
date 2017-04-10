@@ -16,46 +16,50 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
 import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
 import services.FileUploadService
-import views.html.checkAndSubmit.FileUploadAcknowledgement
+import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.checkAndSubmit.CheckDocuments
 
 import scala.concurrent.Future
 
-object FileUploadAcknowledgementController extends FileUploadAcknowledgementController
-{
+object CheckDocumentsController extends CheckDocumentsController{
+  override lazy val s4lConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val s4lConnector = S4LConnector
   val fileUploadService: FileUploadService = FileUploadService
 }
 
-trait FileUploadAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait CheckDocumentsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
+
   val fileUploadService: FileUploadService
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    for {
-      envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
-      tavcRef <- getTavCReferenceNumber()
-      response <- fileUploadService.closeEnvelope(tavcRef, envelopeId.getOrElse(""))
-    } yield envelopeId match {
-      case Some(envelopId) if envelopId.length > 0 => Ok(FileUploadAcknowledgement())
-      case _ => InternalServerError(internalServerErrorTemplate)
-    }
+  def show(envelopeId: String): Action[AnyContent] = AuthorisedAndEnrolled.async {
+    implicit user => implicit request =>
+
+      s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId)
+      for {
+        files <- fileUploadService.getEnvelopeFiles(envelopeId)
+      } yield (files, envelopeId) match {
+        case (_, _) => Ok(CheckDocuments(files, envelopeId))
+      }
   }
 
-  val finish = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(routes.ApplicationHubController.show()))
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.FileUploadAcknowledgementController.show()))
   }
 
+  val redirectAttachments = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
+  }
 }

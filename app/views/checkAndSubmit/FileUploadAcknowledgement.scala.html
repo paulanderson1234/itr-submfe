@@ -1,0 +1,38 @@
+@import models.submission.SubmissionResponse
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.backButton
+@import config.FrontendAppConfig
+@import controllers.feedback.routes
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.hubPartials.fileUpload.acknowledgement.title"), bodyClasses = None) {
+
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <div class="form-group">
+            <div class="transaction-banner--complete">
+                <h1 id="submission-confirmation" class="heading-large banner-white">@Messages("page.hubPartials.fileUpload.acknowledgement.submission.confirmation")</h1>
+
+
+            </div>
+
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <h2 id="what-happens-next" class="heading-medium">@Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.heading")</h2>
+            <p id="happens-next">@Messages("page.hubPartials.fileUpload.acknowledgement.what.happens.text")</p>
+        </div>
+        @form(action = controllers.routes.FileUploadAcknowledgementController.finish()) {
+        <div class="form-group">
+            <button class="btn button" type="submit" id="submit">@Messages("page.hubPartials.fileUpload.acknowledgement.button.confirm")</button>
+        </div>
+        }
+    </div>
+</div>
+
+}

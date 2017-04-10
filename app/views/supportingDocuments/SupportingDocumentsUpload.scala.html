@@ -1,0 +1,48 @@
+@import models.SupportingDocumentsUploadModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, formHiddenYesNoRadioNoError, formHint}
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.supportingDocuments.SupportingDocuments.title"), bodyClasses = None) {
+
+@backButtonWithProgress(routes.ApplicationHubController.show().url, Messages("common.back.dashboard"))
+
+
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.supportingDocuments.SupportingDocuments.heading")</h1>
+
+    <p class="lede" id="intro">@Messages("page.supportingDocumentsUpload.outFlow.heading")</p>
+
+    <ul class="list list-bullet">
+        <li id="bullet-one">@Messages("page.supportingDocumentsUpload.bullet.one")</li>
+        <li id="bullet-two">@Messages("page.supportingDocumentsUpload.bullet.two")</li>
+        <li id="bullet-three">@Messages("page.supportingDocumentsUpload.bullet.three")</li>
+        <li id="bullet-four">@Messages("page.supportingDocumentsUpload.bullet.four")</li>
+        <li id="bullet-five">@Messages("page.supportingDocumentsUpload.bullet.five")</li>
+    </ul>
+
+    <div class="form-group">
+        <div class="form-group">
+            <p id="docs-current">@Messages("page.supportingDocumentsUpload.docs.current")</p>
+        </div>
+    </div>
+
+
+    <div id="supportingDocs-business-plan" class="form-group">
+        <h2 id="noticeMessage" class="important-notice">
+            @Messages("page.supportingDocumentsUpload.outFlow.Note")
+        </h2>
+    </div>
+
+    @form(action = controllers.routes.SupportingDocumentsUploadController.submit()) {
+        <div class="form-group">
+            <button class="btn button" type="submit" id="submit">@Messages("common.button.upload")</button>
+        </div>
+    }
+
+    @form(action = controllers.routes.SupportingDocumentsUploadController.cancel()) {
+        <button class="button--link-style removeLink" type="submit" id="cancel-link"> @Messages("common.button.cancel")
+        </button>
+    }
+}

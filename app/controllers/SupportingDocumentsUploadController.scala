@@ -17,45 +17,46 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.KeystoreKeys
-import config.FrontendGlobal.internalServerErrorTemplate
+import config.FrontendGlobal.notFoundTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import services.FileUploadService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.supportingDocuments.SupportingDocumentsUpload
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import services.FileUploadService
-import views.html.checkAndSubmit.FileUploadAcknowledgement
 
 import scala.concurrent.Future
 
-object FileUploadAcknowledgementController extends FileUploadAcknowledgementController
+object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
 {
+  override lazy val s4lConnector: S4LConnector = S4LConnector
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val s4lConnector = S4LConnector
   val fileUploadService: FileUploadService = FileUploadService
 }
 
-trait FileUploadAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
   val fileUploadService: FileUploadService
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    for {
-      envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
-      tavcRef <- getTavCReferenceNumber()
-      response <- fileUploadService.closeEnvelope(tavcRef, envelopeId.getOrElse(""))
-    } yield envelopeId match {
-      case Some(envelopId) if envelopId.length > 0 => Ok(FileUploadAcknowledgement())
-      case _ => InternalServerError(internalServerErrorTemplate)
-    }
+  val show = AuthorisedAndEnrolled.async { implicit user =>
+    implicit request =>
+      if (!fileUploadService.getUploadFeatureEnabled) {
+        Future.successful(NotFound(notFoundTemplate))
+      }
+      else {
+        Future.successful(Ok(SupportingDocumentsUpload()))
+      }
+  }
+  
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(applicationConfig.attachmentFileUploadOutsideUrl))
   }
 
-  val finish = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val cancel = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.ApplicationHubController.show()))
   }
-
 }
