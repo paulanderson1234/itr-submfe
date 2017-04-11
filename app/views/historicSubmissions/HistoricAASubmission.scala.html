@@ -1,0 +1,74 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.backButtonWithProgress
+@import config.FrontendAppConfig
+@import controllers.feedback.routes
+@import models.submission.AASubmissionDetailsModel
+
+@(historicAASubmissions: List[AASubmissionDetailsModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.historicSubmissions.applications.aa.title"), bodyClasses = None, articleLayout=false) {
+
+@backButtonWithProgress(controllers.routes.ApplicationHubController.show().url, Messages("page.historicSubmissions.applications.aa.section.dashboard"))
+
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+
+        <h1  id="heading" class="form-title heading-xlarge">
+            <span id="pre-header" class="pre-heading">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</span>
+            <span id="page-header">@Messages("page.historicSubmissions.applications.aa.your.applications.heading")</span>
+        </h1>
+
+        <div class="form-group">
+            <section class="section--blue-top"></section>
+        </div>
+
+        <div class = "form-group">
+            <h2 class="heading-small" id="aa-application-heading">@Messages("page.historicSubmissions.applications.aa.new.heading")</h2>
+                <p>@Messages("page.historicSubmissions.applications.aa.new.text")</p>
+        </div>
+
+        <div class="form-group">
+            @form(action = controllers.routes.ApplicationHubController.newApplication()) {
+            <button class="button" type="submit" id="create-new-application">@Messages("page.introduction.hub.button")</button>
+            }
+        </div>
+
+        <div class="form-group">
+            <section class="section--blue-top"></section>
+        </div>
+
+        <div class = "form-group">
+            <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
+            @if(historicAASubmissions.length > 0){
+            <table id="previous-schemes-table">
+            <thead>
+                <tr>
+                    <th id="scheme-table-heading">@Messages("page.historicSubmissions.applications.aa.table.schemes.heading")</th>
+                    <th id="date-table-heading">@Messages("page.historicSubmissions.applications.aa.table.submissionDate.heading")</th>
+                    <th id="reference-number-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
+                    <th id="status-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
+                </tr>
+                </thead>
+                <tbody>
+                    @for((historicAASubmission, index) <- historicAASubmissions.zipWithIndex) {
+                    <tr id="row-@{index}">
+                        <td id="record-@{index}-schemeName">@PreviousSchemeModel.concatSchemeNames(historicAASubmission.schemeType.map{_.scheme})</td>
+                        <td id="record-@{index}-date">@historicAASubmission.submissionDate</td>
+                        <td id="record-@{index}-formBundle">@historicAASubmission.formBundleNumber</td>
+                        <td id="record-@{index}-status">@historicAASubmission.status</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+                } else {
+                    <p id="no-submissions-message">@Messages("page.historicSubmissions.applications.aa.no-previous.text")</p>
+                }
+
+        </div>
+
+    </div>
+</div>
+
+}

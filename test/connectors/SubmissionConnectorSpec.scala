@@ -297,4 +297,20 @@ class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndA
     }
   }
 
+
+
+  "Calling getAASubmissionDetails" should {
+    "throw an error if the TAVCRef is empty" in {
+      intercept[IllegalArgumentException]{
+        TargetSubmissionConnector.getAASubmissionDetails("")
+      }
+    }
+    "return a response if a valid TAVCRef is given" in {
+      when(mockHttp.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
+      val result = TargetSubmissionConnector.getAASubmissionDetails(tavcReferenceId)
+      await(result).status shouldBe OK
+    }
+  }
+
 }

@@ -54,10 +54,10 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
       if (MockConfigUploadFeature.uploadFeatureEnabled){
-          document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-          document.body.getElementById("attachments-outside-desc").text() shouldBe
+        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+        document.body.getElementById("attachments-outside-desc").text() shouldBe
           Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
-          document.body.getElementById("attachments-outside-link").text() shouldBe
+        document.body.getElementById("attachments-outside-link").text() shouldBe
           Messages("page.introduction.hub.upload.link")
       }
     }

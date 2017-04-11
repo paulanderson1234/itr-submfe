@@ -17,6 +17,8 @@
 package utils
 
 import java.text.SimpleDateFormat
+import play.api.Logger
+
 import scala.util.{Failure, Success, Try}
 
 trait DateFormatter {
@@ -38,5 +40,18 @@ trait DateFormatter {
       }
     }
 
+  }
+
+  def etmpDateToDateString(etmpDate: String): String = {
+    Try{
+      val temp = etmpDate.split("-").reverse
+      toDateString(temp(0).toInt,temp(1).toInt, temp(2).toInt)
+    } match {
+      case Success(date) => date
+      case Failure(ex) => {
+        Logger.info("Exception occured while converting ETMP date: " + ex.getMessage)
+        etmpDate
+      }
+    }
   }
 }
