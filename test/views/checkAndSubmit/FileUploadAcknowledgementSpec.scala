@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.CheckAndSubmit
+package views.checkAndSubmit
 
 import org.jsoup.Jsoup
 import play.api.i18n.Messages

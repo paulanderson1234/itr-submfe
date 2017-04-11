@@ -6,50 +6,46 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.historicSubmissions.applications.aa.title"), bodyClasses = None) {
+@main_template(Messages("page.historicSubmissions.applications.aa.title"), bodyClasses = None, articleLayout=false) {
 
 @backButtonWithProgress(controllers.routes.ApplicationHubController.show().url, Messages("page.historicSubmissions.applications.aa.section.dashboard"))
 
-
+<div id="yourAnswers" class="full-width">
 <div class="grid-row">
-    <div class="column-two-thirds">
 
-        <p class="heading-medium faded-text [modifier class]">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</p>
-        <h2 id="main-heading" class="form-title heading-xlarge">@Messages("page.historicSubmissions.applications.aa.your.applications.heading")</h2>
+    <h1 class="heading-large" class="form-title heading-xlarge">
+        <span class="pre-heading" id="aa-heading">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</span>
+        @Messages("page.historicSubmissions.applications.aa.your.applications.heading")
+    </h1>
 
-        <div class = "form-group">
-            <h2 class="heading-small" id="aa-application-heading">@Messages("page.historicSubmissions.applications.aa.new.heading")</h2>
-                <p>@Messages("page.historicSubmissions.applications.aa.new.text")</p>
-        </div>
+    <section class="section section--blue-top">
+            <div class = "form-group">
+                <h2 class="heading-small" id="aa-application-heading">@Messages("page.historicSubmissions.applications.aa.new.heading")</h2>
+                    <p id="aa-application-text">@Messages("page.historicSubmissions.applications.aa.new.text")</p>
+            </div>
 
-        @form(action = controllers.routes.ApplicationHubController.newApplication()) {
-        <button class="button" type="submit" id="create-new-application">@Messages("page.introduction.hub.button")</button>
-        }
-        <div class = "form-group">
-            <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
-        </div>
+            @form(action = controllers.routes.ApplicationHubController.newApplication()) {
+            <button class="button" type="submit" id="create-new-application">@Messages("page.introduction.hub.button")</button>
+            }
+        </section>
 
-        <table id="previous-schemes-table">
-            <thead>
-            <tr>
-                <th id="scheme-table-heading">@Messages("page.historicSubmissions.applications.aa.table.schemes.heading")</th>
-                <th id="date-table-heading">@Messages("page.historicSubmissions.applications.aa.table.submissionDate.heading")</th>
-                <th id="amount-raised-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
-                <th id="amount-spent-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
-                <th>
-                    <span class="visuallyhidden">
-                        @Messages("common.base.change")
-                    </span>
-                </th>
-                <th>
-                    <span class="visuallyhidden">
-                        @Messages("common.base.remove")
-                    </span>
-                </th>
-            </tr>
-            </thead>
+        <section class="section section--blue-top">
+            <div class = "form-group">
+                <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
+            </div>
+
+            <table id="previous-schemes-table">
+                <thead>
+                <tr>
+                    <th id="scheme-table-heading">@Messages("page.historicSubmissions.applications.aa.table.schemes.heading")</th>
+                    <th id="date-table-heading">@Messages("page.historicSubmissions.applications.aa.table.submissionDate.heading")</th>
+                    <th id="refNo-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
+                    <th id="status-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
+
+                </tr>
+                </thead>
             </table>
-
+        </section>
 
 
     </div>

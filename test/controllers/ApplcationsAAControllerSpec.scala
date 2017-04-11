@@ -23,16 +23,16 @@ import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
 
-class FileUploadAcknowledgementControllerSpec extends BaseSpec {
+class ApplcationsAAControllerSpec extends BaseSpec {
 
-  object TestController extends FileUploadAcknowledgementController {
+  object TestController extends ApplicationsAAController {
     override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector
   }
 
-  "FileUploadAcknowledgementController" should {
+  "ApplicationsAAController" should {
     "use the correct auth connector" in {
       FileUploadAcknowledgementController.authConnector shouldBe FrontendAuthConnector
     }
@@ -41,7 +41,7 @@ class FileUploadAcknowledgementControllerSpec extends BaseSpec {
     }
   }
 
-  "Sending a GET request to FileUploadAcknowledgementController when authenticated and enrolled" should {
+  "Sending a GET request to ApplicationsAAController when authenticated and enrolled" should {
     "return a 200 OK Swhen something is fetched from keystore" in {
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show)(
