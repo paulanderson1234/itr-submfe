@@ -34,9 +34,20 @@
 </div>
 
 <div class="form-group">
+    <h2 id="aa-historic-heading" class="heading-small">@Messages("page.PreviouslySubmitted.heading")</h2>
+    <a id="aa-historic-link" href="@routes.HistoricAASubmissionController.show">@Messages("page.introduction.hub.viewPrevious.AdvancedAssurance")</a>
+</div>
+
+@if(FrontendAppConfig.uploadFeatureEnabled){
+<div class="form-group">
+    <input type="hidden" id="isUploadEnabled" name="isUploadEnabled" value="@FrontendAppConfig.uploadFeatureEnabled">
     <h2 id="attachments-outside-heading" class="heading-small">@Messages("page.supportingDocuments.SupportingDocuments.heading")</h2>
-    <p id="attachments-outside-desc"> <a id="attachments-outside-link" href="@routes.ApplicationHubController.supportingDocuments">@Messages("page.introduction.hub.upload.link")</a> @Messages("page.introduction.hub.upload.desc")</p>
+    <p id="attachments-outside-desc"> <a id="attachments-outside-link" href="@routes.SupportingDocumentsUploadController.show">@Messages("page.introduction.hub.upload.link")</a> @Messages("page.introduction.hub.upload.desc")</p>
   </div>
+}
+
+
+
 }
 
 

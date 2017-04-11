@@ -14,8 +14,10 @@
 <div class="grid-row">
     <div class="column-two-thirds">
 
-        <p class="heading-medium faded-text [modifier class]">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</p>
-        <h2 id="main-heading" class="form-title heading-xlarge">@Messages("page.historicSubmissions.applications.aa.your.applications.heading")</h2>
+        <h1  id="heading" class="form-title heading-xlarge">
+            <span class="pre-heading">@Messages("page.historicSubmissions.applications.aa.advance.assurance.heading")</span>
+            @Messages("page.historicSubmissions.applications.aa.your.applications.heading")
+        </h1>
 
         <div class="form-group">
             <section class="section--blue-top"></section>
@@ -38,27 +40,32 @@
 
         <div class = "form-group">
             <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
-
+            @if(historicAASubmissions.length > 0){
             <table id="previous-schemes-table">
-                <thead>
+            <thead>
                 <tr>
                     <th id="scheme-table-heading">@Messages("page.historicSubmissions.applications.aa.table.schemes.heading")</th>
                     <th id="date-table-heading">@Messages("page.historicSubmissions.applications.aa.table.submissionDate.heading")</th>
-                    <th id="amount-raised-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
-                    <th id="amount-spent-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
+                    <th id="reference-number-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
+                    <th id="status-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
                 </tr>
                 </thead>
                 <tbody>
                     @for((historicAASubmission, index) <- historicAASubmissions.zipWithIndex) {
-                    <tr>
-                        <td>@PreviousSchemeModel.concatSchemeNames(historicAASubmission.schemeType.map{_.scheme})</td>
-                        <td>@historicAASubmission.submissionDate</td>
-                        <td>@historicAASubmission.formBundleNumber</td>
-                        <td>@historicAASubmission.status</td>
+                    <tr id="row-@{index}">
+                        <td id="record-@{index}-schemeName">@PreviousSchemeModel.concatSchemeNames(historicAASubmission.schemeType.map{_.scheme})</td>
+                        <td id="record-@{index}-date">@historicAASubmission.submissionDate</td>
+                        <td id="record-@{index}-formBundle">@historicAASubmission.formBundleNumber</td>
+                        <td id="record-@{index}-status">@historicAASubmission.status</td>
                     </tr>
-                    }
+                }
                 </tbody>
             </table>
+
+                } else {
+                    <p id="no-submissions-message">@Messages("page.historicSubmissions.applications.aa.no-previous.text")</p>
+                }
+
         </div>
 
     </div>

@@ -14,48 +14,47 @@
  * limitations under the License.
  */
 
-package views.checkAndSubmit
-
-import controllers.helpers.BaseSpec
+import auth.{MockAuthConnector, MockConfigEISFlow}
+import controllers.CheckDocumentsController
+import models.fileUpload.{EnvelopeFile, Metadata}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.test.Helpers._
-import services.FileUploadServiceSpec
 import views.helpers.ViewSpec
 import views.html.checkAndSubmit.CheckDocuments
 
-class CheckDocumentsSpec extends ViewSpec{
+class CheckDocumentsSpec extends ViewSpec {
 
-  val files = (new FileUploadServiceSpec).files
+  val files = Seq(EnvelopeFile("1","PROCESSING","test.pdf","application/pdf","2016-03-31T12:33:45Z",Metadata(None),"test.url"))
 
-    "The Check Documents page" should {
+  "The CheckDocuments page" should {
 
+    "Verify that the check documents page contains the correct documents when a valid envelopeId is passed" in {
       lazy val page = CheckDocuments(files, envelopeId.get)(fakeRequest, applicationMessages)
-      lazy val document = Jsoup.parse(contentAsString(page))
+      lazy val document = Jsoup.parse(page.body)
+      document.title() shouldBe Messages("page.checkAndSubmit.checkDocuments.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.title")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")
+      //file table
+      lazy val filesTable = document.getElementById("files-table").select("tbody")
+      filesTable.select("tr").get(1).getElementById("file-0").text() shouldBe "test.pdf"
+      filesTable.select("tr").get(1).getElementById("supporting-docs-link").text() shouldBe Messages("common.base.change")
 
-      "have the title 'Check your documents'" in {
-        document.title() shouldBe Messages("page.checkAndSubmit.checkDocuments.heading")
-      }
-
-      "display the heading 'Check your documents'" in {
-        document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.heading")
-      }
-
-      "display the correct description" in {
-        document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")
-      }
-
-      "display the correct submit button" in {
-        document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.button.confirm")
-      }
-
-      "display the correct back button" in {
-        document.getElementById("back-link").text() shouldBe Messages("common.button.back")
-      }
-
-      "display the help button" in {
-        document.body.getElementById("get-help-action").text() shouldBe Messages("common.error.help.text")
-      }
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.button.confirm")
     }
+
+    "Verify that the check documents page contains no documents when the envelopeId passed has no documents enclosed" in {
+      lazy val page = CheckDocuments(Seq(), envelopeId.get)(fakeRequest, applicationMessages)
+      lazy val document = Jsoup.parse(page.body)
+      document.title() shouldBe Messages("page.checkAndSubmit.checkDocuments.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.title")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")
+      document.getElementById("description-one").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.outsideFlow.desc")
+      //file table
+      document.getElementById("files-table") shouldBe null
+
+      document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkDocuments.button.confirm")
+    }
+  }
 }

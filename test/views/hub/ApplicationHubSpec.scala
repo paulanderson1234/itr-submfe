@@ -16,13 +16,14 @@
 
 package views
 
+import auth.MockConfigUploadFeature
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
+import play.api.i18n.Messages.Implicits._
 import utils.CountriesHelper
 import views.helpers.ViewSpec
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 import views.html.introduction.ApplicationHub
-import play.api.i18n.Messages.Implicits._
 
 class ApplicationHubSpec extends ViewSpec {
 
@@ -33,7 +34,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
       "the model used contains the max fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest,applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -52,11 +53,13 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
-      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
-      document.body.getElementById("attachments-outside-link").text() shouldBe
-        Messages("page.introduction.hub.upload.link")
+      if (MockConfigUploadFeature.uploadFeatureEnabled){
+        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+        document.body.getElementById("attachments-outside-desc").text() shouldBe
+          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+        document.body.getElementById("attachments-outside-link").text() shouldBe
+          Messages("page.introduction.hub.upload.link")
+      }
     }
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
@@ -80,11 +83,13 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
-      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
-      document.body.getElementById("attachments-outside-link").text() shouldBe
-        Messages("page.introduction.hub.upload.link")
+      if (MockConfigUploadFeature.uploadFeatureEnabled) {
+        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+        document.body.getElementById("attachments-outside-desc").text() shouldBe
+          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+        document.body.getElementById("attachments-outside-link").text() shouldBe
+          Messages("page.introduction.hub.upload.link")
+      }
     }
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and" +
@@ -103,11 +108,13 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
       document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
       //attachments outside
-      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
-      document.body.getElementById("attachments-outside-link").text() shouldBe
-        Messages("page.introduction.hub.upload.link")
+      if (MockConfigUploadFeature.uploadFeatureEnabled) {
+        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+        document.body.getElementById("attachments-outside-desc").text() shouldBe
+          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+        document.body.getElementById("attachments-outside-link").text() shouldBe
+          Messages("page.introduction.hub.upload.link")
+      }
     }
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
@@ -126,11 +133,13 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
       document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
       //attachments outside
-      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-      document.body.getElementById("attachments-outside-desc").text() shouldBe
-        Messages("page.introduction.hub.upload.link") ++ " " ++ Messages("page.introduction.hub.upload.desc")
-      document.body.getElementById("attachments-outside-link").text() shouldBe
-        Messages("page.introduction.hub.upload.link")
+      if (MockConfigUploadFeature.uploadFeatureEnabled) {
+        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+        document.body.getElementById("attachments-outside-desc").text() shouldBe
+          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+        document.body.getElementById("attachments-outside-link").text() shouldBe
+          Messages("page.introduction.hub.upload.link")
+      }
     }
   }
 }

@@ -463,11 +463,12 @@ page.supportingDocumentsUpload.bullet.two=shareholder agreements or drafts
 page.supportingDocumentsUpload.bullet.three=memorandum and articles of association
 page.supportingDocumentsUpload.bullet.four= prospectuses and other documents for attracting investment
 page.supportingDocumentsUpload.bullet.five=last annual accounts or cash flow forecast if you haven''t submitted accounts yet
-page.supportingDocumentsUpload.docs.current=If your documents aren''t up-to-date you should also tell us about any changes you''ll be making to them.
+page.supportingDocumentsUpload.docs.current=If your documents aren''t up-to-date, you need to tell us about any changes you plan to make.
 page.supportingDocumentsUpload.upload.instruction=You can either upload your documents now, or after you have checked and submitted your application.
 page.supportingDocumentsUpload.send.confirm=Send your documents now?
 page.supportingDocumentsUpload.Note=Your application will not be complete until you send us these files
 page.supportingDocumentsUpload.outFlow.heading=If you haven''t already submitted supporting documents, you''ll need to upload your company''s:
+page.supportingDocumentsUpload.outFlow.Note=You must submit these documents to complete your application
 
 #Confirm Correspondence Address
 page.contactInformation.ConfirmCorrespondAddress.heading=Is this the correspondence address you want us to use for this application?
@@ -486,6 +487,7 @@ page.checkAndSubmit.checkAnswers.button.confirm=Submit
 page.checkAndSubmit.checkAnswers.suportingDocs.desc=To support your application you will need to send us your company''s:
 
 #check your answers page
+page.checkAndSubmit.checkDocuments.title=Check your documents
 page.checkAndSubmit.checkDocuments.heading=Check your documents
 page.checkAndSubmit.checkDocuments.outsideFlow.desc=Check you''ve uploaded the correct supporting documents.
 page.checkAndSubmit.checkDocuments.outsideFlow.table.heading=Your supporting documents
@@ -692,6 +694,10 @@ page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Inves
 page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme
 
+#hub temp link to advanced assurance history
+page.PreviouslySubmitted.heading=Previously submitted applications
+page.introduction.hub.viewPrevious.AdvancedAssurance=View all of your Advance Assurance applications
+
 
 # SEIS trade start date
 page.seis.companyDetails.tradeStartDate.title=Has the trade you want investment in started?
@@ -853,18 +859,22 @@ page.hubPartials.fileUpload.acknowledgement.button.confirm=Finish
 page.introduction.hub.upload.link=Upload documents
 page.introduction.hub.upload.desc=to support an application.
 
+
 #AA Applications
 page.historicSubmissions.applications.aa.section.dashboard=Dashboard
 page.historicSubmissions.applications.aa.title=Your applications for Advance Assurance
 page.historicSubmissions.applications.aa.advance.assurance.heading=Advance Assurance
 page.historicSubmissions.applications.aa.your.applications.heading=Your applications
 page.historicSubmissions.applications.aa.new.heading=Applications in progress
-page.historicSubmissions.applications.aa.new.text=You have no unsubmitted applications
+page.historicSubmissions.applications.aa.new.text=You have no unsubmitted applications.
 page.historicSubmissions.applications.aa.previous.submitted.applications.heading=Previously submitted applications
 page.historicSubmissions.applications.aa.table.schemes.heading=Applicable schemes
 page.historicSubmissions.applications.aa.table.submissionDate.heading=Submission date
 page.historicSubmissions.applications.aa.table.refNo.heading=Reference number
 page.historicSubmissions.applications.aa.table.status.heading=Status
+page.historicSubmissions.applications.aa.no-previous.text=You have not submitted any applications.
+
+
 
 ## Feedback ##
 feedback.title = Feedback

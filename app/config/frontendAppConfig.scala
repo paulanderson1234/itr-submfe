@@ -79,6 +79,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val attachmentsServiceUrl: String = baseUrl("investment-tax-relief-attachments")
 
   val attachmentFileUploadOutsideUrl =
-     s"${attachmentsFrontEndServiceBaseUrl}/file-upload?continueUrl=${submissionFrontendServiceBaseUrl}" +
-      s"/check-your-documents&backUrl=${submissionFrontendServiceBaseUrl}/supporting-documents-upload"
+     s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
+      s"/check-your-documents&backUrl=$submissionFrontendServiceBaseUrl/supporting-documents-upload"
 }

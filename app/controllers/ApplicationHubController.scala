@@ -115,8 +115,4 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
       case _ => Redirect(routes.ApplicationHubController.show())
     }
   }
-
-  val supportingDocuments = AuthorisedAndEnrolled.async{ implicit user => implicit request =>
-    Future.successful(Ok(SupportingDocumentsUpload()))
-  }
 }

@@ -17,29 +17,45 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import common.KeystoreKeys
+import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import services.FileUploadService
 import views.html.checkAndSubmit.FileUploadAcknowledgement
-import play.api.mvc.{Action, AnyContent}
+
 import scala.concurrent.Future
 
-
-object  FileUploadAcknowledgementController extends FileUploadAcknowledgementController
+object FileUploadAcknowledgementController extends FileUploadAcknowledgementController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
   override lazy val s4lConnector = S4LConnector
+  val fileUploadService: FileUploadService = FileUploadService
 }
 
 trait FileUploadAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
+  val fileUploadService: FileUploadService
 
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Ok(FileUploadAcknowledgement()))
+    for {
+      envelopeId <- s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId)
+      tavcRef <- getTavCReferenceNumber()
+      response <- fileUploadService.closeEnvelope(tavcRef, envelopeId.getOrElse(""))
+    } yield envelopeId match {
+      case Some(envelopId) if envelopId.length > 0 => Ok(FileUploadAcknowledgement())
+      case _ => InternalServerError(internalServerErrorTemplate)
+    }
   }
+
+  val finish = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.ApplicationHubController.show()))
+  }
+
 }
