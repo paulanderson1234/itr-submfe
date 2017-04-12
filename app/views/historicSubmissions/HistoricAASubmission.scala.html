@@ -38,7 +38,7 @@
             <section class="section--blue-top"></section>
         </div>
 
-        <div class = "form-group">
+        <div id ="table-div" class = "form-group">
             <h2 class="heading-small" id="aa-previous-application-heading">@Messages("page.historicSubmissions.applications.aa.previous.submitted.applications.heading")</h2>
             @if(historicAASubmissions.length > 0){
             <table id="previous-schemes-table">
@@ -49,7 +49,7 @@
                     <th id="reference-number-table-heading">@Messages("page.historicSubmissions.applications.aa.table.refNo.heading")</th>
                     <th id="status-table-heading">@Messages("page.historicSubmissions.applications.aa.table.status.heading")</th>
                 </tr>
-                </thead>
+            </thead>
                 <tbody>
                     @for((historicAASubmission, index) <- historicAASubmissions.zipWithIndex) {
                     <tr id="row-@{index}">
