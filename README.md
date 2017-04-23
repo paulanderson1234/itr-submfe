@@ -48,7 +48,7 @@ sbt 'run 9635'
 
 You can _*optionally*_ also run any of our other dependent microservices locally by killing the services specified and running the commands as shown below:
 
-[Submission Microservice](https://github.com/hmrc/investment-tax-relief-submission-cs-frontend)
+[Submission Frontend Compliance Statement Microservice](https://github.com/hmrc/investment-tax-relief-submission-cs-frontend)
 
 Kill the service  ```sm --stop ITR_SUBM_FE_CS``` in service Manager and run:
 ```
