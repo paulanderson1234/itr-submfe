@@ -48,8 +48,8 @@ trait HistoricAASubmissionController extends FrontendController with AuthorisedA
     (for{
       tavcRef <- getTavCReferenceNumber()
       submissionDetails <- submissionService.getEtmpSubmissionDetails(tavcRef)
-    } yield Ok(HistoricAASubmission(submissionDetails.get.submissions.map{
-      submission => submission.copy(submissionDate = etmpDateToDateString(submission.submissionDate))
+    } yield Ok(HistoricAASubmission(submissionDetails.get.submissions.getOrElse(List()).map{
+      submission => submission.copy(submissionDate = Some(etmpDateToDateString(submission.submissionDate.getOrElse("N/A"))))
     }))).recover{
       case e: Exception => {
         Logger.warn(s"[HistoricAASubmissionController][show] - Exception retrieving historic AA submissions: ${e.getMessage}")

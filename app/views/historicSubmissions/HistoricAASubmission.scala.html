@@ -53,10 +53,10 @@
                 <tbody>
                     @for((historicAASubmission, index) <- historicAASubmissions.zipWithIndex) {
                     <tr id="row-@{index}">
-                        <td id="record-@{index}-schemeName">@PreviousSchemeModel.concatSchemeNames(historicAASubmission.schemeType.map{_.scheme})</td>
-                        <td id="record-@{index}-date">@historicAASubmission.submissionDate</td>
-                        <td id="record-@{index}-formBundle">@historicAASubmission.formBundleNumber</td>
-                        <td id="record-@{index}-status">@historicAASubmission.status</td>
+                        <td id="record-@{index}-schemeName">@PreviousSchemeModel.concatSchemeNames(historicAASubmission.schemeType.getOrElse(List()).map{_.scheme.getOrElse("N/A")})</td>
+                        <td id="record-@{index}-date">@historicAASubmission.submissionDate.getOrElse("N/A")</td>
+                        <td id="record-@{index}-formBundle">@historicAASubmission.formBundleNumber.getOrElse("N/A")</td>
+                        <td id="record-@{index}-status">@historicAASubmission.status.getOrElse("N/A")</td>
                     </tr>
                 }
                 </tbody>

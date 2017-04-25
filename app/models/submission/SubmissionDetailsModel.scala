@@ -18,21 +18,21 @@ package models.submission
 
 import play.api.libs.json.Json
 
-case class Scheme(scheme: String)
+case class Scheme(scheme: Option[String])
 
 object Scheme{
   implicit val formats = Json.format[Scheme]
 }
 
-case class AASubmissionDetailsModel(formBundleNumber: String, submissionType: String,
-                                    submissionDate: String, schemeType: List[Scheme],
-                                    status: String, contactNoteReference: String)
+case class AASubmissionDetailsModel(formBundleNumber: Option[String], submissionType: Option[String],
+                                    submissionDate: Option[String], schemeType: Option[List[Scheme]],
+                                    status: Option[String], contactNoteReference: Option[String])
 
 object AASubmissionDetailsModel{
   implicit val formats = Json.format[AASubmissionDetailsModel]
 }
 
-case class SubmissionDetailsModel(submissions: List[AASubmissionDetailsModel])
+case class SubmissionDetailsModel(submissions: Option[List[AASubmissionDetailsModel]])
 
 object SubmissionDetailsModel{
   implicit val formats = Json.format[SubmissionDetailsModel]
