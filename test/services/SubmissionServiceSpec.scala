@@ -42,19 +42,21 @@ class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPer
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
   implicit val user = TAVCUser(allowedAuthContext, internalId)
 
-  val aASubmissionDetailsModelOne = AASubmissionDetailsModel("000000123456", "Compliance Statement",
-      "2015-09-22", List(Scheme("EIS"),Scheme("UCT")), "Received", "003333333333")
-  val aASubmissionDetailsModelTwo = AASubmissionDetailsModel("000000000000", "Advance Assurance",
-    "2015-09-22", List(Scheme("EIS"),Scheme("UCT")), "Rejected", "003333333334")
+  val aASubmissionDetailsModelOne = AASubmissionDetailsModel(Some("000000123456"), Some("Compliance Statement"),
+    Some("2015-09-22"), Some(List(Scheme(Some("EIS")), Scheme(Some("VCT")))), Some("Received"), Some("003333333333"))
+  val aASubmissionDetailsModelTwo = AASubmissionDetailsModel(Some("000000000000"), Some("Advance Assurance"),
+    Some("2015-09-22"), Some(List(Scheme(Some("EIS")),Scheme(Some("SEIS")))), Some("Rejected"), Some("003333333334"))
 
-  val combinedSubmissionModel = SubmissionDetailsModel(List(aASubmissionDetailsModelOne,aASubmissionDetailsModelTwo))
+  val combinedSubmissionModel = SubmissionDetailsModel(Some(List(aASubmissionDetailsModelOne,aASubmissionDetailsModelTwo)))
 
-  val emptySubmissionModel = SubmissionDetailsModel(List())
+  val emptySubmissionModel = SubmissionDetailsModel(Some(List()))
 
   val invalidJson = Json.parse(
     """
-      |{}
+      |{
+      |}
     """.stripMargin)
+
 
   val combinedJson = Json.parse(
     """
@@ -72,7 +74,7 @@ class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPer
       |               "scheme":"EIS"
       |            },
       |            {
-      |               "scheme":"UCT"
+      |               "scheme":"VCT"
       |            }
       |         ],
       |         "status":"Received",
@@ -87,7 +89,7 @@ class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPer
       |               "scheme":"EIS"
       |            },
       |            {
-      |               "scheme":"UCT"
+      |               "scheme":"SEIS"
       |            }
       |         ],
       |         "status":"Rejected",
@@ -137,7 +139,7 @@ class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPer
       when(TestSubmiisionService.submissionConnector.getAASubmissionDetails(Matchers.any())(Matchers.any())).
         thenReturn(HttpResponse(OK, Some(invalidJson)))
       lazy val result = TestSubmiisionService.getEtmpSubmissionDetails(tavcRef)
-      await(result) shouldBe None
+      await(result) shouldBe Some(SubmissionDetailsModel(None))
     }
   }
 

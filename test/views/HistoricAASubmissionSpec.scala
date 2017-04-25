@@ -32,10 +32,10 @@ class HistoricAASubmissionSpec extends ViewSpec {
 
   "The AA applications page" should {
 
-    val aASubmissionDetailsModelOne = AASubmissionDetailsModel("000000123456", "Compliance Statement",
-      "2015-09-22", List(Scheme("EIS"),Scheme("VCT")), "Received", "003333333333")
-    val aASubmissionDetailsModelTwo = AASubmissionDetailsModel("000000000000", "Advance Assurance",
-      "2015-09-22", List(Scheme("EIS"),Scheme("SEIS")), "Rejected", "003333333334")
+    val aASubmissionDetailsModelOne = AASubmissionDetailsModel(Some("000000123456"), Some("Compliance Statement"),
+      Some("2015-09-22"), Some(List(Scheme(Some("EIS")), Scheme(Some("VCT")))), Some("Received"), Some("003333333333"))
+    val aASubmissionDetailsModelTwo = AASubmissionDetailsModel(Some("000000000000"), Some("Advance Assurance"),
+      Some("2015-09-22"), Some(List(Scheme(Some("EIS")),Scheme(Some("SEIS")))), Some("Rejected"), Some("003333333334"))
 
 
     "contain the correct elements when loaded with a list of historic submission" in {

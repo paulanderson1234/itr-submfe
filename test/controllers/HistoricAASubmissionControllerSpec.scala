@@ -29,14 +29,14 @@ import org.mockito.Mockito._
 class HistoricAASubmissionControllerSpec extends BaseSpec{
 
   val tavcRef = "XATAVC000123456"
-  val aASubmissionDetailsModelOne = AASubmissionDetailsModel("000000123456", "Compliance Statement",
-    "2015-09-22", List(Scheme("EIS"),Scheme("UCT")), "Received", "003333333333")
-  val aASubmissionDetailsModelTwo = AASubmissionDetailsModel("000000000000", "Advance Assurance",
-    "2015-09-22", List(Scheme("EIS"),Scheme("UCT")), "Rejected", "003333333334")
+  val aASubmissionDetailsModelOne = AASubmissionDetailsModel(Some("000000123456"), Some("Compliance Statement"),
+    Some("2015-09-22"), Some(List(Scheme(Some("EIS")), Scheme(Some("VCT")))), Some("Received"), Some("003333333333"))
+  val aASubmissionDetailsModelTwo = AASubmissionDetailsModel(Some("000000000000"), Some("Advance Assurance"),
+    Some("2015-09-22"), Some(List(Scheme(Some("EIS")),Scheme(Some("SEIS")))), Some("Rejected"), Some("003333333334"))
 
-  val combinedSubmissionModel = SubmissionDetailsModel(List(aASubmissionDetailsModelOne,aASubmissionDetailsModelTwo))
+  val combinedSubmissionModel = SubmissionDetailsModel(Some(List(aASubmissionDetailsModelOne,aASubmissionDetailsModelTwo)))
 
-  val emptySubmissionModel = SubmissionDetailsModel(List())
+  val emptySubmissionModel = SubmissionDetailsModel(Some(List()))
 
 
   object TestController extends HistoricAASubmissionController {
