@@ -11,13 +11,14 @@
             <h1 class="banner-white">@Messages("page.throttlingGuidance.ourServiceChange.heading")</h1>
             <p>@Messages("page.throttlingGuidance.ourServiceChange.text")</p>
 
-            <form method="post" class="form">
+            @form(action = controllers.throttlingGuidance.routes.OurServiceChangeController.submit()) {
 
                 <div class="actions">
                     <button class="button">@Messages("common.button.continue")</button>
                 </div>
 
-            </form>
+                }
+
 
         </div>
 

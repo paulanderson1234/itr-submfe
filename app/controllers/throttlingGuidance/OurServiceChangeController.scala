@@ -26,6 +26,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.Action
 
+
 import scala.concurrent.Future
 
 object OurServiceChangeController extends OurServiceChangeController
@@ -33,14 +34,14 @@ object OurServiceChangeController extends OurServiceChangeController
 trait OurServiceChangeController extends FrontendController  {
 
   val show = Action.async{
-    implicit request =>Future.successful(Ok(views.html.throttlingGuidance.OurServiceChange()))
+    implicit request => Future.successful(Ok(views.html.throttlingGuidance.OurServiceChange()))
   }
 
 
-//  val submit = Action.async{
-//      implicit user => implicit request =>
-//      Future.successful(Redirect(routes.OurServiceChangeController.show()))
-//  }
+  val submit = Action.async{
+      implicit request =>
+      Future.successful(Redirect(routes.WhoCanUseNewServiceController.show()))
+  }
 
 
 }
