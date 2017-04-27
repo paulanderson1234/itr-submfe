@@ -42,7 +42,9 @@ GET        /historic-aa-submission                  controllers.HistoricAASubmis
 
 #Throttling routes
 
+GET         /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.show
 GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
+
 
 #Feedback routes
 #####################################################################################################################
