@@ -2,16 +2,16 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@import config.FrontendAppConfig
-
 @main_template(title = Messages("page.throttlingGuidance.whoCanUseNewService.title"), bodyClasses = None) {
 
-<div class="grid-row">
-    <div class="column-two-thirds">
-        <div id="main">
-            <h1 class="form-title heading-xlarge" id="main-heading" >@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
-        </div>
 
-    </div>
-</div>
+
+        <header class="hero">
+            <section class="hero__content">
+                <h1 class="hero__heading-large">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
+                <h2 class="hero__heading-small">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</h2>
+                <p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
+            </section>
+        </header>
+
 }

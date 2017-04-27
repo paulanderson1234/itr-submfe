@@ -23,23 +23,17 @@ import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.mvc.Action
 
 import scala.concurrent.Future
 
 object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
-{
-  override lazy val applicationConfig = FrontendAppConfig
-  override lazy val authConnector = FrontendAuthConnector
-  override lazy val enrolmentConnector = EnrolmentConnector
-  override lazy val s4lConnector = S4LConnector
-}
+  {
+  }
 
-trait WhoCanUseNewServiceController extends FrontendController  {
+  trait WhoCanUseNewServiceController extends FrontendController  {
 
-
-
-//  val show = { implicit user => implicit request =>
-//      Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
-//    }
-
+    val show = Action.async{
+      implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
+    }
 }

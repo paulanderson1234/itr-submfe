@@ -875,7 +875,10 @@ page.historicSubmissions.applications.aa.table.status.heading=Status
 page.historicSubmissions.applications.aa.no-previous.text=You have not submitted any applications.
 
 ##  Throttling ##
-#page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.heading=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only use this new service if your company:
+
 
 
 ## Feedback ##
