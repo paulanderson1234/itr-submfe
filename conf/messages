@@ -874,6 +874,8 @@ page.historicSubmissions.applications.aa.table.refNo.heading=Reference number
 page.historicSubmissions.applications.aa.table.status.heading=Status
 page.historicSubmissions.applications.aa.no-previous.text=You have not submitted any applications.
 
+##  Throttling ##
+#page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
 
 
 ## Feedback ##
