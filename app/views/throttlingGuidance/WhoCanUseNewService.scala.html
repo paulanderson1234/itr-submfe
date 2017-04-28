@@ -9,7 +9,7 @@
     <div class="grid-row">
         <div class="column-two-thirds-slides">
             <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
-            <p id="apply-if">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
+            <p id="description">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
 
             <ul class="list list-bullet">
                 <li id="reason-one"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")</p></li>
@@ -23,12 +23,12 @@
                         @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a>.</p>
             </div>
 
-            @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
+
 
             <div class="actions">
-                <button class="button">@Messages("common.button.continue")</button>
+                <button id="next" class="button">@Messages("common.button.continue")</button>
             </div>
-}
+
         </div>
 
     </div>
