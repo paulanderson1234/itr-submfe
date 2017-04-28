@@ -2,16 +2,36 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(title = Messages("page.throttlingGuidance.whoCanUseNewService.title"), bodyClasses = None) {
+@main_template(title = Messages("page.throttlingGuidance.whoCanUseNewService.title"), mainClass=Some("full-width")) {
 
+<div class="content-inner slides">
 
+    <div class="grid-row">
+        <div class="column-two-thirds-slides">
+            <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
+            <p id="apply-if">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
 
-        <header class="hero">
-            <section class="hero__content">
-                <h1 class="hero__heading-large">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
-                <h2 class="hero__heading-small">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</h2>
-                <p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
-            </section>
-        </header>
+            <ul class="list list-bullet">
+                <li id="reason-one"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")</p></li>
+                <li id="reason-two"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")</p></li>
+                <li id="reason-three"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")</p></li>
+            </ul>
 
+            <div class="form-group">
+                <p id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
+                    <a href="https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154" class="link-style" id="change-answers">
+                        @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a>.</p>
+            </div>
+
+            @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
+
+            <div class="actions">
+                <button class="button">@Messages("common.button.continue")</button>
+            </div>
+}
+        </div>
+
+    </div>
+
+</div>
 }

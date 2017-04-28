@@ -36,4 +36,9 @@ object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
     val show = Action.async{
       implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
     }
+
+    val submit = Action.async{
+      implicit request =>
+        Future.successful(Redirect(routes.WhoCanUseNewServiceController.show()))
+    }
 }
