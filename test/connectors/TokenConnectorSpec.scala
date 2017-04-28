@@ -18,6 +18,7 @@ package connectors
 
 import auth.MockConfig
 import config.WSHttp
+import models.throttling.TokenModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
@@ -37,6 +38,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
   val token = "TOK123456789"
+  val tokenModel = TokenModel(token)
 
 
   val successResponse = HttpResponse(Status.OK, responseJson = Some(Json.parse(
@@ -110,7 +112,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   "Calling validateTemporaryToken" when {
 
     "expecting a successful response" should {
-      lazy val result = TestTokenConnector.validateTemporaryToken(token)
+      lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
 
       "return a Some(true) response" in {
         setupMockedValidateTempTokenResponse(Some(true))

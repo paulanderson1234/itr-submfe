@@ -17,6 +17,7 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
+import models.throttling.TokenModel
 import play.api.libs.json.{JsObject, JsString}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
@@ -41,10 +42,14 @@ trait TokenConnector {
     }
 }
 
-  def validateTemporaryToken(token: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+  def validateTemporaryToken(token: Option[TokenModel])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     /*Todo Uncomment
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief-submission/validate-temporary-token/$token")*/
-    Future{
+    token match {
+      case Some(t) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief-submission/validate-temporary-token/$t.token")
+      case None => Future.successful(Some(false))
+    }*/
+
+    Future {
       Some(true)
     }
   }
