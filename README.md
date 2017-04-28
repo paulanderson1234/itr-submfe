@@ -5,7 +5,7 @@
 
 
 Overview - Investment Tax Relief 
---------------------------------
+---------------------------------
 
 Investment Tax Relief (ITR) include The Enterprise Investment Scheme (EIS), Seed Enterprise Investment Scheme (SEIS), Social Investment Tax Relief (SITR) and Venture Capital Trusts (VCT). 
 
