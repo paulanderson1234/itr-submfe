@@ -7,7 +7,7 @@
 <div class="content-inner slides">
 
     <div class="grid-row">
-        <div class="column-two-thirds-slides">
+        <div class="column-two-thirds">
             <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
             <p id="description">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
 
@@ -16,7 +16,7 @@
                 <li id="reason-two"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")</p></li>
                 <li id="reason-three"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")</p></li>
             </ul>
-
+            <!-- link to be changed once confirmed with chris H -->
             <div class="form-group">
                 <p id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
                     <a href="https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154" class="link-style" id="change-answers">
@@ -24,11 +24,13 @@
             </div>
 
 
+            @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
 
             <div class="actions">
-                <button id="next" class="button">@Messages("common.button.continue")</button>
+                <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
             </div>
 
+            }
         </div>
 
     </div>

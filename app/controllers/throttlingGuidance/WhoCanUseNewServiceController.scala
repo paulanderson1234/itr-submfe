@@ -28,8 +28,6 @@ import play.api.mvc.Action
 import scala.concurrent.Future
 
 object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
-  {
-  }
 
   trait WhoCanUseNewServiceController extends FrontendController  {
 
@@ -37,8 +35,9 @@ object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
       implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
     }
 
+    // link to first time using this service page once created.
     val submit = Action.async{
       implicit request =>
-        Future.successful(Redirect(routes.WhoCanUseNewServiceController.show()))
+        Future.successful(Redirect(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show()))
     }
 }

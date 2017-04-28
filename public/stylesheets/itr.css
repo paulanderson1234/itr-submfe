@@ -218,9 +218,12 @@ related ul {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  min-height: 480px;
+  min-height: relative;
   padding: 30px;
 }
+.length {
+    min-height: 680px;
+  }
 @media (min-width: 641px) {
   .slides {
     margin-top: 30px;

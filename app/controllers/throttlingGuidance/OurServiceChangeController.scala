@@ -37,11 +37,9 @@ trait OurServiceChangeController extends FrontendController  {
     implicit request => Future.successful(Ok(views.html.throttlingGuidance.OurServiceChange()))
   }
 
-
   val submit = Action.async{
       implicit request =>
       Future.successful(Redirect(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show()))
   }
-
 
 }
