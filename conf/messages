@@ -874,7 +874,19 @@ page.historicSubmissions.applications.aa.table.refNo.heading=Reference number
 page.historicSubmissions.applications.aa.table.status.heading=Status
 page.historicSubmissions.applications.aa.no-previous.text=You have not submitted any applications.
 
+##  Throttling ##
+page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.heading=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only use this new service if your company:
+page.throttlingGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or Venture Capital Trust
+page.throttlingGuidance.whoCanUseNewService.apply.if.two=is not part of a group of companies
+page.throttlingGuidance.whoCanUseNewService.apply.if.three=did not acquire the trade you want to raise investment for
+page.throttlingGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don’t meet these conditions,
+page.throttlingGuidance.whoCanUseNewService.existing=find out how to use our existing service.
 
+page.throttlingGuidance.ourServiceChange.title=Our service is changing
+page.throttlingGuidance.ourServiceChange.heading=Our service is changing
+page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
 ## Feedback ##
 feedback.title = Feedback

@@ -39,6 +39,15 @@ POST       /supporting-documents-upload             controllers.SupportingDocume
 GET        /supporting-documents-cancel             controllers.SupportingDocumentsUploadController.cancel
 GET        /historic-aa-submission                  controllers.HistoricAASubmissionController.show
 
+
+#Throttling routes
+
+GET         /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.show
+POST        /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.submit
+GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
+POST        /who-can-use-new-service                 controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
+
+
 #Feedback routes
 #####################################################################################################################
 GET         /feedback                               controllers.feedback.FeedbackController.show

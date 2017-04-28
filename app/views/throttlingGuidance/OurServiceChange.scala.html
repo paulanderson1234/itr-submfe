@@ -1,0 +1,22 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.throttlingGuidance.ourServiceChange.title"), mainClass=Some("full-width")) {
+
+    <div class="content-inner slides">
+
+        <div class="grid-row">
+            <div class="column-two-thirds-slides">
+                <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.ourServiceChange.heading")</h1>
+                <p id="description">@Messages("page.throttlingGuidance.ourServiceChange.description")</p>
+                @form(action = controllers.throttlingGuidance.routes.OurServiceChangeController.submit()) {
+                    <div class="actions">
+                        <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+                    </div>
+                    }
+            </div>
+        </div>
+    </div>
+
+}
