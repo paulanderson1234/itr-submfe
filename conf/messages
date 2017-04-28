@@ -879,9 +879,9 @@ page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
 page.throttlingGuidance.whoCanUseNewService.heading=Who can use this service
 page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only use this new service if your company:
 
-page.throttlingGuidance.ourServiceChange.title=Our Service is changing
-page.throttlingGuidance.ourServiceChange.heading=Our Service is changing
-page.throttlingGuidance.ourServiceChange.text=You can now apply for Advance Assurance online using HMRC’s secure trial service.
+page.throttlingGuidance.ourServiceChange.title=Our service is changing
+page.throttlingGuidance.ourServiceChange.heading=Our service is changing
+page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
 
 
