@@ -16,25 +16,17 @@
 
 package controllers.throttlingGuidance
 
-import auth.{MockAuthConnector, MockConfig}
-import config.FrontendAuthConnector
-import connectors.EnrolmentConnector
 import controllers.helpers.BaseSpec
-import org.mockito.Matchers
-import org.mockito.Mockito._
-import play.api.test.Helpers.{redirectLocation, _}
 import play.api.test.Helpers._
 
 class OurServiceChangeControllerSpec extends BaseSpec {
 
   object TestController extends OurServiceChangeController {
-//    override lazy val applicationConfig = MockConfig
 
   }
 
   "Sending a GET request to OurServiceChangeController" should {
     "return a 200 OK" in {
-//      setupMocks()
       showWithoutSession(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -43,18 +35,10 @@ class OurServiceChangeControllerSpec extends BaseSpec {
 
   "POST to the OurServiceChangeController" should {
     "redirect to Who Can Use New Service page" in {
-//      setupMocks()
         submitWithoutSession(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show().url)
       }
     }
   }
-
-
-
-
-
-
-
 }
