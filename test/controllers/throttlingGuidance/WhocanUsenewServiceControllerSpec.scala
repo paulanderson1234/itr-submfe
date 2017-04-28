@@ -32,12 +32,14 @@ class WhocanUsenewServiceControllerSpec extends BaseSpec {
     }
   }
 
-//  "POST to the WhoCanUseNewServiceController" should {
-//    "redirect to Who Can Use New Service page" in {
-//      //      setupMocks()
-//      submitWithoutSession(TestController.submit){
-//        result => status(result) shouldBe SEE_OTHER
-//          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show().url)
-//      }
-//    }
+  //TODO: change test when new page is navigated to
+  "POST to the OurServiceChangeController" should {
+    "redirect to Who Can Use New Service page" in {
+      submitWithoutSession(TestController.submit){
+        result => status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show().url)
+      }
+    }
+  }
+
 }
