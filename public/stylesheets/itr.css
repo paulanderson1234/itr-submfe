@@ -218,12 +218,11 @@ related ul {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  min-height: relative;
+  min-height: 480px;
+  height: 100%;
   padding: 30px;
 }
-.length {
-    min-height: 680px;
-  }
+
 @media (min-width: 641px) {
   .slides {
     margin-top: 30px;
@@ -248,6 +247,8 @@ related ul {
   font-size-adjust: 0.525;
   margin-bottom: 30px;
 }
+
+
 @media (min-width: 641px) {
   .slides h1 {
     font-size: 36px;
@@ -321,6 +322,7 @@ related ul {
 .slides a,
 .slides a:focus,
 .slides a:hover,
+.slides a:visited,
 .slides a:active {
   color: inherit;
 }
@@ -391,4 +393,19 @@ related ul {
 }
 .slides.slides-2 details .panel {
   border-left-color: #005ea5;
+}
+
+.slide-medium
+{
+    height:35em;
+}
+
+.slide-medium-large
+{
+    height:40em;
+}
+
+.slide-large
+{
+    height:40em;
 }
