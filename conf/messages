@@ -881,7 +881,7 @@ page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only
 page.throttlingGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or Venture Capital Trust
 page.throttlingGuidance.whoCanUseNewService.apply.if.two=is not part of a group of companies
 page.throttlingGuidance.whoCanUseNewService.apply.if.three=did not acquire the trade you want to raise investment for
-page.throttlingGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don’t meet these conditions,
+page.throttlingGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don''t meet these conditions,
 page.throttlingGuidance.whoCanUseNewService.existing=find out how to use our existing service.
 
 page.throttlingGuidance.ourServiceChange.title=Our service is changing
