@@ -44,7 +44,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   val successResponse = HttpResponse(Status.OK, responseJson = Some(Json.parse(
     """
       |{
-      |    "token": "TOK123456789"
+      |    "id": "TOK123456789"
       |}
     """.stripMargin
   )))
@@ -59,14 +59,14 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   def setupMockedGenerateTempTokenResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
     when(TestTokenConnector.http.POSTEmpty[HttpResponse](
-      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief-submission/generate-temporary-token"))
+      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/generate-temporary-token"))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 
   def setupMockedValidateTempTokenResponse(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestTokenConnector.http.GET[Option[Boolean]](
-      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief-submission/validate-temporary-token/${"TOK123456789"}"))
+      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/validate-temporary-token/$token"))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
@@ -97,24 +97,24 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
       }
     }
 
-//    "expecting a non-successful response" should {
-//      lazy val result = TestTokenConnector.generateTemporaryToken
-//
-//      "return a Status INTERNAL_SERVER_ERROR (500) response" in {
-//        setupMockedGenerateTempTokenResponse(failedResponse)
-//        await(result) match {
-//          case response => response.status shouldBe Status.INTERNAL_SERVER_ERROR
-//        }
-//      }
-//    }
+    "expecting a non-successful response" should {
+      lazy val result = TestTokenConnector.generateTemporaryToken
+
+      "return a Status INTERNAL_SERVER_ERROR (500) response" in {
+        setupMockedGenerateTempTokenResponse(failedResponse)
+        await(result) match {
+          case response => response.status shouldBe Status.INTERNAL_SERVER_ERROR
+        }
+      }
+    }
   }
 
   "Calling validateTemporaryToken" when {
 
     "expecting a successful response" should {
-      lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
 
       "return a Some(true) response" in {
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
         setupMockedValidateTempTokenResponse(Some(true))
         await(result) match {
           case response => {
@@ -124,26 +124,27 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
         }
       }
 
-//      "return a Some(false) response" in {
-//        setupMockedValidateTempTokenResponse(Some(false))
-//        await(result) match {
-//          case response => {
-//            response should not be empty
-//            response shouldBe Some(false)
-//          }
-//        }
-//      }
-//    }
-//
-//    "expecting a non-successful response" should {
-//      lazy val result = TestTokenConnector.validateTemporaryToken(token)
-//
-//      "return a None" in {
-//        setupMockedValidateTempTokenResponse(None)
-//        await(result) match {
-//          case response => response shouldBe empty
-//        }
-//      }
+      "return a Some(false) response" in {
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
+        setupMockedValidateTempTokenResponse(Some(false))
+        await(result) match {
+          case response => {
+            response should not be empty
+            response shouldBe Some(false)
+          }
+        }
+      }
+    }
+
+    "with an empty token model" should {
+      lazy val result = TestTokenConnector.validateTemporaryToken(None)
+
+      "return false" in {
+        setupMockedValidateTempTokenResponse(None)
+        await(result) match {
+          case response => response.get shouldBe false
+        }
+      }
     }
   }
 }

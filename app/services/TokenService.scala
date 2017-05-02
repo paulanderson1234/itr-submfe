@@ -21,9 +21,11 @@ import common.KeystoreKeys
 import connectors.{S4LConnector, TokenConnector}
 import models.throttling.TokenModel
 import play.api.Logger
-import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.play.http.HeaderCarrier
+import play.api.http.Status
+import play.api.libs.json.{Json, JsError, JsSuccess}
+import uk.gov.hmrc.play.http.{HttpResponse, HeaderCarrier}
 import scala.concurrent.Future
+import Status._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
@@ -36,20 +38,23 @@ trait TokenService {
   val tokenConnector: TokenConnector
   val s4lConnector: S4LConnector
 
-  def generateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[String]] = {
+  def generateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
     tokenConnector.generateTemporaryToken.map{
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
           s4lConnector.saveFormData[TokenModel](KeystoreKeys.selectedSchemes,data.value)
-          Some(data.value.token)
+          HttpResponse(OK)
         case e: JsError =>
-          Logger.warn(s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}")
-          None
+          val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
+          Logger.warn(errorMessage)
+          HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
       }
     }.recover {
       case _ => {
-        Logger.warn(s"[TokenService][generateTemporaryToken] - No temporary token response retrieved")
-        None
+        val errorMessage = s"[TokenService][generateTemporaryToken] - No temporary token response retrieved"
+        Logger.warn(errorMessage)
+        HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage))
+        )
       }
     }
   }

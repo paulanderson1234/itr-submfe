@@ -18,10 +18,8 @@ package connectors
 
 import config.{FrontendAppConfig, WSHttp}
 import models.throttling.TokenModel
-import play.api.libs.json.{JsObject, JsString}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 
@@ -35,22 +33,13 @@ trait TokenConnector {
   val http: HttpGet with HttpPost with HttpPut with HttpDelete
 
   def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    /*Todo Uncomment
-    http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief-submission/generate-temporary-token")*/
-    Future{
-      HttpResponse(200,Some(JsObject(Seq("token" -> JsString("TOK123456789")))))
-    }
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/token/generate-temporary-token")
 }
 
   def validateTemporaryToken(token: Option[TokenModel])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    /*Todo Uncomment
     token match {
-      case Some(t) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief-submission/validate-temporary-token/$t.token")
+      case Some(tok) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok.id}")
       case None => Future.successful(Some(false))
-    }*/
-
-    Future {
-      Some(true)
     }
   }
 }

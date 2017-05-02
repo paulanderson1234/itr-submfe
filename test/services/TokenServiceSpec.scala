@@ -42,7 +42,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val token = "TOK123456789"
   val tokenModel = TokenModel("TOK123456789")
-  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("token" -> JsString("TOK123456789")))))
+  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("id" -> JsString("TOK123456789")))))
   val generateTokenInvalidResponse = HttpResponse(OK,Some(JsObject(Seq("notToken" -> JsString("Invalid")))))
   val generateTokenFailResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
   val tokenCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(tokenModel)))
@@ -52,7 +52,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     override val s4lConnector: S4LConnector = mock[S4LConnector]
   }
 
-  def mockGenerateTokenFunction(res: Future[HttpResponse]): Option[String] = {
+  def mockGenerateTokenFunction(res: Future[HttpResponse]): Future[HttpResponse] = {
     when(TestTokenService.tokenConnector.generateTemporaryToken(Matchers.any())).thenReturn(res)
     lazy val result = TestTokenService.generateTemporaryToken
     await(result)
@@ -78,18 +78,17 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   }
 
   "generateTemporaryToken" should {
-    "return a token if the call to the connector returns a valid TokenModel" in {
+    "return a OK response if the call to the connector returns a valid TokenModel" in {
       val response = mockGenerateTokenFunction(generateTokenSucResponse)
-      response should not be empty
-      response.get shouldBe "TOK123456789"
+      response.status shouldBe OK
     }
-    "return None if the call to the connector returns an invalid TokenModel" in {
+    "return INTERNAL SERVER ERROR if the call to the connector returns an invalid TokenModel" in {
       val response = mockGenerateTokenFunction(generateTokenInvalidResponse)
-      response shouldBe empty
+      response.status shouldBe INTERNAL_SERVER_ERROR
     }
-    "return None if the call to then connector returns a non 200 response code" in {
+    "return INTERNAL SERVER ERROR if the call to then connector returns a non 200 response code" in {
       val response = mockGenerateTokenFunction(generateTokenFailResponse)
-      response shouldBe empty
+      response.status shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
