@@ -45,6 +45,11 @@ class WhoCanUseNewServiceSpec extends ViewSpec {
       document.body.getElementById("reason-one").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")
       document.body.getElementById("reason-two").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")
       document.body.getElementById("reason-three").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")
+      document.body.getElementById("still-apply").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.still.apply") + " " + Messages("page.throttlingGuidance.whoCanUseNewService.existing")
+
+      //link
+      document.body.getElementById("change-answers").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.existing")
+      document.body.getElementById("change-answers").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154"
 
       //continue button
       document.body.getElementById("next").text() shouldBe Messages("common.button.continue")
