@@ -18,7 +18,7 @@ package services
 
 import auth.TAVCUser
 import common.KeystoreKeys
-import connectors.{S4LConnector, TokenConnector}
+import connectors.{KeystoreConnector, S4LConnector, TokenConnector}
 import models.throttling.TokenModel
 import play.api.Logger
 import play.api.http.Status
@@ -31,18 +31,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object TokenService  extends TokenService{
   val tokenConnector = TokenConnector
-  val s4lConnector = S4LConnector
+  val keystoreConnector = KeystoreConnector
 }
 
 trait TokenService {
   val tokenConnector: TokenConnector
-  val s4lConnector: S4LConnector
+  val keystoreConnector: KeystoreConnector
 
   def generateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
     tokenConnector.generateTemporaryToken.map{
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
-          s4lConnector.saveFormData[TokenModel](KeystoreKeys.selectedSchemes,data.value)
+          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.selectedSchemes,data.value)
           HttpResponse(OK)
         case e: JsError =>
           val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
@@ -61,7 +61,7 @@ trait TokenService {
 
   def validateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser) : Future[Boolean] = {
     (for{
-      tokenModel <-  s4lConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
+      tokenModel <-  keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
       validated <- tokenConnector.validateTemporaryToken(tokenModel)
     } yield validated.getOrElse(false)). recover {
       case e: NoSuchElementException => Logger.warn(s"[TokenService][validateTemporaryToken] - No token found in Save4Later. Errors=${e.getMessage}")

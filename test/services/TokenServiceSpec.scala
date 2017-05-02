@@ -18,7 +18,7 @@ package services
 
 import auth.{ggUser, TAVCUser}
 import common.KeystoreKeys
-import connectors.{TokenConnector, S4LConnector}
+import connectors.{KeystoreConnector, TokenConnector, S4LConnector}
 import models.throttling.TokenModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
@@ -49,7 +49,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   object TestTokenService extends TokenService{
     override val tokenConnector: TokenConnector = mock[TokenConnector]
-    override val s4lConnector: S4LConnector = mock[S4LConnector]
+    override val keystoreConnector: KeystoreConnector = mock[KeystoreConnector]
   }
 
   def mockGenerateTokenFunction(res: Future[HttpResponse]): Future[HttpResponse] = {
@@ -59,8 +59,8 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   }
 
   def mockValidateTokenFunction(tokenModel: Option[TokenModel], validated: Option[Boolean]): Boolean = {
-    when(TestTokenService.s4lConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
-    (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(tokenModel)
+    when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
+    (Matchers.any(),Matchers.any())).thenReturn(tokenModel)
     when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(validated)
     lazy val result = TestTokenService.validateTemporaryToken
     await(result)
@@ -70,7 +70,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   "The TokenService" should {
     "use the correct 'save for later' connector" in {
-      TokenService.s4lConnector shouldBe S4LConnector
+      TokenService.keystoreConnector shouldBe KeystoreConnector
     }
     "use the correct token connector" in {
       TokenService.tokenConnector shouldBe TokenConnector
@@ -110,8 +110,8 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
       response shouldBe false
     }
     "return false if an exception occurs down stream" in {
-      when(TestTokenService.s4lConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
-        (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Some(tokenModel))
+      when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(tokenModel))
       when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(generateTokenFailResponse)
       lazy val result = TestTokenService.validateTemporaryToken
       await(result) shouldBe false
