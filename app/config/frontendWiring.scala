@@ -17,11 +17,12 @@
 package config
 
 import uk.gov.hmrc.crypto.ApplicationCrypto
-import uk.gov.hmrc.http.cache.client.{ShortLivedCache, ShortLivedHttpCaching => HMRCShortLivedHttpCaching}
+import uk.gov.hmrc.http.cache.client.{ShortLivedHttpCaching => HMRCShortLivedHttpCaching, SessionCache, ShortLivedCache}
 import uk.gov.hmrc.play.audit.http.config.LoadAuditingConfig
 import uk.gov.hmrc.play.audit.http.connector.{AuditConnector => Auditing}
 import uk.gov.hmrc.play.config.{AppName, RunMode, ServicesConfig}
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
+import uk.gov.hmrc.play.http.{HttpDelete, HttpPut, HttpGet}
 import uk.gov.hmrc.play.http.ws.{WSDelete, WSGet, WSPost, WSPut}
 
 object FrontendAuditConnector extends Auditing with AppName {
@@ -49,4 +50,12 @@ object ShortLivedHttpCaching extends HMRCShortLivedHttpCaching with AppName with
 object TAVCShortLivedCache extends ShortLivedCache {
   override implicit lazy val crypto = ApplicationCrypto.JsonCrypto
   override lazy val shortLiveCache = ShortLivedHttpCaching
+}
+
+object TAVCSessionCache extends SessionCache with AppName with ServicesConfig{
+  override lazy val defaultSource: String = appName
+  override lazy val baseUri = baseUrl("cachable.session-cache")
+  override lazy val domain = getConfString("cachable.session-cache.domain",
+    throw new Exception(s"Could not find config 'cachable.session-cache.domain'"))
+  override def http: HttpGet with HttpPut with HttpDelete = WSHttp
 }

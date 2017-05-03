@@ -86,4 +86,7 @@ trait KeystoreKeys {
 
   //file upload keys
   val envelopeID: String = "fileUpload:envelopeID"
+
+  //throttling
+  val throttlingToken: String = "throttling:token"
 }
