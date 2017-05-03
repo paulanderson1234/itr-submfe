@@ -16,7 +16,6 @@
 
 package services
 
-import auth.{ggUser, TAVCUser}
 import common.KeystoreKeys
 import connectors.{KeystoreConnector, TokenConnector, S4LConnector}
 import models.throttling.TokenModel
@@ -38,7 +37,6 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
-  implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext, internalId)
 
   val token = "TOK123456789"
   val tokenModel = TokenModel("TOK123456789")

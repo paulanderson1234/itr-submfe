@@ -16,17 +16,17 @@
 
 package services
 
-import auth.TAVCUser
 import common.KeystoreKeys
-import connectors.{KeystoreConnector, S4LConnector, TokenConnector}
+import connectors.{KeystoreConnector, TokenConnector}
 import models.throttling.TokenModel
 import play.api.Logger
 import play.api.http.Status
-import play.api.libs.json.{Json, JsError, JsSuccess}
-import uk.gov.hmrc.play.http.{HttpResponse, HeaderCarrier}
-import scala.concurrent.Future
-import Status._
+import play.api.http.Status._
+import play.api.libs.json.{JsError, JsSuccess, Json}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 
 object TokenService  extends TokenService{
@@ -38,7 +38,7 @@ trait TokenService {
   val tokenConnector: TokenConnector
   val keystoreConnector: KeystoreConnector
 
-  def generateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
+  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     tokenConnector.generateTemporaryToken.map{
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
@@ -59,7 +59,7 @@ trait TokenService {
     }
   }
 
-  def validateTemporaryToken(implicit hc: HeaderCarrier, user: TAVCUser) : Future[Boolean] = {
+  def validateTemporaryToken(implicit hc: HeaderCarrier) : Future[Boolean] = {
     (for{
       tokenModel <-  keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
       validated <- tokenConnector.validateTemporaryToken(tokenModel)
