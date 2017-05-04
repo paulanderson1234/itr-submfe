@@ -22,12 +22,13 @@
                 '_legend -> Messages("page.throttlingGuidance.firstTimeUsingService.heading"),
                 '_legendClass -> "visuallyhidden",
                 '_labelAfter -> true,
-                '_labelClass -> "block-label",
+                '_labelClass -> "block-label slide-radio-button",
+                '_legendID -> "isFirstTimeUsingService",
                 '_groupClass -> "inline"
                 )
             </div>
 
-            @form(action = controllers.throttlingGuidance.routes.OurServiceChangeController.submit()) {
+            @form(action = controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.submit()) {
             <div class="actions">
                 <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
             </div>

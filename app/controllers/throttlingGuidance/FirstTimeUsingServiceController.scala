@@ -16,22 +16,23 @@
 
 package controllers.throttlingGuidance
 
-import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
-import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
-import models.FirstTimeUsingServiceModel
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.Action
+import common.{Constants, KeystoreKeys}
+import connectors.KeystoreConnector
 import forms.FirstTimeUsingServiceForm._
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.Action
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
-object FirstTimeUsingServiceController extends FirstTimeUsingServiceController
+object FirstTimeUsingServiceController extends FirstTimeUsingServiceController{
+  val keystoreConnector = KeystoreConnector
+}
 
 trait FirstTimeUsingServiceController extends FrontendController  {
+
+  val keystoreConnector: KeystoreConnector
 
   val show = Action.async{
     implicit request =>Future.successful(Ok(views.html.throttlingGuidance.FirstTimeUsingService(firstTimeUsingServiceForm)))
@@ -40,8 +41,19 @@ trait FirstTimeUsingServiceController extends FrontendController  {
   // once pages are created
   // yes -> are you an agent
   // no -> gateway login page
-  val submit = Action.async{
+  val submit = Action.async {
     implicit request =>
-      Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
+      firstTimeUsingServiceForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+        },
+        validFormData => {
+          keystoreConnector.saveFormData(KeystoreKeys.isFirstTimeUsingService, validFormData)
+          validFormData.isFirstTimeUsingService match {
+            case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+          }
+        })
+
   }
 }

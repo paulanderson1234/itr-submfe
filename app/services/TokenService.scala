@@ -42,7 +42,7 @@ trait TokenService {
     tokenConnector.generateTemporaryToken.map{
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
-          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.selectedSchemes,data.value)
+          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken,data.value)
           HttpResponse(OK)
         case e: JsError =>
           val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"

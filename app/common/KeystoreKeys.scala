@@ -89,4 +89,5 @@ trait KeystoreKeys {
 
   //throttling
   val throttlingToken: String = "throttling:token"
+  val isFirstTimeUsingService: String = "throttling:isFirstTimeUsingService"
 }
