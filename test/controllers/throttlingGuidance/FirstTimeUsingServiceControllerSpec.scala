@@ -19,12 +19,12 @@ package controllers.throttlingGuidance
 import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
-class WhocanUsenewServiceControllerSpec extends BaseSpec {
+class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
   object TestController extends WhoCanUseNewServiceController {
   }
 
-  "Sending a GET request to WhoCanUseNewServiceController" should {
+  "Sending a GET request to FirstTimeUsingServiceController" should {
     "return a 200 OK" in {
       showWithoutSession(TestController.show)(
         result => status(result) shouldBe OK
@@ -33,8 +33,8 @@ class WhocanUsenewServiceControllerSpec extends BaseSpec {
   }
 
   //TODO: change test when new page is navigated to
-  "POST to the WhoCanUseNewServiceController" should {
-    "redirect to First Time Using New Service page" in {
+  "POST to the OurServiceChangeController" should {
+    "redirect to Who Can Use New Service page" in {
       submitWithoutSession(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show().url)
