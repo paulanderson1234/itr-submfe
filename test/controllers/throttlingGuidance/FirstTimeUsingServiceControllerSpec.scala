@@ -19,12 +19,12 @@ package controllers.throttlingGuidance
 import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
-class WhocanUsenewServiceControllerSpec extends BaseSpec {
+class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
   object TestController extends WhoCanUseNewServiceController {
   }
 
-  "Sending a GET request to WhoCanUseNewServiceController" should {
+  "Sending a GET request to FirstTimeUsingServiceController" should {
     "return a 200 OK" in {
       showWithoutSession(TestController.show)(
         result => status(result) shouldBe OK

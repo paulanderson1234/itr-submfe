@@ -45,7 +45,9 @@ GET        /historic-aa-submission                  controllers.HistoricAASubmis
 GET         /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.show
 POST        /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.submit
 GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
-POST        /who-can-use-new-service                 controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
+POST        /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
+GET         /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.show
+POST        /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.submit
 
 
 #Feedback routes

@@ -20,23 +20,28 @@ import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
+import models.FirstTimeUsingServiceModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.Action
+import forms.FirstTimeUsingServiceForm._
 
 import scala.concurrent.Future
 
-object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
+object FirstTimeUsingServiceController extends FirstTimeUsingServiceController
 
-  trait WhoCanUseNewServiceController extends FrontendController  {
+trait FirstTimeUsingServiceController extends FrontendController  {
 
-    val show = Action.async{
-      implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
-    }
+  val show = Action.async{
+    implicit request =>Future.successful(Ok(views.html.throttlingGuidance.FirstTimeUsingService(firstTimeUsingServiceForm)))
+  }
 
-    val submit = Action.async{
-      implicit request =>
-        Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
-    }
+  // once pages are created
+  // yes -> are you an agent
+  // no -> gateway login page
+  val submit = Action.async{
+    implicit request =>
+      Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
+  }
 }
