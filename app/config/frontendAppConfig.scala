@@ -73,8 +73,9 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val submissionUrl = baseUrl("investment-tax-relief-submission")
   override lazy val internalAttachmentsUrl = baseUrl("internal-attachments")
   override lazy val attachmentFileUploadUrl: (String)=> String = schemeType => {
-    s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=${submissionFrontendServiceBaseUrl}" +
-      s"investment-tax-relief/$schemeType/check-your-answers&backUrl=${submissionFrontendServiceBaseUrl}investment-tax-relief/$schemeType/supporting-documents-upload"
+    s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
+    s"/$schemeType/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/$schemeType/supporting-documents-upload"
+
   }
   override lazy val uploadFeatureEnabled: Boolean = getFeature(s"$env.features.UploadEnabled")
   override lazy val seisFlowEnabled: Boolean = getFeature(s"$env.features.seisFlowEnabled")
@@ -83,6 +84,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val attachmentsServiceUrl: String = baseUrl("investment-tax-relief-attachments")
 
   val attachmentFileUploadOutsideUrl =
-     s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=${submissionFrontendServiceBaseUrl}investment-tax-relief" +
-      s"/check-your-documents&backUrl=${submissionFrontendServiceBaseUrl}investment-tax-relief/supporting-documents-upload"
+    s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
+    s"/check-your-documents&backUrl=$submissionFrontendServiceBaseUrl/supporting-documents-upload"
 }
