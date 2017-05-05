@@ -64,8 +64,6 @@ trait TokenService {
       tokenModel <-  keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
       validated <- tokenConnector.validateTemporaryToken(tokenModel)
     } yield validated.getOrElse(false)). recover {
-      case e: NoSuchElementException => Logger.warn(s"[TokenService][validateTemporaryToken] - No token found in Save4Later. Errors=${e.getMessage}")
-        false
       case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
         false
     }
