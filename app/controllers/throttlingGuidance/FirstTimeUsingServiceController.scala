@@ -51,7 +51,7 @@ trait FirstTimeUsingServiceController extends FrontendController  {
           keystoreConnector.saveFormData(KeystoreKeys.isFirstTimeUsingService, validFormData)
           validFormData.isFirstTimeUsingService match {
             case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
-            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
           }
         })
 

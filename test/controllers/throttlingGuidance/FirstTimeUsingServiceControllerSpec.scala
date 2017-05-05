@@ -16,12 +16,15 @@
 
 package controllers.throttlingGuidance
 
+import common.Constants
+import connectors.KeystoreConnector
 import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 
 class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
-  object TestController extends WhoCanUseNewServiceController {
+  object TestController extends FirstTimeUsingServiceController {
+    override lazy val keystoreConnector = mock[KeystoreConnector]
   }
 
   "Sending a GET request to FirstTimeUsingServiceController" should {
@@ -32,14 +35,27 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
     }
   }
 
-  //TODO: change test when new page is navigated to
-  "POST to the OurServiceChangeController" should {
-    "redirect to Who Can Use New Service page" in {
-      submitWithoutSession(TestController.submit){
-        result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show().url)
+  "POST to the FirstTimeUsingServiceController" should {
+
+    "redirect to Hub page" in {
+      val formInput = "isFirstTimeUsingService" -> Constants.StandardRadioButtonNoValue
+      submitWithoutSession(TestController.submit, formInput){
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+          }
+      }
+    }
+
+    //TODO: change test when new page is navigated to
+    "redirect to same page" in {
+      val formInput = "isFirstTimeUsingService" -> Constants.StandardRadioButtonYesValue
+      submitWithoutSession(TestController.submit, formInput){
+        result => {
+          status(result) shouldBe SEE_OTHER
+          redirectLocation(result) shouldBe Some(routes.FirstTimeUsingServiceController.show().url)
+        }
       }
     }
   }
-
 }
