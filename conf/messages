@@ -888,6 +888,15 @@ page.throttlingGuidance.ourServiceChange.title=Our service is changing
 page.throttlingGuidance.ourServiceChange.heading=Our service is changing
 page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
+
+# throttle limit page - User Limit reached
+page.throttlingGuidance.userLimitReached.title=We''ve reached our maximum number of users for today
+page.throttlingGuidance.userLimitReached.heading=We''ve reached our maximum number of users for today
+page.throttlingGuidance.userLimitReached.reason=Sorry, we''ve already reached our limit for new users of the service today.
+page.throttlingGuidance.userLimitReached.tryAgain.info=Please try again tomorrow, or you can
+page.throttlingGuidance.userLimitReached.findOut=find out how to use our existing service
+page.throttlingGuidance.userLimitReached.apply=to apply for Advance Assurance.
+
 ## Feedback ##
 feedback.title = Feedback
 
