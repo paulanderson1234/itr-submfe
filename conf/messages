@@ -888,6 +888,10 @@ page.throttlingGuidance.ourServiceChange.title=Our service is changing
 page.throttlingGuidance.ourServiceChange.heading=Our service is changing
 page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
+page.throttlingGuidance.Agent.title=Are you an agent?
+page.throttlingGuidance.Agent.heading=Are you an agent?
+
+
 ## Feedback ##
 feedback.title = Feedback
 

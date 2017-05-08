@@ -18,9 +18,10 @@ package controllers.helpers
 
 import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
-import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, KeystoreConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
+import models.throttlingGuidance.IsAgentModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -39,6 +40,7 @@ import scala.concurrent.Future
 trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeRequestHelper with SubmissionFixture with BeforeAndAfterEach {
 
   val mockS4lConnector = mock[S4LConnector]
+  val mockKeystoreConnector = mock[KeystoreConnector]
   val mockEnrolmentConnector = mock[EnrolmentConnector]
   val mockSubmissionConnector = mock[SubmissionConnector]
   val mockSubscriptionService= mock[SubscriptionService]
@@ -100,11 +102,14 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val newProductMarketModelYes = NewProductModel(Constants.StandardRadioButtonYesValue)
   val newProductMarketModelNo = NewProductModel(Constants.StandardRadioButtonNoValue)
 
-  val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
-  val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+  val isAgentModelYes = IsAgentModel(Constants.StandardRadioButtonYesValue)
+  val isAgentModelNo = IsAgentModel(Constants.StandardRadioButtonNoValue)
 
   val kiProcessingModelMet = KiProcessingModel(None, Some(true), Some(false), Some(false), Some(false))
   val kiProcessingModelNotMet = KiProcessingModel(Some(false),Some(false), Some(false), Some(false), Some(false))
+
+  val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+  val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
 
   val kiProcessingModelIsKi = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
 
