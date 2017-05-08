@@ -16,18 +16,23 @@
 
 package views.throttlingGuidance
 
+import auth.MockConfig
 import connectors.KeystoreConnector
 import controllers.throttlingGuidance.FirstTimeUsingServiceController
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers.{contentAsString, _}
+import services.{ThrottleService, TokenService}
 import views.helpers.ViewSpec
 
 class FirstTimeUsingServiceSpec extends ViewSpec {
 
   object TestController extends FirstTimeUsingServiceController {
     override val keystoreConnector =  mock[KeystoreConnector]
+    override val throttleService =  mock[ThrottleService]
+    override val tokenService =  mock[TokenService]
+    override val applicationConfig = MockConfig
   }
 
   "The First time usage guidance page" should {

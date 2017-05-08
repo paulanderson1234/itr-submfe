@@ -17,43 +17,57 @@
 package controllers.throttlingGuidance
 
 import common.{Constants, KeystoreKeys}
+import config.{AppConfig, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.FirstTimeUsingServiceForm._
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
+import services.{ThrottleService, TokenService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import views.html.throttlingGuidance.FirstTimeUsingService
 
 import scala.concurrent.Future
 
 object FirstTimeUsingServiceController extends FirstTimeUsingServiceController{
   val keystoreConnector = KeystoreConnector
+  val throttleService: ThrottleService = ThrottleService
+  val tokenService: TokenService = TokenService
+  val applicationConfig = FrontendAppConfig
 }
 
 trait FirstTimeUsingServiceController extends FrontendController  {
 
-  val keystoreConnector: KeystoreConnector
+  val keystoreConnector : KeystoreConnector
+  val throttleService: ThrottleService
+  val tokenService: TokenService
+  val applicationConfig : AppConfig
 
   val show = Action.async{
     implicit request =>Future.successful(Ok(views.html.throttlingGuidance.FirstTimeUsingService(firstTimeUsingServiceForm)))
   }
 
-  // once pages are created
-  // yes -> are you an agent
-  // no -> gateway login page
   val submit = Action.async {
     implicit request =>
       firstTimeUsingServiceForm.bindFromRequest().fold(
         formWithErrors => {
-          Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+          Future.successful(BadRequest(FirstTimeUsingService(formWithErrors)))
         },
         validFormData => {
           keystoreConnector.saveFormData(KeystoreKeys.isFirstTimeUsingService, validFormData)
           validFormData.isFirstTimeUsingService match {
-            case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
+            case Constants.StandardRadioButtonYesValue => {
+              throttleService.checkUserAccess.flatMap {
+                case true => {
+                  tokenService.generateTemporaryToken
+                  Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
+                }
+                case false => Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
+              }
+            }
             case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
           }
-        })
-
+        }
+      )
   }
 }

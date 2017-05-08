@@ -18,7 +18,7 @@ package controllers.helpers
 
 import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
-import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
+import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector, ThrottleConnector}
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
@@ -28,7 +28,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.Json
-import services.{FileUploadService, RegistrationDetailsService, SubscriptionService}
+import services.{FileUploadService, RegistrationDetailsService, SubscriptionService, ThrottleService}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -44,11 +44,14 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockSubscriptionService= mock[SubscriptionService]
   val mockRegistrationDetailsService = mock[RegistrationDetailsService]
   val mockFileUploadService = mock[FileUploadService]
+  val mockThrottleService= mock[ThrottleService]
+  val mockThrottleConnector = mock[ThrottleConnector]
 
   override def beforeEach() {
     reset(mockS4lConnector)
     reset(mockEnrolmentConnector)
     reset(mockSubmissionConnector)
+    reset(mockThrottleConnector)
   }
 
   def mockEnrolledRequest(selectedSchemes: Option[SchemeTypesModel] = None): Unit = {

@@ -48,6 +48,7 @@ GET         /who-can-use-new-service                controllers.throttlingGuidan
 POST        /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
 GET         /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.show
 POST        /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.submit
+GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
 
 
 #Feedback routes

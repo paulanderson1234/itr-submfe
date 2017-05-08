@@ -3,38 +3,32 @@
 @import models.FirstTimeUsingServiceModel
 @import common.Constants
 
-@(FirstTimeUsingServiceForm: Form[FirstTimeUsingServiceModel])(implicit request: Request[_], messages: Messages)
+@(firstTimeUsingServiceForm: Form[FirstTimeUsingServiceModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(title = Messages("page.throttlingGuidance.firstTimeUsingService.title"), mainClass=Some("full-width")) {
+@main_template(title = Messages("page.throttlingGuidance.firstTimeUsingService.title"), bodyClasses = None, userLoggedIn = false) {
 
-<div class="content-inner slides">
+@errorSummary(firstTimeUsingServiceForm, "first-time-using-service", "isFirstTimeUsingService")
 
-    <div class="grid-row">
-        <div class="column-two-thirds-slides">
-            <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.firstTimeUsingService.heading")</h1>
-
-            <div class="form-group action radio">
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.throttlingGuidance.firstTimeUsingService.heading")</h1>
+        @form(action = controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.submit()) {
+            <div class="form-group">
                 @formInputRadioGroup(
-                field = FirstTimeUsingServiceForm("isFirstTimeUsingService"),
+                field = firstTimeUsingServiceForm("isFirstTimeUsingService"),
                 Seq(
                 Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
                 Constants.StandardRadioButtonNoValue -> Messages("page.throttlingGuidance.firstTimeUsingService.radioNoLabel")),
                 '_legend -> Messages("page.throttlingGuidance.firstTimeUsingService.heading"),
                 '_legendClass -> "visuallyhidden",
                 '_labelAfter -> true,
-                '_labelClass -> "block-label slide-radio-button",
+                '_labelClass -> "block-label",
                 '_legendID -> "isFirstTimeUsingService",
                 '_groupClass -> "inline"
                 )
             </div>
 
-            @form(action = controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.submit()) {
-            <div class="actions">
+            <div class="form-group">
                 <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
             </div>
-            }
-        </div>
-    </div>
-</div>
+        }
 
 }

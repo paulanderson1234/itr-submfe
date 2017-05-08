@@ -25,7 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object ThrottleService extends ThrottleService {
-  val throttleConnector: ThrottleConnector = ThrottleConnector
+  val throttleConnector = ThrottleConnector
 }
 
 trait ThrottleService {

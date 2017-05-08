@@ -16,15 +16,14 @@
 
 package connectors
 
-import config.WSHttp
-import play.api.Logger
+import config.{FrontendAppConfig, WSHttp}
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
+
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object ThrottleConnector extends ThrottleConnector with ServicesConfig {
-  val serviceUrl = baseUrl("investment-tax-relief-submission")
+  val serviceUrl = FrontendAppConfig.submissionUrl
   val http = WSHttp
 }
 
