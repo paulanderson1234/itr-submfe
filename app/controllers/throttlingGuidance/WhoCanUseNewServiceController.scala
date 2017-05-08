@@ -16,10 +16,6 @@
 
 package controllers.throttlingGuidance
 
-import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
-import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current

@@ -50,8 +50,11 @@ GET         /our-service-is-changing                controllers.throttlingGuidan
 POST        /our-service-is-changing                controllers.throttlingGuidance.OurServiceChangeController.submit
 GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
 POST        /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
+
 GET         /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.show
 POST        /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.submit
+GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
+
 
 #Feedback routes
 #####################################################################################################################

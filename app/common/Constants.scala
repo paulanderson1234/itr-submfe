@@ -58,4 +58,6 @@ trait Constants {
   val enrolmentTavcRefKey = "TAVCRef"
 
   val standardIgnoreYearValue = "9999-12-31"
+
+  val guidanceRedirectUrl = "https://www.gov.uk/guidance/venture-capital-schemes-apply-for-advance-assurance"
 }
