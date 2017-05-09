@@ -14,25 +14,21 @@
  * limitations under the License.
  */
 
-package controllers.throttlingGuidance
+package controllers
 
+import views.html.warnings._
+import play.api.mvc.{AnyContent, Action}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.mvc.Action
 
 import scala.concurrent.Future
 
-object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
+object SessionTimeoutController extends SessionTimeoutController
 
-  trait WhoCanUseNewServiceController extends FrontendController  {
+trait SessionTimeoutController extends FrontendController {
 
-    val show = Action.async{
-      implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
-    }
-
-    val submit = Action.async{
-      implicit request =>
-        Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
-    }
+  def timeout:Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(sessionTimeoutGuest()))
+  }
 }

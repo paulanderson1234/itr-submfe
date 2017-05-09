@@ -18,7 +18,6 @@ package controllers.eligibility
 
 import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
-import controllers.eligibility.GroupsAndSubsEligibilityController
 import controllers.helpers.BaseSpec
 import models.eligibility.GroupsAndSubsEligibilityModel
 import org.mockito.Matchers
@@ -41,10 +40,16 @@ class GroupsAndSubsEligibilityControllerSpec extends BaseSpec {
 
   }
 
+  "THe GroupsAndSubsEligibilityController" should {
+    "use the correct keystore connector" in {
+      GroupsAndSubsEligibilityController.keystoreConnector shouldBe KeystoreConnector
+    }
+  }
+
   "Sending a GET request to GroupsAndSubsEligibilityController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(groupOrSubYes))
-      showWithSessionAndAuth(TestController.show())(
+      showWithSessionWithoutAuth(TestController.show())(
         result => status(result) shouldBe OK
       )
     }
@@ -60,22 +65,22 @@ class GroupsAndSubsEligibilityControllerSpec extends BaseSpec {
   "Sending a valid Yes form submission to the GroupsAndSubsEligibilityController" should {
     "redirect to an error page" in {
       val formInput = "isGroupOrSub" -> Constants.StandardRadioButtonYesValue
-      submitWithSessionAndAuth(TestController.submit,formInput)(
+      submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("")
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.IsGroupErrorController.show().url)
         }
       )
     }
   }
 
   "Sending a valid No form submission to the GroupsAndSubsEligibilityController" should {
-    "redirect to the 'Create acquired trade' page" in {
+    "redirect to the 'acquired trade' page" in {
       val formInput = "isGroupOrSub" -> Constants.StandardRadioButtonNoValue
-      submitWithSessionAndAuth(TestController.submit,formInput)(
+      submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.AcquiredTradeEligibilityController.show())
+          redirectLocation(result) shouldBe Some(routes.AcquiredTradeEligibilityController.show().url)
         }
       )
     }
@@ -85,7 +90,7 @@ class GroupsAndSubsEligibilityControllerSpec extends BaseSpec {
     "redirect to itself" in {
       mockEnrolledRequest(seisSchemeTypesModel)
       val formInput = "isFirstTrade" -> ""
-      submitWithSessionAndAuth(TestController.submit,formInput)(
+      submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST
         }

@@ -47,7 +47,7 @@ class GroupsAndSubsEligibilitySpec extends ViewSpec {
       "GroupsAndSubsEligibilityModel is passed from keystore" in {
       val document: Document = {
         setupMocks(Some(groupOrSubYes))
-        val result = TestController.show.apply(fakeRequest)
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.eligibility.groupsAndSubs.title")
@@ -65,7 +65,7 @@ class GroupsAndSubsEligibilitySpec extends ViewSpec {
     "Verify that the Groups And Subs Eligibility page contains the correct elements when an invalid GroupsAndSubsEligibilityModel is passed" in {
       val document: Document = {
         setupMocks()
-        val result = TestController.submit.apply(fakeRequest)
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.eligibility.groupsAndSubs.title")

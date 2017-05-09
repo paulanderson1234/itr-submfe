@@ -18,6 +18,8 @@ package controllers.eligibility
 
 import common.{KeystoreKeys, Constants}
 import connectors.KeystoreConnector
+import controllers.predicates.ValidActiveSession
+import models.eligibility.GroupsAndSubsEligibilityModel
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eligibility.GroupsAndSubsEligibility
@@ -30,19 +32,18 @@ object GroupsAndSubsEligibilityController extends GroupsAndSubsEligibilityContro
   override val keystoreConnector: KeystoreConnector = KeystoreConnector
 }
 
-trait GroupsAndSubsEligibilityController extends FrontendController{
+trait GroupsAndSubsEligibilityController extends FrontendController with ValidActiveSession{
 
   val keystoreConnector: KeystoreConnector
 
-  val show: Action[AnyContent] = Action.async { implicit request =>
-    //    KeystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility) map {
-    //      case Some(data) => Ok(GroupsAndSubsEligibility(groupsAndSubsEligibilityForm.fill(data)))
-    //      case None => Ok(GroupsAndSubsEligibility(groupsAndSubsEligibilityForm))
-    //    }
-    Future.successful(Ok(GroupsAndSubsEligibility(groupsAndSubsEligibilityForm)))
+  val show: Action[AnyContent] = ValidateSession.async { implicit request =>
+      keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility) map {
+        case Some(data) => Ok(GroupsAndSubsEligibility(groupsAndSubsEligibilityForm.fill(data)))
+        case None => Ok(GroupsAndSubsEligibility(groupsAndSubsEligibilityForm))
+      }
   }
 
-  val submit: Action[AnyContent] =  { Action.async { implicit request =>
+  val submit: Action[AnyContent] =  { ValidateSession.async { implicit request =>
     groupsAndSubsEligibilityForm.bindFromRequest().fold(
       formWithErrors => {
         Future.successful(BadRequest(GroupsAndSubsEligibility(formWithErrors)))
@@ -50,8 +51,8 @@ trait GroupsAndSubsEligibilityController extends FrontendController{
       validFormData => {
         keystoreConnector.saveFormData(KeystoreKeys.groupsAndSubsEligibility, validFormData)
         validFormData.isGroupOrSub match {
-          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.AcquiredTradeEligibilityController.show()))
-          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(""))
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.IsGroupErrorController.show()))
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.AcquiredTradeEligibilityController.show()))
         }
       }
     )

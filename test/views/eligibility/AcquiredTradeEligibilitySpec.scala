@@ -50,7 +50,7 @@ class AcquiredTradeEligibilitySpec extends ViewSpec {
       "AcquiredTradeEligibilityModel is passed from keystore" in {
       val document: Document = {
         setupMocks(Some(acquiredTradeYes))
-        val result = TestController.show.apply(fakeRequest)
+        val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.eligibility.acquiredTrade.title")
@@ -66,7 +66,7 @@ class AcquiredTradeEligibilitySpec extends ViewSpec {
     "Verify that the Acquired Trade Eligibility page contains the correct elements when an invalid AcquiredTradeEligibilityModel is passed" in {
       val document: Document = {
         setupMocks()
-        val result = TestController.submit.apply(fakeRequest)
+        val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
       document.title() shouldBe Messages("page.eligibility.acquiredTrade.title")

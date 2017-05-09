@@ -18,7 +18,7 @@ package models.throttling
 
 import play.api.libs.json.Json
 
-case class TokenModel(id: String)
+case class TokenModel(_id: String)
 
 object TokenModel{
   implicit val formats = Json.format[TokenModel]

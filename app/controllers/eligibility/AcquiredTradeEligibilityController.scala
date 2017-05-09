@@ -19,10 +19,13 @@ package controllers.eligibility
 import common.{KeystoreKeys, Constants}
 import config.FrontendGlobal._
 import connectors.KeystoreConnector
-import models.eligibility.{AcquiredTradeEligibilityModel, GroupsAndSubsEligibilityModel}
+import controllers.predicates.ValidActiveSession
+import models.eligibility.{GroupsAndSubsEligibilityModel, AcquiredTradeEligibilityModel}
+import models.throttlingGuidance.IsAgentModel
 import play.api.mvc.{Result, Action, AnyContent}
 import services.TokenService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HttpResponse
 import views.html.eligibility.AcquiredTradeEligibility
 import scala.concurrent.Future
 import forms.AcquiredTradeEligibilityForm._
@@ -34,30 +37,33 @@ object AcquiredTradeEligibilityController extends AcquiredTradeEligibilityContro
   override val tokenService: TokenService = TokenService
 }
 
-trait AcquiredTradeEligibilityController extends FrontendController{
+trait AcquiredTradeEligibilityController extends FrontendController with ValidActiveSession{
 
   val keystoreConnector: KeystoreConnector
   val tokenService: TokenService
 
-  val show: Action[AnyContent] = Action.async { implicit request =>
-    //    KeystoreConnector.fetchAndGetFormData[AcquiredTradeEligibilityModel](KeystoreKeys.acquiredTradeEligibility) map {
-    //      case Some(data) => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm.fill(data)))
-    //      case None => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm))
-    //    }
-    Future.successful(Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm)))
+  val show: Action[AnyContent] = ValidateSession.async { implicit request =>
+      keystoreConnector.fetchAndGetFormData[AcquiredTradeEligibilityModel](KeystoreKeys.acquiredTradeEligibility) map {
+        case Some(data) => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm.fill(data)))
+        case None => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm))
+      }
   }
 
-  val submit: Action[AnyContent] =  { Action.async { implicit request =>
+  val submit: Action[AnyContent] =  { ValidateSession.async { implicit request =>
 
-    def routeRequest(acquiredTradeEligibilityModel: AcquiredTradeEligibilityModel): Result = {
+    def routeRequest(acquiredTradeEligibilityModel: AcquiredTradeEligibilityModel): Future[Result] = {
       /*TODO get answers from keystore, if any not yes return to isAgent*/
-      //      for {
-      //        isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
-      //        (isGroupOrSub,acquiredTrade) <- (isGroupOrSub.getOrElse()
-      //      }
-            tokenService.generateTemporaryToken match {
-              case Ok => Redirect(controllers.routes.ApplicationHubController.show())
-              case _ => InternalServerError(internalServerErrorTemplate)
+            for {
+              isAgent <- keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility)
+              isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
+
+              (isGroupOrSu,acquiredTrade) <- (isGroupOrSub.getOrElse()
+            }
+            tokenService.generateTemporaryToken map {
+              res => res.status match {
+                case OK => Redirect(controllers.routes.ApplicationHubController.show())
+                case _ => InternalServerError(internalServerErrorTemplate)
+              }
             }
     }
 
@@ -68,8 +74,9 @@ trait AcquiredTradeEligibilityController extends FrontendController{
       validFormData => {
         keystoreConnector.saveFormData(KeystoreKeys.acquiredTradeEligibility, validFormData)
         validFormData.acquiredTrade match {
-          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(""))
-          case Constants.StandardRadioButtonNoValue => Future.successful(routeRequest(validFormData))
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.
+            IsAcquiredTradeErrorController.show()))
+          case Constants.StandardRadioButtonNoValue => routeRequest(validFormData)
         }
       }
     )
