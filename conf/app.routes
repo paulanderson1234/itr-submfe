@@ -51,8 +51,20 @@ POST        /our-service-is-changing                controllers.throttlingGuidan
 GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
 POST        /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
 
+
 GET         /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.show
 POST        /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.submit
+
+GET         /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.show
+POST        /first-time-using-service               controllers.throttlingGuidance.FirstTimeUsingServiceController.submit
+
+GET         /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.show
+POST        /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.submit
+GET         /agent-ineligible                       controllers.throttlingGuidance.IsAgentErrorController.show
+GET         /group-ineligible                       controllers.throttlingGuidance.IsGroupErrorController.show
+GET         /acquiredTrade-ineligible               controllers.throttlingGuidance.IsAcquiredTradeErrorController.show
+
+
 GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
 
 

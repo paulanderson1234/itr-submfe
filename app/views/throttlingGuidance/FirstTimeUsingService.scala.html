@@ -1,0 +1,34 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import views.html.helpers.{errorSummary, formInputRadioGroup, backButtonWithProgress, externalLink}
+@import models.FirstTimeUsingServiceModel
+@import common.Constants
+
+@(firstTimeUsingServiceForm: Form[FirstTimeUsingServiceModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.throttlingGuidance.firstTimeUsingService.title"), bodyClasses = None, userLoggedIn = false) {
+
+@errorSummary(firstTimeUsingServiceForm, "first-time-using-service", "isFirstTimeUsingService")
+
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.throttlingGuidance.firstTimeUsingService.heading")</h1>
+        @form(action = controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.submit()) {
+            <div class="form-group">
+                @formInputRadioGroup(
+                field = firstTimeUsingServiceForm("isFirstTimeUsingService"),
+                Seq(
+                Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+                Constants.StandardRadioButtonNoValue -> Messages("page.throttlingGuidance.firstTimeUsingService.radioNoLabel")),
+                '_legend -> Messages("page.throttlingGuidance.firstTimeUsingService.heading"),
+                '_legendClass -> "visuallyhidden",
+                '_labelAfter -> true,
+                '_labelClass -> "block-label",
+                '_legendID -> "isFirstTimeUsingService",
+                '_groupClass -> "inline"
+                )
+            </div>
+
+            <div class="form-group">
+                <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+            </div>
+        }
+
+}
