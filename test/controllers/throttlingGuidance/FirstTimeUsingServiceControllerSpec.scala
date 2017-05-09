@@ -51,7 +51,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
   def setupMocks(bool: Boolean): Unit = {
     when(TestController.throttleService.throttleConnector.checkUserAccess()).thenReturn(Some(bool))
     when(mockThrottleService.checkUserAccess).thenReturn(Future(bool))
-    when(TestController.tokenService.generateTemporaryToken).thenReturn(Future.successful(HttpResponse(OK)))
+    //when(TestController.tokenService.generateTemporaryToken).thenReturn(Future.successful(HttpResponse(OK)))
   }
 
   "Sending a GET request to FirstTimeUsingServiceController" should {

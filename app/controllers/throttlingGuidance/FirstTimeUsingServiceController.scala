@@ -59,8 +59,7 @@ trait FirstTimeUsingServiceController extends FrontendController  {
             case Constants.StandardRadioButtonYesValue => {
               throttleService.checkUserAccess.flatMap {
                 case true => {
-                  tokenService.generateTemporaryToken
-                  Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
+                  Future.successful(Redirect(controllers.throttlingGuidance.routes.StartGuidanceController.start))
                 }
                 case false => Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
               }
