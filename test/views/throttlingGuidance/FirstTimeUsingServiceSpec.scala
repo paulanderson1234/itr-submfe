@@ -17,14 +17,22 @@
 package views.throttlingGuidance
 
 import auth.MockConfig
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.throttlingGuidance.FirstTimeUsingServiceController
+import models.FirstTimeUsingServiceModel
 import org.jsoup.Jsoup
+import org.mockito.Matchers
+import org.mockito.Mockito.when
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers.{contentAsString, _}
 import services.{ThrottleService, TokenService}
 import views.helpers.ViewSpec
+
+import scala.concurrent.Future
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class FirstTimeUsingServiceSpec extends ViewSpec {
 
@@ -35,10 +43,16 @@ class FirstTimeUsingServiceSpec extends ViewSpec {
     override val applicationConfig = MockConfig
   }
 
+  def setupMocks(isFirstTimeUsingService: Option[FirstTimeUsingServiceModel] = None): Unit = {
+    when(TestController.keystoreConnector.fetchAndGetFormData[FirstTimeUsingServiceModel](Matchers.eq(KeystoreKeys.isFirstTimeUsingService))
+      (Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(isFirstTimeUsingService))
+  }
+
   "The First time usage guidance page" should {
 
     "contain the correct elements when loaded" in {
-
+      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)))
       val result = TestController.show.apply(authorisedFakeRequest)
       val document = Jsoup.parse(contentAsString(result))
 

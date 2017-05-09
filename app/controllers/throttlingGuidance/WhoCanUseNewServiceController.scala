@@ -33,6 +33,6 @@ object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
 
     val submit = Action.async{
       implicit request =>
-        Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
+        Future.successful(Redirect(controllers.throttlingGuidance.routes.StartGuidanceController.start()))
     }
 }
