@@ -48,10 +48,10 @@ trait StartGuidanceController extends FrontendController {
   def start:Action[AnyContent] = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
       val sessionId = UUID.randomUUID.toString
-      Future.successful(Redirect(routes.IsAgentController.show()).withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
+      Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()).withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
     }
     else {
-      Future.successful(Redirect(routes.IsAgentController.show()))
+      Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()))
 
     }
   }
