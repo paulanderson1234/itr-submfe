@@ -884,10 +884,15 @@ page.throttlingGuidance.whoCanUseNewService.apply.if.three=did not acquire the t
 page.throttlingGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don''t meet these conditions,
 page.throttlingGuidance.whoCanUseNewService.existing=find out how to use our existing service.
 
+
 page.throttlingGuidance.ourServiceChange.title=Our service is changing
 page.throttlingGuidance.ourServiceChange.heading=Our service is changing
 page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
+# throttle first time AA access check
+page.throttlingGuidance.firstTimeUsingService.title=Is this the first time you’re applying for Advance Assurance using the new service?
+page.throttlingGuidance.firstTimeUsingService.heading=Is this the first time you’re applying for Advance Assurance using the new service?
+page.throttlingGuidance.firstTimeUsingService.radioNoLabel=No, I’m a returning user
 
 page.throttlingGuidance.Agent.title=Are you an agent?
 page.throttlingGuidance.Agent.heading=Are you an agent?

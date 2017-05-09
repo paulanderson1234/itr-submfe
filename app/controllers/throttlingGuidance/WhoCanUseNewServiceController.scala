@@ -31,9 +31,8 @@ object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
       implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
     }
 
-    // link to first time using this service page once created.
     val submit = Action.async{
       implicit request =>
-        Future.successful(Redirect(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show()))
+        Future.successful(Redirect(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show()))
     }
 }

@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-package connectors
+package models
 
-import config.{FrontendAppConfig, WSHttp}
-import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import play.api.libs.json.Json
 
-import scala.concurrent.Future
+case class FirstTimeUsingServiceModel (isFirstTimeUsingService: String)
 
-object ThrottleConnector extends ThrottleConnector with ServicesConfig {
-  val serviceUrl = FrontendAppConfig.submissionUrl
-  val http = WSHttp
-}
-
-trait ThrottleConnector {
-  val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
-
-  def checkUserAccess()(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
-    http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/throttle/check-user-access")
+object FirstTimeUsingServiceModel {
+  implicit val format = Json.format[FirstTimeUsingServiceModel]
+  implicit val writes = Json.writes[FirstTimeUsingServiceModel]
 }

@@ -37,7 +37,7 @@ class WhocanUsenewServiceControllerSpec extends BaseSpec {
     "redirect to First Time Using New Service page" in {
       submitWithoutSession(TestController.submit){
         result => status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.FirstTimeUsingServiceController.show().url)
       }
     }
   }
