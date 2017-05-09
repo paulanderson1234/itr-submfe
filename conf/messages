@@ -923,7 +923,7 @@ page.throttlingGuidance.isAgentError.reason=At the moment, our new online servic
 page.throttlingGuidance.isAgentError.notAgent=If your company doesn''t use an agent, you can
 
 # Group guidance error page
-page.throttlingGuidance.isGroupError.reason=At the moment, the new online service can only be used by companies that aren''t part of a group.
+page.throttlingGuidance.isGroupError.reason=At the moment, our new online service can only be used by companies that aren''t part of a group.
 page.throttlingGuidance.isGroupError.notGroup=If your company isn''t part of a group, you can
 
 # AcquiredTrade guidance error page
