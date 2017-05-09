@@ -1,0 +1,41 @@
+@import views.html.helpers.{formInputRadioGroup,errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import models.eligibility.AcquiredTradeEligibilityModel
+
+@(acquiredTradeEligibilityForm: Form[AcquiredTradeEligibilityModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.eligibility.acquiredTrade.title"), userLoggedIn = false) {
+
+@errorSummary(acquiredTradeEligibilityForm, "acquired-trade-eligibility", "acquiredTrade")
+
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.eligibility.acquiredTrade.title")</h1>
+
+<div class="form-group">
+    <span id="description-one">@Messages("page.eligibility.acquiredTrade.desc")</span>
+</div>
+
+@form(action = controllers.eligibility.routes.AcquiredTradeEligibilityController.submit()) {
+
+<div class="form-group">
+    @formInputRadioGroup(
+    field = acquiredTradeEligibilityForm("acquiredTrade"),
+    Seq(
+    Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+    Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+    '_legend -> Messages("page.eligibility.acquiredTrade.heading"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_groupClass -> "inline"
+    )
+</div>
+
+
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+</div>
+
+}
+}

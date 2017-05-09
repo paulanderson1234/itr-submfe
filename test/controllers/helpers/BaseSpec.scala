@@ -20,6 +20,7 @@ import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import fixtures.SubmissionFixture
+import models.eligibility.{AcquiredTradeEligibilityModel, GroupsAndSubsEligibilityModel}
 import models.submission.SchemeTypesModel
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Matchers
@@ -195,4 +196,11 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val hadOtherInvestmentsModelNo = HadOtherInvestmentsModel(Constants.StandardRadioButtonNoValue)
 
   val fileId = "1"
+
+  //eligibility
+  val groupOrSubYes = GroupsAndSubsEligibilityModel("Yes")
+  val groupOrSubNo = GroupsAndSubsEligibilityModel("No")
+
+  val acquiredTradeYes = AcquiredTradeEligibilityModel("Yes")
+  val acquiredTradeNo = AcquiredTradeEligibilityModel("No")
 }

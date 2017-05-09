@@ -47,6 +47,11 @@ POST        /our-service-is-changing                controllers.throttlingGuidan
 GET         /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.show
 POST        /who-can-use-new-service                controllers.throttlingGuidance.WhoCanUseNewServiceController.submit
 GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
+GET         /groups-and-subs-eligibility            controllers.eligibility.GroupsAndSubsEligibilityController.show
+POST        /groups-and-subs-eligibility            controllers.eligibility.GroupsAndSubsEligibilityController.submit
+GET         /acquired-trade-eligibility             controllers.eligibility.AcquiredTradeEligibilityController.show
+POST        /acquired-trade-eligibility             controllers.eligibility.AcquiredTradeEligibilityController.submit
+
 
 
 #Feedback routes

@@ -89,4 +89,6 @@ trait KeystoreKeys {
 
   //throttling
   val throttlingToken: String = "throttling:token"
+  val groupsAndSubsEligibility: String = "throttling:groupsAndSubsEligibility"
+  val acquiredTradeEligibility: String = "throttling:acquiredTradeEligibility"
 }
