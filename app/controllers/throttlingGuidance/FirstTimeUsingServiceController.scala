@@ -67,9 +67,13 @@ trait FirstTimeUsingServiceController extends FrontendController with ValidActiv
             case Constants.StandardRadioButtonYesValue => {
               throttleService.checkUserAccess.flatMap {
                 case true => {
+                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
                   Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
                 }
-                case false => Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
+                case false => {
+                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+                  Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
+                }
               }
             }
             case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))

@@ -53,6 +53,7 @@ trait KeystoreKeys {
   val isFirstTrade: String = "companyDetails:isFirstTrade"
   val hadOtherInvestments: String = "previousInvestmentScheme:hadOtherInvestments"
   val isAgent: String = "throttling:isAgent"
+  val throttleCheckPassed: String = "throttling:throttleCheckPassed"
 
   // processing Keys
   val eisSeisProcessingModel: String = "processing:EisSeisProcessingModel"

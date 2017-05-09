@@ -26,6 +26,7 @@ import org.mockito.Mockito._
 import play.api.http.Status.OK
 import play.api.test.Helpers._
 import services.{ThrottleService, TokenService}
+import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.SessionId
 
@@ -57,11 +58,14 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
     when(TestController.keystoreConnector.fetchAndGetFormData[FirstTimeUsingServiceModel](Matchers.eq(KeystoreKeys.isFirstTimeUsingService))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(isFirstTimeUsingService))
+
+    when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.throttleCheckPassed), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   "Sending a GET request to FirstTimeUsingServiceController" should {
     "return a 200 OK" in {
-      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), false)
+      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), bool = false)
       showWithSessionWithoutAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
@@ -81,7 +85,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
     }
 
     "redirect to page" in {
-      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), false)
+      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), bool = false)
       val formInput = "isFirstTimeUsingService" -> Constants.StandardRadioButtonYesValue
       submitWithSessionWithoutAuth(TestController.submit, formInput){
         result => {
