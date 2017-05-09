@@ -1,0 +1,11 @@
+@import views.html.helpers._
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("session.timeout.message"), userLoggedIn = false) {
+
+    <h1 class="heading-large">@Messages("session.timeout.message")</h1>
+
+    <a id="startAgain" class="bold-medium" href="@controllers.throttlingGuidance.routes.StartGuidanceController.start" data-journey-click="nav:itr:guidance">@Messages("session.timeout.startAgain")</a>
+
+}

@@ -1,0 +1,37 @@
+@import models.throttlingGuidance.IsAgentModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers._
+@import common.Constants
+
+@(isAgentForm: Form[IsAgentModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.throttlingGuidance.Agent.title"), userLoggedIn = false) {
+
+    @errorSummary(isAgentForm, "are-you-an-agent", "isAgent")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.throttlingGuidance.Agent.heading")</h1>
+
+    @form(action = controllers.throttlingGuidance.routes.IsAgentController.submit()) {
+
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = isAgentForm("isAgent"),
+        Seq(
+        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue ->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.throttlingGuidance.Agent.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "isAgentLegend",
+        '_groupClass -> "inline",
+        '_helpText -> ""
+        )
+    </div>
+
+    <div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+    </div>
+    }
+
+}
