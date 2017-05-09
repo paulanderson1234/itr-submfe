@@ -80,7 +80,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
       submitWithoutSession(TestController.submit, formInput){
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.StartGuidanceController.start().url)
         }
       }
     }

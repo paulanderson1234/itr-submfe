@@ -18,11 +18,7 @@ package controllers.helpers
 
 import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
-<<<<<<< HEAD
-import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector, ThrottleConnector}
-=======
-import connectors.{EnrolmentConnector, KeystoreConnector, S4LConnector, SubmissionConnector}
->>>>>>> 69a8580fb90de008ede0b351a903e2c5dfc2b82c
+import connectors._
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
 import models.throttlingGuidance.IsAgentModel
