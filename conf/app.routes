@@ -57,7 +57,7 @@ GET         /are-you-an-agent                       controllers.throttlingGuidan
 POST        /are-you-an-agent                       controllers.throttlingGuidance.IsAgentController.submit
 GET         /agent-ineligible                       controllers.throttlingGuidance.IsAgentErrorController.show
 GET         /group-ineligible                       controllers.throttlingGuidance.IsGroupErrorController.show
-GET         /AcquiredTrade-ineligible               controllers.throttlingGuidance.IsAcquiredTradeErrorController.show
+GET         /acquiredTrade-ineligible               controllers.throttlingGuidance.IsAcquiredTradeErrorController.show
 
 GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
 

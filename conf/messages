@@ -910,8 +910,8 @@ page.throttlingGuidance.userLimitReached.apply=to apply for Advance Assurance.
 ## guidance error pages ##
 
 #common guidance error messages
-page.throttlingGuidance.GuidanceError.common.title=You can't use this service yet
-page.throttlingGuidance.GuidanceError.common.heading=You can't use this service yet
+page.throttlingGuidance.GuidanceError.common.title=You can''t use this service yet
+page.throttlingGuidance.GuidanceError.common.heading=You can''t use this service yet
 page.throttlingGuidance.GuidanceError.common.apply=You can still apply for Advance Assurance,
 page.throttlingGuidance.GuidanceError.common.findOut=find out how to use our existing service
 page.throttlingGuidance.GuidanceError.common.changeAnswers=change your answers
