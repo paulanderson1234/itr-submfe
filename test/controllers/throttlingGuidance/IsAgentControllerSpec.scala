@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 package controllers.throttlingGuidance
 
 import common.{Constants, KeystoreKeys}

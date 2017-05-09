@@ -16,25 +16,23 @@
 
 package controllers.throttlingGuidance
 
-import uk.gov.hmrc.play.frontend.controller.FrontendController
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.Action
+
+import controllers.helpers.BaseSpec
+import play.api.test.Helpers._
 
 
-import scala.concurrent.Future
+class IsAgentErrorControllerSpec extends BaseSpec {
 
-object OurServiceChangeController extends OurServiceChangeController
+  object TestController extends IsAgentErrorController {
 
-trait OurServiceChangeController extends FrontendController  {
-
-  val show = Action.async{
-    implicit request => Future.successful(Ok(views.html.throttlingGuidance.OurServiceChange()))
   }
 
-  val submit = Action.async{
-      implicit request =>
-      Future.successful(Redirect(controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.show()))
+  "Sending a GET request to OurServiceChangeController" should {
+    "return a 200 OK" in {
+      showWithoutSession(TestController.show)(
+        result => status(result) shouldBe OK
+      )
+    }
   }
 
 }
