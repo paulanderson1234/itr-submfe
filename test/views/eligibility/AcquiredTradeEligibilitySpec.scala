@@ -40,16 +40,19 @@ class AcquiredTradeEligibilitySpec extends ViewSpec {
 
   }
 
-  def setupMocks(acquiredTradeEligibilityModel: Option[AcquiredTradeEligibilityModel] = None): Unit =
+  def setupMocks(throttleCheckPassed: Option[Boolean], acquiredTradeEligibilityModel: Option[AcquiredTradeEligibilityModel] = None): Unit = {
+    when(TestController.keystoreConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.throttleCheckPassed))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(throttleCheckPassed))
     when(TestController.keystoreConnector.fetchAndGetFormData[AcquiredTradeEligibilityModel](Matchers.eq(KeystoreKeys.acquiredTradeEligibility))
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(acquiredTradeEligibilityModel))
+  }
 
   "The Acquired Trade Eligibility page" should {
 
     "Verify that the Acquired Trade Eligibility page contains the correct elements when a valid " +
       "AcquiredTradeEligibilityModel is passed from keystore" in {
       val document: Document = {
-        setupMocks(Some(acquiredTradeYes))
+        setupMocks(Some(true), Some(acquiredTradeYes))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
@@ -65,7 +68,6 @@ class AcquiredTradeEligibilitySpec extends ViewSpec {
 
     "Verify that the Acquired Trade Eligibility page contains the correct elements when an invalid AcquiredTradeEligibilityModel is passed" in {
       val document: Document = {
-        setupMocks()
         val result = TestController.submit.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }

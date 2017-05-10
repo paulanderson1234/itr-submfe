@@ -17,15 +17,18 @@
 package controllers.throttlingGuidance
 
 import auth.MockConfig
-import common.Constants
+import common.{Constants, KeystoreKeys}
 import connectors.{KeystoreConnector, ThrottleConnector}
 import controllers.helpers.BaseSpec
+import models.FirstTimeUsingServiceModel
+import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status.OK
 import play.api.test.Helpers._
 import services.{ThrottleService, TokenService}
+import uk.gov.hmrc.http.cache.client.CacheMap
+import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -48,15 +51,22 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
   implicit override val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId(sessionId.toString)))
 
-  def setupMocks(bool: Boolean): Unit = {
+  def setupMocks(isFirstTimeUsingService: Option[FirstTimeUsingServiceModel] = None, bool: Boolean): Unit = {
     when(TestController.throttleService.throttleConnector.checkUserAccess()).thenReturn(Some(bool))
     when(mockThrottleService.checkUserAccess).thenReturn(Future(bool))
     //when(TestController.tokenService.generateTemporaryToken).thenReturn(Future.successful(HttpResponse(OK)))
+    when(TestController.keystoreConnector.fetchAndGetFormData[FirstTimeUsingServiceModel](Matchers.eq(KeystoreKeys.isFirstTimeUsingService))
+      (Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(isFirstTimeUsingService))
+
+    when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.throttleCheckPassed), Matchers.any())(Matchers.any(), Matchers.any()))
+      .thenReturn(Future.successful(CacheMap("", Map())))
   }
 
   "Sending a GET request to FirstTimeUsingServiceController" should {
     "return a 200 OK" in {
-      showWithoutSession(TestController.show)(
+      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), bool = false)
+      showWithSessionWithoutAuth(TestController.show)(
         result => status(result) shouldBe OK
       )
     }
@@ -66,7 +76,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
     "redirect to Hub page" in {
       val formInput = "isFirstTimeUsingService" -> Constants.StandardRadioButtonNoValue
-      submitWithoutSession(TestController.submit, formInput){
+      submitWithSessionWithoutAuth(TestController.submit, formInput){
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
@@ -75,12 +85,12 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
     }
 
     "redirect to page" in {
-      setupMocks(false)
+      setupMocks(Some(FirstTimeUsingServiceModel(Constants.StandardRadioButtonYesValue)), bool = false)
       val formInput = "isFirstTimeUsingService" -> Constants.StandardRadioButtonYesValue
-      submitWithoutSession(TestController.submit, formInput){
+      submitWithSessionWithoutAuth(TestController.submit, formInput){
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.StartGuidanceController.start().url)
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.IsAgentController.show().url)
         }
       }
     }

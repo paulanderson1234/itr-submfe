@@ -40,7 +40,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val token = "TOK123456789"
   val tokenModel = TokenModel("TOK123456789")
-  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("id" -> JsString("TOK123456789")))))
+  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("_id" -> JsString("TOK123456789")))))
   val generateTokenInvalidResponse = HttpResponse(OK,Some(JsObject(Seq("notToken" -> JsString("Invalid")))))
   val generateTokenFailResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
   val tokenCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(tokenModel)))

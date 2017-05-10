@@ -46,7 +46,7 @@ class GroupsAndSubsEligibilityControllerSpec extends BaseSpec {
     }
   }
 
-  "Sending a GET request to GroupsAndSubsEligibilityController when authenticated and enrolled" should {
+  "Sending a GET request to GroupsAndSubsEligibilityController" should {
     "return a 200 when something is fetched from keystore" in {
       setupMocks(Some(groupOrSubYes))
       showWithSessionWithoutAuth(TestController.show())(
@@ -88,8 +88,7 @@ class GroupsAndSubsEligibilityControllerSpec extends BaseSpec {
 
   "Sending an invalid form submission with validation errors to the GroupsAndSubsEligibilityController when authenticated and enrolled" should {
     "redirect to itself" in {
-      mockEnrolledRequest(seisSchemeTypesModel)
-      val formInput = "isFirstTrade" -> ""
+      val formInput = "isGroupOrSub" -> ""
       submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe BAD_REQUEST

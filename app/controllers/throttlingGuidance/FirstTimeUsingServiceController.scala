@@ -20,12 +20,17 @@ import common.{Constants, KeystoreKeys}
 import config.{AppConfig, FrontendAppConfig}
 import connectors.KeystoreConnector
 import forms.FirstTimeUsingServiceForm._
+import forms.throttlingGuidance.IsAgentForm.isAgentForm
+import models.throttlingGuidance.IsAgentModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
 import services.{ThrottleService, TokenService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.throttlingGuidance.FirstTimeUsingService
+import views.html.throttlingGuidance.{FirstTimeUsingService, IsAgent}
+import controllers.predicates.ValidActiveSession
+import forms.FirstTimeUsingServiceForm
+import models.FirstTimeUsingServiceModel
 
 import scala.concurrent.Future
 
@@ -36,15 +41,18 @@ object FirstTimeUsingServiceController extends FirstTimeUsingServiceController{
   val applicationConfig = FrontendAppConfig
 }
 
-trait FirstTimeUsingServiceController extends FrontendController  {
+trait FirstTimeUsingServiceController extends FrontendController with ValidActiveSession {
 
   val keystoreConnector : KeystoreConnector
   val throttleService: ThrottleService
   val tokenService: TokenService
   val applicationConfig : AppConfig
 
-  val show = Action.async{
-    implicit request =>Future.successful(Ok(views.html.throttlingGuidance.FirstTimeUsingService(firstTimeUsingServiceForm)))
+  val show = ValidateSession.async { implicit request =>
+    keystoreConnector.fetchAndGetFormData[FirstTimeUsingServiceModel](KeystoreKeys.isFirstTimeUsingService).map {
+      case Some(data) => Ok(FirstTimeUsingService(firstTimeUsingServiceForm.fill(data)))
+      case _ => Ok(FirstTimeUsingService(firstTimeUsingServiceForm))
+    }
   }
 
   val submit = Action.async {
@@ -59,9 +67,13 @@ trait FirstTimeUsingServiceController extends FrontendController  {
             case Constants.StandardRadioButtonYesValue => {
               throttleService.checkUserAccess.flatMap {
                 case true => {
-                  Future.successful(Redirect(controllers.throttlingGuidance.routes.StartGuidanceController.start))
+                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
+                  Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
                 }
-                case false => Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
+                case false => {
+                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+                  Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
+                }
               }
             }
             case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))

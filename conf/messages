@@ -889,6 +889,9 @@ page.throttlingGuidance.ourServiceChange.title=Our service is changing
 page.throttlingGuidance.ourServiceChange.heading=Our service is changing
 page.throttlingGuidance.ourServiceChange.description=You can now apply for Advance Assurance online using HMRC''s secure trial service.
 
+page.throttlingGuidance.Agent.title=Are you an agent?
+page.throttlingGuidance.Agent.heading=Are you an agent?
+
 # throttle first time AA access check
 page.throttlingGuidance.firstTimeUsingService.title=Is this the first time you’re applying for Advance Assurance using the new service?
 page.throttlingGuidance.firstTimeUsingService.heading=Is this the first time you’re applying for Advance Assurance using the new service?
@@ -896,6 +899,7 @@ page.throttlingGuidance.firstTimeUsingService.radioNoLabel=No, I’m a returning
 
 page.throttlingGuidance.Agent.title=Are you an agent?
 page.throttlingGuidance.Agent.heading=Are you an agent?
+
 
 
 # throttle limit page - User Limit reached
@@ -921,8 +925,8 @@ page.eligibility.acquiredTrade.desc=This means your business, product or service
 ## guidance error pages ##
 
 #common guidance error messages
-page.throttlingGuidance.GuidanceError.common.title=You can't use this service yet
-page.throttlingGuidance.GuidanceError.common.heading=You can't use this service yet
+page.throttlingGuidance.GuidanceError.common.title=You can''t use this service yet
+page.throttlingGuidance.GuidanceError.common.heading=You can''t use this service yet
 page.throttlingGuidance.GuidanceError.common.apply=You can still apply for Advance Assurance,
 page.throttlingGuidance.GuidanceError.common.findOut=find out how to use our existing service
 page.throttlingGuidance.GuidanceError.common.changeAnswers=change your answers
@@ -934,7 +938,7 @@ page.throttlingGuidance.isAgentError.reason=At the moment, our new online servic
 page.throttlingGuidance.isAgentError.notAgent=If your company doesn''t use an agent, you can
 
 # Group guidance error page
-page.throttlingGuidance.isGroupError.reason=At the moment, the new online service can only be used by companies that aren''t part of a group.
+page.throttlingGuidance.isGroupError.reason=At the moment, our new online service can only be used by companies that aren''t part of a group.
 page.throttlingGuidance.isGroupError.notGroup=If your company isn''t part of a group, you can
 
 # AcquiredTrade guidance error page

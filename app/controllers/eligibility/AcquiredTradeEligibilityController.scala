@@ -25,7 +25,6 @@ import models.throttlingGuidance.IsAgentModel
 import play.api.mvc.{Result, Action, AnyContent}
 import services.TokenService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HttpResponse
 import views.html.eligibility.AcquiredTradeEligibility
 import scala.concurrent.Future
 import forms.AcquiredTradeEligibilityForm._
@@ -43,28 +42,45 @@ trait AcquiredTradeEligibilityController extends FrontendController with ValidAc
   val tokenService: TokenService
 
   val show: Action[AnyContent] = ValidateSession.async { implicit request =>
+    def routeRequest: Future[Result] = {
       keystoreConnector.fetchAndGetFormData[AcquiredTradeEligibilityModel](KeystoreKeys.acquiredTradeEligibility) map {
         case Some(data) => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm.fill(data)))
         case None => Ok(AcquiredTradeEligibility(acquiredTradeEligibilityForm))
       }
+    }
+
+    keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed) flatMap  {
+      throttleCheckPassed => if (throttleCheckPassed.getOrElse(false))
+                                 routeRequest
+                             else Future.successful(Redirect(controllers.throttlingGuidance.routes.OurServiceChangeController.show()))
+    }
   }
+
+
 
   val submit: Action[AnyContent] =  { ValidateSession.async { implicit request =>
 
-    def routeRequest(acquiredTradeEligibilityModel: AcquiredTradeEligibilityModel): Future[Result] = {
-      /*TODO get answers from keystore, if any not yes return to isAgent*/
-            for {
-              isAgent <- keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility)
-              isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
+    def routeRequest: Future[Result] = {
 
-              (isGroupOrSu,acquiredTrade) <- (isGroupOrSub.getOrElse()
+      def routeReq(isAgentModel: Option[IsAgentModel], isGroupOrSubModel: Option[GroupsAndSubsEligibilityModel]): Future[Result] = {
+        if((isAgentModel.isDefined && isAgentModel.get.isAgent == Constants.StandardRadioButtonNoValue)&&
+          (isGroupOrSubModel.isDefined && isGroupOrSubModel.get.isGroupOrSub == Constants.StandardRadioButtonNoValue)){
+          tokenService.generateTemporaryToken map {
+            res => res.status match {
+              case OK => Redirect(controllers.routes.ApplicationHubController.show())
+              case _ => InternalServerError(internalServerErrorTemplate)
             }
-            tokenService.generateTemporaryToken map {
-              res => res.status match {
-                case OK => Redirect(controllers.routes.ApplicationHubController.show())
-                case _ => InternalServerError(internalServerErrorTemplate)
-              }
-            }
+          }
+       }else{
+          Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
+        }
+      }
+
+      for {
+        isAgent <- keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility)
+        isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
+        route <- routeReq(isAgent,isGroupOrSub)
+      } yield route
     }
 
     acquiredTradeEligibilityForm.bindFromRequest().fold(
@@ -76,7 +92,7 @@ trait AcquiredTradeEligibilityController extends FrontendController with ValidAc
         validFormData.acquiredTrade match {
           case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.
             IsAcquiredTradeErrorController.show()))
-          case Constants.StandardRadioButtonNoValue => routeRequest(validFormData)
+          case Constants.StandardRadioButtonNoValue => routeRequest
         }
       }
     )
