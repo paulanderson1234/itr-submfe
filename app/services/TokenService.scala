@@ -60,10 +60,19 @@ trait TokenService {
   }
 
   def validateTemporaryToken(implicit hc: HeaderCarrier) : Future[Boolean] = {
+
+    def hasValidToken(token: Option[TokenModel], hasExistingThrottleCheck: Option[Boolean]): Future[Boolean] = {
+      if (hasExistingThrottleCheck.getOrElse(false)) Future(true)
+      else tokenConnector.validateTemporaryToken(token).map {
+        result => result.getOrElse(false)
+      }
+    }
+
     (for{
+      hasExistingThrottleCheck <- keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed)
       tokenModel <-  keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
-      validated <- tokenConnector.validateTemporaryToken(tokenModel)
-    } yield validated.getOrElse(false)). recover {
+      validated <- hasValidToken(tokenModel,hasExistingThrottleCheck)
+    } yield validated). recover {
       case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
         false
     }

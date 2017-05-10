@@ -44,6 +44,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
 
   object MyThrottleService extends ThrottleService {
     override val throttleConnector = mock[ThrottleConnector]
+    override val keystoreConnector = mock[KeystoreConnector]
     override def checkUserAccess(implicit hc: HeaderCarrier) : Future[Boolean] = {
       true
     }
