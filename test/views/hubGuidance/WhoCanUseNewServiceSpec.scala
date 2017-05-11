@@ -16,6 +16,7 @@
 
 package views.hubGuidance
 
+import common.Constants
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
@@ -50,7 +51,7 @@ class WhoCanUseNewServiceSpec extends ViewSpec {
 
       //link
       document.body.getElementById("change-answers").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.existing")
-      document.body.getElementById("change-answers").attr("href") shouldEqual "https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154"
+      document.body.getElementById("change-answers").attr("href") shouldBe Constants.guidanceRedirectUrl
 
       //continue button
       document.body.getElementById("next").text() shouldBe Messages("common.button.continue")
