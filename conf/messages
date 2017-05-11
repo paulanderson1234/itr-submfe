@@ -934,6 +934,20 @@ page.throttlingGuidance.isGroupError.notGroup=If your company isn''t part of a g
 page.throttlingGuidance.isAcquiredTradeError.reason=At the moment, our new online service can only be used by companies that didn''t acquire the trade they want to raise investment for.
 page.throttlingGuidance.isAcquiredTradeError.notAcquiredTrade=If you didn''t acquire the trade you want to raise investment for, you can
 
+##  Hub Guidance ##
+page.hubGuidance.whoCanUseNewService.title=Who can use this service
+page.hubGuidance.whoCanUseNewService.heading=Who can use this service
+page.hubGuidance.whoCanUseNewService.apply.if=At the moment, you can only use the new online service if your company:
+page.hubGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or Venture Capital Trust
+page.hubGuidance.whoCanUseNewService.apply.if.two=isn''t using an agent
+page.hubGuidance.whoCanUseNewService.apply.if.three=isn''t part of a group of companies
+page.hubGuidance.whoCanUseNewService.apply.if.four=didn''t acquire the trade you want to raise investment for
+page.hubGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don''t meet these conditions,
+page.hubGuidance.whoCanUseNewService.existing=find out how to use our existing service.
+
+page.hubGuidance.hubGuidanceFeedback.title=Feedback
+page.hubGuidance.hubGuidanceFeedback.heading=Feedback
+page.hubGuidance.hubGuidanceFeedback.description=We''re keen to know what you think of the new service so please complete the survey at the end.
 
 ## Feedback ##
 feedback.title = Feedback

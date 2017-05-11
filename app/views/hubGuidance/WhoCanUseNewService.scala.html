@@ -1,0 +1,41 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+
+@()(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.hubGuidance.whoCanUseNewService.title"), mainClass=Some("full-width"), userLoggedIn = false) {
+
+<div class="content-inner slides slide-medium">
+
+    <div class="grid-row">
+        <div class="column-two-thirds-slides">
+            <h1 id="main-heading" class="banner-white">@Messages("page.hubGuidance.whoCanUseNewService.heading")</h1>
+            <span id="description">@Messages("page.hubGuidance.whoCanUseNewService.apply.if")</span>
+
+            <ul class="list list-bullet">
+                <li id="reason-one"><span>@Messages("page.hubGuidance.whoCanUseNewService.apply.if.one")</span></li>
+                <li id="reason-two"><span>@Messages("page.hubGuidance.whoCanUseNewService.apply.if.two")</span></li>
+                <li id="reason-three"><span>@Messages("page.hubGuidance.whoCanUseNewService.apply.if.three")</span></li>
+                <li id="reason-four"><span>@Messages("page.hubGuidance.whoCanUseNewService.apply.if.four")</span></li>
+            </ul>
+
+            <!-- link to be changed once confirmed with chris H -->
+            <div class="form-group">
+                <span id="still-apply">@Messages("page.hubGuidance.whoCanUseNewService.still.apply")
+                    <a href="https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154" class="link-style" id="change-answers">
+                        @Messages("page.hubGuidance.whoCanUseNewService.existing")</a></span>
+            </div>
+
+
+            @form(action = controllers.hubGuidance.routes.WhoCanUseNewServiceController.submit()) {
+
+            <div class="actions">
+                <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+            </div>
+
+            }
+        </div>
+
+    </div>
+
+</div>
+}
