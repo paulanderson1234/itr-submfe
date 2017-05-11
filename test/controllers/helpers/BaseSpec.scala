@@ -21,7 +21,7 @@ import common.{Constants, KeystoreKeys}
 import connectors._
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
-import models.throttlingGuidance.IsAgentModel
+import models.throttlingGuidance.{AcquiredTradeEligibilityModel, GroupsAndSubsEligibilityModel, IsAgentModel}
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
@@ -203,4 +203,11 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val hadOtherInvestmentsModelNo = HadOtherInvestmentsModel(Constants.StandardRadioButtonNoValue)
 
   val fileId = "1"
+
+  //eligibility
+  val groupOrSubYes = GroupsAndSubsEligibilityModel("Yes")
+  val groupOrSubNo = GroupsAndSubsEligibilityModel("No")
+
+  val acquiredTradeYes = AcquiredTradeEligibilityModel("Yes")
+  val acquiredTradeNo = AcquiredTradeEligibilityModel("No")
 }

@@ -22,7 +22,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 
 class TokenModelConversionSpec extends UnitSpec {
 
-  val testJson = """{"id":"TOK123456789"}"""
+  val testJson = """{"_id":"TOK123456789"}"""
   val id = "TOK123456789"
 
   // form json to model - unapply
@@ -38,6 +38,6 @@ class TokenModelConversionSpec extends UnitSpec {
   "call apply successfully to create model from Json" in {
     implicit val formats = Json.format[TokenModel]
     val request =  Json.parse(testJson.toString).as[TokenModel]
-    request.id shouldBe id
+    request._id shouldBe id
   }
 }

@@ -47,7 +47,7 @@ class IsAcquiredTradeErrorSpec  extends ViewSpec {
       document.body.getElementById("change-info").text() shouldEqual Messages("page.throttlingGuidance.isAcquiredTradeError.notAcquiredTrade") +
         " " +  Messages("page.throttlingGuidance.GuidanceError.common.changeAnswers") + "."
 
-      document.body.getElementById("change-link").attr("href") shouldEqual routes.IsAgentController.show().url
+      document.body.getElementById("change-link").attr("href") shouldEqual controllers.throttlingGuidance.routes.AcquiredTradeEligibilityController.show().url
 
     }
 

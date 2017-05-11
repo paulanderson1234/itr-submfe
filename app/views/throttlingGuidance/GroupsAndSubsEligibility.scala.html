@@ -1,0 +1,45 @@
+@import views.html.helpers.{formInputRadioGroup,errorSummary}
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import models.throttlingGuidance.GroupsAndSubsEligibilityModel
+
+@(groupsAndSubsEligibilityForm: Form[GroupsAndSubsEligibilityModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(title = Messages("page.eligibility.groupsAndSubs.title"), userLoggedIn = false) {
+
+@errorSummary(groupsAndSubsEligibilityForm, "groups-and-subs-eligibility", "isGroupOrSub")
+
+    <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.eligibility.groupsAndSubs.title")</h1>
+
+    <div class="form-group">
+        <span id="description-one">@Messages("page.eligibility.groupsAndSubs.desc")</span>
+        <ul class="list list-bullet">
+            <li id="bullet-one">@Messages("page.eligibility.groupsAndSubs.bullet.one")</li>
+            <li id="bullet-two">@Messages("page.eligibility.groupsAndSubs.bullet.two")</li>
+        </ul>
+    </div>
+
+    @form(action = controllers.throttlingGuidance.routes.GroupsAndSubsEligibilityController.submit()) {
+
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = groupsAndSubsEligibilityForm("isGroupOrSub"),
+        Seq(
+        Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+        Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+        '_legend -> Messages("page.eligibility.groupsAndSubs.heading"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_groupClass -> "inline"
+        )
+    </div>
+
+
+
+<div class="form-group">
+        <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+    </div>
+
+    }
+}

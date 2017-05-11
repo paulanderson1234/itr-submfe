@@ -43,11 +43,11 @@ class IsAgentControllerSpec extends BaseSpec {
   }
 
   def setupMocks(isAgentModel: Option[IsAgentModel] = None): Unit = {
-    when(TestController.keystoreConnector.fetchAndGetFormData[IsAgentModel](Matchers.eq(KeystoreKeys.isAgent))
+    when(TestController.keystoreConnector.fetchAndGetFormData[IsAgentModel](Matchers.eq(KeystoreKeys.isAgentEligibility))
       (Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(isAgentModel))
 
-    when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.isAgent), Matchers.any())(Matchers.any(), Matchers.any()))
+    when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.isAgentEligibility), Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
 
   }
@@ -69,26 +69,26 @@ class IsAgentControllerSpec extends BaseSpec {
   }
 
   "Sending a valid Yes form submission to the IsAgentController" should {
-    "redirect to the the expectedd page" in {
+    "redirect to the error page" in {
       val formInput = "isAgent" -> Constants.StandardRadioButtonYesValue
       setupMocks()
       submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.IsAgentController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.IsAgentErrorController.show().url)
         }
       )
     }
   }
 
   "Sending a valid No form submission to the IsAgentController" should {
-    "redirect to expected page" in {
+    "redirect to the groups and subs page" in {
       val formInput = "isAgent" -> Constants.StandardRadioButtonNoValue
       setupMocks()
       submitWithSessionWithoutAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.IsAgentController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.throttlingGuidance.routes.GroupsAndSubsEligibilityController.show().url)
         }
       )
     }

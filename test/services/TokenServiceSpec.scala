@@ -17,7 +17,7 @@
 package services
 
 import common.KeystoreKeys
-import connectors.{KeystoreConnector, TokenConnector, S4LConnector}
+import connectors.{KeystoreConnector, TokenConnector}
 import models.throttling.TokenModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
@@ -40,7 +40,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val token = "TOK123456789"
   val tokenModel = TokenModel("TOK123456789")
-  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("id" -> JsString("TOK123456789")))))
+  val generateTokenSucResponse = HttpResponse(OK,Some(JsObject(Seq("_id" -> JsString("TOK123456789")))))
   val generateTokenInvalidResponse = HttpResponse(OK,Some(JsObject(Seq("notToken" -> JsString("Invalid")))))
   val generateTokenFailResponse = Future.failed(Upstream5xxResponse("Error",INTERNAL_SERVER_ERROR,INTERNAL_SERVER_ERROR))
   val tokenCacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(tokenModel)))
@@ -52,12 +52,6 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   def mockGenerateTokenFunction(res: Future[HttpResponse], hasThrottlePassed:Option[Boolean]): Future[HttpResponse] = {
     when(TestTokenService.tokenConnector.generateTemporaryToken(Matchers.any())).thenReturn(res)
-    when(TestTokenService.keystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.throttleCheckPassed), Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(CacheMap("", Map())))
-
-    when(TestTokenService.keystoreConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.throttleCheckPassed))
-      (Matchers.any(),Matchers.any())).thenReturn(if(hasThrottlePassed.isDefined)
-      Future.successful(Option(hasThrottlePassed.getOrElse(false))) else Future.successful(None))
 
     lazy val result = TestTokenService.generateTemporaryToken
     await(result)
@@ -71,9 +65,6 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
 
-    when(TestTokenService.keystoreConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.throttleCheckPassed))
-      (Matchers.any(),Matchers.any())).thenReturn(if(hasThrottlePassed.isDefined)
-      Future.successful(Option(hasThrottlePassed.getOrElse(false))) else Future.successful(None))
 
     when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(validated)
     lazy val result = TestTokenService.validateTemporaryToken

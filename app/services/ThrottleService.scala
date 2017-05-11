@@ -39,25 +39,13 @@ trait ThrottleService {
 
     def checkAccess(implicit hc: HeaderCarrier):Future[Boolean] = {
       throttleSessionCheck(hc).flatMap {
-        case exists if exists => {
-          println ("=====================================exists")
-          Future(true)
-        }
+        case exists if exists => Future(true)
         case notExists => {
-          println ("=====================================not exists")
           throttleConnector.checkUserAccess() map {
-            case Some(accessGranted) => {
-              println ("=====================================granted")
-              //keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, accessGranted)
-              accessGranted
-            }
-            case None => {
-              //keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
-              false
-            }
+            case Some(accessGranted) => accessGranted
+            case None =>  false
           } recover {
             case e: Exception => {
-              println("error=======================")
               Logger.warn(s"[ThrottleService][checkUserAccess] - Error occurred while checking user access. Errors=${e.getMessage}")
               false
             }

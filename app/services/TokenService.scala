@@ -39,10 +39,10 @@ trait TokenService {
   val keystoreConnector: KeystoreConnector
 
   def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-    tokenConnector.generateTemporaryToken.map{
+    tokenConnector.generateTemporaryToken.map {
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
-          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken,data.value)
+          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
           HttpResponse(OK)
         case e: JsError =>
           val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
@@ -59,21 +59,29 @@ trait TokenService {
     }
   }
 
-  def validateTemporaryToken(implicit hc: HeaderCarrier) : Future[Boolean] = {
+  def validateTemporaryToken(implicit hc: HeaderCarrier): Future[Boolean] = {
 
-    def hasValidToken(token: Option[TokenModel], hasExistingThrottleCheck: Option[Boolean]): Future[Boolean] = {
-      if (hasExistingThrottleCheck.getOrElse(false)) Future(true)
-      else tokenConnector.validateTemporaryToken(token).map {
-        result => result.getOrElse(false)
+    def hasValidToken(token: Option[TokenModel]): Future[Boolean] = {
+      tokenConnector.validateTemporaryToken(token).map {
+        case Some(validationResult) if validationResult => true
+        case _ =>
+          keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+          false
+      }.recover {
+        case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
+          keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+          false
       }
     }
 
-    (for{
-      hasExistingThrottleCheck <- keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed)
-      tokenModel <-  keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
-      validated <- hasValidToken(tokenModel,hasExistingThrottleCheck)
-    } yield validated). recover {
-      case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
+    (for {
+      tokenModel <- keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
+      validated <- hasValidToken(tokenModel)
+    } yield validated).recover {
+      case _ => {
+        keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+        Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
+      }
         false
     }
   }

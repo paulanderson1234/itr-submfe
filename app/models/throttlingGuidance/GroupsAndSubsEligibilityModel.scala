@@ -18,9 +18,8 @@ package models.throttlingGuidance
 
 import play.api.libs.json.Json
 
-case class FirstTimeUsingServiceModel (isFirstTimeUsingService: String)
+case class GroupsAndSubsEligibilityModel(isGroupOrSub: String)
 
-object FirstTimeUsingServiceModel {
-  implicit val format = Json.format[FirstTimeUsingServiceModel]
-  implicit val writes = Json.writes[FirstTimeUsingServiceModel]
+object GroupsAndSubsEligibilityModel{
+  implicit val formats = Json.format[GroupsAndSubsEligibilityModel]
 }

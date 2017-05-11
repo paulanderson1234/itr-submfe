@@ -17,7 +17,7 @@
 package controllers.throttlingGuidance
 
 
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.predicates.ValidActiveSession
 import models.throttlingGuidance.IsAgentModel
@@ -40,7 +40,7 @@ trait IsAgentController extends FrontendController with ValidActiveSession{
   val keystoreConnector: KeystoreConnector
 
   val show = ValidateSession.async { implicit request =>
-    keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgent).map {
+    keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility).map {
       case Some(data) => Ok(IsAgent(isAgentForm.fill(data)))
       case _ => Ok(IsAgent(isAgentForm))
     }
@@ -52,8 +52,11 @@ trait IsAgentController extends FrontendController with ValidActiveSession{
           Future.successful(BadRequest(IsAgent(formWithErrors)))
       },
       validFormData => {
-        keystoreConnector.saveFormData(KeystoreKeys.isAgent, validFormData)
-        Future.successful(Redirect(routes.IsAgentController.show()))
+        keystoreConnector.saveFormData(KeystoreKeys.isAgentEligibility, validFormData)
+        validFormData.isAgent match {
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(routes.IsAgentErrorController.show()))
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.GroupsAndSubsEligibilityController.show()))
+        }
       }
     )
   }

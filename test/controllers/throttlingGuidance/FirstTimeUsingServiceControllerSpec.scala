@@ -20,7 +20,7 @@ import auth.MockConfig
 import common.{Constants, KeystoreKeys}
 import connectors.{KeystoreConnector, ThrottleConnector}
 import controllers.helpers.BaseSpec
-import models.FirstTimeUsingServiceModel
+import models.throttlingGuidance.FirstTimeUsingServiceModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status.OK
