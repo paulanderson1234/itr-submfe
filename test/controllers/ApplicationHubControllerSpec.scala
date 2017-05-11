@@ -150,42 +150,14 @@ class ApplicationHubControllerSpec extends BaseSpec{
   }
 
   "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'scheme selections' page if eisSeisFlowEnabled is enabled" in {
+    "redirect to hub guidance WhoCanUseNewService page" in {
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
       mockEnrolledRequest(None)
       submitWithSessionAndAuth(TestControllerCombined.newApplication)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SchemeSelectionController.show().url)
-        }
-      )
-    }
-  }
-
-  "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'scheme selection' page if eisSeisFlowEnabled is disabled but seisFlowEnabled is enabled" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
-      mockEnrolledRequest(None)
-      submitWithSessionAndAuth(TestControllerSingle.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SingleSchemeSelectionController.show().url)
-        }
-      )
-    }
-  }
-
-  "Posting to the 'create new application' button on the ApplicationHubController when authenticated and enrolled" should {
-    "redirect to 'nature of business' page in EIS flow if neither seisFlowEnabled or eisSeisFlowEnabled are true" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
-      mockEnrolledRequest(None)
-      submitWithSessionAndAuth(TestControllerEIS.newApplication)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.hubGuidance.routes.WhoCanUseNewServiceController.show().url)
         }
       )
     }

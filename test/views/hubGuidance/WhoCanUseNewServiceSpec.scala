@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package views.throttlingGuidance
+package views.hubGuidance
 
 import common.Constants
 import org.jsoup.Jsoup
@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
 import views.helpers.ViewSpec
-import views.html.throttlingGuidance.WhoCanUseNewService
+import views.html.hubGuidance.WhoCanUseNewService
 
 
 class WhoCanUseNewServiceSpec extends ViewSpec {
@@ -36,20 +36,21 @@ class WhoCanUseNewServiceSpec extends ViewSpec {
       lazy val document = Jsoup.parse(contentAsString(page))
 
       //title
-      document.title() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.title")
+      document.title() shouldBe Messages("page.hubGuidance.whoCanUseNewService.title")
 
       //main heading
-      document.getElementById("main-heading").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.heading")
+      document.getElementById("main-heading").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.heading")
 
       //description
-      document.body.getElementById("description").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")
-      document.body.getElementById("reason-one").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")
-      document.body.getElementById("reason-two").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")
-      document.body.getElementById("reason-three").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")
-      document.body.getElementById("still-apply").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.still.apply") + " " + Messages("page.throttlingGuidance.whoCanUseNewService.existing")
+      document.body.getElementById("description").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.apply.if")
+      document.body.getElementById("reason-one").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.apply.if.one")
+      document.body.getElementById("reason-two").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.apply.if.two")
+      document.body.getElementById("reason-three").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.apply.if.three")
+      document.body.getElementById("reason-four").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.apply.if.four")
+      document.body.getElementById("still-apply").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.still.apply") + " " + Messages("page.hubGuidance.whoCanUseNewService.existing")
 
       //link
-      document.body.getElementById("change-answers").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.existing")
+      document.body.getElementById("change-answers").text() shouldBe Messages("page.hubGuidance.whoCanUseNewService.existing")
       document.body.getElementById("change-answers").attr("href") shouldBe Constants.guidanceRedirectUrl
 
       //continue button

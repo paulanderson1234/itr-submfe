@@ -72,6 +72,12 @@ GET         /acquired-trade-eligibility             controllers.throttlingGuidan
 POST        /acquired-trade-eligibility             controllers.throttlingGuidance.AcquiredTradeEligibilityController.submit
 
 
+# Hub Guidance
+GET         /who-can-use-our-service                controllers.hubGuidance.WhoCanUseNewServiceController.show
+POST        /who-can-use-our-service                controllers.hubGuidance.WhoCanUseNewServiceController.submit
+
+GET         /hub-guidance-feedback                  controllers.hubGuidance.HubGuidanceFeedbackController.show
+POST        /hub-guidance-feedback                  controllers.hubGuidance.HubGuidanceFeedbackController.submit
 
 #Feedback routes
 #####################################################################################################################

@@ -1,4 +1,5 @@
 @import uk.gov.hmrc.play.views.html.helpers.{form}
+@import common.Constants
 
 @()(implicit request: Request[_], messages: Messages)
 
@@ -9,18 +10,18 @@
     <div class="grid-row">
         <div class="column-two-thirds-slides">
             <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.whoCanUseNewService.heading")</h1>
-            <p id="description">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</p>
+            <span id="description">@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if")</span>
 
             <ul class="list list-bullet">
-                <li id="reason-one"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")</p></li>
-                <li id="reason-two"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")</p></li>
-                <li id="reason-three"><p>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")</p></li>
+                <li id="reason-one"><span>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")</span></li>
+                <li id="reason-two"><span>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")</span></li>
+                <li id="reason-three"><span>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")</span></li>
             </ul>
             <!-- link to be changed once confirmed with chris H -->
             <div class="form-group">
-                <p id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
-                    <a href="https://www.gov.uk/hmrc-internal-manuals/venture-capital-schemes-manual/8154" class="link-style" id="change-answers">
-                        @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a></p>
+                <span id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
+                    <a href="@Constants.guidanceRedirectUrl" class="link-style" id="change-answers">
+                        @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a></span>
             </div>
 
 

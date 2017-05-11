@@ -2,15 +2,15 @@
 
 @()(implicit request: Request[_], messages: Messages)
 
-@main_template(title = Messages("page.throttlingGuidance.ourServiceChange.title"), mainClass=Some("full-width"), userLoggedIn = false) {
+@main_template(title = Messages("page.hubGuidance.hubGuidanceFeedback.title"), mainClass=Some("full-width"), userLoggedIn = false) {
 
     <div class="content-inner slides">
 
         <div class="grid-row">
             <div class="column-two-thirds-slides">
-                <h1 id="main-heading" class="banner-white">@Messages("page.throttlingGuidance.ourServiceChange.heading")</h1>
-                <span id="description">@Messages("page.throttlingGuidance.ourServiceChange.description")</span>
-                @form(action = controllers.throttlingGuidance.routes.OurServiceChangeController.submit()) {
+                <h1 id="main-heading" class="banner-white">@Messages("page.hubGuidance.hubGuidanceFeedback.heading")</h1>
+                <span id="description">@Messages("page.hubGuidance.hubGuidanceFeedback.description")</span>
+                @form(action = controllers.hubGuidance.routes.HubGuidanceFeedbackController.submit()) {
                     <div class="actions">
                         <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
                     </div>
