@@ -19,18 +19,15 @@ package controllers.throttlingGuidance
 import common.{Constants, KeystoreKeys}
 import config.{AppConfig, FrontendAppConfig}
 import connectors.KeystoreConnector
-import forms.FirstTimeUsingServiceForm._
-import forms.throttlingGuidance.IsAgentForm.isAgentForm
-import models.throttlingGuidance.IsAgentModel
+import models.throttlingGuidance.FirstTimeUsingServiceModel
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.Action
 import services.{ThrottleService, TokenService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.throttlingGuidance.{FirstTimeUsingService, IsAgent}
+import views.html.throttlingGuidance.FirstTimeUsingService
 import controllers.predicates.ValidActiveSession
-import forms.FirstTimeUsingServiceForm
-import models.FirstTimeUsingServiceModel
+import forms.throttlingGuidance.FirstTimeUsingServiceForm._
 
 import scala.concurrent.Future
 
@@ -67,11 +64,9 @@ trait FirstTimeUsingServiceController extends FrontendController with ValidActiv
             case Constants.StandardRadioButtonYesValue => {
               throttleService.checkUserAccess.flatMap {
                 case true => {
-                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
                   Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
                 }
                 case false => {
-                  keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
                   Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
                 }
               }

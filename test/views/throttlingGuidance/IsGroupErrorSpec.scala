@@ -47,7 +47,7 @@ class IsGroupErrorSpec  extends ViewSpec {
       document.body.getElementById("change-info").text() shouldEqual Messages("page.throttlingGuidance.isGroupError.notGroup") +
         " " +  Messages("page.throttlingGuidance.GuidanceError.common.changeAnswers") + "."
 
-      document.body.getElementById("change-link").attr("href") shouldEqual routes.IsAgentController.show().url
+      document.body.getElementById("change-link").attr("href") shouldEqual controllers.throttlingGuidance.routes.GroupsAndSubsEligibilityController.show().url
 
     }
 

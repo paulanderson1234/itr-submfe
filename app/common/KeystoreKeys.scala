@@ -52,8 +52,6 @@ trait KeystoreKeys {
   val tradeStartDate: String = "companyDetails:tradeStartDate"
   val isFirstTrade: String = "companyDetails:isFirstTrade"
   val hadOtherInvestments: String = "previousInvestmentScheme:hadOtherInvestments"
-  val isAgent: String = "throttling:isAgent"
-  val throttleCheckPassed: String = "throttling:throttleCheckPassed"
 
   // processing Keys
   val eisSeisProcessingModel: String = "processing:EisSeisProcessingModel"
@@ -92,4 +90,9 @@ trait KeystoreKeys {
   //throttling
   val throttlingToken: String = "throttling:token"
   val isFirstTimeUsingService: String = "throttling:isFirstTimeUsingService"
+  val groupsAndSubsEligibility: String = "throttling:groupsAndSubsEligibility"
+  val acquiredTradeEligibility: String = "throttling:acquiredTradeEligibility"
+  val isAgentEligibility: String = "throttling:isAgentEligibility"
+  val throttleCheckPassed: String = "throttling:throttleCheckPassed"
+
 }

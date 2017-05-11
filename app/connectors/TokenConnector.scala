@@ -38,7 +38,7 @@ trait TokenConnector {
 
   def validateTemporaryToken(token: Option[TokenModel])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     token match {
-      case Some(tok) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok.id}")
+      case Some(tok) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok._id}")
       case None => Future.successful(Some(false))
     }
   }

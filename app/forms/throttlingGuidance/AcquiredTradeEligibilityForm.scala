@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package models.throttlingGuidance
+package forms.throttlingGuidance
 
-import play.api.libs.json.Json
+import models.throttlingGuidance.AcquiredTradeEligibilityModel
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class FirstTimeUsingServiceModel (isFirstTimeUsingService: String)
-
-object FirstTimeUsingServiceModel {
-  implicit val format = Json.format[FirstTimeUsingServiceModel]
-  implicit val writes = Json.writes[FirstTimeUsingServiceModel]
+object AcquiredTradeEligibilityForm {
+  val acquiredTradeEligibilityForm = Form(
+    mapping(
+      "acquiredTrade" -> nonEmptyText
+    )(AcquiredTradeEligibilityModel.apply)(AcquiredTradeEligibilityModel.unapply)
+  )
 }

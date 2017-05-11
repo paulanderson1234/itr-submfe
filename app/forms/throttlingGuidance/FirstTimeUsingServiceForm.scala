@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package forms
+package forms.throttlingGuidance
 
-import models.FirstTimeUsingServiceModel
+import models.throttlingGuidance.FirstTimeUsingServiceModel
 import play.api.data.Form
 import play.api.data.Forms._
 
