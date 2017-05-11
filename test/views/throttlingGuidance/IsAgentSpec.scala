@@ -33,17 +33,17 @@ import scala.concurrent.Future
 
 class IsAgentSpec extends ViewSpec {
 
-  val isAgentModelInvalidYes = new IsAgentModel("")
+  val isAgentModelInvalidYes =  IsAgentModel("")
 
   object TestController extends IsAgentController {
     override lazy val keystoreConnector = mockKeystoreConnector
   }
 
   def setupMocks(isAgentModel: Option[IsAgentModel] = None): Unit =
-    when(mockKeystoreConnector.fetchAndGetFormData[IsAgentModel](Matchers.eq(KeystoreKeys.isAgent))
+    when(mockKeystoreConnector.fetchAndGetFormData[IsAgentModel](Matchers.eq(KeystoreKeys.isAgentEligibility))
       (Matchers.any(), Matchers.any())).thenReturn(Future.successful(isAgentModel))
 
-      when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.isAgent),
+      when(mockKeystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.isAgentEligibility),
         Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(CacheMap("", Map())))
 
   "The Trade Start Date page" should {

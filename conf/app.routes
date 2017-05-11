@@ -66,6 +66,11 @@ GET         /acquiredTrade-ineligible               controllers.throttlingGuidan
 
 
 GET         /user-limit                             controllers.throttlingGuidance.UserLimitReachedController.show
+GET         /groups-and-subs-eligibility            controllers.throttlingGuidance.GroupsAndSubsEligibilityController.show
+POST        /groups-and-subs-eligibility            controllers.throttlingGuidance.GroupsAndSubsEligibilityController.submit
+GET         /acquired-trade-eligibility             controllers.throttlingGuidance.AcquiredTradeEligibilityController.show
+POST        /acquired-trade-eligibility             controllers.throttlingGuidance.AcquiredTradeEligibilityController.submit
+
 
 # Hub Guidance
 GET         /who-can-use-our-service                controllers.hubGuidance.WhoCanUseNewServiceController.show

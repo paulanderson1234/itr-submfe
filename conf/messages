@@ -910,6 +910,17 @@ page.throttlingGuidance.userLimitReached.tryAgain.info=Please try again tomorrow
 page.throttlingGuidance.userLimitReached.findOut=find out how to use our existing service
 page.throttlingGuidance.userLimitReached.apply=to apply for Advance Assurance.
 
+# groups and subsidiaries eligibility page
+page.eligibility.groupsAndSubs.title=Is your company part of a group?
+page.eligibility.groupsAndSubs.heading=Is your company part of a group?
+page.eligibility.groupsAndSubs.desc=Your company is part of a group if it either:
+page.eligibility.groupsAndSubs.bullet.one=owns or controls at least one other company
+page.eligibility.groupsAndSubs.bullet.two=is owned or controlled by another company
+
+# acquired trade eligibility pages
+page.eligibility.acquiredTrade.title=Did you acquire the trade that you want to raise investment for?
+page.eligibility.acquiredTrade.heading=Did you acquire the trade that you want to raise investment for?
+page.eligibility.acquiredTrade.desc=This means your business, product or service was owned by somebody else before you.
 
 ## guidance error pages ##
 

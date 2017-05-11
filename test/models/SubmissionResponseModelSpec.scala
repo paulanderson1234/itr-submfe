@@ -15,11 +15,12 @@
  */
 
 package Forms
+
 import models.submission.SubmissionResponse
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.test.UnitSpec
 
-class SubmissionResponseSpec extends UnitSpec {
+class SubmissionResponseModelSpec extends UnitSpec {
 
   val testJson = """{"processingDate":"2014-12-17T09:30:47Z","formBundleNumber":"FBUND98763284"}"""
 

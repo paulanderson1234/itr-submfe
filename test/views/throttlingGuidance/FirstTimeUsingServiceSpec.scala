@@ -20,7 +20,7 @@ import auth.MockConfig
 import common.{Constants, KeystoreKeys}
 import connectors.KeystoreConnector
 import controllers.throttlingGuidance.FirstTimeUsingServiceController
-import models.FirstTimeUsingServiceModel
+import models.throttlingGuidance.FirstTimeUsingServiceModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito.when
@@ -31,7 +31,6 @@ import services.{ThrottleService, TokenService}
 import views.helpers.ViewSpec
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class FirstTimeUsingServiceSpec extends ViewSpec {
