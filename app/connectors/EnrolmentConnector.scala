@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import auth.Enrolment
 import common.Constants
+import services.TokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -52,7 +53,13 @@ trait EnrolmentConnector extends ServicesConfig {
       case _ => ""
     }
   }
+
+  def validateToken(implicit hc: HeaderCarrier) = {
+    TokenService.validateTemporaryToken
+  }
 }
+
+
 
 object EnrolmentConnector extends EnrolmentConnector {
   lazy val serviceUrl = baseUrl("auth")
