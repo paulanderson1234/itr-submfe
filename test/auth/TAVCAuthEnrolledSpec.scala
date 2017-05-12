@@ -21,6 +21,7 @@ import java.net.URLEncoder
 import common.KeystoreKeys
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import controllers.throttlingGuidance.routes
 import models.submission.SchemeTypesModel
 import org.scalatest.mock.MockitoSugar
 import play.api.test.FakeRequest
@@ -84,14 +85,30 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
   }
 
   "Calling authenticated async action with a default GG login session with no TAVC enrolment" should {
-    "result in a redirect to subscription" in {
+    "result in a redirect to subscription if there is a valid throttle token" in {
       implicit val hc = HeaderCarrier()
       when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/")
+    }
+  }
+
+  "Calling authenticated async action with a default GG login session with no TAVC enrolment" should {
+    "result in a redirect to subscription  if there is not a vaild throttle token" in {
+      implicit val hc = HeaderCarrier()
+      when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(false))
+      val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      redirectLocation(result) shouldBe Some(routes.OurServiceChangeController.show().url)
     }
   }
 
@@ -103,6 +120,9 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       status(result) shouldBe Status.OK
     }
@@ -122,8 +142,13 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
   "Calling authenticated getTavCReferenceNumber when it is exists on the enrolement" should {
     "return the TavcReference" in {
       implicit val hc = HeaderCarrier()
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(AuthEnrolledTestController.enrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful("XATAVC000123456"))
+
       val result = AuthEnrolledTestController.getTavCReferenceNumber()(hc)
       await(result) shouldBe "XATAVC000123456"
     }
@@ -142,6 +167,10 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSchemeTypesModel))
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -155,6 +184,10 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
       when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -175,6 +208,10 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -196,6 +233,10 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(seisSchemeTypesModel))
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))

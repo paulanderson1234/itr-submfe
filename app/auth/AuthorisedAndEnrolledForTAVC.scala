@@ -22,8 +22,11 @@ import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
 import uk.gov.hmrc.play.http.HeaderCarrier
+import controllers.throttlingGuidance.routes
+
 import scala.concurrent.Future
 import connectors.{EnrolmentConnector, S4LConnector}
+import services.TokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -50,7 +53,12 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
           case Enrolled => getInternalId(authContext).flatMap{internalId =>
             action(TAVCUser(authContext,internalId))(request)
           }
-          case NotEnrolled => Future.successful(Redirect(notEnrolledRedirectUrl))
+          case NotEnrolled => {
+            enrolmentConnector.validateToken(hc).flatMap {
+              case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
+              case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+            }
+          }
         }
       }
     }
