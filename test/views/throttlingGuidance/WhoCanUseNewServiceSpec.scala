@@ -46,6 +46,7 @@ class WhoCanUseNewServiceSpec extends ViewSpec {
       document.body.getElementById("reason-one").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.one")
       document.body.getElementById("reason-two").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")
       document.body.getElementById("reason-three").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")
+      document.body.getElementById("reason-four").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.four")
       document.body.getElementById("still-apply").text() shouldBe Messages("page.throttlingGuidance.whoCanUseNewService.still.apply") + " " + Messages("page.throttlingGuidance.whoCanUseNewService.existing")
 
       //link
