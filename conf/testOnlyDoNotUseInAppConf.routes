@@ -10,6 +10,8 @@
 # Failing to follow this rule may result in test routes deployed in production.
 
 GET        /investment-tax-relief/test-only/clear-cache                                 testOnly.controllers.ClearCacheController.clearCache
+GET        /investment-tax-relief/test-only/reset-throttle                              testOnly.controllers.ResetThrottleController.resetThrottle
+GET        /investment-tax-relief/test-only/reset-tokens                                testOnly.controllers.ResetTokenController.resetTokens
 
 #eis
 GET        /investment-tax-relief/test-only/test-endpoint/eis/page-1                        testOnly.controllers.eis.TestEndpointEISController.showPageOne(schemes: Option[Int])
