@@ -875,13 +875,13 @@ page.historicSubmissions.applications.aa.table.status.heading=Status
 page.historicSubmissions.applications.aa.no-previous.text=You have not submitted any applications.
 
 ##  Throttling ##
-page.throttlingGuidance.whoCanUseNewService.title=Who can use this service
-page.throttlingGuidance.whoCanUseNewService.heading=Who can use this service
+page.throttlingGuidance.whoCanUseNewService.title=Who can use this new service
+page.throttlingGuidance.whoCanUseNewService.heading=Who can use this new service
 page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only use the new online service if your company:
 page.throttlingGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or for investment from a Venture Capital Trust
-page.hubGuidance.whoCanUseNewService.apply.if.two=isn''t using an agent
-page.hubGuidance.whoCanUseNewService.apply.if.three=isn''t part of a group of companies
-page.hubGuidance.whoCanUseNewService.apply.if.four=didn''t acquire the trade you want to raise investment for
+page.throttlingGuidance.whoCanUseNewService.apply.if.two=isn''t using an agent
+page.throttlingGuidance.whoCanUseNewService.apply.if.three=isn''t part of a group of companies
+page.throttlingGuidance.whoCanUseNewService.apply.if.four=didn''t acquire the trade you want to raise investment for
 page.throttlingGuidance.whoCanUseNewService.still.apply=You can still apply for Advance Assurance if you don''t meet these conditions,
 page.throttlingGuidance.whoCanUseNewService.existing=find out how to use our existing service.
 
@@ -947,8 +947,8 @@ page.throttlingGuidance.isAcquiredTradeError.reason=At the moment, our new onlin
 page.throttlingGuidance.isAcquiredTradeError.notAcquiredTrade=If you didn''t acquire the trade you want to raise investment for, you can
 
 ##  Hub Guidance ##
-page.hubGuidance.whoCanUseNewService.title=Who can use this service
-page.hubGuidance.whoCanUseNewService.heading=Who can use this service
+page.hubGuidance.whoCanUseNewService.title=Who can use this new service
+page.hubGuidance.whoCanUseNewService.heading=Who can use this new service
 page.hubGuidance.whoCanUseNewService.apply.if=At the moment, you can only use the new online service if your company:
 page.hubGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or for investment from a Venture Capital Trust
 page.hubGuidance.whoCanUseNewService.apply.if.two=isn''t using an agent

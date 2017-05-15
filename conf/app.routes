@@ -73,8 +73,8 @@ POST        /acquired-trade-eligibility             controllers.throttlingGuidan
 
 
 # Hub Guidance
-GET         /who-can-use-our-service                controllers.hubGuidance.WhoCanUseNewServiceController.show
-POST        /who-can-use-our-service                controllers.hubGuidance.WhoCanUseNewServiceController.submit
+GET         /hub-guidance-who-can-use-new-service   controllers.hubGuidance.WhoCanUseNewServiceController.show
+POST        /hub-guidance-who-can-use-new-service   controllers.hubGuidance.WhoCanUseNewServiceController.submit
 
 GET         /hub-guidance-feedback                  controllers.hubGuidance.HubGuidanceFeedbackController.show
 POST        /hub-guidance-feedback                  controllers.hubGuidance.HubGuidanceFeedbackController.submit
