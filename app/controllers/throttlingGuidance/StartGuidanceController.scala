@@ -50,7 +50,7 @@ trait StartGuidanceController extends FrontendController {
   def start:Action[AnyContent] = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
 
-
+      implicit val hc = new HeaderCarrier()
 
       val sessionId = UUID.randomUUID.toString
 
