@@ -55,7 +55,8 @@ trait EnrolmentConnector extends ServicesConfig {
   }
 
   def validateToken(implicit hc: HeaderCarrier) = {
-    TokenService.validateTemporaryToken
+    println(s"============================== validate token. session id is  ${hc.sessionId}    ==========================")
+    TokenService.validateTemporaryToken(hc)
   }
 }
 

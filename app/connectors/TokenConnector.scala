@@ -38,8 +38,14 @@ trait TokenConnector {
 
   def validateTemporaryToken(token: Option[TokenModel])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     token match {
-      case Some(tok) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok._id}")
-      case None => Future.successful(Some(false))
+      case Some(tok) => {
+        println(s"========================================validating token connector  save id: ${tok._id}         ===========================================")
+        http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok._id}")
+      }
+      case None => {
+        println("==================================== NO TOKEN IN SEESION TO VALIDATE R- RETURNIBNG FALSE===========================")
+        Future.successful(Some(false))
+      }
     }
   }
 }

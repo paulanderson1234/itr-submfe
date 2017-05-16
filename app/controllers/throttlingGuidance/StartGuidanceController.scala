@@ -33,9 +33,10 @@
 package controllers.throttlingGuidance
 
 import java.util.UUID
-import play.api.mvc.{AnyContent, Action}
+
+import play.api.mvc.{Action, AnyContent, Request}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{SessionKeys, HeaderCarrier}
+import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
 
@@ -43,11 +44,36 @@ object StartGuidanceController extends StartGuidanceController
 
 trait StartGuidanceController extends FrontendController {
 
-  implicit val hc = new HeaderCarrier()
+
+
 
   def start:Action[AnyContent] = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
+
+
+
       val sessionId = UUID.randomUUID.toString
+
+      //val d  = Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId"))
+
+      //implicit val hc = new HeaderCarrier(sessionId =  Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId")))
+
+//      implicit  def hc(implicit request: Request[_]): HeaderCarrier = {
+//
+//        //TODO: remove - just for debugging issue ========================
+//        if (request.session.get(SessionKeys.sessionId).isEmpty) {
+//          println("==================================SESSION ID IS EMPTY===================================")
+//        } else {
+//          println(s"==================================SESSION NOT IS EMPTY============ id is: ${request.session.get(SessionKeys.sessionId)}")
+//        }
+//
+//        val f = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
+//        println(s"============================== in implict hc uathfor/tavc. session id is  ${f.sessionId}    ==========================")
+//        f
+//      }
+
+      //TODO: end remove========================================================================================================
+
       Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()).withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
     }
     else {
