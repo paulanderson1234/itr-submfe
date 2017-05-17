@@ -91,7 +91,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/")
@@ -105,7 +105,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(false))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       redirectLocation(result) shouldBe Some(routes.OurServiceChangeController.show().url)
@@ -120,7 +120,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
@@ -143,7 +143,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
     "return the TavcReference" in {
       implicit val hc = HeaderCarrier()
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(AuthEnrolledTestController.enrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
@@ -168,7 +168,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSchemeTypesModel))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -185,7 +185,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -209,7 +209,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -234,7 +234,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(seisSchemeTypesModel))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
