@@ -95,19 +95,19 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   }
 
   "validateTemporaryToken" should {
-    "return true if a token can be fetched from keystore and the call to validate returns Some(true)" in {
+    "return true if the call to validate returns true" in {
       val response = mockValidateTokenFunction(Some(true), None)
       response shouldBe true
     }
-    "return false if a token can be fetched from keystore and the call to validate returns Some(false)" in {
+    "return false if the call to validate returns false" in {
       val response = mockValidateTokenFunction(Some(false), None)
       response shouldBe false
     }
-    "return false if a token can be fetched from keystore and the call to validate returns None" in {
+    "return false if the call to validate returns None" in {
       val response = mockValidateTokenFunction(None, None)
       response shouldBe false
     }
-    "return false if a token cannot be fetched from keystore" in {
+    "return false if a token cannot be validated as not passed" in {
       val response = mockValidateTokenFunction(None, None)
       response shouldBe false
     }
@@ -121,19 +121,19 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   }
 
   "validateTemporaryToken" should {
-    "return true if a token is passed and can be fetched from keystore and the call to validate returns Some(true)" in {
+    "return true if a token is passedand  call to validate returns Some(true)" in {
       val response = mockValidateTokenFunction(Some(true), Some(tokenId))
       response shouldBe true
     }
-    "return false if a token is passed and can be fetched from keystore and the call to validate returns Some(false)" in {
+    "return false if a token is passed and the call to validate returns Some(false)" in {
       val response = mockValidateTokenFunction(Some(false), Some(tokenId))
       response shouldBe false
     }
-    "return false if a token is passed and can be fetched from keystore and the call to validate returns None" in {
+    "return false if a token is passed and the call to validate returns None" in {
       val response = mockValidateTokenFunction(None, Some(tokenId))
       response shouldBe false
     }
-    "return false if a token is passed and cannot be fetched from keystore" in {
+    "return false if a token is passed and cannot be validated" in {
       val response = mockValidateTokenFunction(None, Some(tokenId))
       response shouldBe false
     }
