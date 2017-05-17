@@ -46,14 +46,26 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
 
-  class AuthorisedAndEnrolled(regime: TaxRegime) {
+  class AuthorisedAndEnrolled {
     def async(action: AsyncUserRequest, tokenId:Option[String] = None): Action[AnyContent] = {
       println(s"=================IN ASYNC" )
 
-        println(s"======================== TokenSessionID: ${tokenId.fold("None")(_.self)}    ============================================")
+
+      val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
+        applicationConfig.ggSignInUrl)
+
+      trait TAVCRegime extends TaxRegime {
+        override def isAuthorised(accounts: Accounts): Boolean = true
+        override def authenticationType: AuthenticationProvider = tavcAuthProvider
+      }
+
+      object TAVCRegime extends TAVCRegime
 
 
-      AuthorisedFor(regime, pageVisibilityPredicate).async {
+      println(s"======================== TokenSessionID: ${tokenId.fold("None")(_.self)}    ============================================")
+
+
+      AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
         authContext: AuthContext => implicit request =>
 
           println("======================== AuthorisedFor TokenId :===================")
@@ -76,7 +88,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
     def apply(action: UserRequest, tokenSessionId:Option[String]): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)),tokenSessionId)
   }
 
-  object AuthorisedAndEnrolled extends AuthorisedAndEnrolled(TAVCRegime)
+  object AuthorisedAndEnrolled extends AuthorisedAndEnrolled
 
   def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] =
   {
@@ -119,12 +131,4 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
     f
   }
 
-  val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.ggSignInUrl)
-
-  trait TAVCRegime extends TaxRegime {
-    override def isAuthorised(accounts: Accounts): Boolean = true
-    override def authenticationType: AuthenticationProvider = tavcAuthProvider
-  }
-
-  object TAVCRegime extends TAVCRegime
 }
