@@ -36,8 +36,8 @@ trait AuthEnrolledTestController extends FrontendController with AuthorisedAndEn
     implicit user =>  implicit request => Future.successful(Ok)
   }
 
-  val authorisedAction = AuthorisedAndEnrolled {
+  val authorisedAction = AuthorisedAndEnrolled ({
     implicit user =>  implicit request => Ok
-  }
+  },None)
 
 }

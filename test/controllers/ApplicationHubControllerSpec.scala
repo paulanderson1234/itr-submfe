@@ -106,7 +106,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when true is fetched from keystore" in {
       setupMocks(Some(true))
       mockEnrolledRequest()
-      showWithSessionAndAuth(TestControllerCombined.show())(
+      showWithSessionAndAuth(TestControllerCombined.show(None))(
         result => {
           status(result) shouldBe OK
           contentAsString(result) contains ApplicationHubExisting
@@ -117,7 +117,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when false is fetched from keystore" in {
       setupMocks(Some(false))
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestControllerCombined.show())(
+      showWithSessionAndAuth(TestControllerCombined.show(None))(
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
@@ -129,7 +129,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 200 when nothing is fetched from keystore" in {
       setupMocks(None)
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestControllerCombined.show())(
+      showWithSessionAndAuth(TestControllerCombined.show(None))(
         result => {
           status(result) shouldBe OK
           val document = Jsoup.parse(contentAsString(result))
@@ -141,7 +141,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "return a 500 when an ApplicationHubModel cannot be composed" in {
       setupMocksNotAvailable()
       mockEnrolledRequest(eisSchemeTypesModel)
-      showWithSessionAndAuth(TestControllerCombined.show())(
+      showWithSessionAndAuth(TestControllerCombined.show(None))(
         result => {
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

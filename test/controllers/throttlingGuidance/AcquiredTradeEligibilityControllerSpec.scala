@@ -54,7 +54,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
     when(TestController.keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](Matchers.eq(KeystoreKeys.groupsAndSubsEligibility))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(isGroup))
-    when(TestController.tokenService.generateTemporaryToken(Matchers.any())).thenReturn(Future.successful(response))
+    when(TestController.tokenService.generateTemporaryToken(Matchers.any())).thenReturn(Future.successful(tokenId))
 
 
   }

@@ -40,6 +40,8 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   val token = "TOK123456789"
   val tokenModel = TokenModel(token)
 
+  val tokenId = "123456789"
+
 
   val successResponse = HttpResponse(Status.OK, responseJson = Some(Json.parse(
     """
@@ -114,7 +116,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     "expecting a successful response" should {
 
       "return a Some(true) response" in {
-        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenId))
         setupMockedValidateTempTokenResponse(Some(true))
         await(result) match {
           case response => {
@@ -125,7 +127,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
       }
 
       "return a Some(false) response" in {
-        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenId))
         setupMockedValidateTempTokenResponse(Some(false))
         await(result) match {
           case response => {

@@ -16,16 +16,18 @@
 
 package services
 
+import javassist.compiler.TokenId
+
 import common.KeystoreKeys
 import connectors.{KeystoreConnector, TokenConnector}
 import models.throttling.TokenModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
-import play.api.libs.json.{Json, JsString, JsObject}
+import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -34,6 +36,8 @@ import scala.concurrent.Future
 
 
 class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
+
+  val tokenId = "12334567"
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
@@ -50,10 +54,10 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     override val keystoreConnector: KeystoreConnector = mock[KeystoreConnector]
   }
 
-  def mockGenerateTokenFunction(res: Future[HttpResponse], hasThrottlePassed:Option[Boolean]): Future[HttpResponse] = {
+  def mockGenerateTokenFunction(res: Future[HttpResponse], hasThrottlePassed:Option[Boolean]): Future[String] = {
     when(TestTokenService.tokenConnector.generateTemporaryToken(Matchers.any())).thenReturn(res)
 
-    lazy val result = TestTokenService.generateTemporaryToken
+    lazy val result = TestTokenService.generateTemporaryToken(hc)
     await(result)
   }
 
@@ -67,7 +71,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
 
     when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(validated)
-    lazy val result = TestTokenService.validateTemporaryToken
+    lazy val result = TestTokenService.validateTemporaryToken(Some(tokenId))
     await(result)
   }
 
@@ -83,15 +87,15 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   "generateTemporaryToken" should {
     "return a OK response if the call to the connector returns a valid TokenModel" in {
       val response = mockGenerateTokenFunction(generateTokenSucResponse, None)
-      response.status shouldBe OK
+      response shouldBe tokenId
     }
     "return INTERNAL SERVER ERROR if the call to the connector returns an invalid TokenModel" in {
       val response = mockGenerateTokenFunction(generateTokenInvalidResponse, None)
-      response.status shouldBe INTERNAL_SERVER_ERROR
+      response shouldBe tokenId
     }
     "return INTERNAL SERVER ERROR if the call to then connector returns a non 200 response code" in {
       val response = mockGenerateTokenFunction(generateTokenFailResponse, None)
-      response.status shouldBe INTERNAL_SERVER_ERROR
+      response shouldBe INTERNAL_SERVER_ERROR
     }
   }
 
@@ -116,7 +120,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
       when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
         (Matchers.any(),Matchers.any())).thenReturn(Some(tokenModel))
       when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(generateTokenFailResponse)
-      lazy val result = TestTokenService.validateTemporaryToken
+      lazy val result = TestTokenService.validateTemporaryToken(Some(tokenId))
       await(result) shouldBe false
     }
   }
