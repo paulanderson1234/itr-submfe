@@ -61,9 +61,10 @@ trait AcquiredTradeEligibilityController extends FrontendController with ValidAc
         if((isAgentModel.isDefined && isAgentModel.get.isAgent == Constants.StandardRadioButtonNoValue)&&
           (isGroupOrSubModel.isDefined && isGroupOrSubModel.get.isGroupOrSub == Constants.StandardRadioButtonNoValue)){
           tokenService.generateTemporaryToken map {
-            res => res.status match {
-              case OK => Redirect(controllers.routes.ApplicationHubController.show())
-              case _ => InternalServerError(internalServerErrorTemplate)
+            tokenId =>  {
+              println(s"=============== generated token id is: $tokenId")
+              if (tokenId.nonEmpty) Redirect(controllers.routes.ApplicationHubController.show(Some(tokenId)))
+              else InternalServerError(internalServerErrorTemplate)
             }
           }
        }else{

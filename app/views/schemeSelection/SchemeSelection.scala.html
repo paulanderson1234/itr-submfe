@@ -6,7 +6,7 @@
 
 @main_template(Messages("page.schemeSelection.SchemeSelection.title")) {
 
-    @backButton(controllers.routes.ApplicationHubController.show.url)
+    @backButton(controllers.routes.ApplicationHubController.show(None).url)
 
     @errorSummary(schemeTypesForm, "SEIS", "SEIS")
 

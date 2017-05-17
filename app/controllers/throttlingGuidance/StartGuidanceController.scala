@@ -50,13 +50,15 @@ trait StartGuidanceController extends FrontendController {
   def start:Action[AnyContent] = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
 
-      implicit val hc = new HeaderCarrier()
+
 
       val sessionId = UUID.randomUUID.toString
 
+      //implicit val hc = new HeaderCarrier()
+
       //val d  = Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId"))
 
-      //implicit val hc = new HeaderCarrier(sessionId =  Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId")))
+      implicit val hc = new HeaderCarrier(sessionId =  Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId")))
 
 //      implicit  def hc(implicit request: Request[_]): HeaderCarrier = {
 //

@@ -20,14 +20,11 @@ import common.KeystoreKeys
 import connectors.{KeystoreConnector, TokenConnector}
 import models.throttling.TokenModel
 import play.api.Logger
-import play.api.http.Status
-import play.api.http.Status._
-import play.api.libs.json.{JsError, JsSuccess, Json}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import play.api.libs.json.{JsError, JsSuccess}
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 
 object TokenService  extends TokenService{
   val tokenConnector = TokenConnector
@@ -38,32 +35,60 @@ trait TokenService {
   val tokenConnector: TokenConnector
   val keystoreConnector: KeystoreConnector
 
-  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[String] = {
+
+    val noToken = ""
+
     tokenConnector.generateTemporaryToken.map {
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
-          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
-          HttpResponse(OK)
+          //keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
+          data.value._id
         case e: JsError =>
           val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
           Logger.warn(errorMessage)
-          HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
+          //HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
+          noToken
       }
     }.recover {
       case _ => {
         val errorMessage = s"[TokenService][generateTemporaryToken] - No temporary token response retrieved"
         Logger.warn(errorMessage)
-        HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage))
-        )
+        noToken
       }
     }
   }
 
-  def validateTemporaryToken(implicit hc: HeaderCarrier): Future[Boolean] = {
 
-    def hasValidToken(token: Option[TokenModel]): Future[Boolean] = {
-      tokenConnector.validateTemporaryToken(token).map {
-        case Some(validationResult) if validationResult => true
+  //  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  //    tokenConnector.generateTemporaryToken.map {
+  //      response => response.json.validate[TokenModel] match {
+  //        case data: JsSuccess[TokenModel] =>
+  //          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
+  //          HttpResponse(OK)
+  //        case e: JsError =>
+  //          val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
+  //          Logger.warn(errorMessage)
+  //          HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
+  //      }
+  //    }.recover {
+  //      case _ => {
+  //        val errorMessage = s"[TokenService][generateTemporaryToken] - No temporary token response retrieved"
+  //        Logger.warn(errorMessage)
+  //        HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage))
+  //        )
+  //      }
+  //    }
+  //  }
+
+  def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
+
+    def hasValidToken(token: Option[String]): Future[Boolean] = {
+      tokenConnector.validateTemporaryToken(tokenId).map {
+        case Some(validationResult) if validationResult => {
+          keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
+          true
+        }
         case _ =>
           keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
           false
@@ -75,8 +100,7 @@ trait TokenService {
     }
 
     (for {
-      tokenModel <- keystoreConnector.fetchAndGetFormData[TokenModel](KeystoreKeys.throttlingToken)
-      validated <- hasValidToken(tokenModel)
+      validated <- hasValidToken(tokenId)
     } yield validated).recover {
       case _ => {
         keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)

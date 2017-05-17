@@ -89,9 +89,9 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
   }
 
   def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+    AuthorisedAndEnrolled.apply ({ implicit user => implicit request =>
       Redirect(feedback.routes.FeedbackController.show().url)
-    }
+    },None)
   }
 
   private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {

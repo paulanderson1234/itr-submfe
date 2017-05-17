@@ -47,14 +47,24 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
 
   class AuthorisedAndEnrolled(regime: TaxRegime) {
-    def async(action: AsyncUserRequest): Action[AnyContent] = {
+    def async(action: AsyncUserRequest, tokenId:Option[String] = None): Action[AnyContent] = {
+      println(s"=================IN ASYNC" )
+
+        println(s"======================== TokenSessionID: ${tokenId.fold("None")(_.self)}    ============================================")
+
+
       AuthorisedFor(regime, pageVisibilityPredicate).async {
-        authContext: AuthContext => implicit request => enrolledCheck {
+        authContext: AuthContext => implicit request =>
+
+          println("======================== AuthorisedFor TokenId :===================")
+          //println(s"${request.session.get(SessionKeys.sessionId)}")
+          println(s"token id is $tokenId")
+          enrolledCheck {
           case Enrolled => getInternalId(authContext).flatMap{internalId =>
             action(TAVCUser(authContext,internalId))(request)
           }
           case NotEnrolled => {
-            enrolmentConnector.validateToken(hc).flatMap {
+            enrolmentConnector.validateToken(tokenId)(hc).flatMap {
               case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
               case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
             }
@@ -63,7 +73,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
       }
     }
 
-    def apply(action: UserRequest): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)))
+    def apply(action: UserRequest, tokenSessionId:Option[String]): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)),tokenSessionId)
   }
 
   object AuthorisedAndEnrolled extends AuthorisedAndEnrolled(TAVCRegime)
@@ -99,13 +109,13 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   implicit private def hc(implicit request: Request[_]): HeaderCarrier = {
 
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
-      println("==================================SESSION ID IS EMPTY===================================")
+      //println("==================================SESSION ID IS EMPTY===================================")
     } else {
-      println(s"==================================SESSION NOT IS EMPTY============ id is: ${request.session.get(SessionKeys.sessionId)}")
+      //println(s"==================================SESSION NOT IS EMPTY============ id is: ${request.session.get(SessionKeys.sessionId)}")
     }
 
     val f = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
-    println(s"============================== in implict hc uathfor/tavc. session id is  ${f.sessionId}    ==========================")
+    //println(s"============================== in implict hc uathfor/tavc. session id is  ${f.sessionId}    ==========================")
     f
   }
 

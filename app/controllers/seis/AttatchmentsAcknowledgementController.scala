@@ -58,7 +58,7 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
 
   //noinspection ScalaStyle
   val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    AuthorisedAndEnrolled.async ({ implicit user => implicit request =>
       (for {
       // minimum required fields to continue
         natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
@@ -85,13 +85,13 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
           InternalServerError(internalServerErrorTemplate)
         }
       }
-    }
+    }, None)
   }
 
   def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+    AuthorisedAndEnrolled.apply ({ implicit user => implicit request =>
       Redirect(feedback.routes.FeedbackController.show().url)
-    }
+    },None)
   }
 
   private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {
