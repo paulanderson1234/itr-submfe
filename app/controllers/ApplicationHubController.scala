@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
@@ -33,7 +33,6 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.supportingDocuments.SupportingDocumentsUpload
 import play.api.mvc.{AnyContent, Action}
 
 import scala.concurrent.Future

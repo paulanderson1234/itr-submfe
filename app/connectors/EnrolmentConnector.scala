@@ -54,12 +54,10 @@ trait EnrolmentConnector extends ServicesConfig {
     }
   }
 
-  def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier) = {
-    println(s"============================== Enrolment Connector: validate token: Tokenid is  ${tokenId.getOrElse("NO TOKEN ID")}    ==========================")
+  def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
     TokenService.validateTemporaryToken(tokenId)(hc)
   }
 }
-
 
 
 object EnrolmentConnector extends EnrolmentConnector {

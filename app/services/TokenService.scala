@@ -42,12 +42,10 @@ trait TokenService {
     tokenConnector.generateTemporaryToken.map {
       response => response.json.validate[TokenModel] match {
         case data: JsSuccess[TokenModel] =>
-          //keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
           data.value._id
         case e: JsError =>
           val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
           Logger.warn(errorMessage)
-          //HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
           noToken
       }
     }.recover {
@@ -59,42 +57,25 @@ trait TokenService {
     }
   }
 
-
-  //  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
-  //    tokenConnector.generateTemporaryToken.map {
-  //      response => response.json.validate[TokenModel] match {
-  //        case data: JsSuccess[TokenModel] =>
-  //          keystoreConnector.saveFormData[TokenModel](KeystoreKeys.throttlingToken, data.value)
-  //          HttpResponse(OK)
-  //        case e: JsError =>
-  //          val errorMessage = s"[TokenService][generateTemporaryToken] - Failed to parse JSON response. Errors=${e.errors}"
-  //          Logger.warn(errorMessage)
-  //          HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage)))
-  //      }
-  //    }.recover {
-  //      case _ => {
-  //        val errorMessage = s"[TokenService][generateTemporaryToken] - No temporary token response retrieved"
-  //        Logger.warn(errorMessage)
-  //        HttpResponse(INTERNAL_SERVER_ERROR, Some(Json.toJson(errorMessage))
-  //        )
-  //      }
-  //    }
-  //  }
-
   def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
 
     def hasValidToken(token: Option[String]): Future[Boolean] = {
       tokenConnector.validateTemporaryToken(tokenId).map {
         case Some(validationResult) if validationResult => {
+
+          // if we have a valid token we can assume the throttle check was passed abd restore it in the new session created by auth
+          // This will prevent user form wastijg tokens if subscription  ot completed
           keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
           true
         }
         case _ =>
-          keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+          // if the token is missing or invalid we won't assume there is no valid throttle check and reset it.
+          // if there is a valid throttle check in session we should not emove it as it will expire at end of session in any case
+          // we don't want the user to waste tokens if it can be avoided.
           false
       }.recover {
         case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
-          keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+          // do not clear throttle check - see above
           false
       }
     }
@@ -103,7 +84,7 @@ trait TokenService {
       validated <- hasValidToken(tokenId)
     } yield validated).recover {
       case _ => {
-        keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, false)
+        // do not clear throttle check
         Logger.warn(s"[TokenService][validateTemporaryToken] - Call to validate token failed")
       }
         false

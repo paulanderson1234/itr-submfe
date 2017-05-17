@@ -17,11 +17,9 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
-import models.throttling.TokenModel
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
-
 
 object TokenConnector extends TokenConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -39,11 +37,9 @@ trait TokenConnector {
   def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     tokenId match {
       case Some(token) => {
-        println(s"========================================validating token connector  save id: ${token}         ===========================================")
-        http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${token}")
+        http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/$token")
       }
       case None => {
-        println("==================================== NO TOKEN IN SEESION TO VALIDATE R- RETURNIBNG FALSE===========================")
         Future.successful(Some(false))
       }
     }

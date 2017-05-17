@@ -79,8 +79,6 @@ class ApplicationHubControllerSpec extends BaseSpec{
       thenReturn(Future.successful(None))
   }
 
-
-
   val cacheMap: CacheMap = CacheMap("", Map("" -> Json.toJson(true)))
 
 
@@ -142,6 +140,53 @@ class ApplicationHubControllerSpec extends BaseSpec{
       setupMocksNotAvailable()
       mockEnrolledRequest(eisSchemeTypesModel)
       showWithSessionAndAuth(TestControllerCombined.show(None))(
+        result => {
+          status(result) shouldBe INTERNAL_SERVER_ERROR
+        }
+      )
+    }
+  }
+
+  "Sending a GET request to ApplicationHubController when authenticated and enrolled with token passes" should {
+    "return a 200 when true is fetched from keystore" in {
+      setupMocks(Some(true))
+      mockEnrolledRequest()
+      showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+        result => {
+          status(result) shouldBe OK
+          contentAsString(result) contains ApplicationHubExisting
+        }
+      )
+    }
+
+    "return a 200 when false is fetched from keystore with token passed" in {
+      setupMocks(Some(false))
+      mockEnrolledRequest(eisSchemeTypesModel)
+      showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+        result => {
+          status(result) shouldBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          contentAsString(result) contains ApplicationHubNew
+        }
+      )
+    }
+
+    "return a 200 when nothing is fetched from keystore with token passed" in {
+      setupMocks(None)
+      mockEnrolledRequest(eisSchemeTypesModel)
+      showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+        result => {
+          status(result) shouldBe OK
+          val document = Jsoup.parse(contentAsString(result))
+          contentAsString(result) contains ApplicationHubNew
+        }
+      )
+    }
+
+    "return a 500 when an ApplicationHubModel cannot be composed with token passed" in {
+      setupMocksNotAvailable()
+      mockEnrolledRequest(eisSchemeTypesModel)
+      showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
         result => {
           status(result) shouldBe INTERNAL_SERVER_ERROR
         }

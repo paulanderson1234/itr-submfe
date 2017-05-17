@@ -31,7 +31,7 @@ import forms.throttlingGuidance.AcquiredTradeEligibilityForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
-trait AcquiredTradeEligibilityController extends FrontendController with ValidActiveSession{
+trait AcquiredTradeEligibilityController extends FrontendController with ValidActiveSession {
 
   val keystoreConnector: KeystoreConnector
   val tokenService: TokenService
@@ -44,58 +44,50 @@ trait AcquiredTradeEligibilityController extends FrontendController with ValidAc
       }
     }
 
-    keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed) flatMap  {
-      throttleCheckPassed => if (throttleCheckPassed.getOrElse(false))
-                                 routeRequest
-                             else Future.successful(Redirect(controllers.throttlingGuidance.routes.OurServiceChangeController.show()))
+    keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed) flatMap {
+      throttleCheckPassed => if (throttleCheckPassed.getOrElse(false)) routeRequest
+      else Future.successful(Redirect(controllers.throttlingGuidance.routes.OurServiceChangeController.show()))
     }
   }
 
+  val submit: Action[AnyContent] = {
+    ValidateSession.async { implicit request =>
 
-
-  val submit: Action[AnyContent] =  { ValidateSession.async { implicit request =>
-
-    def routeRequest: Future[Result] = {
-
-      def routeReq(isAgentModel: Option[IsAgentModel], isGroupOrSubModel: Option[GroupsAndSubsEligibilityModel]): Future[Result] = {
-        if((isAgentModel.isDefined && isAgentModel.get.isAgent == Constants.StandardRadioButtonNoValue)&&
-          (isGroupOrSubModel.isDefined && isGroupOrSubModel.get.isGroupOrSub == Constants.StandardRadioButtonNoValue)){
-          tokenService.generateTemporaryToken map {
-            tokenId =>  {
-              println(s"=============== generated token id is: $tokenId")
+      def routeRequest: Future[Result] = {
+        def routeReq(isAgentModel: Option[IsAgentModel], isGroupOrSubModel: Option[GroupsAndSubsEligibilityModel]): Future[Result] = {
+          if (isAgentModel.isDefined && isAgentModel.get.isAgent == Constants.StandardRadioButtonNoValue &&
+            (isGroupOrSubModel.isDefined && isGroupOrSubModel.get.isGroupOrSub == Constants.StandardRadioButtonNoValue)) tokenService.generateTemporaryToken map {
+            tokenId => {
               if (tokenId.nonEmpty) Redirect(controllers.routes.ApplicationHubController.show(Some(tokenId)))
               else InternalServerError(internalServerErrorTemplate)
             }
+          } else {
+            Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
           }
-       }else{
-          Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
         }
+
+        for {
+          isAgent <- keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility)
+          isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
+          route <- routeReq(isAgent, isGroupOrSub)
+        } yield route
       }
 
-      for {
-        isAgent <- keystoreConnector.fetchAndGetFormData[IsAgentModel](KeystoreKeys.isAgentEligibility)
-        isGroupOrSub <- keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](KeystoreKeys.groupsAndSubsEligibility)
-        route <- routeReq(isAgent,isGroupOrSub)
-      } yield route
+      acquiredTradeEligibilityForm.bindFromRequest().fold(
+        formWithErrors => {
+          Future.successful(BadRequest(AcquiredTradeEligibility(formWithErrors)))
+        },
+        validFormData => {
+          keystoreConnector.saveFormData(KeystoreKeys.acquiredTradeEligibility, validFormData)
+          validFormData.acquiredTrade match {
+            case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.
+              IsAcquiredTradeErrorController.show()))
+            case Constants.StandardRadioButtonNoValue => routeRequest
+          }
+        }
+      )
     }
-
-    acquiredTradeEligibilityForm.bindFromRequest().fold(
-      formWithErrors => {
-        Future.successful(BadRequest(AcquiredTradeEligibility(formWithErrors)))
-      },
-      validFormData => {
-        keystoreConnector.saveFormData(KeystoreKeys.acquiredTradeEligibility, validFormData)
-        validFormData.acquiredTrade match {
-          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(controllers.throttlingGuidance.routes.
-            IsAcquiredTradeErrorController.show()))
-          case Constants.StandardRadioButtonNoValue => routeRequest
-        }
-      }
-    )
   }
-  }
-
-
 
 }
 

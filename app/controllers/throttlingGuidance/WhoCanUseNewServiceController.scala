@@ -25,14 +25,14 @@ import scala.concurrent.Future
 
 object WhoCanUseNewServiceController extends WhoCanUseNewServiceController
 
-  trait WhoCanUseNewServiceController extends FrontendController  {
+  trait WhoCanUseNewServiceController extends FrontendController {
 
-    val show = Action.async{
-      implicit request =>Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
+    val show = Action.async {
+      implicit request => Future.successful(Ok(views.html.throttlingGuidance.WhoCanUseNewService()))
     }
 
-    val submit = Action.async{
+    val submit = Action.async {
       implicit request =>
         Future.successful(Redirect(controllers.throttlingGuidance.routes.StartGuidanceController.start()))
     }
-}
+  }

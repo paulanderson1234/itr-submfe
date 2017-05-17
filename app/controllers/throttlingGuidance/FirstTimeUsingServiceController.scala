@@ -40,10 +40,10 @@ object FirstTimeUsingServiceController extends FirstTimeUsingServiceController{
 
 trait FirstTimeUsingServiceController extends FrontendController with ValidActiveSession {
 
-  val keystoreConnector : KeystoreConnector
+  val keystoreConnector: KeystoreConnector
   val throttleService: ThrottleService
   val tokenService: TokenService
-  val applicationConfig : AppConfig
+  val applicationConfig: AppConfig
 
   val show = ValidateSession.async { implicit request =>
     keystoreConnector.fetchAndGetFormData[FirstTimeUsingServiceModel](KeystoreKeys.isFirstTimeUsingService).map {
@@ -61,16 +61,13 @@ trait FirstTimeUsingServiceController extends FrontendController with ValidActiv
         validFormData => {
           keystoreConnector.saveFormData(KeystoreKeys.isFirstTimeUsingService, validFormData)
           validFormData.isFirstTimeUsingService match {
-            case Constants.StandardRadioButtonYesValue => {
+            case Constants.StandardRadioButtonYesValue =>
               throttleService.checkUserAccess.flatMap {
-                case true => {
+                case true =>
                   Future.successful(Redirect(controllers.throttlingGuidance.routes.IsAgentController.show()))
-                }
-                case false => {
+                case false =>
                   Future.successful(Redirect(controllers.throttlingGuidance.routes.UserLimitReachedController.show()))
-                }
               }
-            }
             case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(controllers.routes.ApplicationHubController.show()))
           }
         }

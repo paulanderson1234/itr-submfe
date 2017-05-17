@@ -21,12 +21,11 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
+import uk.gov.hmrc.play.http.HeaderCarrier
 import controllers.throttlingGuidance.routes
 
 import scala.concurrent.Future
 import connectors.{EnrolmentConnector, S4LConnector}
-import services.TokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -44,12 +43,10 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = TAVCUser => AsyncPlayRequest
 
-  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
+  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector, acceptedFlows, authConnector)
 
   class AuthorisedAndEnrolled {
-    def async(action: AsyncUserRequest, tokenId:Option[String] = None): Action[AnyContent] = {
-      println(s"=================IN ASYNC" )
-
+    def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
 
       val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
         applicationConfig.ggSignInUrl)
@@ -61,37 +58,29 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
       object TAVCRegime extends TAVCRegime
 
-
-      println(s"======================== TokenSessionID: ${tokenId.fold("None")(_.self)}    ============================================")
-
-
       AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
         authContext: AuthContext => implicit request =>
-
-          println("======================== AuthorisedFor TokenId :===================")
-          //println(s"${request.session.get(SessionKeys.sessionId)}")
-          println(s"token id is $tokenId")
           enrolledCheck {
-          case Enrolled => getInternalId(authContext).flatMap{internalId =>
-            action(TAVCUser(authContext,internalId))(request)
-          }
-          case NotEnrolled => {
-            enrolmentConnector.validateToken(tokenId)(hc).flatMap {
-              case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
-              case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+            case Enrolled => getInternalId(authContext).flatMap { internalId =>
+              action(TAVCUser(authContext, internalId))(request)
+            }
+            case NotEnrolled => {
+              enrolmentConnector.validateToken(tokenId)(hc).flatMap {
+                case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
+                case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+              }
             }
           }
-        }
       }
     }
 
-    def apply(action: UserRequest, tokenSessionId:Option[String]): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)),tokenSessionId)
+    def apply(action: UserRequest, tokenSessionId: Option[String]):
+    Action[AnyContent] = async(user => request => Future.successful(action(user)(request)), tokenSessionId)
   }
 
   object AuthorisedAndEnrolled extends AuthorisedAndEnrolled
 
-  def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] =
-  {
+  def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] = {
     for {
       userIds <- authConnector.getIds[UserIDs](authContext)
     } yield userIds.internalId
@@ -118,17 +107,6 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
     case _ => NotEnrolled
   }
 
-  implicit private def hc(implicit request: Request[_]): HeaderCarrier = {
-
-    if (request.session.get(SessionKeys.sessionId).isEmpty) {
-      //println("==================================SESSION ID IS EMPTY===================================")
-    } else {
-      //println(s"==================================SESSION NOT IS EMPTY============ id is: ${request.session.get(SessionKeys.sessionId)}")
-    }
-
-    val f = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
-    //println(s"============================== in implict hc uathfor/tavc. session id is  ${f.sessionId}    ==========================")
-    f
-  }
+  implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
 }
