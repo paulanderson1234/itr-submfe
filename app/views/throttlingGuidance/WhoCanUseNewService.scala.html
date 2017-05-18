@@ -5,7 +5,7 @@
 
 @main_template(title = Messages("page.throttlingGuidance.whoCanUseNewService.title"), mainClass=Some("full-width"), userLoggedIn = false) {
 
-<div class="content-inner slides slide-medium">
+<div class="slides slide-medium">
 
     <div class="grid-row">
         <div class="column-two-thirds-slides">
@@ -22,14 +22,15 @@
                 <span id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
                     <a href="@Constants.guidanceRedirectUrl" class="link-style" id="change-answers">
                         @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a></span>
+
+                @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
+
+                <div class="actions">
+                    <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
+                </div>
             </div>
 
 
-            @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
-
-            <div class="actions">
-                <button class="btn button" type="submit" id="next">@Messages("common.button.continue")</button>
-            </div>
 
             }
         </div>
