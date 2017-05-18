@@ -223,21 +223,6 @@ related ul {
   padding: 30px;
 }
 
-@media (min-width: 641px) {
-  .slides {
-    margin-top: 30px;
-  }
-}
-@media (min-width: 641px) {
-  .slides {
-    padding: 45px;
-  }
-}
-@media (min-width: 769px) {
-  .slides {
-    padding: 75px 70px;
-  }
-}
 .slides h1 {
   font-family: "nta", Arial, sans-serif;
   font-size: 24px;
@@ -291,18 +276,7 @@ related ul {
   font-size-adjust: 0.525;
   margin-bottom: 30px;
 }
-@media (min-width: 641px) {
-  .slides h3 {
-    font-size: 24px;
-    line-height: 1.25;
-  }
-}
-@media (max-width: 640px) {
-  .slides h3 {
-    margin-top: 15px;
-    margin-bottom: 15px;
-  }
-}
+
 .slides p,
 .slides ul {
   font-family: "nta", Arial, sans-serif;
@@ -345,18 +319,6 @@ related ul {
 .slides figure img {
   width: 100%;
 }
-@media (max-width: 640px) {
-  .slides figure {
-    width: 40%;
-  }
-}
-
-@media (min-width: 641px){
-.column-two-thirds-slides {
-    float: left;
-    width: 66.6666666667%;
- }
-}
 
 .slides details summary {
   color: #fff;
@@ -374,16 +336,7 @@ related ul {
   border: solid #005ea5 10px;
   padding: 20px;
 }
-@media (min-width: 641px) {
-  .slides.slides-2 {
-    padding: 35px;
-  }
-}
-@media (min-width: 769px) {
-  .slides.slides-2 {
-    padding: 65px 60px;
-  }
-}
+
 .slides.slides-2 .actions .button {
   background: #005ea5;
   color: #fff;
@@ -397,7 +350,7 @@ related ul {
 
 .slide-medium
 {
-    height:35em;
+    height:100%;
 }
 
 .slide-medium-large
