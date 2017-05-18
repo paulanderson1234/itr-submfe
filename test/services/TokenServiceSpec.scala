@@ -22,10 +22,10 @@ import models.throttling.TokenModel
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
-import play.api.libs.json.{Json, JsString, JsObject}
+import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.Mockito._
 import play.api.test.Helpers._
@@ -34,6 +34,8 @@ import scala.concurrent.Future
 
 
 class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
+
+  val tokenId = "TOK123456789"
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
@@ -50,24 +52,21 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     override val keystoreConnector: KeystoreConnector = mock[KeystoreConnector]
   }
 
-  def mockGenerateTokenFunction(res: Future[HttpResponse], hasThrottlePassed:Option[Boolean]): Future[HttpResponse] = {
+  def mockGenerateTokenFunction(res: Future[HttpResponse]): String = {
     when(TestTokenService.tokenConnector.generateTemporaryToken(Matchers.any())).thenReturn(res)
 
-    lazy val result = TestTokenService.generateTemporaryToken
+    lazy val result = TestTokenService.generateTemporaryToken(hc)
     await(result)
   }
 
-  def mockValidateTokenFunction(tokenModel: Option[TokenModel], validated: Option[Boolean], hasThrottlePassed:Option[Boolean]): Boolean = {
-    when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
-    (Matchers.any(),Matchers.any())).thenReturn(tokenModel)
+  def mockValidateTokenFunction( validated: Option[Boolean], tokenIdentifier: Option[String]): Boolean = {
 
     when(TestTokenService.keystoreConnector.saveFormData(Matchers.eq(KeystoreKeys.throttleCheckPassed), Matchers.any())
     (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(CacheMap("", Map())))
 
-
     when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(validated)
-    lazy val result = TestTokenService.validateTemporaryToken
+    lazy val result = TestTokenService.validateTemporaryToken(tokenIdentifier)
     await(result)
   }
 
@@ -81,42 +80,68 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   }
 
   "generateTemporaryToken" should {
-    "return a OK response if the call to the connector returns a valid TokenModel" in {
-      val response = mockGenerateTokenFunction(generateTokenSucResponse, None)
-      response.status shouldBe OK
+    "return a the tokenId if the call to the connector returns a valid TokenModel" in {
+      val response = mockGenerateTokenFunction(generateTokenSucResponse)
+      response shouldBe tokenId
     }
-    "return INTERNAL SERVER ERROR if the call to the connector returns an invalid TokenModel" in {
-      val response = mockGenerateTokenFunction(generateTokenInvalidResponse, None)
-      response.status shouldBe INTERNAL_SERVER_ERROR
+    "return an empty string if the call to the connector returns an invalid TokenModel" in {
+      val response = mockGenerateTokenFunction(generateTokenInvalidResponse)
+      response shouldBe ""
     }
-    "return INTERNAL SERVER ERROR if the call to then connector returns a non 200 response code" in {
-      val response = mockGenerateTokenFunction(generateTokenFailResponse, None)
-      response.status shouldBe INTERNAL_SERVER_ERROR
+    "return an empty string if the call to then connector returns a non 200 response code" in {
+      val response = mockGenerateTokenFunction(generateTokenFailResponse)
+      response shouldBe ""
     }
   }
 
   "validateTemporaryToken" should {
-    "return true if a token can be fetched from s4later and the call to validate returns Some(true)" in {
-      val response = mockValidateTokenFunction(Some(tokenModel),Some(true), None)
+    "return true if the call to validate returns true" in {
+      val response = mockValidateTokenFunction(Some(true), None)
       response shouldBe true
     }
-    "return false if a token can be fetched from s4later and the call to validate returns Some(false)" in {
-      val response = mockValidateTokenFunction(Some(tokenModel),Some(false), None)
+    "return false if the call to validate returns false" in {
+      val response = mockValidateTokenFunction(Some(false), None)
       response shouldBe false
     }
-    "return false if a token can be fetched from s4later and the call to validate returns None" in {
-      val response = mockValidateTokenFunction(Some(tokenModel),None, None)
+    "return false if the call to validate returns None" in {
+      val response = mockValidateTokenFunction(None, None)
       response shouldBe false
     }
-    "return false if a token cannot be fetched from s4later" in {
-      val response = mockValidateTokenFunction(None,None, None)
+    "return false if a token cannot be validated as not passed" in {
+      val response = mockValidateTokenFunction(None, None)
       response shouldBe false
     }
     "return false if an exception occurs down stream" in {
       when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
         (Matchers.any(),Matchers.any())).thenReturn(Some(tokenModel))
       when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(generateTokenFailResponse)
-      lazy val result = TestTokenService.validateTemporaryToken
+      lazy val result = TestTokenService.validateTemporaryToken(None)
+      await(result) shouldBe false
+    }
+  }
+
+  "validateTemporaryToken" should {
+    "return true if a token is passedand  call to validate returns Some(true)" in {
+      val response = mockValidateTokenFunction(Some(true), Some(tokenId))
+      response shouldBe true
+    }
+    "return false if a token is passed and the call to validate returns Some(false)" in {
+      val response = mockValidateTokenFunction(Some(false), Some(tokenId))
+      response shouldBe false
+    }
+    "return false if a token is passed and the call to validate returns None" in {
+      val response = mockValidateTokenFunction(None, Some(tokenId))
+      response shouldBe false
+    }
+    "return false if a token is passed and cannot be validated" in {
+      val response = mockValidateTokenFunction(None, Some(tokenId))
+      response shouldBe false
+    }
+    "return false if an exception occurs down stream when token passed" in {
+      when(TestTokenService.keystoreConnector.fetchAndGetFormData[TokenModel](Matchers.eq(KeystoreKeys.throttlingToken))
+        (Matchers.any(),Matchers.any())).thenReturn(Some(tokenModel))
+      when(TestTokenService.tokenConnector.validateTemporaryToken(Matchers.any())(Matchers.any())).thenReturn(generateTokenFailResponse)
+      lazy val result = TestTokenService.validateTemporaryToken(Some(tokenId))
       await(result) shouldBe false
     }
   }

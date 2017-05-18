@@ -17,11 +17,9 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
-import models.throttling.TokenModel
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
-
 
 object TokenConnector extends TokenConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -36,10 +34,14 @@ trait TokenConnector {
     http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/token/generate-temporary-token")
 }
 
-  def validateTemporaryToken(token: Option[TokenModel])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    token match {
-      case Some(tok) => http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/${tok._id}")
-      case None => Future.successful(Some(false))
+  def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+    tokenId match {
+      case Some(token) => {
+        http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/$token")
+      }
+      case None => {
+        Future.successful(Some(false))
+      }
     }
   }
 }

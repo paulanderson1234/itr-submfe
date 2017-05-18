@@ -73,6 +73,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   implicit val hc = HeaderCarrier()
 
+  val tokenId = "12334567"
 
   val applicationHubModelMax = ApplicationHubModel("Company ltd", AddressModel("1 ABCDE Street","FGHIJ Town", Some("FGHIJKL Town"),Some("MNO County"),
     Some("tf4 2ls"),"GB"), ContactDetailsModel("Firstname","Lastname",Some("0123324234234"),Some("4567324234324"),"test@test.com"))

@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser}
+import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
@@ -33,7 +33,7 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import views.html.supportingDocuments.SupportingDocumentsUpload
+import play.api.mvc.{AnyContent, Action}
 
 import scala.concurrent.Future
 
@@ -54,15 +54,15 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
 
-  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  def show(tokenId:Option[String]):Action[AnyContent] = AuthorisedAndEnrolled.async ( { implicit user => implicit request =>
 
     def routeRequest(applicationHubModel: Option[ApplicationHubModel]): Future[Result] = {
       if (applicationHubModel.nonEmpty) {
 
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
           case Some(true) => Ok(ApplicationHub(applicationHubModel.get,
-            ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)(ControllerHelpers.routeToScheme),
-              ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))))
+            ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)
+            (ControllerHelpers.routeToScheme),ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))))
           case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew()))
         }
       }
@@ -90,7 +90,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
         InternalServerError(internalServerErrorTemplate)
       }
     }
-  }
+  },tokenId)
 
   val newApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(controllers.hubGuidance.routes.WhoCanUseNewServiceController.show()))

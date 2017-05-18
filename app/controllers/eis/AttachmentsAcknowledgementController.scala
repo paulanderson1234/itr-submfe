@@ -92,9 +92,9 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
     }
   }
 
-  def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply { implicit user => implicit request =>
+  def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply ({ implicit user => implicit request =>
     Redirect(controllers.feedback.routes.FeedbackController.show().url)
-  }
+  },None)
 
   //noinspection ScalaStyle
   //TODO:

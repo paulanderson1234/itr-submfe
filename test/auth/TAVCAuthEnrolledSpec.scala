@@ -75,12 +75,23 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
     }
   }
 
-  "Calling authenticated async action with no login session" should {
+  "Calling authenticated async action with no login session with no tokenId" should {
     "result in a redirect to login" in {
 
       val result = AuthEnrolledTestController.authorisedAsyncAction(fakeRequest)
       status(result) shouldBe Status.SEE_OTHER
-      redirectLocation(result) shouldBe Some(s"/gg/sign-in?continue=${URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+      //redirectLocation(result) shouldBe Some(s"/gg/sign-in?continue=${URLEncoder.encode(MockConfig.introductionUrl)}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+      redirectLocation(result) shouldBe Some(s"/gg/sign-in?continue=${URLEncoder.encode(MockConfig.introductionUrl+"?tokenId=")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+    }
+  }
+
+  "Calling authenticated async action with no login session and a tokenId" should {
+    "result in a redirect to login" in {
+      val result = AuthEnrolledTestController.authorisedAsyncTokenAction(fakeRequest)
+      status(result) shouldBe Status.SEE_OTHER
+      //redirectLocation(result) shouldBe Some(s"/gg/sign-in?continue=${URLEncoder.encode(MockConfig.introductionUrl+"?tokenId=Some(123456789)")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+      redirectLocation(result) shouldBe Some(s"/gg/sign-in?continue=${URLEncoder.encode(MockConfig.introductionUrl+"?tokenId=123456789")}&origin=investment-tax-relief-submission-frontend&accountType=organisation")
+
     }
   }
 
@@ -91,23 +102,37 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/")
     }
   }
 
-  "Calling authenticated async action with a default GG login session with no TAVC enrolment" should {
+  "Calling authenticated async action with a default GG login session with no TAVC enrolment  and no tokenId passed" should {
     "result in a redirect to subscription  if there is not a vaild throttle token" in {
       implicit val hc = HeaderCarrier()
       when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(None))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(false))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      redirectLocation(result) shouldBe Some(routes.OurServiceChangeController.show().url)
+    }
+  }
+
+  "Calling authenticated async action with a default GG login session with no TAVC enrolment with a tokenId that has expired" should {
+    "result in a redirect to subscription  if there is not a vaild throttle token" in {
+      implicit val hc = HeaderCarrier()
+      when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(None))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(false))
+      val result = AuthEnrolledTestController.authorisedAsyncTokenAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       redirectLocation(result) shouldBe Some(routes.OurServiceChangeController.show().url)
     }
   }
@@ -120,13 +145,28 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
-        .thenReturn(Future.successful(true))
+
+      // should not need to mock validate token as already enrolled
 
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       status(result) shouldBe Status.OK
     }
   }
+
+  "Calling authenticated async action with a GG login session with a HMRC-TAVC-ORG enrolment passing aokenId" should {
+  "result in a status OK" in {
+    implicit val hc = HeaderCarrier()
+    val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+    when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+    when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+      .thenReturn(Future.successful(Option(enrolledUser)))
+    // should not need to mock validate token as already enrolled
+
+    val result = AuthEnrolledTestController.authorisedAsyncTokenAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+    status(result) shouldBe Status.OK
+  }
+}
 
 
   "Calling authenticated getTavCReferenceNumber when it is not found on the enrolement" should {
@@ -143,7 +183,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
     "return the TavcReference" in {
       implicit val hc = HeaderCarrier()
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(AuthEnrolledTestController.enrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
@@ -168,7 +208,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(eisSchemeTypesModel))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -185,7 +225,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(AuthEnrolledTestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(AuthEnrolledTestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
@@ -209,12 +249,37 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Option(enrolledUser)))
       val result = TestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
+      status(result) shouldBe Status.SEE_OTHER
+      redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+    }
+  }
+
+  "Calling authenticated async action with valid not expired token and no schemeTypesModel is returned and controller only accepts specific schemes" should {
+    "redirect to the application hub page" in {
+      implicit val hc = HeaderCarrier()
+      object TestController extends AuthEnrolledTestController with MockitoSugar {
+        override lazy val applicationConfig = mockConfig
+        override lazy val authConnector = mockAuthConnector
+        override lazy val enrolmentConnector = mock[EnrolmentConnector]
+        override lazy val s4lConnector = mock[S4LConnector]
+        override lazy val acceptedFlows = Seq(Seq(EIS))
+      }
+      val enrolledUser = Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated")
+      when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+        (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(true))
+
+      when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Option(enrolledUser)))
+      val result = TestController.authorisedAsyncTokenAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
       status(result) shouldBe Status.SEE_OTHER
       redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
     }
@@ -234,7 +299,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(TestController.s4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(seisSchemeTypesModel))
 
-      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any()))
+      when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
 
       when(TestController.enrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))

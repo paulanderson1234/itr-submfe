@@ -26,7 +26,6 @@ import controllers.throttlingGuidance.routes
 
 import scala.concurrent.Future
 import connectors.{EnrolmentConnector, S4LConnector}
-import services.TokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -44,32 +43,44 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   private type AsyncPlayRequest = Request[AnyContent] => Future[Result]
   private type AsyncUserRequest = TAVCUser => AsyncPlayRequest
 
-  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector,acceptedFlows, authConnector)
+  private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector, acceptedFlows, authConnector)
 
-  class AuthorisedAndEnrolled(regime: TaxRegime) {
-    def async(action: AsyncUserRequest): Action[AnyContent] = {
-      AuthorisedFor(regime, pageVisibilityPredicate).async {
-        authContext: AuthContext => implicit request => enrolledCheck {
-          case Enrolled => getInternalId(authContext).flatMap{internalId =>
-            action(TAVCUser(authContext,internalId))(request)
-          }
-          case NotEnrolled => {
-            enrolmentConnector.validateToken(hc).flatMap {
-              case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
-              case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+  class AuthorisedAndEnrolled {
+    def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
+
+      val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
+        applicationConfig.ggSignInUrl)
+
+      trait TAVCRegime extends TaxRegime {
+        override def isAuthorised(accounts: Accounts): Boolean = true
+        override def authenticationType: AuthenticationProvider = tavcAuthProvider
+      }
+
+      object TAVCRegime extends TAVCRegime
+
+      AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
+        authContext: AuthContext => implicit request =>
+          enrolledCheck {
+            case Enrolled => getInternalId(authContext).flatMap { internalId =>
+              action(TAVCUser(authContext, internalId))(request)
+            }
+            case NotEnrolled => {
+              enrolmentConnector.validateToken(tokenId)(hc).flatMap {
+                case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
+                case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+              }
             }
           }
-        }
       }
     }
 
-    def apply(action: UserRequest): Action[AnyContent] = async(user => request => Future.successful(action(user)(request)))
+    def apply(action: UserRequest, tokenSessionId: Option[String]):
+    Action[AnyContent] = async(user => request => Future.successful(action(user)(request)), tokenSessionId)
   }
 
-  object AuthorisedAndEnrolled extends AuthorisedAndEnrolled(TAVCRegime)
+  object AuthorisedAndEnrolled extends AuthorisedAndEnrolled
 
-  def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] =
-  {
+  def getInternalId(authContext: AuthContext)(implicit hc: HeaderCarrier): Future[String] = {
     for {
       userIds <- authConnector.getIds[UserIDs](authContext)
     } yield userIds.internalId
@@ -98,12 +109,4 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
 
-  val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl, applicationConfig.ggSignInUrl)
-
-  trait TAVCRegime extends TaxRegime {
-    override def isAuthorised(accounts: Accounts): Boolean = true
-    override def authenticationType: AuthenticationProvider = tavcAuthProvider
-  }
-
-  object TAVCRegime extends TAVCRegime
 }

@@ -37,8 +37,8 @@ import scala.concurrent.Future
 class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
-  val token = "TOK123456789"
-  val tokenModel = TokenModel(token)
+
+  val tokenId = "123456789"
 
 
   val successResponse = HttpResponse(Status.OK, responseJson = Some(Json.parse(
@@ -66,7 +66,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   def setupMockedValidateTempTokenResponse(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestTokenConnector.http.GET[Option[Boolean]](
-      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/validate-temporary-token/$token"))
+      Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/validate-temporary-token/$tokenId"))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
@@ -114,7 +114,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
     "expecting a successful response" should {
 
       "return a Some(true) response" in {
-        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenId))
         setupMockedValidateTempTokenResponse(Some(true))
         await(result) match {
           case response => {
@@ -125,7 +125,7 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
       }
 
       "return a Some(false) response" in {
-        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenModel))
+        lazy val result = TestTokenConnector.validateTemporaryToken(Some(tokenId))
         setupMockedValidateTempTokenResponse(Some(false))
         await(result) match {
           case response => {

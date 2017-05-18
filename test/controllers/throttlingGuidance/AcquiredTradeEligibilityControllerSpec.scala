@@ -46,15 +46,15 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
 
   }
 
-  def setupSubmissionMocks(isAgent: Option[IsAgentModel], isGroup: Option[GroupsAndSubsEligibilityModel] = None, response:
-  HttpResponse): Unit = {
+  def setupSubmissionMocks(isAgent: Option[IsAgentModel], isGroup: Option[GroupsAndSubsEligibilityModel] = None, tok:
+  String): Unit = {
     when(TestController.keystoreConnector.fetchAndGetFormData[IsAgentModel](Matchers.eq(KeystoreKeys.isAgentEligibility))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(isAgent))
     when(TestController.keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](Matchers.eq(KeystoreKeys.groupsAndSubsEligibility))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(isGroup))
-    when(TestController.tokenService.generateTemporaryToken(Matchers.any())).thenReturn(Future.successful(response))
+    when(TestController.tokenService.generateTemporaryToken(Matchers.any())).thenReturn(Future.successful(tok))
 
 
   }
@@ -122,7 +122,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
   "Sending a valid No form submission to the AcquiredTradeEligibilityController" should {
     val formInput = "acquiredTrade" -> Constants.StandardRadioButtonNoValue
     "redirect to the first eligibility page when there is no agent or groups eligibility answers found in keystore" in {
-      setupSubmissionMocks(None, None, HttpResponse(OK))
+      setupSubmissionMocks(None, None, tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -131,7 +131,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the first eligibility page when there is no agent eligibility answer found in keystore" in {
-      setupSubmissionMocks(None, Some(groupOrSubNo), HttpResponse(OK))
+      setupSubmissionMocks(None, Some(groupOrSubNo), tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -140,7 +140,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the first eligibility page when there is no groups eligibility answer found in keystore" in {
-      setupSubmissionMocks(Some(isAgentModelNo), None, HttpResponse(OK))
+      setupSubmissionMocks(Some(isAgentModelNo), None, tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -149,7 +149,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the first eligibility page when the answer to agent eligibility and groups and subs eligibility is 'Yes'" in {
-      setupSubmissionMocks(Some(isAgentModelYes), Some(groupOrSubYes), HttpResponse(OK))
+      setupSubmissionMocks(Some(isAgentModelYes), Some(groupOrSubYes), tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -158,7 +158,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the first eligibility page when the answer to agent eligibility is 'Yes'" in {
-      setupSubmissionMocks(Some(isAgentModelYes), Some(groupOrSubNo), HttpResponse(OK))
+      setupSubmissionMocks(Some(isAgentModelYes), Some(groupOrSubNo), tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -167,7 +167,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the first eligibility page when the answer to groups and subs eligibility is 'Yes'" in {
-      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubYes), HttpResponse(OK))
+      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubYes), tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -176,16 +176,16 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
       )
     }
     "redirect to the  hub when all eligibility checks are passed and a token is successfully generated" in {
-      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubNo), HttpResponse(OK))
+      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubNo), tokenId)
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+          redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show(Some(tokenId)).url)
         }
       )
     }
-    "redirect to the first eligibility page when there the answer to groups and subs eligibility is 'Yes'" in {
-      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubNo),HttpResponse(INTERNAL_SERVER_ERROR))
+    "Internal Server Error when the eligibility checks are passed but an empty token is generated" in {
+      setupSubmissionMocks(Some(isAgentModelNo), Some(groupOrSubNo),"")
       submitWithSessionWithoutAuth(TestController.submit, formInput)(
         result => {
           status(result) shouldBe INTERNAL_SERVER_ERROR

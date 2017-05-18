@@ -5,7 +5,7 @@ GET         /assets/*file            controllers.Assets.at(path="/public", file)
 
 #Start route
 #####################################################################################################################
-GET        /                                        controllers.ApplicationHubController.show
+GET        /                                         controllers.ApplicationHubController.show(tokenId: Option[String]?=None)
 #####################################################################################################################
 
 #Session Timeout route
@@ -25,7 +25,7 @@ POST       /select-scheme                           controllers.schemeSelection.
 GET        /sign-out                                controllers.SignOutController.signout
 GET        /signed-out                              controllers.SignOutController.show
 
-GET        /hub                                     controllers.ApplicationHubController.show
+GET        /hub                                     controllers.ApplicationHubController.show(tokenId: Option[String]?=None)
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
 
