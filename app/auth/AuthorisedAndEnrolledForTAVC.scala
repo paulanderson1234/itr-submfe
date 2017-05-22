@@ -66,14 +66,14 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
               action(TAVCUser(authContext, internalId))(request)
             }
             case NotEnrolled => {
-              enrolmentConnector.validateToken(tokenId)(hc).flatMap {
+              enrolmentConnector.validateToken(tokenId)(hc).map {
                 case validate if validate => {
                   Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3")
-                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
+                  Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}")
                 }
                 case _ => {
                   Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6")
-                  Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+                  Redirect(routes.OurServiceChangeController.show().url)
                 }
               }
             }
