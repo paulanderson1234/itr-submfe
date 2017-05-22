@@ -17,6 +17,7 @@
 package auth
 
 import auth.authModels.UserIDs
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
@@ -68,11 +69,19 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
             case NotEnrolled => {
               enrolmentConnector.validateToken(tokenId)(hc).flatMap {
                 case validate if validate => {
+
                   Logger.warn(s"Token validation PASSED for token ${tokenId.getOrElse("Unknown")}")
                   Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
                 }
                 case _ => {
                   Logger.warn(s"Token validation FAILED for token ${tokenId.getOrElse("Unknown")}")
+
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3")
+                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
+                }
+                case _ => {
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6")
+
                   Future.successful(Redirect(routes.OurServiceChangeController.show().url))
                 }
               }

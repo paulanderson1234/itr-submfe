@@ -62,13 +62,14 @@ trait TokenService {
     def hasValidToken(token: Option[String]): Future[Boolean] = {
       tokenConnector.validateTemporaryToken(tokenId).map {
         case Some(validationResult) if validationResult => {
-
+          Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL 1,2,3")
           // if we have a valid token we can assume the throttle check was passed abd restore it in the new session created by auth
           // This will prevent user form wastijg tokens if subscription  ot completed
           keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
           true
         }
         case _ =>
+          Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL 4,5,6")
           // if the token is missing or invalid we won't assume there is no valid throttle check and reset it.
           // if there is a valid throttle check in session we should not emove it as it will expire at end of session in any case
           // we don't want the user to waste tokens if it can be avoided.
