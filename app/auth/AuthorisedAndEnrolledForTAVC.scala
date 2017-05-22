@@ -26,6 +26,7 @@ import controllers.throttlingGuidance.routes
 
 import scala.concurrent.Future
 import connectors.{EnrolmentConnector, S4LConnector}
+import play.api.Logger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -66,8 +67,14 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
             }
             case NotEnrolled => {
               enrolmentConnector.validateToken(tokenId)(hc).flatMap {
-                case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
-                case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+                case validate if validate => {
+                  Logger.warn(s"Token validation PASSED for token ${tokenId.getOrElse("Unknown")}")
+                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
+                }
+                case _ => {
+                  Logger.warn(s"Token validation FAILED for token ${tokenId.getOrElse("Unknown")}")
+                  Future.successful(Redirect(routes.OurServiceChangeController.show().url))
+                }
               }
             }
           }
