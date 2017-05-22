@@ -66,7 +66,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
             }
             case NotEnrolled => {
               enrolmentConnector.validateToken(tokenId)(hc).flatMap {
-                case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl))
+                case validate if validate => Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
                 case _ => Future.successful(Redirect(routes.OurServiceChangeController.show().url))
               }
             }
