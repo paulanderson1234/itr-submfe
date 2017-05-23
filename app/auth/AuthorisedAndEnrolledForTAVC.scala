@@ -46,10 +46,16 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector, acceptedFlows, authConnector)
 
+  // only for testing remove later
+  var testSession = ""
+
   class AuthorisedAndEnrolled {
     def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
       Logger.warn(s"[AuthorisedAndEnrolledForTAVC][async] - STARTING TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
-      val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
+      // only for testing remove later
+      if(tokenId.getOrElse("") != "") testSession = tokenId.get
+
+      val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${testSession}",
         applicationConfig.ggSignInUrl)
 
       trait TAVCRegime extends TaxRegime {
@@ -61,20 +67,20 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
       AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
         Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - pageVisibilityPredicate TESTING IN DEV AND QA FAIL 1,2,3 " +
-          s"tokenId=${tokenId.getOrElse("")}")
+          s"tokenId=${testSession}")
         authContext: AuthContext => implicit request =>
           enrolledCheck {
             case Enrolled => getInternalId(authContext).flatMap { internalId =>
               action(TAVCUser(authContext, internalId))(request)
             }
             case NotEnrolled => {
-              enrolmentConnector.validateToken(tokenId)(hc).flatMap {
+              enrolmentConnector.validateToken(Some(testSession))(hc).flatMap {
                 case validate if validate => {
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
-                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${testSession}")
+                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${testSession}"))
                 }
                 case _ => {
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6 tokenId=${tokenId.getOrElse("")}")
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6 tokenId=${testSession}")
                   Future.successful(Redirect(routes.OurServiceChangeController.show().url))
                 }
               }
