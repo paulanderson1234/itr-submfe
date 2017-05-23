@@ -54,7 +54,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
       Logger.warn(s"[AuthorisedAndEnrolledForTAVC][async] - STARTING TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
       // only for testing remove later
       //if(tokenId.getOrElse("") != "") testSession = tokenId.get
-      val testSession = tokenId.get
+      val testSession = tokenId.getOrElse("")
       val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${testSession}",
         applicationConfig.ggSignInUrl)
 
