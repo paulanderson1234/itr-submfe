@@ -17,6 +17,7 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
+import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
@@ -37,9 +38,11 @@ trait TokenConnector {
   def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     tokenId match {
       case Some(token) => {
+        Logger.warn(s"[TokenConnector][validateTemporaryToken] - TESTING IN DEV AND QA FAIL 1,2,3 token = $token")
         http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/token/validate-temporary-token/$token")
       }
       case None => {
+        Logger.warn(s"[TokenConnector][validateTemporaryToken] - NONE BLOCK TESTING IN DEV AND QA FAIL 4,5,6")
         Future.successful(Some(false))
       }
     }
