@@ -47,14 +47,14 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
   private lazy val pageVisibilityPredicate = new TAVCCompositePageVisibilityPredicate(s4lConnector, acceptedFlows, authConnector)
 
   // only for testing remove later
-  var testSession = ""
+  //var testSession = ""
 
   class AuthorisedAndEnrolled {
     def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
       Logger.warn(s"[AuthorisedAndEnrolledForTAVC][async] - STARTING TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
       // only for testing remove later
-      if(tokenId.getOrElse("") != "") testSession = tokenId.get
-
+      //if(tokenId.getOrElse("") != "") testSession = tokenId.get
+      val testSession = tokenId.getOrElse("")
       val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${testSession}",
         applicationConfig.ggSignInUrl)
 
