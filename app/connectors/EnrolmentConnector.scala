@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import auth.Enrolment
 import common.Constants
+import play.api.Logger
 import services.TokenService
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -55,6 +56,7 @@ trait EnrolmentConnector extends ServicesConfig {
   }
 
   def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
+    Logger.info(s"[EnrolmentConnector][validateToken] - TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
     TokenService.validateTemporaryToken(tokenId)(hc)
   }
 }
