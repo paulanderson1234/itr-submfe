@@ -105,7 +105,7 @@ class TAVCAuthEnrolledSpec extends BaseSpec {
       when(AuthEnrolledTestController.enrolmentConnector.validateToken(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(true))
       val result = AuthEnrolledTestController.authorisedAsyncAction(authenticatedFakeRequest(AuthenticationProviderIds.GovernmentGatewayId))
-      redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/?tokenId=")
+      redirectLocation(result) shouldBe Some("/investment-tax-relief-subscription/?tokenId=123456789")
     }
   }
 
