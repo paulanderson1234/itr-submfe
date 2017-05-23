@@ -48,7 +48,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   class AuthorisedAndEnrolled {
     def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
-
+      Logger.warn(s"[AuthorisedAndEnrolledForTAVC][async] - STARTING TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
       val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
         applicationConfig.ggSignInUrl)
 
@@ -60,6 +60,8 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
       object TAVCRegime extends TAVCRegime
 
       AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
+        Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - pageVisibilityPredicate TESTING IN DEV AND QA FAIL 1,2,3 " +
+          s"tokenId=${tokenId.getOrElse("")}")
         authContext: AuthContext => implicit request =>
           enrolledCheck {
             case Enrolled => getInternalId(authContext).flatMap { internalId =>
