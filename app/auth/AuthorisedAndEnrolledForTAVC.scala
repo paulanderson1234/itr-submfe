@@ -75,13 +75,6 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
                 }
                 case _ => {
                   Logger.warn(s"Token validation FAILED for token ${tokenId.getOrElse("Unknown")}")
-
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3")
-                  Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
-                }
-                case _ => {
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6")
-
                   Future.successful(Redirect(routes.OurServiceChangeController.show().url))
                 }
               }
