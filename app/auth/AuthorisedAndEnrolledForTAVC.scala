@@ -48,7 +48,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
 
   class AuthorisedAndEnrolled {
     def async(action: AsyncUserRequest, tokenId: Option[String] = None): Action[AnyContent] = {
-
+      Logger.warn(s"[AuthorisedAndEnrolledForTAVC][async] - STARTING TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
       val tavcAuthProvider: GovernmentGatewayProvider = new GovernmentGatewayProvider(postSignInRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}",
         applicationConfig.ggSignInUrl)
 
@@ -60,6 +60,8 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
       object TAVCRegime extends TAVCRegime
 
       AuthorisedFor(TAVCRegime, pageVisibilityPredicate).async {
+        Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - pageVisibilityPredicate TESTING IN DEV AND QA FAIL 1,2,3 " +
+          s"tokenId=${tokenId.getOrElse("")}")
         authContext: AuthContext => implicit request =>
           enrolledCheck {
             case Enrolled => getInternalId(authContext).flatMap { internalId =>
@@ -68,11 +70,11 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
             case NotEnrolled => {
               enrolmentConnector.validateToken(tokenId)(hc).flatMap {
                 case validate if validate => {
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3")
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
                   Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
                 }
                 case _ => {
-                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6")
+                  Logger.warn(s"[AuthorisedAndEnrolledForTAVC][AuthorisedFor] - TESTING IN DEV AND QA FAIL 4,5,6 tokenId=${tokenId.getOrElse("")}")
                   Future.successful(Redirect(routes.OurServiceChangeController.show().url))
                 }
               }
