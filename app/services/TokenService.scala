@@ -58,27 +58,22 @@ trait TokenService {
   }
 
   def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
-    Logger.info(s"[TokenService][validateTemporaryToken] - BEFORE hasValidToken TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
+    Logger.info(s"[TokenService][validateTemporaryToken] - START tokenId=${tokenId.getOrElse("")}")
     def hasValidToken(token: Option[String]): Future[Boolean] = {
       tokenConnector.validateTemporaryToken(tokenId).map {
         case Some(validationResult) if validationResult => {
-          Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL 1,2,3 validationResult = ${validationResult}")
           // if we have a valid token we can assume the throttle check was passed abd restore it in the new session created by auth
           // This will prevent user form wastijg tokens if subscription  ot completed
           keystoreConnector.saveFormData(KeystoreKeys.throttleCheckPassed, true)
-          Logger.warn(s"[TokenService][validateTemporaryToken] - AFTER saveFormData TESTING IN DEV AND QA FAIL 1,2,3 " +
-            s"validationResult = ${validationResult}")
           true
         }
         case _ =>
-          Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL 4,5,6 ALL ELSE CASE")
           // if the token is missing or invalid we won't assume there is no valid throttle check and reset it.
           // if there is a valid throttle check in session we should not emove it as it will expire at end of session in any case
           // we don't want the user to waste tokens if it can be avoided.
           false
       }.recover {
-        case _ => Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL Call to validate token failed")
-          // do not clear throttle check - see above
+        case _ => // do not clear throttle check - see above
           false
       }
     }
@@ -86,11 +81,10 @@ trait TokenService {
     (for {
       validated <- hasValidToken(tokenId)
     } yield validated).recover {
-      case _ => {
-        // do not clear throttle check
-        Logger.warn(s"[TokenService][validateTemporaryToken] - TESTING IN DEV AND QA FAIL Call to validate token failed")
-      }
+      case _ =>
+        // do not clear throttle check - see above
         false
     }
+
   }
 }
