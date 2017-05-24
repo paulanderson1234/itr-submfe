@@ -56,7 +56,7 @@ trait EnrolmentConnector extends ServicesConfig {
   }
 
   def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
-    Logger.info(s"[EnrolmentConnector][validateToken] - TESTING IN DEV AND QA FAIL 1,2,3 tokenId=${tokenId.getOrElse("")}")
+    Logger.info(s"[EnrolmentConnector][validateToken] - START tokenId=${tokenId.getOrElse("")}")
     TokenService.validateTemporaryToken(tokenId)(hc)
   }
 }
