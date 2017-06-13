@@ -59,13 +59,13 @@ class ApplicationHubControllerSpec extends BaseSpec{
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
 
 
-  def setupMocks(bool: Option[Boolean]): Unit = {
+  def setupMocks(applicationIsInProgress: Option[Boolean]): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
     when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
       thenReturn(Future.successful(Some(contactDetailsModel)))
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
-      .thenReturn(Future.successful(bool))
+      .thenReturn(Future.successful(applicationIsInProgress))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
@@ -209,13 +209,13 @@ class ApplicationHubControllerSpec extends BaseSpec{
   }
 
   "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
-    "redirect to itself and delete the application currently in progress" in {
+    "redirect to the delete confirmation controller" in {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       mockEnrolledRequest(eisSchemeTypesModel)
       submitWithSessionAndAuth(TestControllerCombined.delete)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.ApplicationHubController.show().url)
+          redirectLocation(result) shouldBe Some(routes.ConfirmDeleteApplicationController.show().url)
         }
       )
     }

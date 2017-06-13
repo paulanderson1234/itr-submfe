@@ -183,6 +183,9 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val eisSchemeTypesModel = Some(SchemeTypesModel(eis = true))
   val vctSchemeTypesModel = Some(SchemeTypesModel(vct = true))
   val eisSeisSchemeTypesModel = Some(SchemeTypesModel(seis = true, eis = true))
+  val eisSeisVctSchemeTypesModel = Some(SchemeTypesModel(seis = true, eis = true, vct = true))
+  val eisVctSchemeTypesModel = Some(SchemeTypesModel(seis = false, eis = true, vct = true))
+  val seisVctSchemeTypesModel = Some(SchemeTypesModel(seis = true, eis = false, vct = true))
 
   val eisSeisProcessingModelWithIneligible = EisSeisProcessingModel(Some(true), Some(false), Some(false) )
   val eisSeisProcessingModelIneligiblePreviousSchemeType = EisSeisProcessingModel(Some(false), Some(true), Some(false) )
