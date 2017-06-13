@@ -16,6 +16,9 @@ POST      /trade-start-date-error                  controllers.eisseis.TradeStar
 GET        /commercial-sale                         controllers.eisseis.CommercialSaleController.show
 POST       /commercial-sale                         controllers.eisseis.CommercialSaleController.submit
 
+GET        /is-company-knowledge-intensive          controllers.eisseis.IsCompanyKnowledgeIntensiveController.show
+POST       /is-company-knowledge-intensive          controllers.eisseis.IsCompanyKnowledgeIntensiveController.submit
+
 GET        /is-knowledge-intensive                  controllers.eisseis.IsKnowledgeIntensiveController.show
 POST       /is-knowledge-intensive                  controllers.eisseis.IsKnowledgeIntensiveController.submit
 
