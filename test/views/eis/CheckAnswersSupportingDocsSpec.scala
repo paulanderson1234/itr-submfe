@@ -16,14 +16,14 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
-import config.FrontendAppConfig
+import auth.{MockAuthConnector, MockConfigEISFlow}
 import controllers.eis.CheckAnswersController
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
+import services.EmailVerificationService
 import views.helpers.CheckAnswersSpec
 
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
@@ -33,6 +33,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override val emailVerificationService = mock[EmailVerificationService]
   }
 
   "The Check Answers page" should {

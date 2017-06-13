@@ -49,6 +49,11 @@ trait MockConfig extends AppConfig {
   override lazy val attachmentFileUploadOutsideUrl =
      s"http://localhost:9643/investment-tax-relief-attachments-frontend/file-upload?continueUrl=http://localhost:9635/" +
       s"investment-tax-relief/check-your-documents"
+
+  override lazy val emailVerificationReturnUrlOne = "http://localhost:9635/investment-tax-relief/email-verification/1"
+  override lazy val sendVerificationEmailURL = "http://localhost:9640/email-verification/verification-requests"
+  override lazy val checkVerifiedEmailURL = "http://localhost:9640/email-verification/verified-email-addresses"
+  override lazy val emailVerificationTemplate = "verifyEmailAddress"
 }
 
 object MockConfig extends MockConfig

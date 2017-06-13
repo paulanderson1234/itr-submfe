@@ -74,5 +74,5 @@ GET       /invalid-scheme-type                     controllers.seis.InvalidPrevi
 GET        /had-other-investments-before           controllers.seis.HadOtherInvestmentsController.show
 POST       /had-other-investments-before          controllers.seis.HadOtherInvestmentsController.submit
 
-
-
+# Email verification
+GET        /email-verification/:urlPosition         controllers.seis.EmailVerificationController.verify(urlPosition: Int)

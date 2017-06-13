@@ -107,5 +107,8 @@ GET        /annual-turnover-error                   controllers.eis.AnnualTurnov
 
 GET        /trading-for-too-long                    controllers.eis.TradingForTooLongController.show
 
-GET        /had-other-investments-before           controllers.eis.HadOtherInvestmentsController.show
-POST       /had-other-investments-before          controllers.eis.HadOtherInvestmentsController.submit
+GET        /had-other-investments-before            controllers.eis.HadOtherInvestmentsController.show
+POST       /had-other-investments-before            controllers.eis.HadOtherInvestmentsController.submit
+
+# Email verification
+GET        /email-verification/:urlPosition         controllers.eis.EmailVerificationController.verify(urlPosition: Int)

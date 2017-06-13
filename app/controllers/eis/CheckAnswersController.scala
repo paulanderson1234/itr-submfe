@@ -17,12 +17,12 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import models._
+import models.{ContactDetailsModel, _}
 import models.submission.SchemeTypesModel
 import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -31,6 +31,7 @@ import views.html.eis.checkAndSubmit.CheckAnswers
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
+import services.EmailVerificationService
 
 import scala.concurrent.Future
 
@@ -39,15 +40,16 @@ object CheckAnswersController extends CheckAnswersController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  val emailVerificationService = EmailVerificationService
 }
 
 trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
-  override val acceptedFlows = Seq(Seq(EIS),Seq(VCT),Seq(EIS,VCT))
+  override val acceptedFlows = Seq(Seq(EIS), Seq(VCT), Seq(EIS, VCT))
 
+  val emailVerificationService: EmailVerificationService
 
-
-  def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser) : Future[CheckAnswersModel] = for {
+  def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[CheckAnswersModel] = for {
     yourCompanyNeed <- s4lConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed)
     taxPayerReference <- s4lConnector.fetchAndGetFormData[TaxpayerReferenceModel](KeystoreKeys.taxpayerReference)
     registeredAddress <- s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress)
@@ -71,43 +73,54 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
     investmentGrowModel <- s4lConnector.fetchAndGetFormData[InvestmentGrowModel](KeystoreKeys.investmentGrow)
-  }yield new CheckAnswersModel(yourCompanyNeed,taxPayerReference,registeredAddress,dateOfIncorporation
-    ,natureOfBusiness,commercialSale,isKnowledgeIntensive,operatingCosts
-    ,percentageStaffWithMasters,tenYearPlan,subsidiaries,hadPreviousRFI, previousSchemes, proposedInvestment
-    ,usedInvestmentReasonBefore,previousBeforeDOFCS,newGeographicalMarket,newProduct,subsidiariesSpendingInvestment,
-    subsidiariesNinetyOwned,contactDetails,contactAddress,investmentGrowModel, applicationConfig.uploadFeatureEnabled)
+  } yield new CheckAnswersModel(yourCompanyNeed, taxPayerReference, registeredAddress, dateOfIncorporation
+    , natureOfBusiness, commercialSale, isKnowledgeIntensive, operatingCosts
+    , percentageStaffWithMasters, tenYearPlan, subsidiaries, hadPreviousRFI, previousSchemes, proposedInvestment
+    , usedInvestmentReasonBefore, previousBeforeDOFCS, newGeographicalMarket, newProduct, subsidiariesSpendingInvestment,
+    subsidiariesNinetyOwned, contactDetails, contactAddress, investmentGrowModel, applicationConfig.uploadFeatureEnabled)
 
 
-  def show (envelopeId: Option[String]) : Action[AnyContent]= AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    if(envelopeId.fold("")(_.toString).length > 0) {
+  def show(envelopeId: Option[String]): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user =>
+    implicit request =>
+      if (envelopeId.fold("")(_.toString).length > 0) {
         s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
       }
 
-    checkAnswersModel.flatMap {
-      checkAnswer =>
-        s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-          case Some(schemeTypes) => Ok(CheckAnswers(checkAnswer, schemeTypes))
-          case None => Redirect(controllers.routes.ApplicationHubController.show())
-        }.recover {
-          case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling fetchAndGetFormData: ${e.getMessage}")
-            InternalServerError(internalServerErrorTemplate)
-        }
-    }.recover {
-      case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling checkAnswersModel: ${e.getMessage}")
-        InternalServerError(internalServerErrorTemplate)
-    }
-  }
-
-  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap{
-      envelopeId => {
-        if(envelopeId.isEmpty)
-          Future.successful(Redirect(routes.AcknowledgementController.show()))
-        else
-          Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+      checkAnswersModel.flatMap {
+        checkAnswer =>
+          s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+            case Some(schemeTypes) => Ok(CheckAnswers(checkAnswer, schemeTypes))
+            case None => Redirect(controllers.routes.ApplicationHubController.show())
+          }.recover {
+            case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling fetchAndGetFormData: ${e.getMessage}")
+              InternalServerError(internalServerErrorTemplate)
+          }
+      }.recover {
+        case e: Exception => Logger.warn(s"[CheckAnswersController][show] Exception calling checkAnswersModel: ${e.getMessage}")
+          InternalServerError(internalServerErrorTemplate)
       }
-    }
   }
 
+  val submit = AuthorisedAndEnrolled.async { implicit user =>
+    implicit request =>
 
+      val verifyStatus = for {
+        contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+        isVerified <- emailVerificationService.verifyEmailAddress(contactDetails.get.email)
+      } yield isVerified.getOrElse(false)
+
+      verifyStatus.flatMap {
+        case true => {
+          s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
+            envelopeId => {
+              if (envelopeId.isEmpty)
+                Future.successful(Redirect(routes.AcknowledgementController.show()))
+              else
+                Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+            }
+          }
+        }
+        case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl)))
+      }
+  }
 }

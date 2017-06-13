@@ -82,7 +82,7 @@ class ContactDetailsControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(ContactDetailsControllerTest.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/confirm-correspondence-address")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/email-verification/1")
         }
       )
     }
