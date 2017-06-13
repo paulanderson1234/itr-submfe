@@ -89,7 +89,7 @@ class CommercialSaleControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
+          redirectLocation(result) shouldBe Some(routes.IsCompanyKnowledgeIntensiveController.show().url)
         }
       )
     }
@@ -143,7 +143,7 @@ class CommercialSaleControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput:_*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.IsKnowledgeIntensiveController.show().url)
+          redirectLocation(result) shouldBe Some(routes.IsCompanyKnowledgeIntensiveController.show().url)
         }
       )
     }

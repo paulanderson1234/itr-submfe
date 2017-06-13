@@ -115,6 +115,9 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val isKnowledgeIntensiveModelYes = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
   val isKnowledgeIntensiveModelNo = IsKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
 
+  val isCompanyKnowledgeIntensiveModelYes = IsCompanyKnowledgeIntensiveModel(Constants.StandardRadioButtonYesValue)
+  val isCompanyKnowledgeIntensiveModelNo = IsCompanyKnowledgeIntensiveModel(Constants.StandardRadioButtonNoValue)
+
   val kiProcessingModelIsKi = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), Some(true), Some(true))
 
   val trueKIModel = KiProcessingModel(Some(true), Some(true), Some(true), Some(true), None, Some(true))
