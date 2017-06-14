@@ -67,6 +67,11 @@ object MockConfigEISFlow extends MockConfig{
   override val eisseisFlowEnabled: Boolean = false
 }
 
+object MockConfigAllFlows extends MockConfig{
+  override val seisFlowEnabled: Boolean = true
+  override val eisseisFlowEnabled: Boolean = true
+}
+
 object MockConfigUploadFeature extends MockConfig{
   override val uploadFeatureEnabled: Boolean = FrontendAppConfig.uploadFeatureEnabled
 }

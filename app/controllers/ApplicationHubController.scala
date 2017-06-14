@@ -97,8 +97,6 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
   }
 
   val delete = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.clearCache().map {
-      case _ => Redirect(routes.ApplicationHubController.show())
-    }
+    Future.successful(Redirect(routes.ConfirmDeleteApplicationController.show()))
   }
 }
