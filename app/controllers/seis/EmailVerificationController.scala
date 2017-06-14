@@ -65,7 +65,7 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
               ("", Constants.EmailVerified)
             }
             case (data, Some(false)) => {
-              emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationReturnUrlOne,
+              emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationSeisReturnUrl,
                 applicationConfig.emailVerificationTemplate).map {
                 case true => (data, Constants.EmailNotVerified)
                 case false => ("", Constants.EmailVerified)
