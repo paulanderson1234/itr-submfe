@@ -42,6 +42,9 @@ trait AppConfig {
   val eisseisFlowEnabled: Boolean
   val attachmentsServiceUrl: String
   val attachmentFileUploadOutsideUrl: String
+  val emailDomain: String
+  val emailUrl: String
+  val emailTemplate: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -86,4 +89,9 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   val attachmentFileUploadOutsideUrl =
     s"$attachmentsFrontEndServiceBaseUrl/file-upload?continueUrl=$submissionFrontendServiceBaseUrl" +
     s"/check-your-documents&backUrl=$submissionFrontendServiceBaseUrl/supporting-documents-upload"
+
+  override lazy val emailDomain = loadConfig("email-confirmation.domain")
+  override lazy val emailUrl = baseUrl("email")
+  override lazy val emailTemplate = loadConfig("email-confirmation.templateId")
+
 }
