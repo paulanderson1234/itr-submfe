@@ -159,13 +159,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           submissionResponseModel.map { submissionResponse =>
             submissionResponse.status match {
               case OK =>
-                getTavCReferenceNumber() map {
+                (getTavCReferenceNumber() map {
                   tavcRef => {
                     emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
                       _ => s4lConnector.clearCache()
                     }
                   }
+                }).recover{
+                  case _ => s4lConnector.clearCache()
                 }
+
                 Ok(views.html.eis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
                 Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
@@ -187,13 +190,16 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
                 s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
                   envelopeId => fileUploadService.closeEnvelope(tavcReferenceNumber, envelopeId.fold("")(_.toString)).map {
                     _ => {
-                      getTavCReferenceNumber() map {
+                      (getTavCReferenceNumber() map {
                         tavcRef => {
                           emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
                             _ => s4lConnector.clearCache()
                           }
                         }
+                      }).recover{
+                        case _ => s4lConnector.clearCache()
                       }
+
                       Ok(views.html.eis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
                     }
                   }
