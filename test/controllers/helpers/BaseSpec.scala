@@ -29,7 +29,7 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.Json
-import services.{FileUploadService, RegistrationDetailsService, SubscriptionService, ThrottleService}
+import services._
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -48,6 +48,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockFileUploadService = mock[FileUploadService]
   val mockThrottleService= mock[ThrottleService]
   val mockThrottleConnector = mock[ThrottleConnector]
+  val mockEmailVerificationService = mock[EmailVerificationService]
 
   override def beforeEach() {
     reset(mockS4lConnector)

@@ -40,6 +40,7 @@ class CheckAnswersContactDetailsSpec extends CheckAnswersSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override val emailVerificationService = mockEmailVerificationService
   }
 
   def setupMocks(): Unit = {

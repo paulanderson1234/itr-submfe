@@ -16,22 +16,23 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, TAVCUser, VCT}
-import common.KeystoreKeys
-import config.{FrontendAppConfig, FrontendAuthConnector}
+import auth._
+import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal.internalServerErrorTemplate
+import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
 import controllers.predicates.FeatureSwitch
 import models._
 import models.submission.SchemeTypesModel
 import play.api.Logger
+import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent}
+import services.EmailVerificationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.eisseis.checkAndSubmit.CheckAnswers
-import play.api.i18n.Messages.Implicits._
-import play.api.Play.current
-import play.api.mvc.{Action, AnyContent}
 
 import scala.concurrent.Future
 
@@ -40,13 +41,14 @@ object CheckAnswersController extends CheckAnswersController{
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val enrolmentConnector = EnrolmentConnector
+  val emailVerificationService = EmailVerificationService
 }
 
 trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-
+  val emailVerificationService: EmailVerificationService
 
   def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser) : Future[CheckAnswersModel] = for {
     yourCompanyNeed <- s4lConnector.fetchAndGetFormData[YourCompanyNeedModel](KeystoreKeys.yourCompanyNeed)
@@ -107,13 +109,23 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
 
   val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap{
-        envelopeId => {
-          if(envelopeId.isEmpty)
-            Future.successful(Redirect(routes.AcknowledgementController.show()))
-          else
-            Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+      val verifyStatus = for {
+        contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+        isVerified <- emailVerificationService.verifyEmailAddress(contactDetails.get.email)
+      } yield isVerified.getOrElse(false)
+
+      verifyStatus.flatMap {
+        case true => {
+          s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
+            envelopeId => {
+              if (envelopeId.isEmpty)
+                Future.successful(Redirect(routes.AcknowledgementController.show()))
+              else
+                Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
+            }
+          }
         }
+        case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl)))
       }
     }
   }

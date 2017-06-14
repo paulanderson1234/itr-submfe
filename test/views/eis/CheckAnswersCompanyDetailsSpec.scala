@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockAuthConnector, MockConfigEISFlow}
 import config.FrontendAppConfig
 import controllers.eis.CheckAnswersController
 import controllers.routes
@@ -27,6 +27,7 @@ import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers._
+import services.EmailVerificationService
 import views.helpers.CheckAnswersSpec
 import views.html.eis.checkAndSubmit.CheckAnswers
 
@@ -37,6 +38,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
+    override val emailVerificationService = mock[EmailVerificationService]
   }
 
   "The Check Answers page" should {

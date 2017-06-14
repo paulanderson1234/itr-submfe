@@ -60,4 +60,9 @@ trait Constants {
   val standardIgnoreYearValue = "9999-12-31"
 
   val guidanceRedirectUrl = "https://www.gov.uk/guidance/venture-capital-schemes-apply-for-advance-assurance"
+
+  val ContactDetailsReturnUrl = 1
+  val EmailVerified = "FORWARD"
+  val EmailNotVerified = "SEND_EMAIL"
+  val EmailVerificationError = "ERROR"
 }

@@ -17,7 +17,7 @@
 package controllers.eis
 
 import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import models.ContactDetailsModel
@@ -56,7 +56,7 @@ trait ContactDetailsController extends FrontendController with AuthorisedAndEnro
       validFormData => {
         s4lConnector.saveFormData(KeystoreKeys.manualContactDetails, validFormData)
         s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData)
-        Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+        Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl)))
       }
     )
   }
