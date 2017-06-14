@@ -24,6 +24,7 @@ trait KeystoreKeys {
   val commercialSale: String = "companyDetails:commercialSale"
   val registeredAddress: String = "introduction:registeredAddress"
   val dateOfIncorporation: String = "companyDetails:dateOfIncorporation"
+  val isCompanyKnowledgeIntensive: String = "companyDetails:isCompanyKnowledgeIntensive"
   val isKnowledgeIntensive: String = "companyDetails:isKnowledgeIntensive"
   val subsidiaries: String = "companyDetails:subsidiaries"
   val natureOfBusiness: String = "companyDetails:natureOfBusiness"

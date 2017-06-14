@@ -7,6 +7,9 @@ POST       /date-of-incorporation                   controllers.eis.DateOfIncorp
 GET        /commercial-sale                         controllers.eis.CommercialSaleController.show
 POST       /commercial-sale                         controllers.eis.CommercialSaleController.submit
 
+GET        /is-company-knowledge-intensive          controllers.eis.IsCompanyKnowledgeIntensiveController.show
+POST       /is-company-knowledge-intensive          controllers.eis.IsCompanyKnowledgeIntensiveController.submit
+
 GET        /is-knowledge-intensive                  controllers.eis.IsKnowledgeIntensiveController.show
 POST       /is-knowledge-intensive                  controllers.eis.IsKnowledgeIntensiveController.submit
 

@@ -56,7 +56,7 @@ trait CommercialSaleController extends FrontendController with AuthorisedAndEnro
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithDateCondition) =>
           if (dataWithDateCondition.dateConditionMet.get) {
-            Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+            Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
           }
           else {
             s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.CommercialSaleController.show().url)

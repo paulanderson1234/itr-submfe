@@ -59,16 +59,12 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.CommercialSaleController.show().url
-    document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
-    document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
-    document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
-    document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
-    document.getElementById("ki-requirement-also").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")
-    document.getElementById("ki-requirement-three").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")
-    document.getElementById("ki-requirement-four").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")
-    document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
+    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsCompanyKnowledgeIntensiveController.show().url
+    document.title() shouldBe Messages("page.companyDetails.ApplyForKI.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.ApplyForKI.heading")
+    document.getElementById("description-ki").text() shouldBe Messages("page.companyDetails.ApplyForKI.description.1")
+    document.getElementById("knowledge-intensive-hint").text() shouldBe Messages("page.companyDetails.ApplyForKI.hint")
+    document.select("#isKnowledgeIntensive-no").size() shouldBe 1
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isKnowledgeIntensive-noLabel").text() shouldBe Messages("common.radioNoLabel")
@@ -82,16 +78,12 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
       val result = TestController.show.apply(authorisedFakeRequest)
       Jsoup.parse(contentAsString(result))
     }
-    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.CommercialSaleController.show().url
-    document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
-    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.heading")
-    document.getElementById("ki-requirement-definition").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition")
-    document.getElementById("ki-requirement-one").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-one")
-    document.getElementById("ki-requirement-two").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-two")
-    document.getElementById("ki-requirement-also").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-also")
-    document.getElementById("ki-requirement-three").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-three")
-    document.getElementById("ki-requirement-four").text() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.ki-requirement-four")
-    document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
+    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.IsCompanyKnowledgeIntensiveController.show().url
+    document.title() shouldBe Messages("page.companyDetails.ApplyForKI.title")
+    document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.ApplyForKI.heading")
+    document.getElementById("description-ki").text() shouldBe Messages("page.companyDetails.ApplyForKI.description.1")
+    document.getElementById("knowledge-intensive-hint").text() shouldBe Messages("page.companyDetails.ApplyForKI.hint")
+    document.select("#isKnowledgeIntensive-no").size() shouldBe 1
     document.select("#isKnowledgeIntensive-yes").size() shouldBe 1
     document.getElementById("isKnowledgeIntensive-yesLabel").text() shouldBe Messages("common.radioYesLabel")
     document.getElementById("isKnowledgeIntensive-noLabel").text() shouldBe Messages("common.radioNoLabel")
@@ -107,6 +99,6 @@ class IsKnowledgeIntensiveSpec extends ViewSpec {
     }
     // Make sure we have the expected error summary displayed
     document.getElementById("error-summary-display").hasClass("error-summary--show")
-    document.title() shouldBe Messages("page.companyDetails.IsKnowledgeIntensive.title")
+    document.title() shouldBe Messages("page.companyDetails.ApplyForKI.title")
   }
 }
