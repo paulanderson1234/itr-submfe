@@ -107,7 +107,7 @@ class PercentageStaffWithMastersControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit,formInput)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-knowledge-intensive")
+          redirectLocation(result) shouldBe Some("/investment-tax-relief/eis/is-company-knowledge-intensive")
         }
       )
     }

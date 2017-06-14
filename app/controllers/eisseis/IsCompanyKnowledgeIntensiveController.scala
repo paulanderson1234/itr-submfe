@@ -62,10 +62,19 @@ trait IsCompanyKnowledgeIntensiveController extends FrontendController with Auth
           }
           case Some(dataWithDateCondition) => {
             if (!isKnowledgeIntensive) {
-              s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateCondition.copy(companyAssertsIsKi = Some(isKnowledgeIntensive)))
+
+              // user has said not knowledge intensive so reset the KIProcessing model so it correctly calculates the KI Flag
+              // Clear the processing data (keeping the date and is  company KI info)
+              s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, KiProcessingModel(companyAssertsIsKi = Some(isKnowledgeIntensive),
+                dateConditionMet = dataWithDateCondition.dateConditionMet))
               s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.IsCompanyKnowledgeIntensiveController.show().url)
               Future.successful(Redirect(routes.SubsidiariesController.show()))
-            }else Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+
+            }else {
+              // don't update KIProcessing model here by setting companyAssertsIsKi as next page collects that datat which
+              // is used for page logic later. It should not be set here but only if they visited the next page.
+              Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+            }
           }
           case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         }
