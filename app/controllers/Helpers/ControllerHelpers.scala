@@ -83,4 +83,27 @@ trait ControllerHelpers {
     }
   }
 
+  def removeDescriptionFromTypes(schemeTypesModel: Option[SchemeTypesModel])(implicit request: Request[AnyContent], messages: Messages): String = {
+    schemeTypesModel match {
+      //EIS Flow
+      case Some(SchemeTypesModel(true,false,false,false)) => Messages("page.deleteApplication.hub.advanced.assurance.type")
+      //SEIS Flow
+      case Some(SchemeTypesModel(false,true,false,false)) => Messages("page.deleteApplication.hub.seis.type")
+      //VCT Flow
+      case Some(SchemeTypesModel(false,false,false,true)) => Messages("page.deleteApplication.hub.vct.type")
+      //EIS SEIS Flow
+      case Some(SchemeTypesModel(true,true,false,false)) => Messages("page.deleteApplication.hub.eis-seis.type")
+      //EIS VCT Flow
+      case Some(SchemeTypesModel(true,false,false,true)) => Messages("page.deleteApplication.hub.eis-vct.type")
+      //SEIS VCT Flow
+      case Some(SchemeTypesModel(false,true,false,true)) => Messages("page.deleteApplication.hub.seis-vct.type")
+      //EIS SEIS VCT Flow
+      case Some(SchemeTypesModel(true,true,false,true)) => Messages("page.deleteApplication.hub.eis-seis-vct.type")
+      //Assume EIS
+      case Some(_) => Messages("page.deleteApplication.hub.advanced.assurance.type")
+      //Assume EIS
+      case None =>  Messages("page.deleteApplication.hub.advanced.assurance.type")
+    }
+  }
+
 }

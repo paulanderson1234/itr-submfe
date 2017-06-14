@@ -64,7 +64,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         }
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
-          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+          Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
         }
         case Some(dataWithDateConditionMet) => {
           // all good - save the cost condition returned from API and navigate accordingly

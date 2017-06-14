@@ -1,0 +1,27 @@
+@import uk.gov.hmrc.play.views.html.helpers.form
+
+@(emailVerificationModel: EmailVerificationModel)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.verification.EmailVerification.title")) {
+
+<div class="grid-row">
+    <div class="column-two-thirds">
+        <h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.verification.EmailVerification.heading")</h1>
+
+        <div class="form-group">
+            <p id="email-one">@Messages("page.verification.EmailVerification.info.one") @emailVerificationModel.email@Messages("page.verification.EmailVerification.info.two")</p>
+        </div>
+
+        <details>
+            <summary><span id="help" class="summary">@Messages("page.verification.EmailVerification.help.link")</span></summary>
+            <div class="panel panel-indent panel-border-narrow">
+                <p id="help-text-one">@Messages("page.verification.EmailVerification.help.text.one")
+                    <a id="email-help-link-one" href="@controllers.seis.ContactDetailsController.show">@Messages("page.verification.EmailVerification.help.text.two")</a>
+                    @Messages("page.verification.EmailVerification.help.text.three")
+                    <a id="email-help-link-two" href="/investment-tax-relief/seis/email-verification/1">@Messages("page.verification.EmailVerification.help.text.four")</a></p>
+            </div>
+        </details>
+
+    </div>
+</div>
+}

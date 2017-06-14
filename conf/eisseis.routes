@@ -16,6 +16,9 @@ POST      /trade-start-date-error                  controllers.eisseis.TradeStar
 GET        /commercial-sale                         controllers.eisseis.CommercialSaleController.show
 POST       /commercial-sale                         controllers.eisseis.CommercialSaleController.submit
 
+GET        /is-company-knowledge-intensive          controllers.eisseis.IsCompanyKnowledgeIntensiveController.show
+POST       /is-company-knowledge-intensive          controllers.eisseis.IsCompanyKnowledgeIntensiveController.submit
+
 GET        /is-knowledge-intensive                  controllers.eisseis.IsKnowledgeIntensiveController.show
 POST       /is-knowledge-intensive                  controllers.eisseis.IsKnowledgeIntensiveController.submit
 
@@ -120,5 +123,8 @@ GET        /invalid-scheme-type                     controllers.eisseis.InvalidP
 GET        /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.show
 POST       /not-first-trade                         controllers.eisseis.NotFirstTradeErrorController.submit
 
-GET        /had-other-investments-before           controllers.eisseis.HadOtherInvestmentsController.show
-POST       /had-other-investments-before          controllers.eisseis.HadOtherInvestmentsController.submit
+GET        /had-other-investments-before            controllers.eisseis.HadOtherInvestmentsController.show
+POST       /had-other-investments-before            controllers.eisseis.HadOtherInvestmentsController.submit
+
+# Email verification
+GET        /email-verification/:urlPosition         controllers.eisseis.EmailVerificationController.verify(urlPosition: Int)

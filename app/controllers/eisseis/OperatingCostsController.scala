@@ -66,7 +66,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
             Future.successful(Redirect(routes.DateOfIncorporationController.show()))
           }
           case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
-            Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+            Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
           }
           case Some(dataWithDateConditionMet) => {
             // all good - save the cost condition returned from API and navigate accordingly
@@ -78,7 +78,7 @@ trait OperatingCostsController extends FrontendController with AuthorisedAndEnro
                 if (data) {
                   Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
                 } else {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().toString())
+                  s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().url)
                   Future.successful(Redirect(routes.IneligibleForKIController.show()))
                 }
               //will only hit case none if the back end isn't running.

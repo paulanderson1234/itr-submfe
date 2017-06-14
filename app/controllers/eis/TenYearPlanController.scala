@@ -65,7 +65,7 @@ trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolle
           /** not sure if we are still using isMissingData **/
           Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
-          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+          Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
         case Some(dataWithPreviousValid) => {
           // all good - save the cost condition result returned from API and navigate accordingly
           val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,

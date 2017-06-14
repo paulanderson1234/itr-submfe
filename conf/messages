@@ -39,6 +39,7 @@ common.notAvailableAcronym=N/A
 common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
 common.back.dashboard=Dashboard
+common.application.types.advanceAssurance=Advance Assurance
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -251,18 +252,21 @@ page.companyDetails.CommercialSale.question.hint=When was its first commercial s
 validation.error.DateOfCommercialSale.Future=Date of first commercial sale cannot be a future date
 validation.error.DateForNoOption=Date should not be entered when '''No'' is selected
 
-#Is Knowledge Intensive Page
-page.companyDetails.IsKnowledgeIntensive.title = Do you want to apply as a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.heading = Do you want to apply as a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.description.1 = If you are a knowledge intensive company, you''re allowed to attract more investment. You can get up to £20million over your company''s lifetime.
-page.companyDetails.IsKnowledgeIntensive.description.2 = You also have up to 10 years after your first commercial sale to receive qualifying investment.
-page.companyDetails.IsKnowledgeIntensive.definition = What''s a knowledge intensive company?
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-definition = Over the past 3 years, the amount you''ve spent on research and development must have been either:
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-one = 15% or more of your operating costs for at least 1 year
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-two = 10% or more of your operating costs per year
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-also = You also need:
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-three = at least 20% of your staff who do research and development to have master''s degrees, or
-page.companyDetails.IsKnowledgeIntensive.ki-requirement-four = to plan to develop, or have already developed, a product that you''ll own the rights to
+#Is Your Company Knowledge Intensive
+page.companyDetails.IsCompanyKnowledgeIntensive.title = Is your company knowledge intensive?
+page.companyDetails.IsCompanyKnowledgeIntensive.heading = Is your company knowledge intensive?
+page.companyDetails.IsCompanyKnowledgeIntensive.description.1 = The amount you''ve spent on research and development in the last 3 years must be either:
+page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-one = 10% or more of your operating costs per year
+page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-two = 15% or more of your operating costs for at least one of the 3 years
+page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-also = You also need either:
+page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-three = 20% or more of your research and development staff to have master''s degrees
+page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-four = a plan to develop, or an already developed, product that you''ll own the rights to
+
+#Do You Want To Apply As Knowledge Intensive Page
+page.companyDetails.ApplyForKI.title = Do you want to apply as a knowledge intensive company?
+page.companyDetails.ApplyForKI.heading = Do you want to apply as a knowledge intensive company?
+page.companyDetails.ApplyForKI.description.1 = If you qualify you can raise up to £20 million over your company''s lifetime. You''ll also have up to 10 years after your first commercial sale to receive qualifying investment.
+page.companyDetails.ApplyForKI.hint = You don''t have to apply as a knowledge intensive company, even if you qualify.
 
 #Ineligible for Knowledge Intensive Page
 page.knowledgeIntensive.IneligibleForKI.title = Your company isn''t knowledge intensive
@@ -694,6 +698,26 @@ page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Inves
 page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme
 
+#hub delete application
+page.deleteApplication.title=Confirm that you want to remove this application for {0}
+page.deleteApplication.heading=Confirm that you want to remove this application for {0}
+page.deleteApplication.hint=This will remove your Advance Assurance application for the Enterprise Investment Scheme.
+page.deleteApplication.appType.AdvancedAssurance=AdvanceAssurance
+page.deleteApplication.confirm=Remove
+page.deleteApplication.cancel=Cancel remove and go back
+
+# delete message for types
+page.deleteApplication.hub.advanced.assurance.type=This will remove your Advance Assurance application for the Enterprise Investment Scheme.
+page.deleteApplication.hub.seis.type=This will remove your Advance Assurance application for the Seed Enterprise Investment Scheme.
+page.deleteApplication.hub.vct.type=This will remove your Advance Assurance application for the Venture Capital Trust scheme.
+page.deleteApplication.hub.eis-seis.type=This will remove your Advance Assurance application for the Enterprise Investment Scheme and Seed Enterprise Investment Scheme.
+page.deleteApplication.hub.eis-vct.type=This will remove your Advance Assurance application for the Enterprise Investment Scheme and Venture Capital Trust Scheme.
+page.deleteApplication.hub.seis-vct.type=This will remove your Advance Assurance application for the Seed Enterprise Investment Scheme and Venture Capital Trust Scheme.
+page.deleteApplication.hub.eis-seis-vct.type=This will remove your Advance Assurance application for the  Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme.
+
+
+
+
 #hub temp link to advanced assurance history
 page.PreviouslySubmitted.heading=Previously submitted applications
 page.introduction.hub.viewPrevious.AdvancedAssurance=View all of your Advance Assurance applications
@@ -932,7 +956,16 @@ page.throttlingGuidance.GuidanceError.common.apply=You can still apply for Advan
 page.throttlingGuidance.GuidanceError.common.findOut=find out how to use our existing service
 page.throttlingGuidance.GuidanceError.common.changeAnswers=change your answers
 
-
+# Email Verification Details
+page.verification.EmailVerification.heading= We''ve sent you an email
+page.verification.EmailVerification.title= We''ve sent you an email
+page.verification.EmailVerification.info.one= We''ve sent an email to
+page.verification.EmailVerification.info.two= . It contains a link you’ll need to continue your registration.
+page.verification.EmailVerification.help.link= If you don't get an email
+page.verification.EmailVerification.help.text.one= Check the email address you''ve entered. If it''s wrong you''ll need to
+page.verification.EmailVerification.help.text.two= start again
+page.verification.EmailVerification.help.text.three= . If it''s right, check for the email in your spam folder. If you''re having problems you can ask us to
+page.verification.EmailVerification.help.text.four= send it again.
 
 # Agent guidance error page
 page.throttlingGuidance.isAgentError.reason=At the moment, our new online service can only be used by companies that aren''t using an agent.

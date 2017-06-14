@@ -59,7 +59,7 @@ trait PercentageStaffWithMastersController extends FrontendController with Autho
         // check previous answers present
         case Some(data) if isMissingData(data) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
-          Future.successful(Redirect(routes.IsKnowledgeIntensiveController.show()))
+          Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
         }
         case Some(dataWithPreviousValid) => {
           // all good - save the cost condition result returned from API and navigate accordingly

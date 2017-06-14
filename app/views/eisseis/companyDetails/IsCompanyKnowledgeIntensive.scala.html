@@ -1,0 +1,51 @@
+@import models.IsCompanyKnowledgeIntensiveModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import common.Constants
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formInputRadioGroup}
+
+@(isCompanyKnowledgeIntensiveForm: Form[IsCompanyKnowledgeIntensiveModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.IsCompanyKnowledgeIntensive.title")) {
+
+    @backButtonWithProgress(controllers.eisseis.routes.CommercialSaleController.show().toString, Messages("common.section.progress.company.details.one"))
+
+    @errorSummary(isCompanyKnowledgeIntensiveForm, "is-company-knowledge-intensive", "isCompanyKnowledgeIntensive")
+
+    <h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.heading")</h1>
+
+        <div class="form-group">
+            <p id = "description-ki">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.description.1")</p>
+            <ul class ="list list-bullet">
+                <li id = "ki-requirement-one">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-one")</li>
+                <li id = "ki-requirement-two">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-two")</li>
+            </ul>
+
+            <p id ="ki-requirement-also">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-also")</p>
+            <ul class ="list list-bullet">
+                <li id ="ki-requirement-three">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-three")</li>
+                <li id ="ki-requirement-four">@Messages("page.companyDetails.IsCompanyKnowledgeIntensive.ki-requirement-four")</li>
+            </ul>
+
+        </div>
+
+    @form(action = controllers.eisseis.routes.IsCompanyKnowledgeIntensiveController.submit()) {
+
+        <div class="form-group">
+            @formInputRadioGroup(
+            field = isCompanyKnowledgeIntensiveForm("isCompanyKnowledgeIntensive"),
+            Seq(
+            Constants.StandardRadioButtonYesValue->Messages("common.radioYesLabel"),
+            Constants.StandardRadioButtonNoValue->Messages("common.radioNoLabel")),
+            '_legend -> Messages("page.companyDetails.IsCompanyKnowledgeIntensive.heading"),
+            '_legendClass -> "visuallyhidden",
+            '_labelAfter -> true,
+            '_labelClass -> "block-label",
+            '_groupClass -> "inline"
+            )
+        </div>
+
+        <div class="form-group">
+            <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+        </div>
+    }
+}
