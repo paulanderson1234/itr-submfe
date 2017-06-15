@@ -18,15 +18,18 @@ package models
 
 import common.Constants
 import play.api.libs.json.Json
+import utils.DateFormatter
 
 case class EmailConfirmationModel(to: Array[String], templateId: String, parameters: Map[String,String] = Map(),
                                   force: Boolean = false, eventUrl: Option[String] = None, onSendUrl: Option[String] = None)
 
-object EmailConfirmationModel{
+object EmailConfirmationModel extends DateFormatter{
+
   implicit val formats = Json.format[EmailConfirmationModel]
 
-  def parameters(companyName: String, date: String, formBundleRef: String): Map[String,String] = {
+  def parameters(companyName: String, formBundleRef: String): Map[String,String] = {
     val emailConstants = Constants.EmailConfirmationParameters
-    Map(emailConstants.companyName -> companyName, emailConstants.date -> date, emailConstants.formBundleRefNUmber -> formBundleRef)
+    Map(emailConstants.companyName -> companyName, emailConstants.date -> desDateToDateString, emailConstants.formBundleRefNUmber -> formBundleRef)
   }
+
 }

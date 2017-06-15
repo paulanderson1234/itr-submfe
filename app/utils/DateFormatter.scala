@@ -17,6 +17,8 @@
 package utils
 
 import java.text.SimpleDateFormat
+import java.util.Date
+import org.joda.time.DateTime
 import play.api.Logger
 
 import scala.util.{Failure, Success, Try}
@@ -54,4 +56,11 @@ trait DateFormatter {
       }
     }
   }
+
+  def desDateToDateString: String = {
+    val todayDate = new DateTime()
+    toDateString(todayDate.getDayOfMonth, todayDate.getMonthOfYear, todayDate.getYear)
+  }
+
+
 }

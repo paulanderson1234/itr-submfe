@@ -42,7 +42,7 @@ class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with One
     override val http = mock[WSHttp]
     override val domain: String = MockConfig.emailDomain
     val testModel = EmailConfirmationModel(Array("test@test.com"), "test-template",
-      EmailConfirmationModel.parameters("Test company","NA/NA/NANA", "XATESTREFNUM123456789"))
+      EmailConfirmationModel.parameters("Test company", "XATESTREFNUM123456789"))
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))
