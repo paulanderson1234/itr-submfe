@@ -61,8 +61,17 @@ trait Constants {
 
   val guidanceRedirectUrl = "https://www.gov.uk/guidance/venture-capital-schemes-apply-for-advance-assurance"
 
+
+
+  object EmailConfirmationParameters{
+    val companyName = "companyName"
+    val date = "date"
+    val formBundleRefNUmber = "formBundleRefNumber"
+  }
+
   val ContactDetailsReturnUrl = 1
   val EmailVerified = "FORWARD"
   val EmailNotVerified = "SEND_EMAIL"
   val EmailVerificationError = "ERROR"
+
 }
