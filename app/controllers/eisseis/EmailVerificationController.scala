@@ -27,7 +27,7 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import services.EmailVerificationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import views.html.eis.verification.EmailVerification
+import views.html.eisseis.verification.EmailVerification
 
 import scala.concurrent.Future
 
