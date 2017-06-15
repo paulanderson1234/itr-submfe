@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package views
+package views.hub
 
 import auth.MockConfigUploadFeature
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import utils.CountriesHelper
@@ -29,12 +30,14 @@ class ApplicationHubSpec extends ViewSpec {
 
   val continueUrl = "/seis/natureOfbusiness"
   val schemeType = "SEED Enterprise Investment Scheme - Advanced Assurance"
+  val hasPreviousSubmissions = true
+  val hasNoPreviousSubmissions = false
 
   "The Application Hub page" should {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
       "the model used contains the max fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -62,9 +65,37 @@ class ApplicationHubSpec extends ViewSpec {
       }
     }
 
+    "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
+      "the model used contains the max fields and there are NO previous submissions" in {
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest, applicationMessages),
+        hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(view.body)
+      document.title shouldEqual Messages("page.introduction.hub.title")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMax.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMax.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe applicationHubModelMax.registeredAddress.addressline3.get
+      document.body.getElementById("address-line3").text() shouldBe applicationHubModelMax.registeredAddress.addressline4.get
+      document.body.getElementById("address-line4").text() shouldBe applicationHubModelMax.registeredAddress.postcode.get
+      document.body.getElementById("address-line5").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMax.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMax.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMax.contactDetails.telephoneNumber.get
+      document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
+      document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
+      //attachments outside
+      if (MockConfigUploadFeature.uploadFeatureEnabled){
+        val result =  document.select("#attachments-outside-link")
+        result.isEmpty shouldBe true
+      }
+    }
+
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the max amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -94,7 +125,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages),hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -119,7 +150,8 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages))(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)
+      (fakeRequest, applicationMessages),hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -139,6 +171,31 @@ class ApplicationHubSpec extends ViewSpec {
           Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
         document.body.getElementById("attachments-outside-link").text() shouldBe
           Messages("page.introduction.hub.upload.link")
+      }
+    }
+
+    "verify the outside flow upload link not present when a 'hub existing' partial is passed to it and"
+      "the model used contains the min amount of fields" in {
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest,
+        applicationMessages),hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
+      val document = Jsoup.parse(view.body)
+      document.title shouldEqual Messages("page.introduction.hub.title")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
+      //organisation name
+      document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
+      //registered address
+      document.body.getElementById("address-line0").text() shouldBe applicationHubModelMin.registeredAddress.addressline1
+      document.body.getElementById("address-line1").text() shouldBe applicationHubModelMin.registeredAddress.addressline2
+      document.body.getElementById("address-line2").text() shouldBe CountriesHelper.getSelectedCountry(applicationHubModelMin.registeredAddress.countryCode)
+      //contact details
+      document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
+      document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
+
+      //MockConfigUploadFeature.uploadFeatureEnabled shouldBe false
+      //attachments outside
+      if (MockConfigUploadFeature.uploadFeatureEnabled) {
+       val result =  document.select("#attachments-outside-link")
+        result.isEmpty shouldBe true
       }
     }
   }

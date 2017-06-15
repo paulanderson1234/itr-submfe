@@ -6,7 +6,7 @@
 @import utils.Transformers
 @import utils.CountriesHelper
 
-@(applicationHubModel: ApplicationHubModel, partial: Html)(implicit request: Request[_], messages: Messages)
+@(applicationHubModel: ApplicationHubModel, partial: Html, hasPreviousSubmissions: Boolean)(implicit request: Request[_], messages: Messages)
 
 @sidebar = {
     <h2 class="heading-small" id="organisation-name"> @applicationHubModel.organisationName</h2>
@@ -38,7 +38,7 @@
     <!--<a id="aa-historic-link" href="@routes.HistoricAASubmissionController.show">@Messages("page.introduction.hub.viewPrevious.AdvancedAssurance")</a>-->
 <!--</div>-->
 
-@if(FrontendAppConfig.uploadFeatureEnabled){
+@if(FrontendAppConfig.uploadFeatureEnabled && hasPreviousSubmissions){
 <div class="form-group">
     <input type="hidden" id="isUploadEnabled" name="isUploadEnabled" value="@FrontendAppConfig.uploadFeatureEnabled">
     <h2 id="attachments-outside-heading" class="heading-small">@Messages("page.supportingDocuments.SupportingDocuments.heading")</h2>

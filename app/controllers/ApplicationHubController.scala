@@ -25,7 +25,7 @@ import controllers.Helpers.ControllerHelpers
 import models.ApplicationHubModel
 import models.submission.SchemeTypesModel
 import play.api.mvc.Result
-import services.{RegistrationDetailsService, SubscriptionService}
+import services.{RegistrationDetailsService, SubmissionService, SubscriptionService}
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -33,7 +33,7 @@ import views.html.introduction._
 import views.html.hubPartials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import play.api.mvc.{AnyContent, Action}
+import play.api.mvc.{Action, AnyContent}
 
 import scala.concurrent.Future
 
@@ -44,33 +44,33 @@ object ApplicationHubController extends ApplicationHubController{
   override lazy val s4lConnector = S4LConnector
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
+  val submissionService: SubmissionService = SubmissionService
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
 
-
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
+  val submissionService: SubmissionService
 
   def show(tokenId:Option[String]):Action[AnyContent] = AuthorisedAndEnrolled.async ( { implicit user => implicit request =>
 
-    def routeRequest(applicationHubModel: Option[ApplicationHubModel]): Future[Result] = {
+    def routeRequest(applicationHubModel: Option[ApplicationHubModel], hasPreviousSubmissions: Boolean): Future[Result] = {
       if (applicationHubModel.nonEmpty) {
 
         s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
           case Some(true) => Ok(ApplicationHub(applicationHubModel.get,
             ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)
-            (ControllerHelpers.routeToScheme),ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))))
-          case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew()))
+            (ControllerHelpers.routeToScheme),ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes)),hasPreviousSubmissions))
+          case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew(), hasPreviousSubmissions))
         }
       }
       else Future.successful(InternalServerError(internalServerErrorTemplate))
     }
 
-    def getApplicationHubModel()(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = (for {
-      tavcRef <- getTavCReferenceNumber()
+    def getApplicationHubModel(tavcRef:String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ApplicationHubModel]] = (for {
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
       subscriptionDetailsModel <- subscriptionService.getSubscriptionContactDetails(tavcRef)
       schemeTypesModel <-   s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
@@ -82,8 +82,10 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     }
 
     (for {
-      applicationHubModel <- getApplicationHubModel()
-      route <- routeRequest(applicationHubModel)
+      tavcRef <- getTavCReferenceNumber()
+      applicationHubModel <- getApplicationHubModel(tavcRef)
+      hasPreviousSubmissions <- submissionService.hasPreviousSubmissions(tavcRef)
+      route <- routeRequest(applicationHubModel, hasPreviousSubmissions)
     } yield route ) recover{
       case e: Exception => {
         Logger.warn(s"[ApplicationHubController][getApplicationModel] - Exception occurred: ${e.getMessage}")
