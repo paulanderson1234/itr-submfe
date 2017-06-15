@@ -59,7 +59,7 @@ trait EmailConfirmationService {
       contactDetails <- s4LConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     }yield Some(EmailConfirmationModel(Array(contactDetails.get.email),
                                   emailTemplate,
-                                  EmailConfirmationModel.parameters(registrationDetailsModel.organisationName, date, formBundleReferenceNumber)))).recover{
+                                  EmailConfirmationModel.parameters(registrationDetailsModel.organisationName, formBundleReferenceNumber)))).recover{
       case throwable => {
         Logger.warn(s"[EmailConfirmationService][getEmailConfirmationModel] - Failed to build EmailConfirmationModel:  ${throwable.getMessage}")
         None
