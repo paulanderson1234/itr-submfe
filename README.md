@@ -14,7 +14,7 @@ The EIS and SEIS schemes encourage equity investment in small and medium size co
 The user population is made up of mainly UK based, but some non-UK based limited companies and charities and agents acting on their behalf.
 
 The investment tax relief services are the represent the realisation of a digital service the above.
-Features will be added and enhanced over time.    
+Features will be added and enhanced over time
   
 
 Requirements
