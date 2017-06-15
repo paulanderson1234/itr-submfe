@@ -25,8 +25,8 @@ case class EmailConfirmationModel(to: Array[String], templateId: String, paramet
 object EmailConfirmationModel{
   implicit val formats = Json.format[EmailConfirmationModel]
 
-  def parameters(parameters: String*): Map[String,String] = {
+  def parameters(companyName: String, date: String, formBundleRef: String): Map[String,String] = {
     val emailConstants = Constants.EmailConfirmationParameters
-    Map(emailConstants.companyName -> parameters(0), emailConstants.date -> parameters(1), emailConstants.formBundleRefNUmber -> parameters(2))
+    Map(emailConstants.companyName -> companyName, emailConstants.date -> date, emailConstants.formBundleRefNUmber -> formBundleRef)
   }
 }
