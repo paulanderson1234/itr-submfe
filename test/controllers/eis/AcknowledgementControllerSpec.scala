@@ -27,7 +27,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
 import uk.gov.hmrc.play.http.HttpResponse
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
+import auth.AuthEnrolledTestController.{ACCEPTED => _, INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
 import models.{ContactDetailsModel, SubmissionRequest, YourCompanyNeedModel}
 import models.submission.{SchemeTypesModel, SubmissionResponse}
 
@@ -95,7 +95,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 and delete the current application and send a confirmation email when a valid submission data is submitted" in new SetupPageFull {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
-      doReturn(Future(Unit)).when(mockEmailConfirmationService).sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -111,7 +112,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
       when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-      doReturn(Future(Unit)).when(mockEmailConfirmationService).sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -124,7 +126,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
     "return a 200 and delete the current application " +
       "and send a confirmation email when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
-      doReturn(Future(Unit)).when(mockEmailConfirmationService).sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -246,7 +249,8 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 if KI is set to false" in {
-      doReturn(Future(Unit)).when(mockEmailConfirmationService).sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
