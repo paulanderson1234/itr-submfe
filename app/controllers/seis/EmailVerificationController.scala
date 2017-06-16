@@ -50,17 +50,18 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
   def verify(urlPosition: Int) : Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     urlPosition match {
       case Constants.ContactDetailsReturnUrl => {
-        val result = verifyEmailStatus()
+        val result = verifyEmailStatus(applicationConfig.emailVerificationSeisReturnUrlOne)
         processSendEmailVerification(result)
       }
       case Constants.CheckAnswersReturnUrl => {
-        val result = verifyEmailStatus()
+        val result = verifyEmailStatus(applicationConfig.emailVerificationSeisReturnUrlTwo)
         processSubmitEmailVerification(result)
       }
     }
   }
 
-  private def verifyEmailStatus()(implicit request: Request[AnyContent], user: TAVCUser): Future[(String, String)] ={
+  private def verifyEmailStatus(emailVerificationSeisReturnUrl: String)
+                               (implicit request: Request[AnyContent], user: TAVCUser): Future[(String, String)] ={
     val contactDetails = for {
       contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     } yield if (contactDetails.isDefined) contactDetails.get.email else ""
@@ -75,7 +76,7 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
         ("", Constants.EmailVerified)
       }
       case (data, Some(false)) => {
-        emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationEisReturnUrl,
+        emailVerificationService.sendVerificationLink(data, emailVerificationSeisReturnUrl,
           applicationConfig.emailVerificationTemplate).map {
           case true => (data, Constants.EmailNotVerified)
           case false => ("", Constants.EmailVerified)
