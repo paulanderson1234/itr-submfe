@@ -45,9 +45,12 @@ trait AppConfig {
   val emailDomain: String
   val emailUrl: String
   val emailTemplate: String
-  val emailVerificationEisReturnUrl: String
-  val emailVerificationSeisReturnUrl: String
-  val emailVerificationCombinedReturnUrl: String
+  val emailVerificationEisReturnUrlOne: String
+  val emailVerificationSeisReturnUrlOne: String
+  val emailVerificationCombinedReturnUrlOne: String
+  val emailVerificationEisReturnUrlTwo: String
+  val emailVerificationSeisReturnUrlTwo: String
+  val emailVerificationCombinedReturnUrlTwo: String
   val sendVerificationEmailURL: String
   val checkVerifiedEmailURL: String
   val emailVerificationTemplate: String
@@ -101,9 +104,12 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val emailUrl = baseUrl("email")
   override lazy val emailTemplate = loadConfig("email-confirmation.templateId")
 
-  override lazy val emailVerificationEisReturnUrl = loadConfig(s"email.returnUrlEis")
-  override lazy val emailVerificationSeisReturnUrl = loadConfig(s"email.returnUrlSeis")
-  override lazy val emailVerificationCombinedReturnUrl = loadConfig(s"email.returnUrlCombined")
+  override lazy val emailVerificationEisReturnUrlOne = loadConfig(s"email.returnUrlEisOne")
+  override lazy val emailVerificationSeisReturnUrlOne = loadConfig(s"email.returnUrlSeisOne")
+  override lazy val emailVerificationCombinedReturnUrlOne = loadConfig(s"email.returnUrlCombinedOne")
+  override lazy val emailVerificationEisReturnUrlTwo = loadConfig(s"email.returnUrlEisTwo")
+  override lazy val emailVerificationSeisReturnUrlTwo = loadConfig(s"email.returnUrlSeisTwo")
+  override lazy val emailVerificationCombinedReturnUrlTwo = loadConfig(s"email.returnUrlCombinedTwo")
   override lazy val sendVerificationEmailURL = baseUrl("email-verification") + loadConfig("email-vs.sendVerificationEmailURL")
   override lazy val checkVerifiedEmailURL = baseUrl("email-verification") + loadConfig("email-vs.checkVerifiedEmailURL")
   override lazy val emailVerificationTemplate = loadConfig("email.emailVerificationTemplate")

@@ -22,10 +22,9 @@ import config.{FrontendAppConfig, FrontendAuthConnector, FrontendGlobal}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.predicates.FeatureSwitch
 import models.{ContactDetailsModel, EmailVerificationModel}
-import play.api.Logger
-import play.api.mvc.{Action, AnyContent, Request, Result}
-import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
+import play.api.i18n.Messages.Implicits._
+import play.api.mvc.{Action, AnyContent, Request, Result}
 import services.EmailVerificationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.eis.verification.EmailVerification
@@ -51,17 +50,18 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
   def verify(urlPosition: Int) : Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     urlPosition match {
         case Constants.ContactDetailsReturnUrl => {
-          val result = verifyEmailStatus()
+          val result = verifyEmailStatus(applicationConfig.emailVerificationEisReturnUrlOne)
           processSendEmailVerification(result)
         }
         case Constants.CheckAnswersReturnUrl => {
-          val result = verifyEmailStatus()
+          val result = verifyEmailStatus(applicationConfig.emailVerificationEisReturnUrlTwo)
           processSubmitEmailVerification(result)
         }
       }
   }
 
-  private def verifyEmailStatus()(implicit request: Request[AnyContent], user: TAVCUser): Future[(String, String)] ={
+  private def verifyEmailStatus(emailVerificationEisReturnUrl: String)
+                               (implicit request: Request[AnyContent], user: TAVCUser): Future[(String, String)] ={
     val contactDetails = for {
       contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     } yield if (contactDetails.isDefined) contactDetails.get.email else ""
@@ -76,7 +76,7 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
         ("", Constants.EmailVerified)
       }
       case (data, Some(false)) => {
-        emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationEisReturnUrl,
+        emailVerificationService.sendVerificationLink(data, emailVerificationEisReturnUrl,
           applicationConfig.emailVerificationTemplate).map {
           case true => (data, Constants.EmailNotVerified)
           case false => ("", Constants.EmailVerified)
