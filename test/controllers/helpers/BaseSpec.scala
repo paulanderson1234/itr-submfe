@@ -50,6 +50,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockThrottleConnector = mock[ThrottleConnector]
   val mockEmailConfirmationService = mock[EmailConfirmationService]
   val mockEmailVerificationService = mock[EmailVerificationService]
+  val mockSubmissionService = mock[SubmissionService]
 
 
   override def beforeEach() {

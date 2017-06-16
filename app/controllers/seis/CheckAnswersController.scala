@@ -94,7 +94,7 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
             }
           }
         }
-        case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl)))
+        case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.CheckAnswersReturnUrl)))
       }
     }
   }

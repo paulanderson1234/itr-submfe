@@ -43,6 +43,16 @@ trait SubmissionService {
         }
     }
   }
+
+  def hasPreviousSubmissions(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+    getEtmpSubmissionDetails(tavcRef) map {
+      result => result.nonEmpty && result.get.submissions.fold(0)(_.length) > 0
+    }
+  }.recover{
+    case e =>
+      Logger.warn(s"[SubmissionService][hasPreviousSubmissions] - Error checking previous submission history. TavcRef: $tavcRef. Errors=$e")
+      false
+  }
 }
 
 object SubmissionService extends SubmissionService {

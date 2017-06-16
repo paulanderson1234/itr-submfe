@@ -179,7 +179,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl).url)
+          redirectLocation(result) shouldBe Some(routes.EmailVerificationController.verify(Constants.CheckAnswersReturnUrl).url)
         }
       )
     }
