@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.AuthEnrolledTestController.{INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
+import auth.AuthEnrolledTestController.{ACCEPTED => _, INTERNAL_SERVER_ERROR => _, NO_CONTENT => _, OK => _, SEE_OTHER => _, _}
 import auth._
 import common.KeystoreKeys
 import config.FrontendAuthConnector
@@ -51,6 +51,8 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
     override lazy val s4lConnector = mockS4lConnector
     override val submissionConnector = mockSubmissionConnector
     override lazy val fileUploadService = mockFileUploadService
+    override lazy val emailConfirmationService = mockEmailConfirmationService
+
   }
 
   class SetupPageFull() {
@@ -92,8 +94,10 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
-    "return a 200 and delete the current application when a valid submission data is submitted" in new SetupPageFull {
+    "return a 200 and delete the current application and send an email when a valid submission data is submitted" in new SetupPageFull {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -103,12 +107,14 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
-    "return a 200, close the file upload envelope and " +
+    "return a 200, close the file upload envelope, send an email " +
       "delete the current application when a valid submission data is submitted with the file upload flag enabled" in new SetupPageFull {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(true)
       when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSchemeTypesModel)
@@ -118,7 +124,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
-    "return a 200 and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
+    "return a 200, send an email and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
       when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
@@ -241,6 +247,8 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
     "return a 200 if KI is set to false" in {
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+        thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),

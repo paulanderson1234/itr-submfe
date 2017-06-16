@@ -26,7 +26,7 @@ import models.submission._
 import models._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.{FileUploadService, RegistrationDetailsService}
+import services.{EmailConfirmationService, FileUploadService, RegistrationDetailsService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
@@ -43,6 +43,7 @@ object AttachmentsAcknowledgementController extends AttachmentsAcknowledgementCo
   override lazy val enrolmentConnector = EnrolmentConnector
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
   override lazy val fileUploadService = FileUploadService
+  override lazy val emailConfirmationService = EmailConfirmationService
 }
 
 trait AttachmentsAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
@@ -53,6 +54,7 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
   val submissionConnector: SubmissionConnector
   val registrationDetailsService: RegistrationDetailsService
   val fileUploadService: FileUploadService
+  val emailConfirmationService: EmailConfirmationService
 
 
   //noinspection ScalaStyle
@@ -158,7 +160,15 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
           submissionResponseModel.map { submissionResponse =>
             submissionResponse.status match {
               case OK =>
-                s4lConnector.clearCache()
+                (getTavCReferenceNumber() map {
+                  tavcRef => {
+                    emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
+                      _ => s4lConnector.clearCache()
+                    }
+                  }
+                }).recover{
+                  case _ => s4lConnector.clearCache()
+                }
                 Ok(views.html.eis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
               case _ => {
                 Logger.warn(s"[AttachmentsAcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
@@ -181,7 +191,15 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
                   envelopeId => fileUploadService.closeEnvelope(tavcReferenceNumber, envelopeId.fold("")(_.toString)).map {
                     result => result.status match {
                       case OK =>
-                        s4lConnector.clearCache()
+                        (getTavCReferenceNumber() map {
+                          tavcRef => {
+                            emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
+                              _ => s4lConnector.clearCache()
+                            }
+                          }
+                        }).recover{
+                          case _ => s4lConnector.clearCache()
+                        }
                         Ok(views.html.eis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
                       case _ => s4lConnector.clearCache()
                         InternalServerError
