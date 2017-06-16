@@ -163,7 +163,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe
-            Some(controllers.seis.routes.EmailVerificationController.verify(Constants.ContactDetailsReturnUrl).url)
+            Some(controllers.seis.routes.EmailVerificationController.verify(Constants.CheckAnswersReturnUrl).url)
         }
       )
     }

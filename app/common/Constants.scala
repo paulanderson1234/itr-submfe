@@ -70,6 +70,7 @@ trait Constants {
   }
 
   val ContactDetailsReturnUrl = 1
+  val CheckAnswersReturnUrl = 2
   val EmailVerified = "FORWARD"
   val EmailNotVerified = "SEND_EMAIL"
   val EmailVerificationError = "ERROR"

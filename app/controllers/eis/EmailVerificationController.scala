@@ -16,7 +16,7 @@
 
 package controllers.eis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC, EIS, TAVCUser, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector, FrontendGlobal}
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -51,41 +51,56 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
   def verify(urlPosition: Int) : Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     urlPosition match {
         case Constants.ContactDetailsReturnUrl => {
-
-          val contactDetails = for {
-            contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
-          } yield if (contactDetails.isDefined) contactDetails.get.email else ""
-
-          val verifyStatus = for {
-            email <- contactDetails
-            isVerified <- emailVerificationService.verifyEmailAddress(email)
-          } yield (email, isVerified)
-
-          val result = verifyStatus.flatMap {
-            case (_, Some(true)) => Future {
-                ("", Constants.EmailVerified)
-              }
-            case (data, Some(false)) => {
-              emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationEisReturnUrl,
-                applicationConfig.emailVerificationTemplate).map {
-                case true => (data, Constants.EmailNotVerified)
-                case false => ("", Constants.EmailVerified)
-              }
-            }
-            case (_, None) => Future {
-              ("", "")
-            }
-          }
+          val result = verifyEmailStatus()
           processSendEmailVerification(result)
+        }
+        case Constants.CheckAnswersReturnUrl => {
+          val result = verifyEmailStatus()
+          processSubmitEmailVerification(result)
         }
       }
   }
 
+  private def verifyEmailStatus()(implicit request: Request[AnyContent], user: TAVCUser): Future[(String, String)] ={
+    val contactDetails = for {
+      contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+    } yield if (contactDetails.isDefined) contactDetails.get.email else ""
+
+    val verifyStatus = for {
+      email <- contactDetails
+      isVerified <- emailVerificationService.verifyEmailAddress(email)
+    } yield (email, isVerified)
+
+    val result = verifyStatus.flatMap {
+      case (_, Some(true)) => Future {
+        ("", Constants.EmailVerified)
+      }
+      case (data, Some(false)) => {
+        emailVerificationService.sendVerificationLink(data, applicationConfig.emailVerificationEisReturnUrl,
+          applicationConfig.emailVerificationTemplate).map {
+          case true => (data, Constants.EmailNotVerified)
+          case false => ("", Constants.EmailVerified)
+        }
+      }
+      case (_, None) => Future {
+        ("", "")
+      }
+    }
+    result
+  }
 
   private def processSendEmailVerification(result: Future[(String, String)])
                                           (implicit request: Request[AnyContent]): Future[Result] ={
     result.flatMap {
       case (_,Constants.EmailVerified) => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+      case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data))))
+      case _ => Future.successful(InternalServerError(FrontendGlobal.internalServerErrorTemplate))
+    }
+  }
+  private def processSubmitEmailVerification(result: Future[(String, String)])
+                                          (implicit request: Request[AnyContent]): Future[Result] ={
+    result.flatMap {
+      case (_,Constants.EmailVerified) => Future.successful(Redirect(routes.CheckAnswersController.show()))
       case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data))))
       case _ => Future.successful(InternalServerError(FrontendGlobal.internalServerErrorTemplate))
     }

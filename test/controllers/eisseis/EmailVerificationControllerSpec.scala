@@ -67,7 +67,7 @@ class EmailVerificationControllerSpec extends BaseSpec {
       )
     }
 
-    "redirect to the Review Company Details Controller page if email verified" in {
+    "redirect to the ConfirmCorrespondAddress Controller page if email verified" in {
       when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any()))
         .thenReturn(Future.successful(Some(true)))
       when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
@@ -79,5 +79,16 @@ class EmailVerificationControllerSpec extends BaseSpec {
       )
     }
 
+    "redirect to the CheckAnswers Controller page if email verified" in {
+      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any()))
+        .thenReturn(Future.successful(Some(true)))
+      when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
+        (Matchers.any(), Matchers.any(),Matchers.any()))
+        .thenReturn(Future.successful(Some(contactDetailsModel)))
+      mockEnrolledRequest(eisSeisSchemeTypesModel)
+      showWithSessionAndAuth(TestController.verify(Constants.CheckAnswersReturnUrl))(
+        result => redirectLocation(result) shouldBe Some(routes.CheckAnswersController.show().url)
+      )
+    }
   }
 }
