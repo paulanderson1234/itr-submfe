@@ -76,3 +76,6 @@ POST       /had-other-investments-before          controllers.seis.HadOtherInves
 
 # Email verification
 GET        /email-verification/:urlPosition         controllers.seis.EmailVerificationController.verify(urlPosition: Int)
+
+GET        /qualify-business-activity               controllers.seis.QualifyBusinessActivityController.show
+POST       /qualify-business-activity               controllers.seis.QualifyBusinessActivityController.submit

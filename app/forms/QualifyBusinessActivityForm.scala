@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.Json
+import models.QualifyBusinessActivityModel
+import play.api.data.Form
+import play.api.data.Forms._
 
-case class AddressModel(addressline1 : String,
-                        addressline2 : String,
-                        addressline3 : Option[String] = None,
-                        addressline4 : Option[String] = None,
-                        postcode : Option[String] = None,
-                        countryCode : String = "GB")
-
-object AddressModel {
-  implicit val format = Json.format[AddressModel]
-  implicit val writes = Json.writes[AddressModel]
+object QualifyBusinessActivityForm {
+  val qualifyBusinessActivityForm = Form(
+    mapping(
+      "isQualifyBusinessActivity" -> nonEmptyText
+    )
+    (QualifyBusinessActivityModel.apply)(QualifyBusinessActivityModel.unapply)
+  )
 }

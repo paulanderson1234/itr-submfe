@@ -18,14 +18,9 @@ package models
 
 import play.api.libs.json.Json
 
-case class AddressModel(addressline1 : String,
-                        addressline2 : String,
-                        addressline3 : Option[String] = None,
-                        addressline4 : Option[String] = None,
-                        postcode : Option[String] = None,
-                        countryCode : String = "GB")
+case class QualifyBusinessActivityModel (isQualifyBusinessActivity : String)
 
-object AddressModel {
-  implicit val format = Json.format[AddressModel]
-  implicit val writes = Json.writes[AddressModel]
+object QualifyBusinessActivityModel {
+  implicit val format = Json.format[QualifyBusinessActivityModel]
+  implicit val writes = Json.writes[QualifyBusinessActivityModel]
 }
