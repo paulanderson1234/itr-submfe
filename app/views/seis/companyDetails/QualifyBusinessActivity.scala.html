@@ -5,13 +5,13 @@
 
 @(qualifyBusinessActivityForm: Form[QualifyBusinessActivityModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.contactInformation.qualifyBusinessActivity.title")) {
+@main_template(Messages("page.companyDetails.qualifyBusinessActivity.title")) {
 
 @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.one"))
 
 @errorSummary(qualifyBusinessActivityForm, "isQualifyBusinessActivity", "isQualifyBusinessActivity")
 
-<h1 class="heading-xlarge" id="main-heading">@Messages("page.contactInformation.qualifyBusinessActivity.heading")</h1>
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.companyDetails.qualifyBusinessActivity.heading")</h1>
 
 @form(action = controllers.seis.routes.QualifyBusinessActivityController.submit()) {
 
@@ -19,9 +19,9 @@
     @formInputRadioGroup(
     field = qualifyBusinessActivityForm("isQualifyBusinessActivity"),
     Seq(
-    Constants.qualifyPrepareToTrade -> Messages("page.contactInformation.qualifyBusinessActivity.bullet.one"),
-    Constants.qualifyResearchAndDevelopment -> Messages("page.contactInformation.qualifyBusinessActivity.bullet.two")),
-    '_legend -> Messages("page.contactInformation.qualifyBusinessActivity.legend"),
+    Constants.qualifyPrepareToTrade -> Messages("page.companyDetails.qualifyBusinessActivity.bullet.one"),
+    Constants.qualifyResearchAndDevelopment -> Messages("page.companyDetails.qualifyBusinessActivity.bullet.two")),
+    '_legend -> Messages("page.companyDetails.qualifyBusinessActivity.legend"),
     '_legendClass -> "visuallyhidden",
     '_labelAfter -> true,
     '_labelClass -> "block-label",
@@ -31,16 +31,16 @@
 </div>
 
 <details>
-    <summary><span id="help" class="summary">@Messages("page.contactInformation.qualifyBusinessActivity.help.heading")</span></summary>
+    <summary><span id="help" class="summary">@Messages("page.companyDetails.qualifyBusinessActivity.help.heading")</span></summary>
     <div class="panel panel-indent panel-border-narrow">
-        <p id="help-text-one">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.one")</p>
-        <p id="help-text-two">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.two")</p>
+        <p id="help-text-one">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.one")</p>
+        <p id="help-text-two">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.two")</p>
         <ul class="list list-bullet">
-            <li id="help-bullet-one">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.three")</li>
-            <li id="help-bullet-two">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.four")</li>
-            <li id="help-bullet-three">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.five")</li>
+            <li id="help-bullet-one">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.three")</li>
+            <li id="help-bullet-two">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.four")</li>
+            <li id="help-bullet-three">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.five")</li>
         </ul>
-        <p id="help-text-three">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.six")</p>
+        <p id="help-text-three">@Messages("page.companyDetails.qualifyBusinessActivity.help.text.six")</p>
     </div>
 </details>
 

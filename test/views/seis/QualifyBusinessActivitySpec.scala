@@ -48,23 +48,23 @@ class QualifyBusinessActivitySpec extends ViewSpec {
 
     "Verify whether the company is qualified for the trading process" in new SEISSetup {
       val document: Document = {
-        setupMocks(Some(qualifyBusinessActivityModelYes))
+        setupMocks(Some(qualifyPrepareToTrade))
         val result = TestController.show.apply(authorisedFakeRequest)
         Jsoup.parse(contentAsString(result))
       }
-      document.title() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.title")
-      document.getElementById("main-heading").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.heading")
+      document.title() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.title")
+      document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.heading")
       document.getElementById("main-heading").hasClass("h1-heading")
       //document.getElementById("isQualifyBusinessActivity-yesLabel").text() shouldBe Messages("common.radioYesLabel")
       //document.getElementById("isQualifyBusinessActivity-noLabel").text() shouldBe Messages("common.radioNoLabel")
       //document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.TradeStartDateController.show().url
-      document.body.getElementById("help").text shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.heading")
-      document.getElementById("help-text-one").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.one")
-      document.getElementById("help-text-two").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.two")
-      document.getElementById("help-bullet-one").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.three")
-      document.getElementById("help-bullet-two").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.four")
-      document.getElementById("help-bullet-three").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.five")
-      document.getElementById("help-text-three").text() shouldBe Messages("page.contactInformation.qualifyBusinessActivity.help.text.six")
+      document.body.getElementById("help").text shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.heading")
+      document.getElementById("help-text-one").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.one")
+      document.getElementById("help-text-two").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.two")
+      document.getElementById("help-bullet-one").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.three")
+      document.getElementById("help-bullet-two").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.four")
+      document.getElementById("help-bullet-three").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.five")
+      document.getElementById("help-text-three").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.six")
     }
   }
 

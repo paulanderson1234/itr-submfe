@@ -58,7 +58,7 @@ class QualifyBusinessActivityControllerSpec extends BaseSpec {
 
   "Sending a GET request to QualifyBusinessActivityController when authenticated and enrolled" should {
     "return a 200 when something is fetched from keystore" in {
-      setupMocks(Some(qualifyBusinessActivityModelYes))
+      setupMocks(Some(qualifyPrepareToTrade))
       mockEnrolledRequest(seisSchemeTypesModel)
       showWithSessionAndAuth(TestController.show())(
         result => status(result) shouldBe OK

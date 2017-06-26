@@ -222,7 +222,15 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val acquiredTradeYes = AcquiredTradeEligibilityModel("Yes")
   val acquiredTradeNo = AcquiredTradeEligibilityModel("No")
 
-  val qualifyBusinessActivityModelYes = QualifyBusinessActivityModel(Constants.StandardRadioButtonYesValue)
-  val qualifyBusinessActivityModelNo = QualifyBusinessActivityModel(Constants.StandardRadioButtonNoValue)
+  val qualifyPrepareToTrade = QualifyBusinessActivityModel(Constants.qualifyPrepareToTrade)
+  val qualifyResearchAndDevelopment = QualifyBusinessActivityModel(Constants.qualifyResearchAndDevelopment)
+
+  val hasInvestmentTradeStartedYear = 2004
+  val hasInvestmentTradeStartedMonth = 2
+  val hasInvestmentTradeStartedDay = 29
+  val hasInvestmentTradeStartedModelYes = HasInvestmentTradeStartedModel(Constants.StandardRadioButtonYesValue,
+    Some(hasInvestmentTradeStartedDay), Some(hasInvestmentTradeStartedMonth), Some(hasInvestmentTradeStartedYear))
+  val hasInvestmentTradeStartedModelNo = HasInvestmentTradeStartedModel(Constants.StandardRadioButtonNoValue, None, None, None)
+
 
 }

@@ -1,0 +1,38 @@
+@import models.HasInvestmentTradeStartedModel
+@import uk.gov.hmrc.play.views.html.helpers.form
+@import views.html.helpers.{backButtonWithProgress, errorSummary, formHiddenYesNoRadioNoError, formInlineDateInput}
+
+@(hasInvestmentTradeStartedForm: Form[HasInvestmentTradeStartedModel])(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.companyDetails.HasInvestmentTradeStarted.title")) {
+
+@backButtonWithProgress(controllers.seis.routes.HasInvestmentTradeStartedController.show().url, Messages("common.section.progress.company.details.one"))
+
+@errorSummary(hasInvestmentTradeStartedForm, "has-investment-trade-started", "hasInvestmentTradeStartedDay")
+
+<h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.companyDetails.HasInvestmentTradeStarted.heading")</h1>
+
+
+<div class="form-group">
+    <p id="description-one" class="lede">@Messages("page.companyDetails.HasInvestmentTradeStarted.descriptionOne.text")</p>
+
+@form(action = controllers.seis.routes.HasInvestmentTradeStartedController.submit()) {
+
+@formHiddenYesNoRadioNoError(
+hasInvestmentTradeStartedForm,
+"hasInvestmentTradeStarted",
+Messages("page.companyDetails.HasInvestmentTradeStarted.question.hint"),
+formInlineDateInput(hasInvestmentTradeStartedForm,"hasInvestmentTradeStarted",Some(Messages("page.companyDetails.HasInvestmentTradeStarted.question.hint")),
+false, Some(Messages("common.date.hint.example")), None),
+None,
+Some("visuallyhidden")
+)
+
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+</div>
+
+}
+</div>
+}

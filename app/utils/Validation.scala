@@ -89,6 +89,34 @@ object Validation {
     })
   }
 
+  def dateOfHasInvestmentTradeStarted: Constraint[HasInvestmentTradeStartedModel] = {
+
+    def validateYes(dateForm: HasInvestmentTradeStartedModel) = {
+      anyEmpty(dateForm.hasInvestmentTradeStartedDay, dateForm.hasInvestmentTradeStartedMonth, dateForm.hasInvestmentTradeStartedYear) match {
+        case true => Invalid(Seq(ValidationError(Messages("validation.error.DateNotEntered"))))
+        case false => isValidDate(dateForm.hasInvestmentTradeStartedDay.get, dateForm.hasInvestmentTradeStartedMonth.get, dateForm.hasInvestmentTradeStartedYear.get) match {
+          case false => Invalid(Seq(ValidationError(Messages("common.date.error.invalidDate"))))
+          case true => dateNotInFuture(dateForm.hasInvestmentTradeStartedDay.get, dateForm.hasInvestmentTradeStartedMonth.get, dateForm.hasInvestmentTradeStartedYear.get) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.ShareIssueDate.Future"))))
+          }
+        }
+      }
+    }
+
+    Constraint("constraints.has_investment_trade_started")({
+      dateForm: HasInvestmentTradeStartedModel =>
+        dateForm.hasInvestmentTradeStarted match {
+          case Constants.StandardRadioButtonNoValue => allDatesEmpty(dateForm.hasInvestmentTradeStartedDay,
+            dateForm.hasInvestmentTradeStartedMonth, dateForm.hasInvestmentTradeStartedYear) match {
+            case true => Valid
+            case false => Invalid(Seq(ValidationError(Messages("validation.error.DateForNoOption"))))
+          }
+          case Constants.StandardRadioButtonYesValue => validateYes(dateForm)
+        }
+    })
+  }
+
   def tradeStartDateValidation: Constraint[TradeStartDateModel] = {
 
     def validateYes(dateForm: TradeStartDateModel) = {

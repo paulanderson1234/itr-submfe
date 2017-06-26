@@ -79,3 +79,6 @@ GET        /email-verification/:urlPosition         controllers.seis.EmailVerifi
 
 GET        /qualify-business-activity               controllers.seis.QualifyBusinessActivityController.show
 POST       /qualify-business-activity               controllers.seis.QualifyBusinessActivityController.submit
+
+GET        /has-investment-trade-started           controllers.seis.HasInvestmentTradeStartedController.show
+POST       /has-investment-trade-started           controllers.seis.HasInvestmentTradeStartedController.submit
