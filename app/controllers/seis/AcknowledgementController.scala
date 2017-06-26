@@ -29,7 +29,7 @@ import models.registration.RegistrationDetailsModel
 import models.submission._
 import play.Logger
 import play.api.mvc.{Action, AnyContent, Request, Result}
-import services.{EmailConfirmationService, FileUploadService, RegistrationDetailsService}
+import services.{NoDocsEmailConfirmationService, EmailConfirmationService, FileUploadService, RegistrationDetailsService}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import utils.Validation
 import play.api.i18n.Messages.Implicits._
@@ -45,7 +45,7 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val enrolmentConnector = EnrolmentConnector
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
   override lazy val fileUploadService = FileUploadService
-  override lazy val emailConfirmationService = EmailConfirmationService
+  override lazy val emailConfirmationService = NoDocsEmailConfirmationService
 }
 
 trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {

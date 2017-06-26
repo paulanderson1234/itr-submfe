@@ -44,7 +44,8 @@ trait AppConfig {
   val attachmentFileUploadOutsideUrl: String
   val emailDomain: String
   val emailUrl: String
-  val emailTemplate: String
+  val emailConfirmationTemplate: String
+  val noDocsEmailConfirmationTemplate: String
   val emailVerificationEisReturnUrlOne: String
   val emailVerificationSeisReturnUrlOne: String
   val emailVerificationCombinedReturnUrlOne: String
@@ -102,7 +103,8 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
 
   override lazy val emailDomain = loadConfig("email-confirmation.domain")
   override lazy val emailUrl = baseUrl("email")
-  override lazy val emailTemplate = loadConfig("email-confirmation.templateId")
+  override lazy val emailConfirmationTemplate = loadConfig("email-confirmation.templateConfirmationId")
+  override lazy val noDocsEmailConfirmationTemplate = loadConfig("email-confirmation.templateNoDocsConfirmationId")
 
   override lazy val emailVerificationEisReturnUrlOne = loadConfig(s"email.returnUrlEisOne")
   override lazy val emailVerificationSeisReturnUrlOne = loadConfig(s"email.returnUrlSeisOne")

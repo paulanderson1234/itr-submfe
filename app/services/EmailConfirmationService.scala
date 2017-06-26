@@ -71,7 +71,14 @@ trait EmailConfirmationService {
 
 object EmailConfirmationService extends EmailConfirmationService {
   val s4LConnector: S4LConnector = S4LConnector
-  val emailTemplate = FrontendAppConfig.emailTemplate
+  val emailTemplate = FrontendAppConfig.emailConfirmationTemplate
+  val registrationDetailsService = RegistrationDetailsService
+  val emailConfirmationConnector = EmailConfirmationConnector
+}
+
+object NoDocsEmailConfirmationService extends EmailConfirmationService {
+  val s4LConnector: S4LConnector = S4LConnector
+  val emailTemplate = FrontendAppConfig.noDocsEmailConfirmationTemplate
   val registrationDetailsService = RegistrationDetailsService
   val emailConfirmationConnector = EmailConfirmationConnector
 }

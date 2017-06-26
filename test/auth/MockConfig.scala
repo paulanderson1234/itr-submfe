@@ -40,7 +40,8 @@ trait MockConfig extends AppConfig {
   override val eisseisFlowEnabled: Boolean = true
   override val emailUrl: String = "http://localhost:8300"
   override val emailDomain: String = "hrmc"
-  override val emailTemplate: String = "test_template"
+  override val emailConfirmationTemplate: String = "test_template_email_confirmation"
+  override val noDocsEmailConfirmationTemplate: String = "test_template_no_docs_email_confirmation"
 
 
   override lazy val attachmentFileUploadUrl: (String) => String = schemeType =>
