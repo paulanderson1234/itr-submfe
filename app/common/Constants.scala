@@ -75,4 +75,7 @@ trait Constants {
   val EmailNotVerified = "SEND_EMAIL"
   val EmailVerificationError = "ERROR"
 
+  val qualifyPrepareToTrade = "Preparing to Trade"
+  val qualifyResearchAndDevelopment = "Research and Development"
+
 }

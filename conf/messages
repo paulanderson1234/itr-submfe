@@ -1000,3 +1000,15 @@ feedback.title = Feedback
 ## Feedback Thank You ##
 feedback.thankyou.title = Feedback received
 
+# Compant details qualify business activity #
+page.contactInformation.qualifyBusinessActivity.title=What will the money your company has raised be used for?
+page.contactInformation.qualifyBusinessActivity.heading=What will the money your company has raised be used for?
+page.contactInformation.qualifyBusinessActivity.bullet.one=Doing business or getting ready to do business
+page.contactInformation.qualifyBusinessActivity.bullet.two=Research and development to do with your business activity
+page.contactInformation.qualifyBusinessActivity.help.heading=What''s the difference?
+page.contactInformation.qualifyBusinessActivity.help.text.one=You''re doing business when your goods or services are available to the public. You may not have made a sale yet.
+page.contactInformation.qualifyBusinessActivity.help.text.two=Getting ready is anything you do to prepare for doing business, for example:
+page.contactInformation.qualifyBusinessActivity.help.text.three=advertising
+page.contactInformation.qualifyBusinessActivity.help.text.four=building a website
+page.contactInformation.qualifyBusinessActivity.help.text.five=renting an office
+page.contactInformation.qualifyBusinessActivity.help.text.six=Research and development is work you do to improve existing products and create new products.

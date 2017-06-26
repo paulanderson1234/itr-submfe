@@ -3,34 +3,52 @@
 @import common.Constants
 @import views.html.helpers.{backButtonWithProgress, formInputRadioGroup, errorSummary, formHint}
 
-@(QualifyBusinessActivityForm: Form[QualifyBusinessActivityModel])(implicit request: Request[_], messages: Messages)
+@(qualifyBusinessActivityForm: Form[QualifyBusinessActivityModel])(implicit request: Request[_], messages: Messages)
 
-@main_template(Messages("page.seis.companyDetails.isFirstTrade.title")) {
+@main_template(Messages("page.contactInformation.qualifyBusinessActivity.title")) {
 
-    @backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.one"))
+@backButtonWithProgress(controllers.seis.routes.TradeStartDateController.show().url, Messages("common.section.progress.company.details.one"))
 
-    @errorSummary(isFirstTradeForm, "is-first-trade", "isFirstTrade")
-    <h1 class="heading-xlarge" id="main-heading">@Messages("page.seis.companyDetails.isFirstTrade.heading")</h1>
+@errorSummary(qualifyBusinessActivityForm, "isQualifyBusinessActivity", "isQualifyBusinessActivity")
 
-    @form(action = controllers.seis.routes.IsFirstTradeController.submit()) {
+<h1 class="heading-xlarge" id="main-heading">@Messages("page.contactInformation.qualifyBusinessActivity.heading")</h1>
 
-    <div class="form-group">
-        @formInputRadioGroup(
-        field = isFirstTradeForm("isFirstTrade"),
-        Seq(
-        Constants.StandardRadioButtonYesValue -> Messages("common.radioYesLabel"),
-        Constants.StandardRadioButtonNoValue -> Messages("common.radioNoLabel")),
-        '_legend -> Messages("page.seis.companyDetails.isFirstTrade.legend"),
-        '_legendClass -> "visuallyhidden",
-        '_labelAfter -> true,
-        '_labelClass -> "block-label",
-        '_legendID -> "isFirstTrade",
-        '_groupClass -> "inline"
-        )
+@form(action = controllers.seis.routes.QualifyBusinessActivityController.submit()) {
+
+<div class="form-group">
+    @formInputRadioGroup(
+    field = qualifyBusinessActivityForm("isQualifyBusinessActivity"),
+    Seq(
+    Constants.qualifyPrepareToTrade -> Messages("page.contactInformation.qualifyBusinessActivity.bullet.one"),
+    Constants.qualifyResearchAndDevelopment -> Messages("page.contactInformation.qualifyBusinessActivity.bullet.two")),
+    '_legend -> Messages("page.contactInformation.qualifyBusinessActivity.legend"),
+    '_legendClass -> "visuallyhidden",
+    '_labelAfter -> true,
+    '_labelClass -> "block-label",
+    '_legendID -> "isQualifyBusinessActivity",
+    '_groupClass -> "inline"
+    )
+</div>
+
+<details>
+    <summary><span id="help" class="summary">@Messages("page.contactInformation.qualifyBusinessActivity.help.heading")</span></summary>
+    <div class="panel panel-indent panel-border-narrow">
+        <p id="help-text-one">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.one")</p>
+        <p id="help-text-two">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.two")</p>
+        <ul class="list list-bullet">
+            <li id="help-bullet-one">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.three")</li>
+            <li id="help-bullet-two">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.four")</li>
+            <li id="help-bullet-three">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.five")</li>
+        </ul>
+        <p id="help-text-three">@Messages("page.contactInformation.qualifyBusinessActivity.help.text.six")</p>
     </div>
+</details>
 
-    <div class="form-group">
-        <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
-    </div>
-    }
+
+
+
+<div class="form-group">
+    <button class="btn button" type="submit" id="next">@Messages("common.button.snc")</button>
+</div>
+}
 }

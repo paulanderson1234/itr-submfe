@@ -22,7 +22,7 @@ import connectors._
 import fixtures.SubmissionFixture
 import models.submission.SchemeTypesModel
 import models.throttlingGuidance.{AcquiredTradeEligibilityModel, GroupsAndSubsEligibilityModel, IsAgentModel}
-import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
+import models.{QualifyBusinessActivityModel, UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
@@ -221,4 +221,8 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   val acquiredTradeYes = AcquiredTradeEligibilityModel("Yes")
   val acquiredTradeNo = AcquiredTradeEligibilityModel("No")
+
+  val qualifyBusinessActivityModelYes = QualifyBusinessActivityModel(Constants.StandardRadioButtonYesValue)
+  val qualifyBusinessActivityModelNo = QualifyBusinessActivityModel(Constants.StandardRadioButtonNoValue)
+
 }
