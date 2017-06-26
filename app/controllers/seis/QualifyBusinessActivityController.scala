@@ -65,11 +65,11 @@ trait QualifyBusinessActivityController extends FrontendController with Authoris
           s4lConnector.saveFormData(KeystoreKeys.isQualifyBusinessActivity, validFormData)
           validFormData.isQualifyBusinessActivity match {
 
-            case Constants.StandardRadioButtonYesValue => {
+            case Constants.qualifyPrepareToTrade => {
               // to navigate to usedInvestmentSchemeBefore for SEIS only flow
               Future.successful(Redirect(routes.HadPreviousRFIController.show()))
             }
-            case Constants.StandardRadioButtonNoValue => {
+            case Constants.qualifyResearchAndDevelopment => {
               // to navigate to errorNotFirstTrade for SEIS only flow
               Future.successful(Redirect(routes.NotFirstTradeController.show()))
             }

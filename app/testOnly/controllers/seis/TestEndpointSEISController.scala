@@ -58,6 +58,7 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         confirmCorrespondAddressForm <- fillForm[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress, ConfirmCorrespondAddressForm.confirmCorrespondAddressForm)
         contactAddressForm <- fillForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
         hadOtherInvestmentsForm <- fillForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
+        qualifyBusinessActivityForm <- fillForm[QualifyBusinessActivityModel](KeystoreKeys.isQualifyBusinessActivity, QualifyBusinessActivityForm.qualifyBusinessActivityForm)
       } yield Ok(
         testOnly.views.html.seis.testEndpointSEISPageOne(
           natureOfBusinessForm,
@@ -72,7 +73,8 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
           contactDetailsForm,
           confirmCorrespondAddressForm,
           contactAddressForm,
-          hadOtherInvestmentsForm
+          hadOtherInvestmentsForm,
+          qualifyBusinessActivityForm
         )
       )
   }
@@ -90,6 +92,8 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
     val confirmCorrespondAddress = bindConfirmContactAddress()
     val contactAddress = bindForm[AddressModel](KeystoreKeys.manualContactAddress, ContactAddressForm.contactAddressForm)
     val hadOtherInvestments = bindForm[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments, HadOtherInvestmentsForm.hadOtherInvestmentsForm)
+    val qualifyBusinessActivityForm = bindForm[QualifyBusinessActivityModel](KeystoreKeys.isQualifyBusinessActivity,
+      QualifyBusinessActivityForm.qualifyBusinessActivityForm)
     saveBackLinks()
     saveSchemeType()
     Future.successful(Ok(
@@ -106,7 +110,8 @@ trait TestEndpointSEISController extends FrontendController with AuthorisedAndEn
         contactDetails,
         confirmCorrespondAddress,
         contactAddress,
-        hadOtherInvestments
+        hadOtherInvestments,
+        qualifyBusinessActivityForm
       )
     ))
   }

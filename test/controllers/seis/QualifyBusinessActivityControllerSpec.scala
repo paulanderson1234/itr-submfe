@@ -76,7 +76,7 @@ class QualifyBusinessActivityControllerSpec extends BaseSpec {
 
   "Sending a valid Yes form submission to the QualifyBusinessActivityController when authenticated and enrolled" should {
     "redirect to the HadPreviousRFI page" in {
-      val formInput = "isQualifyBusinessActivity" -> Constants.StandardRadioButtonYesValue
+      val formInput = "isQualifyBusinessActivity" -> Constants.qualifyPrepareToTrade
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput)(
@@ -90,7 +90,7 @@ class QualifyBusinessActivityControllerSpec extends BaseSpec {
 
   "Sending a valid Yes form submission to the QualifyBusinessActivityController when authenticated and enrolled" should {
     "redirect to the NotFirstTrade page" in {
-      val formInput = "isQualifyBusinessActivity" -> Constants.StandardRadioButtonNoValue
+      val formInput = "isQualifyBusinessActivity" -> Constants.qualifyResearchAndDevelopment
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       submitWithSessionAndAuth(TestController.submit,formInput)(

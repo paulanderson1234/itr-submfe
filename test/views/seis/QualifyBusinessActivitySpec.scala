@@ -55,8 +55,8 @@ class QualifyBusinessActivitySpec extends ViewSpec {
       document.title() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.heading")
       document.getElementById("main-heading").hasClass("h1-heading")
-      //document.getElementById("isQualifyBusinessActivity-yesLabel").text() shouldBe Messages("common.radioYesLabel")
-      //document.getElementById("isQualifyBusinessActivity-noLabel").text() shouldBe Messages("common.radioNoLabel")
+      document.getElementById("isQualifyBusinessActivity-preparing_to_tradeLabel").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.bullet.one")
+      document.getElementById("isQualifyBusinessActivity-research_and_developmentLabel").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.bullet.two")
       //document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.TradeStartDateController.show().url
       document.body.getElementById("help").text shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.heading")
       document.getElementById("help-text-one").text() shouldBe Messages("page.companyDetails.qualifyBusinessActivity.help.text.one")

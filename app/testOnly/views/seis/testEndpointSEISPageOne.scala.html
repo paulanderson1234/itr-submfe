@@ -8,7 +8,8 @@
 @(natureOfBusinessForm: Form[NatureOfBusinessModel],dateOfIncorporationForm: Form[DateOfIncorporationModel],tradeStartDateForm: Form[TradeStartDateModel], isFirstTradeForm: Form[IsFirstTradeModel],
 hadPreviousRFIForm: Form[HadPreviousRFIModel], testPreviousSchemesForm: Form[TestPreviousSchemesModel], previousSchemesSize: Int,
 proposedInvestmentForm: Form[ProposedInvestmentModel],confirmContactDetailsForm: Form[ConfirmContactDetailsModel], contactDetailsForm: Form[ContactDetailsModel],
-confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel], hadOtherInvestmentsForm: Form[HadOtherInvestmentsModel])(implicit request: Request[_], messages: Messages)
+confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddressForm: Form[AddressModel], hadOtherInvestmentsForm: Form[HadOtherInvestmentsModel],
+qualifyBusinessActivityForm: Form[QualifyBusinessActivityModel])(implicit request: Request[_], messages: Messages)
 @main_template(Messages("page.test.page-one.title")) {
 <div class="grid-row">
 
@@ -34,6 +35,22 @@ confirmCorrespondAddressForm: Form[ConfirmCorrespondAddressModel], contactAddres
     <div class="form-group">
         @formInlineDateInput(dateOfIncorporationForm, "incorporation", Some(Messages("page.companyDetails.DateOfIncorporation.heading")),
         true, Some(Messages("date.hint.dateOfIncorporation")), None)
+    </div>
+
+    <h2>What will the money your company has raised be used for?</h2>
+    <div class="form-group">
+        @formInputRadioGroup(
+        field = qualifyBusinessActivityForm("isQualifyBusinessActivity"),
+        Seq(
+        Constants.qualifyPrepareToTrade -> Messages("page.companyDetails.qualifyBusinessActivity.bullet.one"),
+        Constants.qualifyResearchAndDevelopment -> Messages("page.companyDetails.qualifyBusinessActivity.bullet.two")),
+        '_legend -> Messages("page.companyDetails.qualifyBusinessActivity.legend"),
+        '_legendClass -> "visuallyhidden",
+        '_labelAfter -> true,
+        '_labelClass -> "block-label",
+        '_legendID -> "isQualifyBusinessActivity",
+        '_groupClass -> "inline"
+        )
     </div>
 
     <h2>Trade Start Date</h2>
