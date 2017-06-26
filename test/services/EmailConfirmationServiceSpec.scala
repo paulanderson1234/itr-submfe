@@ -44,7 +44,7 @@ class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAp
     override val s4LConnector: S4LConnector = mock[S4LConnector]
     override val emailConfirmationConnector: EmailConfirmationConnector = mock[EmailConfirmationConnector]
     override val registrationDetailsService: RegistrationDetailsService = mock[RegistrationDetailsService]
-    override val emailTemplate: String = MockConfig.emailTemplate
+    override val emailTemplate: String = MockConfig.emailConfirmationTemplate
   }
 
   val validTavcReference = "XATAVC000123456"
@@ -76,7 +76,21 @@ class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAp
       EmailConfirmationService.registrationDetailsService shouldBe RegistrationDetailsService
     }
     "use the correct email template" in {
-      EmailConfirmationService.emailTemplate shouldBe FrontendAppConfig.emailTemplate
+      EmailConfirmationService.emailTemplate shouldBe FrontendAppConfig.emailConfirmationTemplate
+    }
+  }
+  "The NoDocsEmailConfirmationService" should {
+    "use the correct s4l connector" in {
+      NoDocsEmailConfirmationService.s4LConnector shouldBe S4LConnector
+    }
+    "use the correct email confirmation connector" in {
+      NoDocsEmailConfirmationService.emailConfirmationConnector shouldBe EmailConfirmationConnector
+    }
+    "use the correct registration details service" in {
+      NoDocsEmailConfirmationService.registrationDetailsService shouldBe RegistrationDetailsService
+    }
+    "use the correct email template" in {
+      NoDocsEmailConfirmationService.emailTemplate shouldBe FrontendAppConfig.noDocsEmailConfirmationTemplate
     }
   }
 
