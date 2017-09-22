@@ -16,14 +16,14 @@
 
 package controllers.eisseis
 
-import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, TAVCUser, VCT}
+import auth._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
 import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import models.{ProposedInvestmentModel, KiProcessingModel, CommercialSaleModel, HadPreviousRFIModel, SubsidiariesModel}
+import models._
 import common._
 import common.Constants._
 import config.FrontendGlobal._
@@ -76,12 +76,13 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
   val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeReq(kiModel: KiProcessingModel, prevRFI: HadPreviousRFIModel,
+      def routeReq(kiModel: KiProcessingModel, prevRFI: HadPreviousRFIModel, otherInvestment: HadOtherInvestmentsModel,
                    comSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel]): Future[Result] = {
-        getRoute(prevRFI, comSale, hasSub, kiModel.isKi)
+        getRoute(prevRFI, otherInvestment, comSale, hasSub, kiModel.isKi)
       }
 
-      def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean], prevRFI: HadPreviousRFIModel): Future[Result] = {
+      def routeRequest(kiModel: Option[KiProcessingModel], isLifeTimeAllowanceExceeded: Option[Boolean],
+                       prevRFI: HadPreviousRFIModel, otherInvestments: HadOtherInvestmentsModel): Future[Result] = {
         kiModel match {
           // check previous answers present
           case Some(dataWithPreviousValid) => {
@@ -101,7 +102,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
                   for {
                     comSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
                     hasSub <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-                    route <- routeReq(kiModel.get, prevRFI, comSale, hasSub)
+                    route <- routeReq(kiModel.get, prevRFI, otherInvestments, comSale, hasSub)
                   } yield route
                 }
 
@@ -124,16 +125,19 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
           s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
           (for {
             kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+            hadOtherInvestments <- s4lConnector.fetchAndGetFormData[HadOtherInvestmentsModel](KeystoreKeys.hadOtherInvestments)
             hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
             previousInvestments <- PreviousSchemesHelper.getPreviousInvestmentTotalFromKeystore(s4lConnector)
 
             // Call API
             isLifeTimeAllowanceExceeded <- submissionConnector.checkLifetimeAllowanceExceeded(
-              if (hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue) true else false,
+              if (hadPrevRFI.get.hadPreviousRFI == StandardRadioButtonYesValue
+                ||hadOtherInvestments.get.hadOtherInvestments == StandardRadioButtonYesValue) true else false,
               if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
               validFormData.investmentAmount)
 
-            route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get)
+
+            route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get, hadOtherInvestments.get)
           } yield route) recover {
             case e: NoSuchElementException => Redirect(routes.HadPreviousRFIController.show())
             case e: Exception => {
@@ -146,12 +150,13 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     }
   }
 
-  def getRoute(prevRFI: HadPreviousRFIModel, commercialSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel], isKi: Boolean)
+  def getRoute(prevRFI: HadPreviousRFIModel, otherInvestment: HadOtherInvestmentsModel,
+               commercialSale: Option[CommercialSaleModel], hasSub: Option[SubsidiariesModel], isKi: Boolean)
               (implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
 
     commercialSale match {
       case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonNoValue => subsidiariesCheck(hasSub)
-      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonYesValue => getPreviousSaleRoute(prevRFI, sale, hasSub, isKi)
+      case Some(sale) if sale.hasCommercialSale == Constants.StandardRadioButtonYesValue => getPreviousSaleRoute(prevRFI, otherInvestment, sale, hasSub, isKi)
       case None => Future.successful(Redirect(routes.CommercialSaleController.show()))
     }
   }
@@ -180,28 +185,22 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     }
   }
 
-  def getPreviousSaleRoute(prevRFI: HadPreviousRFIModel, commercialSale: CommercialSaleModel, hasSub: Option[SubsidiariesModel], isKi: Boolean)
-                          (implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
+  def getPreviousSaleRoute(prevRFI: HadPreviousRFIModel, otherInvestment: HadOtherInvestmentsModel, commercialSale: CommercialSaleModel,
+                           hasSub: Option[SubsidiariesModel], isKi: Boolean)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
 
     val dateWithinRangeRule: Boolean = Validation.checkAgeRule(commercialSale.commercialSaleDay.get,
       commercialSale.commercialSaleMonth.get, commercialSale.commercialSaleYear.get, getAgeLimit(isKi))
 
-    prevRFI match {
-      case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonNoValue => {
-        // this is first scheme
-        if (dateWithinRangeRule) {
-          s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
-            routes.ProposedInvestmentController.show().url)
-          Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-        }
-        else subsidiariesCheck(hasSub)
+    if(prevRFI.hadPreviousRFI == StandardRadioButtonNoValue && otherInvestment.hadOtherInvestments == StandardRadioButtonNoValue){
+      // this is first scheme
+      if (dateWithinRangeRule) {
+        s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket,
+          routes.ProposedInvestmentController.show().url)
+        Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
       }
-      case rfi if rfi.hadPreviousRFI == Constants.StandardRadioButtonYesValue => {
-        // subsequent scheme
-        if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
-        else subsidiariesCheck(hasSub)
-      }
-
+      else subsidiariesCheck(hasSub)
     }
+    else if (dateWithinRangeRule) Future.successful(Redirect(routes.UsedInvestmentReasonBeforeController.show()))
+    else subsidiariesCheck(hasSub)
   }
 }
