@@ -31,21 +31,21 @@ trait SubmissionService {
 
   val submissionConnector: SubmissionConnector
 
-  def getEtmpSubmissionDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubmissionDetailsModel]] = {
-    submissionConnector.getAASubmissionDetails(tavcRef) map {
+  def getEtmpReturnsSummary(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubmissionDetailsModel]] = {
+    submissionConnector.getReturnsSummary(tavcRef) map {
       submissionDetails =>
         submissionDetails.json.validate[SubmissionDetailsModel] match {
           case data: JsSuccess[SubmissionDetailsModel] =>
             Some(data.value)
           case e: JsError =>
-            Logger.warn(s"[SubmissionService][getEtmpSubmissionDetails] - Failed to parse JSON response. Errors=${e.errors}")
+            Logger.warn(s"[SubmissionService][getEtmpReturnsSummary] - Failed to parse JSON response. Errors=${e.errors}")
             None
         }
     }
   }
 
   def hasPreviousSubmissions(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
-    getEtmpSubmissionDetails(tavcRef) map {
+    getEtmpReturnsSummary(tavcRef) map {
       result => result.nonEmpty && result.get.submissions.fold(0)(_.length) > 0
     }
   }.recover{

@@ -59,7 +59,7 @@ class HistoricAASubmissionControllerSpec extends BaseSpec{
   "Sending a GET request to HistoricAASubmissionController when authenticated and enrolled" should {
     "return a 200 OK when a submission details model is received" in {
       mockEnrolledRequest()
-      when(TestController.submissionService.getEtmpSubmissionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+      when(TestController.submissionService.getEtmpReturnsSummary(Matchers.any())(Matchers.any(),Matchers.any()))
         .thenReturn(Some(combinedSubmissionModel))
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe OK
@@ -68,7 +68,7 @@ class HistoricAASubmissionControllerSpec extends BaseSpec{
 
     "return a 500 INTERNAL_SERVER_ERROR when no submission details model is received" in {
       mockEnrolledRequest()
-      when(TestController.submissionService.getEtmpSubmissionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+      when(TestController.submissionService.getEtmpReturnsSummary(Matchers.any())(Matchers.any(),Matchers.any()))
         .thenReturn(None)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -77,7 +77,7 @@ class HistoricAASubmissionControllerSpec extends BaseSpec{
 
     "return a 500 INTERNAL_SERVER_ERROR when a error occurs" in {
       mockEnrolledRequest()
-      when(TestController.submissionService.getEtmpSubmissionDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+      when(TestController.submissionService.getEtmpReturnsSummary(Matchers.any())(Matchers.any(),Matchers.any()))
           .thenThrow(new NullPointerException)
       showWithSessionAndAuth(TestController.show)(
         result => status(result) shouldBe INTERNAL_SERVER_ERROR

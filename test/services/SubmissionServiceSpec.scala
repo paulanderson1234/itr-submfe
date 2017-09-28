@@ -118,27 +118,27 @@ class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPer
 
   "Calling getEtmpSubmissionDetails" should {
     "convert the combined submission details data from json to the corresponding model" in {
-      when(TestSubmiisionService.submissionConnector.getAASubmissionDetails(Matchers.any())(Matchers.any())).
+      when(TestSubmiisionService.submissionConnector.getReturnsSummary(Matchers.any())(Matchers.any())).
         thenReturn(HttpResponse(OK, Some(combinedJson)))
-      lazy val result = TestSubmiisionService.getEtmpSubmissionDetails(tavcRef)
+      lazy val result = TestSubmiisionService.getEtmpReturnsSummary(tavcRef)
       await(result) shouldBe Some(combinedSubmissionModel)
     }
   }
 
   "Calling getEtmpSubmissionDetails" should {
     "convert the empty submission details data from json to the corresponding model" in {
-      when(TestSubmiisionService.submissionConnector.getAASubmissionDetails(Matchers.any())(Matchers.any())).
+      when(TestSubmiisionService.submissionConnector.getReturnsSummary(Matchers.any())(Matchers.any())).
         thenReturn(HttpResponse(OK, Some(emptySubmissionsJson)))
-      lazy val result = TestSubmiisionService.getEtmpSubmissionDetails(tavcRef)
+      lazy val result = TestSubmiisionService.getEtmpReturnsSummary(tavcRef)
       await(result) shouldBe Some(emptySubmissionModel)
     }
   }
 
   "Calling getEtmpSubmissionDetails" should {
     "return None if the Model does not validate the Json" in {
-      when(TestSubmiisionService.submissionConnector.getAASubmissionDetails(Matchers.any())(Matchers.any())).
+      when(TestSubmiisionService.submissionConnector.getReturnsSummary(Matchers.any())(Matchers.any())).
         thenReturn(HttpResponse(OK, Some(invalidJson)))
-      lazy val result = TestSubmiisionService.getEtmpSubmissionDetails(tavcRef)
+      lazy val result = TestSubmiisionService.getEtmpReturnsSummary(tavcRef)
       await(result) shouldBe Some(SubmissionDetailsModel(None))
     }
   }

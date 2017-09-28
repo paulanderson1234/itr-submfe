@@ -77,13 +77,13 @@ trait SubmissionConnector {
     http.POST[JsValue, HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceNumber/submit", Json.toJson(targetSubmissionModel))
   }
 
-  def getAASubmissionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def getReturnsSummary(tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     if(tavcReferenceNumber.isEmpty) {
-      Logger.warn("[SubmissionConnector][getAASubmissionSummary] An empty tavcReferenceNumber was passed")
+      Logger.warn("[SubmissionConnector][getReturnsSummary] An empty tavcReferenceNumber was passed")
     }
-    require(tavcReferenceNumber.nonEmpty, "[SubmissionConnector][getAASubmissionSummary] An empty tavcReferenceNumber was passed")
+    require(tavcReferenceNumber.nonEmpty, "[SubmissionConnector][getReturnsSummary] An empty tavcReferenceNumber was passed")
 
-    http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief/advanced-assurance/$tavcReferenceNumber/submission-details")
+    http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief/returns/$tavcReferenceNumber/submission-details")
   }
 
   def getRegistrationDetails(safeID: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
