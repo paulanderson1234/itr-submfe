@@ -50,7 +50,7 @@
             }
             <tr>
                 <td id="total-investment-heading" class="bold-xsmall" colspan="2">@Messages("page.previousInvestment.reviewPreviousSchemes.totalInvestment")</td>
-                <td id="total-investment-amount" class="bold-xsmall">@PreviousSchemeModel.getAmountAsFormattedString(previousSchemes.foldLeft(0)(_ + _.investmentAmount))</td>
+                <td id="total-investment-amount" class="bold-xsmall">@PreviousSchemeModel.getAmountAsFormattedString(previousSchemes.foldLeft(0.toLong)(_ + _.investmentAmount))</td>
                 <td colspan="3"></td>
             </tr>
             <tr>

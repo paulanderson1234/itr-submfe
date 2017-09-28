@@ -129,7 +129,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
             if ((hadPrevRFI.get.hadPreviousRFI == Constants.StandardRadioButtonYesValue) ||
               (hadOtherInvestments.get.hadOtherInvestments == Constants.StandardRadioButtonYesValue)) true else false,
             if (kiModel.isDefined) kiModel.get.isKi else false, previousInvestments,
-            validFormData.investmentAmount)
+            validFormData.investmentAmount.toLong)
 
           route <- routeRequest(kiModel, isLifeTimeAllowanceExceeded, hadPrevRFI.get, hadOtherInvestments.get)
         } yield route) recover {

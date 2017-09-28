@@ -65,6 +65,8 @@ trait PreviousSchemesHelper {
     result
   }
 
+
+
   def previousInvestmentsExist(s4lConnector: connectors.S4LConnector)
                               (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
 
@@ -78,13 +80,14 @@ trait PreviousSchemesHelper {
 
   }
 
+
   def getPreviousInvestmentTotalFromKeystore(s4lConnector: connectors.S4LConnector)
-                                            (implicit hc: HeaderCarrier, user: TAVCUser): Future[Int] = {
+                                            (implicit hc: HeaderCarrier, user: TAVCUser): Future[Long] = {
 
     val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
-      case Some(data) => data.foldLeft(0)(_ + _.investmentAmount)
-      case None => 0
-    }.recover { case _ => 0 }
+      case Some(data) => data.foldLeft(0.toLong)(_ + _.investmentAmount.toLong)
+      case None => 0.toLong
+    }.recover { case _ => 0.toLong }
 
     result
   }

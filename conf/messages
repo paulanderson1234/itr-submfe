@@ -1,3 +1,7 @@
+#overrdie for play's max length error
+error.maxLength=You can''t enter more than {0} characters
+
+
 #common
 common.button.next=Next
 common.button.continue=Continue

@@ -65,10 +65,15 @@ object Transformers {
       Option(contactDetails.email)).flatten
   }
 
+  val penceSuffix = "00"
+  def getPenceSuffix(amount:String): String ={
+    if (amount.matches("[0]+")) amount else amount.concat(penceSuffix)
+  }
+
   def poundToPence(pounds: Either[String, Int]): String = {
     pounds match {
-      case Left(pounds) => pounds ++ "00"
-      case Right(pounds) => (pounds * 100).toString
+      case Left(poundsMatch) => getPenceSuffix(poundsMatch)
+      case Right(poundsMatch) => (poundsMatch * 100).toString
     }
   }
 }

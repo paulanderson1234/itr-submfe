@@ -42,13 +42,12 @@ trait Converters {
 
     require(turnoverCostModel.firstYear.toInt >= 1000 && turnoverCostModel.firstYear.toInt <= 9999, "most recent year must be a 4 digit integer")
 
-
     List(
       TurnoverCostModel(turnoverCostModel.firstYear, CostModel(amount = turnoverCostModel.amount1)),
       TurnoverCostModel(turnoverCostModel.secondYear, CostModel(amount = turnoverCostModel.amount2)),
       TurnoverCostModel(turnoverCostModel.thirdYear, CostModel(amount = turnoverCostModel.amount3)),
       TurnoverCostModel(turnoverCostModel.fourthYear, CostModel(amount = turnoverCostModel.amount4)),
       TurnoverCostModel(turnoverCostModel.fifthYear, CostModel(amount = turnoverCostModel.amount5))
-     )
+    )
   }
 }
