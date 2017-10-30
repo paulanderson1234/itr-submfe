@@ -18,20 +18,16 @@ package controllers.seis
 
 import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.KeystoreKeys
-import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.{ControllerHelpers, PreviousSchemesHelper}
-import controllers.predicates.FeatureSwitch
 import models.HadPreviousRFIModel
-import play.Logger
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.previousInvestment.ReviewPreviousSchemes
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc._
-
 import scala.concurrent.Future
 
 object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
@@ -42,76 +38,65 @@ object ReviewPreviousSchemesController extends ReviewPreviousSchemesController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with
-  PreviousSchemesHelper with FeatureSwitch {
+trait ReviewPreviousSchemesController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      def routeRequest(backUrl: Option[String]) = {
-        if (backUrl.isDefined) {
-          PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
-            previousSchemes =>
-              if (previousSchemes.nonEmpty) {
-                Future.successful(Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get)))
-              }
-              else
-                Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-          }
-        } else {
-          // no back link - send to beginning of flow
-          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).flatMap {
+          previousSchemes =>
+            if (previousSchemes.nonEmpty) {
+              Future.successful(Ok(ReviewPreviousSchemes(previousSchemes, backUrl.get)))
+            }
+            else
+              Future.successful(Redirect(routes.HadPreviousRFIController.show()))
         }
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
-      for {
-        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkReviewPreviousSchemes, s4lConnector)
-        route <- routeRequest(link)
-      } yield route
     }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkReviewPreviousSchemes, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
 
-  def add: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
-      Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
-    }
+  def add: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+    Future.successful(Redirect(routes.PreviousSchemeController.show(None)))
   }
 
-  def change(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
-      Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
-    }
+  def change(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.saveFormData(KeystoreKeys.backLinkPreviousScheme, routes.ReviewPreviousSchemesController.show().url)
+    Future.successful(Redirect(routes.PreviousSchemeController.show(Some(id))))
   }
 
-  def remove(id: Int): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.DeletePreviousSchemeController.show(id)))
-    }
+  def remove(id: Int): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.DeletePreviousSchemeController.show(id)))
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeRequest(previousSchemesExist: Boolean): Future[Result] = {
-        if (!previousSchemesExist) {
-          Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
-        }
-        else {
-            Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-        }
+    def routeRequest(previousSchemesExist: Boolean): Future[Result] = {
+      if (!previousSchemesExist) {
+        Future.successful(Redirect(routes.ReviewPreviousSchemesController.show()))
       }
-
-      s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
-      for {
-        previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
-        hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
-        route <- routeRequest(previousSchemesExist)
-      } yield route
+      else {
+        Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+      }
     }
+
+    s4lConnector.saveFormData(KeystoreKeys.backLinkProposedInvestment, routes.ReviewPreviousSchemesController.show().url)
+    for {
+      previousSchemesExist <- PreviousSchemesHelper.previousInvestmentsExist(s4lConnector)
+      hadPrevRFI <- s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI)
+      route <- routeRequest(previousSchemesExist)
+    } yield route
   }
 }

@@ -10,7 +10,7 @@
 
 @main_template(Messages("page.checkAndSubmit.checkAnswers.heading"), articleLayout=false) {
 
-    @backButton(controllers.eisseis.routes.SupportingDocumentsController.show().toString)
+    @backButton(controllers.eisseis.routes.SupportingDocumentsUploadController.show().toString)
 
     <h1 class="form-title heading-xlarge" id="main-heading">@Messages("page.checkAndSubmit.checkAnswers.heading")</h1>
     <div class="form-group">
@@ -195,20 +195,13 @@
                     </div>
                 </td>
                 <td></td>
-                @if(checkAnswersModel.attachmentsEnabled) {
                 <td class="summaryLink align-top">
                     <a id="supporting-docs-link" href=@controllers.eisseis.routes.SupportingDocumentsUploadController.show().url>@Messages("common.base.change")</a>
                 </td>
-                } else {
-                <td></td>
-                }
             </tr>
             </tbody>
         </table>
     </div>
-
-
-
 
     @form(action = controllers.eisseis.routes.CheckAnswersController.submit()) {
         <div class="form-group">

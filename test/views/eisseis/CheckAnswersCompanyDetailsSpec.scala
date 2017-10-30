@@ -169,7 +169,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         .attr("href") shouldEqual controllers.eisseis.routes.PercentageStaffWithMastersController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 
@@ -206,7 +206,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").size() shouldBe 0
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 
@@ -250,7 +250,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         .attr("href") shouldEqual controllers.eisseis.routes.TradeStartDateController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 
@@ -375,7 +375,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
         .attr("href") shouldEqual controllers.eisseis.routes.TenYearPlanController.show().url
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 
@@ -441,7 +441,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 
@@ -451,7 +451,8 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
     setupMocks()
 
-    val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+    val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(),
+      None, None, None, None, None, None, None, None, None, None)
     val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true), EisSeisProcessingModel(None, None, None))(fakeRequest, applicationMessages)
     val document = Jsoup.parse(page.body)
 
@@ -473,14 +474,15 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
     companyDetailsTableTBody.select("tr").size() shouldBe 0
 
     document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+    document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
   }
 
     "Verify that the scheme description contains only VCT and SEIS when schemeTypesModel.seis == true and  schemeTypesModel.vct == true" in {
 
       setupMocks()
 
-      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None,
+        None, None, None, None, None, None, None)
       val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, vct = true), EisSeisProcessingModel(None))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
@@ -502,7 +504,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").size() shouldBe 0
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
 
     "Verify that the scheme description contains EIS,  SEIS and VCT when schemeTypesModel.eis == true and  " +
@@ -510,7 +512,8 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       setupMocks()
 
-      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None,
+        None, None, None, None, None, None, None, None, None)
       val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true, vct = true), EisSeisProcessingModel(None, None, None))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
@@ -533,7 +536,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").size() shouldBe 0
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
 
     "Verify that the scheme description contains EIS,  SEIS and VCT when schemeTypesModel.eis == true and  " +
@@ -542,7 +545,8 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
       setupMocks()
 
-      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None, None, None, None, None, None, None, None, None, false)
+      val model = CheckAnswersModel(None, None, None, None, None, None, None, None, None, None, None, None, Vector(), None, None,
+        None, None, None, None, None, None, None, None)
       val page = CheckAnswers(model,None, SchemeTypesModel(seis = true, eis = true, vct = true), EisSeisProcessingModel(ineligibleTradeStartCondition = Some(true), None, None))(fakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
@@ -564,7 +568,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
       companyDetailsTableTBody.select("tr").size() shouldBe 0
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
 
   }
@@ -678,7 +682,7 @@ class CheckAnswersCompanyDetailsSpec extends CheckAnswersSpec {
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 }

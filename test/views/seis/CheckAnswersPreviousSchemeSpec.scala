@@ -32,7 +32,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
     "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
       " when a Vector of previous schemes can be retrieved" in {
       val model = SEISCheckAnswersModel(None, None, None, None, None, Some(hadPreviousRFIModelYes), previousSchemesValid,
-        None, None, None, None, None, false)
+        None, None, None, None, None)
       val page = CheckAnswers(model)(authorisedFakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
@@ -74,13 +74,13 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
           previousSchemesValid(2).year.get)}"
       document.getElementById("previousScheme-2-link").attr("href") shouldBe controllers.seis.routes.ReviewPreviousSchemesController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsUploadController.show().url
     }
 
     "Verify that the Check Answers page contains the correct elements for Section 2: Previous Schemes" +
       " when an empty Vector is be retrieved" in new SEISSetup {
       val model = SEISCheckAnswersModel(None, None, None, None, None, None, Vector(),
-        None, None, None, None, None, false)
+        None, None, None, None, None)
       val page = CheckAnswers(model)(authorisedFakeRequest, applicationMessages)
       val document = Jsoup.parse(page.body)
 
@@ -96,7 +96,7 @@ class CheckAnswersPreviousSchemeSpec extends CheckAnswersSpec {
       document.getElementById("noPreviousScheme-answer").text shouldBe Messages("page.summaryQuestion.none.answer")
       document.getElementById("noPreviousScheme-link").attr("href") shouldBe controllers.seis.routes.HadPreviousRFIController.show().url
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.seis.routes.SupportingDocumentsUploadController.show().url
     }
 
   }

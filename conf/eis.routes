@@ -64,9 +64,6 @@ POST       /how-plan-to-use-investment              controllers.eis.InvestmentGr
 GET        /contact-details                         controllers.eis.ContactDetailsController.show
 POST       /contact-details                         controllers.eis.ContactDetailsController.submit
 
-GET        /supporting-documents                    controllers.eis.SupportingDocumentsController.show
-POST       /supporting-documents                    controllers.eis.SupportingDocumentsController.submit
-
 GET        /supporting-documents-upload             controllers.eis.SupportingDocumentsUploadController.show
 POST       /supporting-documents-upload             controllers.eis.SupportingDocumentsUploadController.submit
 

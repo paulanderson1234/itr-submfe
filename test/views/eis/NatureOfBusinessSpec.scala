@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.NatureOfBusinessController
@@ -36,7 +36,7 @@ import scala.concurrent.Future
 class NatureOfBusinessSpec extends ViewSpec {
 
   object TestController extends NatureOfBusinessController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

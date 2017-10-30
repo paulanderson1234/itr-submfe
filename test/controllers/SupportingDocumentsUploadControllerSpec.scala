@@ -58,24 +58,10 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
   "Sending a GET request to SupportingDocumentsUploadController when authenticated and enrolled" +
     "with UploadFeature Enabled" should {
     "return a 200" in {
-      when(TestController.fileUploadService.getUploadFeatureEnabled).thenReturn(true)
       mockEnrolledRequest()
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
-        }
-      )
-    }
-  }
-
-  "Sending a GET request to SupportingDocumentsUploadController when authenticated and enrolled" +
-    "with UploadFeature disabled" should {
-    "return a 404" in {
-      when(TestController.fileUploadService.getUploadFeatureEnabled).thenReturn(false)
-      mockEnrolledRequest()
-      showWithSessionAndAuth(TestController.show())(
-        result => {
-          status(result) shouldBe NOT_FOUND
         }
       )
     }

@@ -21,15 +21,12 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.predicates.FeatureSwitch
 import forms.IsFirstTradeForm._
 import models.IsFirstTradeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import views.html.seis.companyDetails.IsFirstTrade
-import views.html.seis.companyDetails.NotFirstTradeError
-
 import scala.concurrent.Future
 
 object IsFirstTradeController extends IsFirstTradeController{
@@ -39,43 +36,36 @@ object IsFirstTradeController extends IsFirstTradeController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait IsFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
+trait IsFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
-
-  //
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-
-      s4lConnector.fetchAndGetFormData[IsFirstTradeModel](KeystoreKeys.isFirstTrade).map {
-        case Some(data) => Ok(IsFirstTrade(isFirstTradeForm.fill(data)))
-        case None => Ok(IsFirstTrade(isFirstTradeForm))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[IsFirstTradeModel](KeystoreKeys.isFirstTrade).map {
+      case Some(data) => Ok(IsFirstTrade(isFirstTradeForm.fill(data)))
+      case None => Ok(IsFirstTrade(isFirstTradeForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      isFirstTradeForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(IsFirstTrade(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.isFirstTrade, validFormData)
-          validFormData.isFirstTrade match {
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    isFirstTradeForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(IsFirstTrade(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.isFirstTrade, validFormData)
+        validFormData.isFirstTrade match {
 
-            case Constants.StandardRadioButtonYesValue => {
-        // to navigate to usedInvestmentSchemeBefore for SEIS only flow
-              Future.successful(Redirect(routes.HadPreviousRFIController.show()))
-            }
-            case Constants.StandardRadioButtonNoValue => {
-         // to navigate to errorNotFirstTrade for SEIS only flow
-              Future.successful(Redirect(routes.NotFirstTradeController.show()))
-            }
+          case Constants.StandardRadioButtonYesValue => {
+            // to navigate to usedInvestmentSchemeBefore for SEIS only flow
+            Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+          }
+          case Constants.StandardRadioButtonNoValue => {
+            // to navigate to errorNotFirstTrade for SEIS only flow
+            Future.successful(Redirect(routes.NotFirstTradeErrorController.show()))
           }
         }
-      )
-    }
+      }
+    )
   }
 }

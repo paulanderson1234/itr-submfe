@@ -19,9 +19,6 @@ GET         /restart                   controllers.throttlingGuidance.StartGuida
 GET        /select-schemes                          controllers.schemeSelection.SchemeSelectionController.show
 POST       /select-schemes                          controllers.schemeSelection.SchemeSelectionController.submit
 
-GET        /select-scheme                           controllers.schemeSelection.SingleSchemeSelectionController.show
-POST       /select-scheme                           controllers.schemeSelection.SingleSchemeSelectionController.submit
-
 GET        /sign-out                                controllers.SignOutController.signout
 GET        /signed-out                              controllers.SignOutController.show
 

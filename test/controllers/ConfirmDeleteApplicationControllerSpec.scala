@@ -42,7 +42,7 @@ class ConfirmDeleteApplicationControllerSpec extends BaseSpec {
   }
 
   object TestController extends TestController {
-    override lazy val applicationConfig = MockConfigAllFlows
+    override lazy val applicationConfig = MockConfig
   }
 
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))

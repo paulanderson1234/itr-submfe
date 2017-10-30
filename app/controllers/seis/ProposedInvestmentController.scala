@@ -23,7 +23,6 @@ import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
 import controllers.Helpers.ControllerHelpers
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
-import controllers.predicates.FeatureSwitch
 import forms.ProposedInvestmentForm._
 import models.ProposedInvestmentModel
 import play.api.i18n.Messages.Implicits._
@@ -40,47 +39,44 @@ object ProposedInvestmentController extends ProposedInvestmentController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait ProposedInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   val submissionConnector: SubmissionConnector
 
-  def show: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      def routeRequest(backUrl: Option[String]) = {
-        if (backUrl.isDefined) {
-          s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
-            case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data), backUrl.get))
-            case None => Ok(ProposedInvestment(proposedInvestmentForm, backUrl.get))
-          }
-        } else {
-          // no back link - send to beginning of flow
-          Future.successful(Redirect(routes.HadPreviousRFIController.show()))
+  def show: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
+          case Some(data) => Ok(ProposedInvestment(proposedInvestmentForm.fill(data), backUrl.get))
+          case None => Ok(ProposedInvestment(proposedInvestmentForm, backUrl.get))
         }
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.HadPreviousRFIController.show()))
       }
-      for {
-        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)
-        route <- routeRequest(link)
-      } yield route
     }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
 
-  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      proposedInvestmentForm.bindFromRequest().fold(
-        formWithErrors => {
-          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).map {
-            url => BadRequest(ProposedInvestment(formWithErrors,
-                url.getOrElse(routes.HadPreviousRFIController.show().url)))
-          }
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
-          Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
+  def submit: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    proposedInvestmentForm.bindFromRequest().fold(
+      formWithErrors => {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkProposedInvestment, s4lConnector).map {
+          url => BadRequest(ProposedInvestment(formWithErrors,
+            url.getOrElse(routes.HadPreviousRFIController.show().url)))
         }
-      )
-    }
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.proposedInvestment, validFormData)
+        Future.successful(Redirect(routes.ConfirmContactDetailsController.show()))
+      }
+    )
   }
 
 }

@@ -32,8 +32,6 @@ import utils.{Converters, Validation}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import config.FrontendGlobal.internalServerErrorTemplate
-import controllers.predicates.FeatureSwitch
-
 import scala.concurrent.Future
 
 object AcknowledgementController extends AcknowledgementController{
@@ -47,7 +45,7 @@ object AcknowledgementController extends AcknowledgementController{
   override lazy val emailConfirmationService = NoDocsEmailConfirmationService
 }
 
-trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait AcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
@@ -59,7 +57,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
 
 
   //noinspection ScalaStyle
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+  val show =
     AuthorisedAndEnrolled.async { implicit user => implicit request =>
       (for {
       // minimum required fields to continue
@@ -95,14 +93,13 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           InternalServerError(internalServerErrorTemplate)
         }
       }
-    }
+
   }
 
-  def submit: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
+  def submit: Action[AnyContent] =
     AuthorisedAndEnrolled.apply ({ implicit user => implicit request =>
       Redirect(controllers.feedback.routes.FeedbackController.show().url)
     },None)
-  }
 
   //noinspection ScalaStyle
   //TODO:
@@ -164,33 +161,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
-        def ProcessResult: Future[Result] = {
-          submissionResponseModel.map { submissionResponse =>
-            submissionResponse.status match {
-              case OK =>
-                (getTavCReferenceNumber() map {
-                  tavcRef => {
-                    emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
-                      _ => s4lConnector.clearCache()
-                    }
-                  }
-                }).recover{
-                  case _ => s4lConnector.clearCache()
-                }
-
-                Ok(views.html.eisseis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-              case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
-                InternalServerError
-              }
-            }
-          }
-        }.recover {
-          case e: Exception => {
-            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
-            InternalServerError(internalServerErrorTemplate)
-          }
-        }
 
         def ProcessResultUpload: Future[Result] = {
           submissionResponseModel.flatMap { submissionResponse =>
@@ -226,7 +196,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           }
         }
 
-        if (fileUploadService.getUploadFeatureEnabled) ProcessResultUpload else ProcessResult
+        ProcessResultUpload
       }
 
       // inconsistent state send to start

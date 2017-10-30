@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.TenYearPlanController
@@ -37,7 +37,7 @@ class TenYearPlanSpec extends ViewSpec {
   val invalidTenYearPlanModel = TenYearPlanModel("Yes", None)
 
   object TestController extends TenYearPlanController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val submissionConnector = mockSubmissionConnector

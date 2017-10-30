@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockConfig, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.PreviousBeforeDOFCSController
@@ -45,7 +45,7 @@ class PreviousBeforeDOFCSSpec extends ViewSpec with DateFormatter {
   }
 
   object TestController extends PreviousBeforeDOFCSController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
