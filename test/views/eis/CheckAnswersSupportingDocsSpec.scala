@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockAuthConnector, MockConfigEISFlow}
+import auth.{MockAuthConnector, MockConfig}
 import controllers.eis.CheckAnswersController
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -29,7 +29,7 @@ import views.helpers.CheckAnswersSpec
 class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
   object TestController extends CheckAnswersController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
@@ -74,7 +74,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 }

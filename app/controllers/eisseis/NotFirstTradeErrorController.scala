@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import models.submission.SchemeTypesModel
 import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,25 +37,21 @@ object NotFirstTradeErrorController extends NotFirstTradeErrorController
   override lazy val s4lConnector = S4LConnector
 }
 
-trait NotFirstTradeErrorController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait NotFirstTradeErrorController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-        case Some(schemeTypesModel) => Ok(NotFirstTradeError(schemeTypesModel))
-        case None => Redirect(controllers.routes.ApplicationHubController.show())
-      }.recover {
-        case e: Exception => Logger.warn(s"[NotFirstTradeErrorController][show] Error calling fetchAndGetFormData: ${e.getMessage}")
-          Redirect(controllers.routes.ApplicationHubController.show())
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+      case Some(schemeTypesModel) => Ok(NotFirstTradeError(schemeTypesModel))
+      case None => Redirect(controllers.routes.ApplicationHubController.show())
+    }.recover {
+      case e: Exception => Logger.warn(s"[NotFirstTradeErrorController][show] Error calling fetchAndGetFormData: ${e.getMessage}")
+        Redirect(controllers.routes.ApplicationHubController.show())
     }
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Redirect(routes.CommercialSaleController.show()))
-    }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.CommercialSaleController.show()))
   }
 }

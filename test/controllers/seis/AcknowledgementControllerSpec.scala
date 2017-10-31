@@ -75,6 +75,14 @@ class AcknowledgementControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesSEIS))
+
+    when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
+      thenReturn(Future(HttpResponse(OK)))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      thenReturn(HttpResponse(ACCEPTED))
+    when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
 
   "AcknowledgementController" should {
@@ -96,29 +104,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
-    "return a 200 and delete the current application and send a confirmatione email when a valid submission data is submitted" in new SetupPageFull {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
-        thenReturn(HttpResponse(ACCEPTED))
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
-      setupMocks()
-      mockEnrolledRequest(seisSchemeTypesModel)
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe OK
-    }
-  }
-
-  "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200, close the file upload envelope and delete the current application " +
       "and send a confirmation email when a valid submission data is submitted with the file upload flag enabled" in new SetupPageFull {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(true)
-      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
-        thenReturn(Future(HttpResponse(OK)))
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
-        (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
-        thenReturn(HttpResponse(ACCEPTED))
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -129,7 +117,6 @@ class AcknowledgementControllerSpec extends BaseSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 and delete the current application and send an email confirmation" +
       " when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
       when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
@@ -142,10 +129,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory NatureOfBusinessModel is missing from keystore" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -156,10 +142,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory ContactDetailsModel is missing from keystore" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -170,10 +155,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory ProposedInvestmentModel is missing from keystore" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -184,10 +168,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory DateOfIncorporationModel is missing from keystore" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -198,10 +181,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory AddressModel (contact address) is missing from keystore" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -212,10 +194,9 @@ class AcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 303 redirect if mandatory registrationDetailsModel is from registration details service" in {
-
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), false)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = false)
       setupMocks()
       mockEnrolledRequest(seisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)

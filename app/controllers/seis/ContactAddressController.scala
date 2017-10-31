@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC, SEIS}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import forms.ContactAddressForm._
 import models.AddressModel
 import play.api.i18n.Messages
@@ -40,36 +39,32 @@ object ContactAddressController extends ContactAddressController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait ContactAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
   lazy val countriesList = CountriesHelper.getIsoCodeTupleList
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
-        case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
-        case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("", "")), countriesList))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.manualContactAddress).map {
+      case Some(data) => Ok(ContactAddress(contactAddressForm.fill(data), countriesList))
+      case None => Ok(ContactAddress(contactAddressForm.fill(AddressModel("", "")), countriesList))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      contactAddressForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(ContactAddress(if (formWithErrors.hasGlobalErrors)
-            formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode"))
-          else formWithErrors, countriesList)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
-          s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
-          s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().url)
-          Future.successful(Redirect(routes.SupportingDocumentsController.show()))
-        }
-      )
-    }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    contactAddressForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(ContactAddress(if (formWithErrors.hasGlobalErrors)
+          formWithErrors.discardingErrors.withError("postcode", Messages("validation.error.countrypostcode"))
+        else formWithErrors, countriesList)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.manualContactAddress, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs, routes.ContactAddressController.show().url)
+        Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
+      }
+    )
   }
 }

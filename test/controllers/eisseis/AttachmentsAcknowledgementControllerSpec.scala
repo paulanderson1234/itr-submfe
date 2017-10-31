@@ -76,6 +76,14 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(schemeTypesEIS))
     when(mockS4lConnector.fetchAndGetFormData[TradeStartDateModel](Matchers.eq(KeystoreKeys.tradeStartDate))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Some(tradeStartDateModelYes))
+
+    when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
+      thenReturn(Future(HttpResponse(OK)))
+    when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
+      (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      thenReturn(HttpResponse(ACCEPTED))
+    when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
 
   "AcknowledgementController" should {
@@ -97,28 +105,8 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController for combined" should {
-    "return a 200 and delete the current application and send an email when a valid submission data is submitted" in new SetupPageFull {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
-        thenReturn(HttpResponse(ACCEPTED))
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
-      setupMocks()
-      mockEnrolledRequest(eisSeisSchemeTypesModel)
-      val result = TestController.show.apply(authorisedFakeRequest)
-      status(result) shouldBe OK
-    }
-  }
-
-  "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController for combined" should {
     "return a 200, close the file upload envelope, send an email and " +
-      "delete the current application when a valid submission data is submitted with the file upload flag enabled" in new SetupPageFull {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(true)
-      when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
-      when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
-        (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
-        thenReturn(HttpResponse(ACCEPTED))
-      when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      "delete the current application when a valid submission data is submitted" in new SetupPageFull {
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -127,8 +115,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController for combined" should {
-    "return a 200, send an email and delete the current application when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
-      when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(false)
+    "return a 200, send an email and delete the current application when a valid submission data is submitted with minimum data" in new SetupPageMinimum {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
@@ -141,7 +128,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
     "return a 303 redirect if mandatory KiProcessingModel is missing from keystore" in {
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, kiModel = None,
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -155,7 +142,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         natureBusiness = None, Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -169,7 +156,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), contactDetails = None, Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -183,7 +170,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), proposedInvestment = None,
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -197,7 +184,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        investGrow = None, Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -211,7 +198,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), dateIncorp = None, Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -225,7 +212,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), contactAddress = None, returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -239,7 +226,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValid),
         Some(natureOfBusinessValid), Some(contactValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), false)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = false)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)
@@ -255,7 +242,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),
         Some(natureOfBusinessValid), Some(contactDetailsValid), Some(proposedInvestmentValid),
-        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), true)
+        Some(investmentGrowValid), Some(dateOfIncorporationValid), Some(fullCorrespondenceAddress), returnRegistrationDetails = true)
       setupMocks()
       mockEnrolledRequest(eisSeisSchemeTypesModel)
       val result = TestController.show.apply(authorisedFakeRequest)

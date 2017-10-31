@@ -22,7 +22,6 @@ import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import models.NatureOfBusinessModel
-import controllers.predicates.FeatureSwitch
 import forms.NatureOfBusinessForm._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -38,28 +37,26 @@ object NatureOfBusinessController extends NatureOfBusinessController
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait NatureOfBusinessController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
-        case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
-        case None => Ok(NatureOfBusiness(natureOfBusinessForm))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness).map {
+      case Some(data) => Ok(NatureOfBusiness(natureOfBusinessForm.fill(data)))
+      case None => Ok(NatureOfBusiness(natureOfBusinessForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      natureOfBusinessForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
-          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-        }
-      )
-    }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    natureOfBusinessForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(NatureOfBusiness(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.natureOfBusiness, validFormData)
+        Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    )
   }
 }

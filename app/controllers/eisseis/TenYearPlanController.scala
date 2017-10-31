@@ -19,7 +19,6 @@ package controllers.eisseis
 import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import models.{KiProcessingModel, TenYearPlanModel}
@@ -41,80 +40,76 @@ object TenYearPlanController extends TenYearPlanController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait TenYearPlanController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
-        case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
-        case None => Ok(TenYearPlan(tenYearPlanForm))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[TenYearPlanModel](KeystoreKeys.tenYearPlan).map {
+      case Some(data) => Ok(TenYearPlan(tenYearPlanForm.fill(data)))
+      case None => Ok(TenYearPlan(tenYearPlanForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeRequest(kiModel: Option[KiProcessingModel], hasTenYearPlan: Boolean,
-                       isSecondaryKiConditionsMet: Option[Boolean]): Future[Result] = {
-        kiModel match {
-          // check previous answers present
-          case Some(data) if isMissingData(data) =>
+    def routeRequest(kiModel: Option[KiProcessingModel], hasTenYearPlan: Boolean,
+                     isSecondaryKiConditionsMet: Option[Boolean]): Future[Result] = {
+      kiModel match {
+        // check previous answers present
+        case Some(data) if isMissingData(data) =>
 
-            /** not sure if we are still using isMissingData **/
-            Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-          case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
-            Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
-          case Some(dataWithPreviousValid) => {
-            // all good - save the cost condition result returned from API and navigate accordingly
-            val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
-              hasTenYearPlan = Some(hasTenYearPlan))
-            s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
+          /** not sure if we are still using isMissingData **/
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get =>
+          Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
+        case Some(dataWithPreviousValid) => {
+          // all good - save the cost condition result returned from API and navigate accordingly
+          val updatedModel = dataWithPreviousValid.copy(secondaryCondtionsMet = isSecondaryKiConditionsMet,
+            hasTenYearPlan = Some(hasTenYearPlan))
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, updatedModel)
 
-            // check the current model to see if valid as this is last page but user could navigate via url out of sequence
-            if (updatedModel.isKi) {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().url)
-              Future.successful(Redirect(routes.SubsidiariesController.show()))
-            }
-            else {
-              // KI condition not met. end of the road..
-              s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().url)
-              Future.successful(Redirect(routes.IneligibleForKIController.show()))
-            }
+          // check the current model to see if valid as this is last page but user could navigate via url out of sequence
+          if (updatedModel.isKi) {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkSubsidiaries, routes.TenYearPlanController.show().url)
+            Future.successful(Redirect(routes.SubsidiariesController.show()))
           }
-          case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+          else {
+            // KI condition not met. end of the road..
+            s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.TenYearPlanController.show().url)
+            Future.successful(Redirect(routes.IneligibleForKIController.show()))
+          }
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
+
+    tenYearPlanForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(TenYearPlan(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
+        val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
+          Constants.StandardRadioButtonYesValue) true
+        else false
+        (for {
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          // Call API
+          isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
+            if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan)
+          route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[TenYearPlanController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
+          }
         }
       }
-
-      tenYearPlanForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(TenYearPlan(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.tenYearPlan, validFormData)
-          val hasTenYearPlan: Boolean = if (validFormData.hasTenYearPlan ==
-            Constants.StandardRadioButtonYesValue) true
-          else false
-          (for {
-            kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-            // Call API
-            isSecondaryKiConditionsMet <- submissionConnector.validateSecondaryKiConditions(
-              if (kiModel.isDefined) kiModel.get.hasPercentageWithMasters.getOrElse(false) else false, hasTenYearPlan)
-            route <- routeRequest(kiModel, hasTenYearPlan, isSecondaryKiConditionsMet)
-          } yield route) recover {
-            case e: Exception => {
-              Logger.warn(s"[TenYearPlanController][submit] - Exception validateSecondaryKiConditions: ${e.getMessage}")
-              InternalServerError(internalServerErrorTemplate)
-            }
-          }
-        }
-      )
-    }
+    )
   }
 
   def isMissingData(data: KiProcessingModel): Boolean = {

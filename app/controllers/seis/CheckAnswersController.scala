@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.predicates.FeatureSwitch
 import models._
 import models.seis.SEISCheckAnswersModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -42,12 +41,11 @@ object CheckAnswersController extends CheckAnswersController{
   val emailVerificationService = EmailVerificationService
 }
 
-trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper
-  with FeatureSwitch {
+trait CheckAnswersController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
-  val emailVerificationService : EmailVerificationService
+  val emailVerificationService: EmailVerificationService
 
   def checkAnswersModel(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[SEISCheckAnswersModel] = for {
     registeredAddress <- s4lConnector.fetchAndGetFormData[RegisteredAddressModel](KeystoreKeys.registeredAddress)
@@ -63,39 +61,34 @@ trait CheckAnswersController extends FrontendController with AuthorisedAndEnroll
     contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
   } yield SEISCheckAnswersModel(registeredAddress, dateOfIncorporation, tradeStartDate, natureOfBusiness, subsidiaries, hadPreviousRFI,
-    previousSchemes, proposedInvestment, subsidiariesSpendingInvestment, subsidiariesNinetyOwned, contactDetails, contactAddress,
-    applicationConfig.uploadFeatureEnabled)
+    previousSchemes, proposedInvestment, subsidiariesSpendingInvestment, subsidiariesNinetyOwned, contactDetails, contactAddress)
 
-  def show(envelopeId: Option[String]): Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      if (envelopeId.fold("")(_.toString).length > 0) {
-        s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
-      }
-
-      checkAnswersModel.flatMap(checkAnswers => Future.successful(Ok(CheckAnswers(checkAnswers))))
+  def show(envelopeId: Option[String]): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    if (envelopeId.fold("")(_.toString).length > 0) {
+      s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId.getOrElse(""))
     }
+
+    checkAnswersModel.flatMap(checkAnswers => Future.successful(Ok(CheckAnswers(checkAnswers))))
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      val verifyStatus = for {
-        contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
-        isVerified <- emailVerificationService.verifyEmailAddress(contactDetails.get.email)
-      } yield isVerified.getOrElse(false)
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    val verifyStatus = for {
+      contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+      isVerified <- emailVerificationService.verifyEmailAddress(contactDetails.get.email)
+    } yield isVerified.getOrElse(false)
 
-      verifyStatus.flatMap {
-        case true => {
-          s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
-            envelopeId => {
-              if (envelopeId.isEmpty)
-                Future.successful(Redirect(routes.AcknowledgementController.show()))
-              else
-                Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
-            }
+    verifyStatus.flatMap {
+      case true => {
+        s4lConnector.fetchAndGetFormData[String](KeystoreKeys.envelopeId).flatMap {
+          envelopeId => {
+            if (envelopeId.isEmpty)
+              Future.successful(Redirect(routes.AcknowledgementController.show()))
+            else
+              Future.successful(Redirect(routes.AttachmentsAcknowledgementController.show()))
           }
         }
-        case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.CheckAnswersReturnUrl)))
       }
+      case false => Future.successful(Redirect(routes.EmailVerificationController.verify(Constants.CheckAnswersReturnUrl)))
     }
   }
 

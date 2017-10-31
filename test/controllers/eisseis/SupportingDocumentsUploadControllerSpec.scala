@@ -43,15 +43,13 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
   val supportingDocumentsUploadDoUpload = SupportingDocumentsUploadModel("Yes")
   val supportingDocumentsUploadDontDoUpload = SupportingDocumentsUploadModel("No")
 
-  def setupMocks(backLink: Option[String] = None, supportingDocumentsUploadModel: Option[SupportingDocumentsUploadModel] = None,
-                 uploadFeatureEnabled: Boolean = true): Unit = {
+  def setupMocks(backLink: Option[String] = None, supportingDocumentsUploadModel: Option[SupportingDocumentsUploadModel] = None): Unit = {
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSupportingDocs))(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.backLinkSubsidiaries))(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(backLink))
     when(mockS4lConnector.fetchAndGetFormData[SupportingDocumentsUploadModel](Matchers.eq(KeystoreKeys.supportingDocumentsUpload))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(supportingDocumentsUploadModel))
-    when(mockFileUploadService.getUploadFeatureEnabled).thenReturn(uploadFeatureEnabled)
   }
 
     "SupportingDocumentsUploadController" should {
@@ -69,22 +67,12 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
       }
     }
 
-    "Sending a GET request to SupportingDocumentsUploadController with upload feature enabled" should {
+    "Sending a GET request to SupportingDocumentsUploadController" should {
       "return a 200 OK" in {
         mockEnrolledRequest(eisSeisSchemeTypesModel)
-        setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
+        setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload))
         showWithSessionAndAuth(TestController.show)(
           result => status(result) shouldBe OK
-        )
-      }
-    }
-
-    "Sending a GET request to SupportingDocumentsUploadController with upload feature disabled" should {
-      "return a 404 NOT_FOUND" in {
-        mockEnrolledRequest(eisSeisSchemeTypesModel)
-        setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), None, false)
-        showWithSessionAndAuth(TestController.show)(
-          result => status(result) shouldBe NOT_FOUND
         )
       }
     }
@@ -138,7 +126,7 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to itself when a backlink is found" in {
       mockEnrolledRequest(eisSeisSchemeTypesModel)
-      setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload), true)
+      setupMocks(Some(routes.ConfirmCorrespondAddressController.show().url), Some(supportingDocumentsUploadDoUpload))
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe BAD_REQUEST
       }
@@ -148,7 +136,7 @@ class SupportingDocumentsUploadControllerSpec extends BaseSpec {
   "Posting to the SupportingDocumentsUploadController when authenticated and enrolled with a form with errors" should {
     "redirect to CommercialSaleController when no backlink is found" in {
       mockEnrolledRequest(eisSeisSchemeTypesModel)
-      setupMocks(None, Some(supportingDocumentsUploadDoUpload), true)
+      setupMocks(None, Some(supportingDocumentsUploadDoUpload))
       submitWithSessionAndAuth(TestController.submit, "doUpload" -> "") {
         result => status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(routes.CommercialSaleController.show().url)

@@ -49,20 +49,6 @@ trait HubGuidanceFeedbackController extends FrontendController with AuthorisedAn
 
   val submit = AuthorisedAndEnrolled.async { implicit user =>
     implicit request =>
-      if(applicationConfig.eisseisFlowEnabled) {
-        Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
-      } else if(applicationConfig.seisFlowEnabled) {
-        Future.successful(Redirect(controllers.schemeSelection.routes.SingleSchemeSelectionController.show()))
-      }else {
-        (for {
-          saveApplication <- s4lConnector.saveFormData(KeystoreKeys.applicationInProgress, true)
-          saveSchemes <- s4lConnector.saveFormData(KeystoreKeys.selectedSchemes, SchemeTypesModel(eis = true))
-        } yield (saveApplication, saveSchemes)).map {
-          result => Redirect(eis.routes.NatureOfBusinessController.show())
-        }.recover {
-          case e: Exception => Logger.warn(s"[HubGuidanceFeedbackController][newApplication] Exception when calling saveFormData: ${e.getMessage}")
-            Redirect(eis.routes.NatureOfBusinessController.show())
-        }
-      }
+      Future.successful(Redirect(controllers.schemeSelection.routes.SchemeSelectionController.show()))
   }
 }

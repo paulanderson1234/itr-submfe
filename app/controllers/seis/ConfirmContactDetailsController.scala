@@ -26,7 +26,6 @@ import services.SubscriptionService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import views.html.seis.contactInformation.ConfirmContactDetails
 import config.FrontendGlobal.internalServerErrorTemplate
-import controllers.predicates.FeatureSwitch
 import play.api.mvc.Result
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -41,56 +40,53 @@ object ConfirmContactDetailsController extends ConfirmContactDetailsController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ConfirmContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait ConfirmContactDetailsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   val subscriptionService: SubscriptionService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def getContactDetails: Future[Option[ContactDetailsModel]] = for {
-        tavcRef <- getTavCReferenceNumber()
-        contactDetails <- subscriptionService.getSubscriptionContactDetails(tavcRef)
-      } yield contactDetails
+    def getContactDetails: Future[Option[ContactDetailsModel]] = for {
+      tavcRef <- getTavCReferenceNumber()
+      contactDetails <- subscriptionService.getSubscriptionContactDetails(tavcRef)
+    } yield contactDetails
 
-      def routeRequest: Option[ConfirmContactDetailsModel] => Future[Result] = {
-        case Some(savedData) => Future.successful(Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(savedData))))
-        case _ => getContactDetails.map {
-          case Some(data) => Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("", data))))
-          case _ => InternalServerError(internalServerErrorTemplate)
-        }
+    def routeRequest: Option[ConfirmContactDetailsModel] => Future[Result] = {
+      case Some(savedData) => Future.successful(Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(savedData))))
+      case _ => getContactDetails.map {
+        case Some(data) => Ok(ConfirmContactDetails(confirmContactDetailsForm.fill(ConfirmContactDetailsModel("", data))))
+        case _ => InternalServerError(internalServerErrorTemplate)
       }
-
-      for {
-        confirmContactAddress <- s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails)
-        route <- routeRequest(confirmContactAddress)
-      } yield route
     }
+
+    for {
+      confirmContactAddress <- s4lConnector.fetchAndGetFormData[ConfirmContactDetailsModel](KeystoreKeys.confirmContactDetails)
+      route <- routeRequest(confirmContactAddress)
+    } yield route
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) { AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      confirmContactDetailsForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(ConfirmContactDetails(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, validFormData)
-          validFormData.contactDetailsUse match {
-            case Constants.StandardRadioButtonYesValue => {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkConfirmCorrespondence, routes.ConfirmContactDetailsController.show().url)
-              s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData.contactDetails)
-              Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-            }
-            case Constants.StandardRadioButtonNoValue => {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkConfirmCorrespondence, routes.ContactDetailsController.show().url)
-              Future.successful(Redirect(routes.ContactDetailsController.show()))
-            }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    confirmContactDetailsForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(ConfirmContactDetails(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.confirmContactDetails, validFormData)
+        validFormData.contactDetailsUse match {
+          case Constants.StandardRadioButtonYesValue => {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkConfirmCorrespondence, routes.ConfirmContactDetailsController.show().url)
+            s4lConnector.saveFormData(KeystoreKeys.contactDetails, validFormData.contactDetails)
+            Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+          }
+          case Constants.StandardRadioButtonNoValue => {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkConfirmCorrespondence, routes.ContactDetailsController.show().url)
+            Future.successful(Redirect(routes.ContactDetailsController.show()))
           }
         }
-      )
-    }
+      }
+    )
   }
-
 }

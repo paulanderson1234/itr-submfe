@@ -42,7 +42,6 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTes
 
   object FileUploadServiceSpec extends FileUploadService with FrontendController with FakeRequestHelper with ServicesConfig{
     override val attachmentsFrontEndConnector = mock[AttachmentsFrontEndConnector]
-    override val getUploadFeatureEnabled = true
     override val attachmentsConnector: AttachmentsConnector = mock[AttachmentsConnector]
   }
 

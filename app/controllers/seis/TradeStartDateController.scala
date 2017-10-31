@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.predicates.FeatureSwitch
 import forms.TradeStartDateForm._
 import models.TradeStartDateModel
 import play.Logger
@@ -40,54 +39,51 @@ object TradeStartDateController extends TradeStartDateController {
   override lazy val submissionConnector = SubmissionConnector
 }
 
-trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait TradeStartDateController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
-        case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
-        case None => Ok(TradeStartDate(tradeStartDateForm))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate).map {
+      case Some(data) => Ok(TradeStartDate(tradeStartDateForm.fill(data)))
+      case None => Ok(TradeStartDate(tradeStartDateForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      tradeStartDateForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(TradeStartDate(formWithErrors)))
-        },
-        validFormData => {
-          validFormData.hasTradeStartDate match {
-            case Constants.StandardRadioButtonYesValue => {
-              s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-              submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
-                validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
-                case Some(validated) => if (validated) Redirect(routes.IsFirstTradeController.show()) else
-                  Redirect(routes.TradeStartDateErrorController.show())
-                case _ => {
-                  Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
-                  InternalServerError(internalServerErrorTemplate)
-                }
-              }.recover {
-                case e: Exception => {
-                  Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
-                  InternalServerError(internalServerErrorTemplate)
-                }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    tradeStartDateForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(TradeStartDate(formWithErrors)))
+      },
+      validFormData => {
+        validFormData.hasTradeStartDate match {
+          case Constants.StandardRadioButtonYesValue => {
+            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+            submissionConnector.validateTradeStartDateCondition(validFormData.tradeStartDay.get,
+              validFormData.tradeStartMonth.get, validFormData.tradeStartYear.get).map {
+              case Some(validated) => if (validated) Redirect(routes.IsFirstTradeController.show())
+              else
+                Redirect(routes.TradeStartDateErrorController.show())
+              case _ => {
+                Logger.warn(s"[TradeStartDateController][submit] - Call to validate trade start date in backend failed")
+                InternalServerError(internalServerErrorTemplate)
+              }
+            }.recover {
+              case e: Exception => {
+                Logger.warn(s"[TradeStartDateController][submit] - Exception: ${e.getMessage}")
+                InternalServerError(internalServerErrorTemplate)
               }
             }
-            case Constants.StandardRadioButtonNoValue => {
-              s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
-              Future.successful(Redirect(routes.IsFirstTradeController.show()))
-            }
+          }
+          case Constants.StandardRadioButtonNoValue => {
+            s4lConnector.saveFormData(KeystoreKeys.tradeStartDate, validFormData)
+            Future.successful(Redirect(routes.IsFirstTradeController.show()))
           }
         }
-      )
-    }
+      }
+    )
   }
 }

@@ -16,9 +16,7 @@
 
 package views.hub
 
-import auth.MockConfigUploadFeature
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Element
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import utils.CountriesHelper
@@ -56,13 +54,12 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled){
-        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-        document.body.getElementById("attachments-outside-desc").text() shouldBe
-          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
-        document.body.getElementById("attachments-outside-link").text() shouldBe
-          Messages("page.introduction.hub.upload.link")
-      }
+      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+      document.body.getElementById("attachments-outside-desc").text() shouldBe
+        Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+      document.body.getElementById("attachments-outside-link").text() shouldBe
+        Messages("page.introduction.hub.upload.link")
+
     }
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and " +
@@ -87,10 +84,8 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled){
-        val result =  document.select("#attachments-outside-link")
-        result.isEmpty shouldBe true
-      }
+      val result = document.select("#attachments-outside-link")
+      result.isEmpty shouldBe true
     }
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
@@ -114,18 +109,16 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line2").text() shouldBe applicationHubModelMax.contactDetails.mobileNumber.get
       document.body.getElementById("contactDetails-line3").text() shouldBe applicationHubModelMax.contactDetails.email
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled) {
-        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-        document.body.getElementById("attachments-outside-desc").text() shouldBe
-          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
-        document.body.getElementById("attachments-outside-link").text() shouldBe
-          Messages("page.introduction.hub.upload.link")
-      }
+      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+      document.body.getElementById("attachments-outside-desc").text() shouldBe
+        Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+      document.body.getElementById("attachments-outside-link").text() shouldBe
+        Messages("page.introduction.hub.upload.link")
     }
 
     "Verify that hub page contains the correct elements when a 'hub new' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages),hasPreviousSubmissions)(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -139,19 +132,17 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
       document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled) {
-        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-        document.body.getElementById("attachments-outside-desc").text() shouldBe
-          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
-        document.body.getElementById("attachments-outside-link").text() shouldBe
-          Messages("page.introduction.hub.upload.link")
-      }
+      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+      document.body.getElementById("attachments-outside-desc").text() shouldBe
+        Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+      document.body.getElementById("attachments-outside-link").text() shouldBe
+        Messages("page.introduction.hub.upload.link")
     }
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
       lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)
-      (fakeRequest, applicationMessages),hasPreviousSubmissions)(fakeRequest, applicationMessages)
+      (fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -165,16 +156,14 @@ class ApplicationHubSpec extends ViewSpec {
       document.body.getElementById("contactDetails-line0").text() shouldBe applicationHubModelMin.contactDetails.fullName
       document.body.getElementById("contactDetails-line1").text() shouldBe applicationHubModelMin.contactDetails.email
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled) {
-        document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
-        document.body.getElementById("attachments-outside-desc").text() shouldBe
-          Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
-        document.body.getElementById("attachments-outside-link").text() shouldBe
-          Messages("page.introduction.hub.upload.link")
-      }
+      document.body.getElementById("attachments-outside-heading").text() shouldBe Messages("page.supportingDocuments.SupportingDocuments.heading")
+      document.body.getElementById("attachments-outside-desc").text() shouldBe
+        Messages("page.introduction.hub.upload.link") + " " + Messages("page.introduction.hub.upload.desc")
+      document.body.getElementById("attachments-outside-link").text() shouldBe
+        Messages("page.introduction.hub.upload.link")
     }
 
-    "verify the outside flow upload link not present when a 'hub existing' partial is passed to it and"
+    "verify the outside flow upload link not present when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
       lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest,
         applicationMessages),hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
@@ -193,10 +182,9 @@ class ApplicationHubSpec extends ViewSpec {
 
       //MockConfigUploadFeature.uploadFeatureEnabled shouldBe false
       //attachments outside
-      if (MockConfigUploadFeature.uploadFeatureEnabled) {
        val result =  document.select("#attachments-outside-link")
         result.isEmpty shouldBe true
-      }
+
     }
   }
 }

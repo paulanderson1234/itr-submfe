@@ -52,21 +52,15 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
   val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     def routeRequest(backUrl: Option[String]) = {
 
-      //TODO: this enforces the feature lock but would be good to make this a predicate (see controller predicates folder)
-      if (!fileUploadService.getUploadFeatureEnabled) {
-        Future.successful(NotFound(notFoundTemplate))
-      }
-      else {
-        if (backUrl.isDefined) {
-          s4lConnector.fetchAndGetFormData[SupportingDocumentsUploadModel](KeystoreKeys.supportingDocumentsUpload).map {
-            case Some(data) => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm.fill(data), backUrl.get))
-            case None => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm, backUrl.get))
-          }
-
-        } else {
-          // no back link - send to beginning of flow
-          Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
+      if (backUrl.isDefined) {
+        s4lConnector.fetchAndGetFormData[SupportingDocumentsUploadModel](KeystoreKeys.supportingDocumentsUpload).map {
+          case Some(data) => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm.fill(data), backUrl.get))
+          case None => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm, backUrl.get))
         }
+
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
       }
     }
 
