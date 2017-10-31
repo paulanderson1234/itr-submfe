@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers.{contentAsString, _}
 import views.helpers.ViewSpec
-import views.html.seis.verification.EmailVerification
+import views.html.eisseis.verification.EmailVerification
 
 class EmailVerificationSpec extends ViewSpec {
 
@@ -34,7 +34,7 @@ class EmailVerificationSpec extends ViewSpec {
 
   "Email verification page" should {
 
-    "show when contact details passed" in new SEISSetup {
+    "show when contact details passed" in new SEISEISSetup {
 
       document.title() shouldBe Messages("page.verification.EmailVerification.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.verification.EmailVerification.heading")
@@ -52,10 +52,10 @@ class EmailVerificationSpec extends ViewSpec {
 
 
       document.body.getElementById("email-help-link-one").attr("href") shouldEqual
-        controllers.seis.routes.ContactDetailsController.show().url
+        controllers.eisseis.routes.ContactDetailsController.show().url
 
       document.body.getElementById("email-help-link-two").attr("href") shouldEqual
-        controllers.seis.routes.EmailVerificationController.verify(emailRedirectOption).url
+        controllers.eisseis.routes.EmailVerificationController.verify(emailRedirectOption).url
     }
 
   }
