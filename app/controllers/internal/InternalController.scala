@@ -18,30 +18,42 @@ package controllers.internal
 import auth.AuthorisedAndEnrolledForTAVC
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import play.api.Logger
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
+import services.internal.InternalService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 object InternalController extends InternalController{
-  override lazy val s4lConnector = S4LConnector
-  override lazy val applicationConfig = FrontendAppConfig
-  override lazy val authConnector = FrontendAuthConnector
-  override lazy val enrolmentConnector = EnrolmentConnector
+  override val internalService = InternalService
 }
 
 
-trait InternalController extends FrontendController with AuthorisedAndEnrolledForTAVC{
+trait InternalController extends FrontendController{
 
-  val s4lConnector: S4LConnector
-
-  override lazy val acceptedFlows = Seq()
+  val internalService: InternalService
 
   /* TODO Currently stubbed implementation */
-  def getApplicationInProgress(internalId: String): Action[AnyContent] = Action.async {
+  def getApplicationInProgress: Action[AnyContent] = Action.async {
     implicit request =>{
-      Future.successful(Ok(Json.toJson(false)))
+
+      implicit val hc = HeaderCarrier.fromHeadersAndSession(request.headers)
+
+      FrontendAuthConnector.currentAuthority.flatMap{
+        case Some(authority) => {
+          internalService.getApplicationInProgress(authority).map{
+            case Some(appInProgress) => Ok(Json.toJson(appInProgress))
+            case None => Ok(Json.toJson(false))
+          }
+        }
+        case None => {
+          Logger.warn(s"[InternalController] [getApplicationInProgress] - Can't get the Authority")
+          Future.successful(Unauthorized)
+        }
+      }
     }
   }
 
