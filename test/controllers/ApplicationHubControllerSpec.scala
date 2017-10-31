@@ -16,7 +16,7 @@
 
 package controllers
 
-import auth.{MockConfigSingleFlow, MockConfigEISFlow, MockAuthConnector, MockConfig}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -51,14 +51,6 @@ class ApplicationHubControllerSpec extends BaseSpec{
     override lazy val applicationConfig = MockConfig
   }
 
-  object TestControllerSingle extends TestController {
-    override lazy val applicationConfig = MockConfigSingleFlow
-  }
-
-  object TestControllerEIS extends TestController {
-    override lazy val applicationConfig = MockConfigEISFlow
-  }
-
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
 
 
@@ -70,10 +62,6 @@ class ApplicationHubControllerSpec extends BaseSpec{
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(applicationIsInProgress))
     when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(hasPreviousSubmissions))
-    when(TestControllerSingle.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
-      .thenReturn(Future.successful(hasPreviousSubmissions))
-    when(TestControllerEIS.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hasPreviousSubmissions))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(seisSchemeTypesModel))

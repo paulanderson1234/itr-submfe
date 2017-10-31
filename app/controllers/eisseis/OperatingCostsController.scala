@@ -21,7 +21,6 @@ import common.KeystoreKeys
 import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector, SubmissionConnector}
-import controllers.predicates.FeatureSwitch
 import forms.OperatingCostsForm._
 import models.{KiProcessingModel, OperatingCostsModel}
 import play.Logger
@@ -41,82 +40,78 @@ object OperatingCostsController extends OperatingCostsController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait OperatingCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait OperatingCostsController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
   val submissionConnector: SubmissionConnector
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
       s4lConnector.fetchAndGetFormData[OperatingCostsModel](KeystoreKeys.operatingCosts).map {
         case Some(data) => Ok(OperatingCosts(operatingCostsForm.fill(data)))
         case None => Ok(OperatingCosts(operatingCostsForm))
       }
     }
-  }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeRequest(kiModel: Option[KiProcessingModel], isCostConditionMet: Option[Boolean]): Future[Result] = {
-        kiModel match {
-          case Some(data) if isMissingData(data) => {
-            // missing expected data - send user back
-            Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+    def routeRequest(kiModel: Option[KiProcessingModel], isCostConditionMet: Option[Boolean]): Future[Result] = {
+      kiModel match {
+        case Some(data) if isMissingData(data) => {
+          // missing expected data - send user back
+          Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+        }
+        case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
+          Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
+        }
+        case Some(dataWithDateConditionMet) => {
+          // all good - save the cost condition returned from API and navigate accordingly
+          s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
+
+          isCostConditionMet match {
+            case Some(data) =>
+
+              if (data) {
+                Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
+              } else {
+                s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().url)
+                Future.successful(Redirect(routes.IneligibleForKIController.show()))
+              }
+            //will only hit case none if the back end isn't running.
+            case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
           }
-          case Some(dataWithPrevious) if !dataWithPrevious.companyAssertsIsKi.get => {
-            Future.successful(Redirect(routes.IsCompanyKnowledgeIntensiveController.show()))
-          }
-          case Some(dataWithDateConditionMet) => {
-            // all good - save the cost condition returned from API and navigate accordingly
-            s4lConnector.saveFormData(KeystoreKeys.kiProcessingModel, dataWithDateConditionMet.copy(costsConditionMet = isCostConditionMet))
+        }
+        case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
+      }
+    }
 
-            isCostConditionMet match {
-              case Some(data) =>
+    operatingCostsForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(OperatingCosts(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
 
-                if (data) {
-                  Future.successful(Redirect(routes.PercentageStaffWithMastersController.show()))
-                } else {
-                  s4lConnector.saveFormData(KeystoreKeys.backLinkIneligibleForKI, routes.OperatingCostsController.show().url)
-                  Future.successful(Redirect(routes.IneligibleForKIController.show()))
-                }
-              //will only hit case none if the back end isn't running.
-              case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
-            }
+        (for {
+          kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
+          // Call API
+          costConditionMet <- submissionConnector.validateKiCostConditions(
+            validFormData.operatingCosts1stYear.toInt,
+            validFormData.operatingCosts2ndYear.toInt,
+            validFormData.operatingCosts3rdYear.toInt,
+            validFormData.rAndDCosts1stYear.toInt,
+            validFormData.rAndDCosts2ndYear.toInt,
+            validFormData.rAndDCosts3rdYear.toInt
+          )
+          route <- routeRequest(kiModel, costConditionMet)
+        } yield route) recover {
+          case e: Exception => {
+            Logger.warn(s"[OperatingCostsController][submit] - Exception checking Ki Conditions: ${e.getMessage}")
+            InternalServerError(internalServerErrorTemplate)
           }
-          case None => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
         }
       }
-
-      operatingCostsForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(OperatingCosts(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.operatingCosts, validFormData)
-
-          (for {
-            kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
-            // Call API
-            costConditionMet <- submissionConnector.validateKiCostConditions(
-              validFormData.operatingCosts1stYear.toInt,
-              validFormData.operatingCosts2ndYear.toInt,
-              validFormData.operatingCosts3rdYear.toInt,
-              validFormData.rAndDCosts1stYear.toInt,
-              validFormData.rAndDCosts2ndYear.toInt,
-              validFormData.rAndDCosts3rdYear.toInt
-            )
-            route <- routeRequest(kiModel, costConditionMet)
-          } yield route) recover {
-            case e: Exception => {
-              Logger.warn(s"[OperatingCostsController][submit] - Exception checking Ki Conditions: ${e.getMessage}")
-              InternalServerError(internalServerErrorTemplate)
-            }
-          }
-        }
-      )
-    }
+    )
   }
 
   def isMissingData(data: KiProcessingModel): Boolean = {

@@ -19,7 +19,6 @@ package controllers.eisseis
 import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -35,14 +34,12 @@ object TradingForTooLongController extends TradingForTooLongController
   override lazy val s4lConnector = S4LConnector
 }
 
-trait TradingForTooLongController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait TradingForTooLongController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      Future.successful(Ok(TradingForTooLong()))
-    }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Ok(TradingForTooLong()))
   }
 
 }

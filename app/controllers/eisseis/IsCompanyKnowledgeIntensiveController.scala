@@ -26,8 +26,6 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.mvc._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import controllers.predicates.FeatureSwitch
-
 import scala.concurrent.Future
 import views.html.eisseis.companyDetails
 import views.html.eisseis.companyDetails.IsCompanyKnowledgeIntensive
@@ -39,21 +37,18 @@ object IsCompanyKnowledgeIntensiveController extends IsCompanyKnowledgeIntensive
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait IsCompanyKnowledgeIntensiveController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait IsCompanyKnowledgeIntensiveController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-  AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     s4lConnector.fetchAndGetFormData[IsCompanyKnowledgeIntensiveModel](KeystoreKeys.isCompanyKnowledgeIntensive).map {
       case Some(data) => Ok(companyDetails.IsCompanyKnowledgeIntensive(isCompanyKnowledgeIntensiveForm.fill(data)))
       case None => Ok(companyDetails.IsCompanyKnowledgeIntensive(isCompanyKnowledgeIntensiveForm))
       }
-    }
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest(kiModel: Option[KiProcessingModel], isKnowledgeIntensive: Boolean): Future[Result] = {
         kiModel match {
@@ -93,5 +88,4 @@ trait IsCompanyKnowledgeIntensiveController extends FrontendController with Auth
         }
       )
     }
-  }
 }

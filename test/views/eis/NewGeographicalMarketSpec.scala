@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.NewGeographicalMarketController
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class NewGeographicalMarketSpec extends ViewSpec {
 
   object TestController extends NewGeographicalMarketController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

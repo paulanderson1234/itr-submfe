@@ -22,7 +22,6 @@ import config.FrontendGlobal._
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
-import controllers.predicates.FeatureSwitch
 import forms.ConfirmCorrespondAddressForm._
 import models.{AddressModel, ConfirmCorrespondAddressModel}
 import play.api.mvc.Result
@@ -42,15 +41,14 @@ object ConfirmCorrespondAddressController extends ConfirmCorrespondAddressContro
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait ConfirmCorrespondAddressController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   val subscriptionService: SubscriptionService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def getContactAddress: Future[Option[AddressModel]] = for {
         tavcRef <- getTavCReferenceNumber()
@@ -72,11 +70,9 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
         confirmCorrespondenceAddress <- s4lConnector.fetchAndGetFormData[ConfirmCorrespondAddressModel](KeystoreKeys.confirmContactAddress)
         route <- routeRequest(confirmCorrespondenceAddress, backLink)
       } yield route
-    }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
       def routeRequest: Option[String] => Future[Result] = {
         case Some(backLink) => {
@@ -89,9 +85,9 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
               validFormData.contactAddressUse match {
                 case Constants.StandardRadioButtonYesValue => {
                   s4lConnector.saveFormData(KeystoreKeys.backLinkSupportingDocs,
-                    routes.ConfirmCorrespondAddressController.show().toString())
+                    routes.ConfirmCorrespondAddressController.show().url)
                   s4lConnector.saveFormData(KeystoreKeys.contactAddress, validFormData.address)
-                  Future.successful(Redirect(routes.SupportingDocumentsController.show()))
+                  Future.successful(Redirect(routes.SupportingDocumentsUploadController.show()))
                 }
                 case Constants.StandardRadioButtonNoValue => {
                   Future.successful(Redirect(routes.ContactAddressController.show()))
@@ -108,5 +104,4 @@ trait ConfirmCorrespondAddressController extends FrontendController with Authori
         route <- routeRequest(backLink)
       } yield route
     }
-  }
 }

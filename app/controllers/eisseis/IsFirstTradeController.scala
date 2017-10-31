@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.predicates.FeatureSwitch
 import forms.IsFirstTradeForm._
 import models.IsFirstTradeModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,42 +37,38 @@ object IsFirstTradeController extends IsFirstTradeController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait IsFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
+trait IsFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      s4lConnector.fetchAndGetFormData[IsFirstTradeModel](KeystoreKeys.isFirstTrade).map {
-        case Some(data) => Ok(IsFirstTrade(isFirstTradeForm.fill(data)))
-        case None => Ok(IsFirstTrade(isFirstTradeForm))
-      }
+    s4lConnector.fetchAndGetFormData[IsFirstTradeModel](KeystoreKeys.isFirstTrade).map {
+      case Some(data) => Ok(IsFirstTrade(isFirstTradeForm.fill(data)))
+      case None => Ok(IsFirstTrade(isFirstTradeForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      isFirstTradeForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(IsFirstTrade(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.isFirstTrade, validFormData)
-          validFormData.isFirstTrade match {
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    isFirstTradeForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(IsFirstTrade(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.isFirstTrade, validFormData)
+        validFormData.isFirstTrade match {
 
-            case Constants.StandardRadioButtonYesValue => {
-              // to navigate to Date of First Commercial Sale for combined EISSEIS flow
-              Future.successful(Redirect(routes.CommercialSaleController.show()))
-            }
-            case Constants.StandardRadioButtonNoValue => {
-              // to navigate to errorNotFirstTrade for combined EISSEIS flow
-              Future.successful(Redirect(routes.NotFirstTradeErrorController.show()))
-            }
+          case Constants.StandardRadioButtonYesValue => {
+            // to navigate to Date of First Commercial Sale for combined EISSEIS flow
+            Future.successful(Redirect(routes.CommercialSaleController.show()))
+          }
+          case Constants.StandardRadioButtonNoValue => {
+            // to navigate to errorNotFirstTrade for combined EISSEIS flow
+            Future.successful(Redirect(routes.NotFirstTradeErrorController.show()))
           }
         }
-      )
-    }
+      }
+    )
   }
 }
 

@@ -16,7 +16,7 @@
 
 package controllers.seis
 
-import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
+import auth.{AuthorisedAndEnrolledForTAVC,SEIS}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -26,7 +26,7 @@ import views.html.seis.companyDetails.NotFirstTradeError
 
 import scala.concurrent.Future
 
-object NotFirstTradeController extends NotFirstTradeController
+object NotFirstTradeErrorController extends NotFirstTradeErrorController
 {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
@@ -34,7 +34,7 @@ object NotFirstTradeController extends NotFirstTradeController
   override lazy val s4lConnector = S4LConnector
 }
 
-trait NotFirstTradeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
+trait NotFirstTradeErrorController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 

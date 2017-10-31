@@ -30,6 +30,5 @@ case class SEISCheckAnswersModel(
                               subsidiariesSpendingInvestmentModel: Option[SubsidiariesSpendingInvestmentModel],
                               subsidiariesNinetyOwnedModel: Option[SubsidiariesNinetyOwnedModel],
                               contactDetailsModel: Option[ContactDetailsModel],
-                              contactAddressModel: Option[AddressModel],
-                              attachmentsEnabled: Boolean
+                              contactAddressModel: Option[AddressModel]
                             )

@@ -29,8 +29,6 @@ import views.html.seis.supportingDocuments.SupportingDocumentsUpload
 import config.FrontendGlobal.notFoundTemplate
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
-import controllers.predicates.FeatureSwitch
-
 import scala.concurrent.Future
 
 object SupportingDocumentsUploadController extends SupportingDocumentsUploadController
@@ -43,7 +41,7 @@ object SupportingDocumentsUploadController extends SupportingDocumentsUploadCont
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait SupportingDocumentsUploadController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
@@ -51,52 +49,42 @@ trait SupportingDocumentsUploadController extends FrontendController with Author
   val attachmentsFrontEndUrl: String
   val fileUploadService: FileUploadService
 
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      def routeRequest(backUrl: Option[String]) = {
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    def routeRequest(backUrl: Option[String]) = {
 
-        //TODO: this enforces the feature lock but would be good to make this a predicate (see controller predicates folder)
-        if (!fileUploadService.getUploadFeatureEnabled) {
-          Future.successful(NotFound(notFoundTemplate))
+      if (backUrl.isDefined) {
+        s4lConnector.fetchAndGetFormData[SupportingDocumentsUploadModel](KeystoreKeys.supportingDocumentsUpload).map {
+          case Some(data) => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm.fill(data), backUrl.get))
+          case None => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm, backUrl.get))
         }
-        else {
-          if (backUrl.isDefined) {
-            s4lConnector.fetchAndGetFormData[SupportingDocumentsUploadModel](KeystoreKeys.supportingDocumentsUpload).map {
-              case Some(data) => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm.fill(data), backUrl.get))
-              case None => Ok(SupportingDocumentsUpload(supportingDocumentsUploadForm, backUrl.get))
-            }
 
-          } else {
-            // no back link - send to beginning of flow
-            Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-          }
-        }
+      } else {
+        // no back link - send to beginning of flow
+        Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
       }
-
-      for {
-        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector)
-        route <- routeRequest(link)
-      } yield route
     }
+
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      supportingDocumentsUploadForm.bindFromRequest().fold(
-        formWithErrors => {
-          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
-            case Some(link) => Future.successful(BadRequest(SupportingDocumentsUpload(formWithErrors, link)))
-            case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-          }
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.supportingDocumentsUpload, validFormData)
-          validFormData.doUpload match {
-            case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(attachmentsFrontEndUrl))
-            case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.CheckAnswersController.show()))
-          }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    supportingDocumentsUploadForm.bindFromRequest().fold(
+      formWithErrors => {
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSupportingDocs, s4lConnector).flatMap {
+          case Some(link) => Future.successful(BadRequest(SupportingDocumentsUpload(formWithErrors, link)))
+          case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
         }
-      )
-    }
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.supportingDocumentsUpload, validFormData)
+        validFormData.doUpload match {
+          case Constants.StandardRadioButtonYesValue => Future.successful(Redirect(attachmentsFrontEndUrl))
+          case Constants.StandardRadioButtonNoValue => Future.successful(Redirect(routes.CheckAnswersController.show()))
+        }
+      }
+    )
   }
 }

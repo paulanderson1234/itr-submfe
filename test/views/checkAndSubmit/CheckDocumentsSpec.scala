@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import auth.{MockAuthConnector, MockConfigEISFlow}
+import auth.{MockAuthConnector, MockConfig}
 import controllers.CheckDocumentsController
 import models.fileUpload.{EnvelopeFile, Metadata}
 import org.jsoup.Jsoup

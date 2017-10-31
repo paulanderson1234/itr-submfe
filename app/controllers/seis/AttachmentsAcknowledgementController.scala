@@ -33,7 +33,6 @@ import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import config.FrontendGlobal.internalServerErrorTemplate
 import controllers.feedback
-import controllers.predicates.FeatureSwitch
 
 import scala.concurrent.Future
 
@@ -48,7 +47,7 @@ object AttachmentsAcknowledgementController extends AttachmentsAcknowledgementCo
   override lazy val emailConfirmationService = EmailConfirmationService
 }
 
-trait AttachmentsAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait AttachmentsAcknowledgementController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
@@ -59,45 +58,41 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
 
 
   //noinspection ScalaStyle
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async ({ implicit user => implicit request =>
-      (for {
-      // minimum required fields to continue
-        natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
-        contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
-        proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
-        dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
-        contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
-        tavcRef <- getTavCReferenceNumber()
-        tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
-        schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
-        registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
+  val show = AuthorisedAndEnrolled.async({ implicit user => implicit request =>
+    (for {
+    // minimum required fields to continue
+      natureOfBusiness <- s4lConnector.fetchAndGetFormData[NatureOfBusinessModel](KeystoreKeys.natureOfBusiness)
+      contactDetails <- s4lConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
+      proposedInvestment <- s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment)
+      dateOfIncorporation <- s4lConnector.fetchAndGetFormData[DateOfIncorporationModel](KeystoreKeys.dateOfIncorporation)
+      contactAddress <- s4lConnector.fetchAndGetFormData[AddressModel](KeystoreKeys.contactAddress)
+      tavcRef <- getTavCReferenceNumber()
+      tradeStartDate <- s4lConnector.fetchAndGetFormData[TradeStartDateModel](KeystoreKeys.tradeStartDate)
+      schemeType <- s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes)
+      registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
 
-        // potentially optional or required
-        subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
-        subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
-        previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
+      // potentially optional or required
+      subsidiariesSpendInvest <- s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment)
+      subsidiariesNinetyOwned <- s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned)
+      previousSchemes <- PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
 
-        result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
-          dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, schemeType, subsidiariesSpendInvest, subsidiariesNinetyOwned,
-          previousSchemes.toList, registrationDetailsModel)
-      } yield result) recover {
-        case e: Exception => {
-          Logger.warn(s"[AcknowledgementController][submit] - Exception: ${e.getMessage}")
-          InternalServerError(internalServerErrorTemplate)
-        }
+      result <- createSubmissionDetailsModel(natureOfBusiness, contactDetails, proposedInvestment,
+        dateOfIncorporation, contactAddress, tavcRef, tradeStartDate, schemeType, subsidiariesSpendInvest, subsidiariesNinetyOwned,
+        previousSchemes.toList, registrationDetailsModel)
+    } yield result) recover {
+      case e: Exception => {
+        Logger.warn(s"[AcknowledgementController][submit] - Exception: ${e.getMessage}")
+        InternalServerError(internalServerErrorTemplate)
       }
-    }, None)
-  }
+    }
+  }, None)
 
-  def submit: Action[AnyContent] = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.apply ({ implicit user => implicit request =>
-      Redirect(feedback.routes.FeedbackController.show().url)
-    },None)
-  }
+  def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply({ implicit user => implicit request =>
+    Redirect(feedback.routes.FeedbackController.show().url)
+  }, None)
 
   private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {
-    if(tradeStartDateModel.hasTradeStartDate.equals(Constants.StandardRadioButtonYesValue)) {
+    if (tradeStartDateModel.hasTradeStartDate.equals(Constants.StandardRadioButtonYesValue)) {
       Validation.dateToDesFormat(tradeStartDateModel.tradeStartDay.get, tradeStartDateModel.tradeStartMonth.get, tradeStartDateModel.tradeStartYear.get)
     } else {
       Constants.standardIgnoreYearValue
@@ -154,33 +149,6 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
-        def ProcessResult: Future[Result] = {
-          submissionResponseModel.map { submissionResponse =>
-            submissionResponse.status match {
-              case OK =>
-                (getTavCReferenceNumber() map {
-                  tavcRef => {
-                    emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
-                      _ => s4lConnector.clearCache()
-                    }
-                  }
-                }).recover{
-                  case _ => s4lConnector.clearCache()
-                }
-
-                Ok(views.html.seis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
-              case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] - HTTP Submission failed. Response Code: ${submissionResponse.status}")
-                InternalServerError
-              }
-            }
-          }
-        }.recover{
-          case e: Exception => {
-            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
-            InternalServerError(internalServerErrorTemplate)
-          }
-        }
 
         def ProcessResultUpload: Future[Result] = {
           submissionResponseModel.flatMap { submissionResponse =>
@@ -192,11 +160,11 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
                       case OK =>
                         (getTavCReferenceNumber() map {
                           tavcRef => {
-                            emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
+                            emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map {
                               _ => s4lConnector.clearCache()
                             }
                           }
-                        }).recover{
+                        }).recover {
                           case _ => s4lConnector.clearCache()
                         }
                         Ok(views.html.seis.checkAndSubmit.AttachmentsAcknowledgement(submissionResponse.json.as[SubmissionResponse]))
@@ -211,14 +179,14 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
               }
             }
           }
-        }.recover{
+        }.recover {
           case e: Exception => {
             Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
             InternalServerError(internalServerErrorTemplate)
           }
         }
 
-        if (fileUploadService.getUploadFeatureEnabled) ProcessResultUpload else ProcessResult
+        ProcessResultUpload
       }
 
       // inconsistent state send to start
@@ -257,4 +225,3 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
   }
 
 }
-

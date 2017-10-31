@@ -87,7 +87,7 @@ class ContactAddressControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit, formInput: _*)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some("/investment-tax-relief/seis/supporting-documents")
+          redirectLocation(result) shouldBe Some(routes.SupportingDocumentsUploadController.show().url)
         }
       )
     }

@@ -16,7 +16,7 @@
 
 package views
 
-import auth.{MockConfigSingleFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import connectors.SubmissionConnector
 import controllers.seis.TradeStartDateController
@@ -37,7 +37,7 @@ class TradeStartDateSpec extends ViewSpec {
   val tradeStartDateModelInvalidYes = new TradeStartDateModel(Constants.StandardRadioButtonYesValue, None, Some(25), Some(2015))
 
   object TestController extends TradeStartDateController {
-    override lazy val applicationConfig = MockConfigSingleFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

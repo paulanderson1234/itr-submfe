@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC, EIS, SEIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import models.submission.SchemeTypesModel
 import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -36,20 +35,17 @@ object InvalidPreviousSchemeController extends InvalidPreviousSchemeController {
   override lazy val s4lConnector = S4LConnector
 }
 
-trait InvalidPreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait InvalidPreviousSchemeController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  def show: Action[AnyContent] = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-        case Some(schemeTypesModel) => Ok(InvalidPreviousScheme(schemeTypesModel))
-        case None => Redirect(controllers.routes.ApplicationHubController.show())
-      }.recover {
-        case e: Exception => Logger.warn(s"[InvalidPreviousSchemeController][show] Error calling fetchAndGetFormData: ${e.getMessage}")
-          Redirect(controllers.routes.ApplicationHubController.show())
-      }
+  def show: Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
+      case Some(schemeTypesModel) => Ok(InvalidPreviousScheme(schemeTypesModel))
+      case None => Redirect(controllers.routes.ApplicationHubController.show())
+    }.recover {
+      case e: Exception => Logger.warn(s"[InvalidPreviousSchemeController][show] Error calling fetchAndGetFormData: ${e.getMessage}")
+        Redirect(controllers.routes.ApplicationHubController.show())
     }
   }
-
 }

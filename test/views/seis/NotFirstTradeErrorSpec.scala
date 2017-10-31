@@ -16,9 +16,9 @@
 
 package views.seis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import config.FrontendAppConfig
-import controllers.seis.NotFirstTradeController
+import controllers.seis.NotFirstTradeErrorController
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -28,8 +28,8 @@ import views.helpers.ViewSpec
 
 class NotFirstTradeErrorSpec extends ViewSpec {
 
-  object TestController extends NotFirstTradeController {
-    override lazy val applicationConfig = MockConfigEISFlow
+  object TestController extends NotFirstTradeErrorController {
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val s4lConnector = mockS4lConnector

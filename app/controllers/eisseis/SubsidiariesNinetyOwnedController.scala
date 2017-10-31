@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, VCT}
 import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import forms.SubsidiariesNinetyOwnedForm._
 import models.SubsidiariesNinetyOwnedModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -37,32 +36,27 @@ object SubsidiariesNinetyOwnedController extends SubsidiariesNinetyOwnedControll
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait SubsidiariesNinetyOwnedController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
-        case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
-        case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[SubsidiariesNinetyOwnedModel](KeystoreKeys.subsidiariesNinetyOwned).map {
+      case Some(data) => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm.fill(data)))
+      case None => Ok(SubsidiariesNinetyOwned(subsidiariesNinetyOwnedForm))
+    }
+  }
+
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    subsidiariesNinetyOwnedForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
+        s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().url)
+        Future.successful(Redirect(routes.InvestmentGrowController.show()))
       }
-    }
+    )
   }
-
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      subsidiariesNinetyOwnedForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(SubsidiariesNinetyOwned(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.subsidiariesNinetyOwned, validFormData)
-          s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.SubsidiariesNinetyOwnedController.show().url)
-          Future.successful(Redirect(routes.InvestmentGrowController.show()))
-        }
-      )
-    }
-  }
-
 }

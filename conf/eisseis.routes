@@ -73,9 +73,6 @@ POST       /how-plan-to-use-investment              controllers.eisseis.Investme
 GET        /contact-details                         controllers.eisseis.ContactDetailsController.show
 POST       /contact-details                         controllers.eisseis.ContactDetailsController.submit
 
-GET        /supporting-documents                    controllers.eisseis.SupportingDocumentsController.show
-POST       /supporting-documents                    controllers.eisseis.SupportingDocumentsController.submit
-
 GET        /supporting-documents-upload             controllers.eisseis.SupportingDocumentsUploadController.show
 POST       /supporting-documents-upload             controllers.eisseis.SupportingDocumentsUploadController.submit
 
