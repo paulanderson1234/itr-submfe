@@ -22,7 +22,7 @@ import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers.{contentAsString, _}
 import views.helpers.ViewSpec
-import views.html.eis.verification.EmailVerification
+import views.html.seis.verification.EmailVerification
 
 class EmailVerificationSpec extends ViewSpec {
 
@@ -33,7 +33,9 @@ class EmailVerificationSpec extends ViewSpec {
   lazy val document = Jsoup.parse(contentAsString(page))
 
   "Email verification page" should {
-    "show when contact details passed" in {
+
+    "show when contact details passed" in new SEISSetup {
+
       document.title() shouldBe Messages("page.verification.EmailVerification.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.verification.EmailVerification.heading")
       document.body.getElementById("email-one").text shouldBe Messages("page.verification.EmailVerification.info.one") +
@@ -48,11 +50,13 @@ class EmailVerificationSpec extends ViewSpec {
       document.body.getElementById("email-help-link-one").text shouldBe Messages("page.verification.EmailVerification.help.text.two")
       document.body.getElementById("email-help-link-two").text shouldBe Messages("page.verification.EmailVerification.help.text.four")
 
+
       document.body.getElementById("email-help-link-one").attr("href") shouldEqual
-        controllers.eis.routes.ContactDetailsController.show().url
+        controllers.seis.routes.ContactDetailsController.show().url
 
       document.body.getElementById("email-help-link-two").attr("href") shouldEqual
-        controllers.eis.routes.EmailVerificationController.verify(emailRedirectOption).url
+        controllers.seis.routes.EmailVerificationController.verify(emailRedirectOption).url
     }
+
   }
 }

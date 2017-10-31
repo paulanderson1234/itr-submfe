@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eis.SubsidiariesSpendingInvestmentController
@@ -35,7 +35,7 @@ import scala.concurrent.Future
 class SubsidiariesSpendingInvestmentSpec extends ViewSpec {
   
   object TestController extends SubsidiariesSpendingInvestmentController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

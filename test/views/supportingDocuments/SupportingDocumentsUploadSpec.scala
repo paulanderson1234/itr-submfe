@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import auth.{MockAuthConnector, MockConfigEISFlow}
+import auth.{MockAuthConnector, MockConfig}
 import controllers.SupportingDocumentsUploadController
 import models.fileUpload.{EnvelopeFile, Metadata}
 import org.jsoup.Jsoup
@@ -28,7 +28,7 @@ class SupportingDocumentsUploadSpec extends ViewSpec {
   val files = Seq(EnvelopeFile("1", "PROCESSING", "test.pdf", "application/pdf", "2016-03-31T12:33:45Z", Metadata(None), "test.url"))
 
   object TestController extends SupportingDocumentsUploadController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

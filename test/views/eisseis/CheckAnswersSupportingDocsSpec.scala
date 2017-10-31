@@ -86,7 +86,7 @@ class CheckAnswersSupportingDocsSpec extends CheckAnswersSpec {
 
 
       document.getElementById("submit").text() shouldBe Messages("page.checkAndSubmit.checkAnswers.button.confirm")
-      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsController.show().url
+      document.body.getElementById("back-link").attr("href") shouldEqual controllers.eisseis.routes.SupportingDocumentsUploadController.show().url
     }
   }
 }

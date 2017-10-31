@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import controllers.eis.HadPreviousRFIController
 import models.HadPreviousRFIModel
@@ -34,7 +34,7 @@ import scala.concurrent.Future
 class HadPreviousRFISpec extends ViewSpec {
 
   object TestController extends HadPreviousRFIController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

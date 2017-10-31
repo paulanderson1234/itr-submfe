@@ -16,7 +16,7 @@
 
 package views.eis
 
-import auth.{MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAppConfig
 import controllers.eis.ConfirmCorrespondAddressController
@@ -39,7 +39,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with BaseSpec {
 
   object TestController extends ConfirmCorrespondAddressController {
     override lazy val subscriptionService = mock[SubscriptionService]
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
     override lazy val s4lConnector = mockS4lConnector
     override lazy val enrolmentConnector = mockEnrolmentConnector

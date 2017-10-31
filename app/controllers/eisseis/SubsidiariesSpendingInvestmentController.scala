@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
-import controllers.predicates.FeatureSwitch
 import forms.SubsidiariesSpendingInvestmentForm._
 import models.SubsidiariesSpendingInvestmentModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,50 +37,45 @@ object SubsidiariesSpendingInvestmentController extends SubsidiariesSpendingInve
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait SubsidiariesSpendingInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait SubsidiariesSpendingInvestmentController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      def routeRequest(backUrl: Option[String]) = {
-        if (backUrl.isDefined) {
-          s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
-            case Some(data) => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
-            case None => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
-          }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    def routeRequest(backUrl: Option[String]) = {
+      if (backUrl.isDefined) {
+        s4lConnector.fetchAndGetFormData[SubsidiariesSpendingInvestmentModel](KeystoreKeys.subsidiariesSpendingInvestment).map {
+          case Some(data) => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm.fill(data), backUrl.get))
+          case None => Ok(SubsidiariesSpendingInvestment(subsidiariesSpendingInvestmentForm, backUrl.get))
         }
-        else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
       }
-      for {
-        link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)
-        route <- routeRequest(link)
-      } yield route
+      else Future.successful(Redirect(routes.ProposedInvestmentController.show()))
     }
+    for {
+      link <- ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector)
+      route <- routeRequest(link)
+    } yield route
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
-        invalidForm =>
-          ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector).flatMap {
-            case Some(data) => Future.successful(
-              BadRequest(views.html.eisseis.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
-            case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
-          },
-        validForm => {
-          s4lConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
-          validForm.subSpendingInvestment match {
-            case Constants.StandardRadioButtonYesValue =>
-              Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
-            case Constants.StandardRadioButtonNoValue =>
-              s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
-                routes.SubsidiariesSpendingInvestmentController.show().url)
-              Future.successful(Redirect(routes.InvestmentGrowController.show()))
-          }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    subsidiariesSpendingInvestmentForm.bindFromRequest.fold(
+      invalidForm =>
+        ControllerHelpers.getSavedBackLink(KeystoreKeys.backLinkSubSpendingInvestment, s4lConnector).flatMap {
+          case Some(data) => Future.successful(
+            BadRequest(views.html.eisseis.investment.SubsidiariesSpendingInvestment(invalidForm, data)))
+          case None => Future.successful(Redirect(routes.ProposedInvestmentController.show()))
+        },
+      validForm => {
+        s4lConnector.saveFormData(KeystoreKeys.subsidiariesSpendingInvestment, validForm)
+        validForm.subSpendingInvestment match {
+          case Constants.StandardRadioButtonYesValue =>
+            Future.successful(Redirect(routes.SubsidiariesNinetyOwnedController.show()))
+          case Constants.StandardRadioButtonNoValue =>
+            s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow,
+              routes.SubsidiariesSpendingInvestmentController.show().url)
+            Future.successful(Redirect(routes.InvestmentGrowController.show()))
         }
-      )
-    }
+      }
+    )
   }
-
 }

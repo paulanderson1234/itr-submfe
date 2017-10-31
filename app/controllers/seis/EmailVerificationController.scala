@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC, SEIS, TAVCUser}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector, FrontendGlobal}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import models.{ContactDetailsModel, EmailVerificationModel}
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -41,7 +40,7 @@ object EmailVerificationController extends EmailVerificationController
   val emailVerificationService = EmailVerificationService
 }
 
-trait EmailVerificationController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch {
+trait EmailVerificationController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 

@@ -16,7 +16,7 @@
 
 package views.eisseis
 
-import auth.{MockConfig, MockConfigEISFlow, MockAuthConnector}
+import auth.{MockConfig, MockAuthConnector}
 import common.KeystoreKeys
 import config.FrontendAppConfig
 import controllers.eisseis.PercentageStaffWithMastersController

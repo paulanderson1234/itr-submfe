@@ -155,33 +155,6 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
         ))
 
         val submissionResponseModel = submissionConnector.submitAdvancedAssurance(submission, tavcReferenceNumber)
-        def ProcessResult: Future[Result] = {
-          submissionResponseModel.map { submissionResponse =>
-            submissionResponse.status match {
-              case OK =>
-                (getTavCReferenceNumber() map {
-                  tavcRef => {
-                    emailConfirmationService.sendEmailConfirmation(tavcRef, submissionResponse.json.as[SubmissionResponse]).map{
-                      _ => s4lConnector.clearCache()
-                    }
-                  }
-                }).recover{
-                  case _ => s4lConnector.clearCache()
-                }
-
-                Ok(views.html.eis.checkAndSubmit.Acknowledgement(submissionResponse.json.as[SubmissionResponse]))
-              case _ => {
-                Logger.warn(s"[AcknowledgementController][createSubmissionDetailsModel] [ProcessResul]- HTTP Submission failed. Response Code: ${submissionResponse.status}")
-                InternalServerError
-              }
-            }
-          }
-        }.recover{
-          case e: Exception => {
-            Logger.warn(s"[AcknowledgementController][submit] - Exception submitting application: ${e.getMessage}")
-            InternalServerError(internalServerErrorTemplate)
-          }
-        }
 
         def ProcessResultUpload: Future[Result] = {
           submissionResponseModel.flatMap { submissionResponse =>
@@ -218,7 +191,7 @@ trait AcknowledgementController extends FrontendController with AuthorisedAndEnr
           }
         }
 
-        if (fileUploadService.getUploadFeatureEnabled) ProcessResultUpload else ProcessResult
+        ProcessResultUpload
       }
 
       // inconsistent state send to start

@@ -21,7 +21,6 @@ import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.Helpers.PreviousSchemesHelper
-import controllers.predicates.FeatureSwitch
 import forms.HadPreviousRFIForm._
 import models.HadPreviousRFIModel
 import uk.gov.hmrc.play.frontend.controller.FrontendController
@@ -38,33 +37,29 @@ object HadPreviousRFIController extends HadPreviousRFIController{
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with PreviousSchemesHelper {
+trait HadPreviousRFIController extends FrontendController with AuthorisedAndEnrolledForTAVC with PreviousSchemesHelper {
 
   override val acceptedFlows = Seq(Seq(SEIS))
 
 
   //
-  val show = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
-        case Some(data) => Ok(HadPreviousRFI(hadPreviousRFIForm.fill(data)))
-        case None => Ok(HadPreviousRFI(hadPreviousRFIForm))
-      }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.fetchAndGetFormData[HadPreviousRFIModel](KeystoreKeys.hadPreviousRFI).map {
+      case Some(data) => Ok(HadPreviousRFI(hadPreviousRFIForm.fill(data)))
+      case None => Ok(HadPreviousRFI(hadPreviousRFIForm))
     }
   }
 
-  val submit = featureSwitch(applicationConfig.seisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      s4lConnector.saveFormData(KeystoreKeys.backLinkHadRFI, routes.HadPreviousRFIController.show().url)
-      hadPreviousRFIForm.bindFromRequest().fold(
-        formWithErrors => {
-          Future.successful(BadRequest(HadPreviousRFI(formWithErrors)))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
-          Future.successful(Redirect(routes.HadOtherInvestmentsController.show()))
-        }
-      )
-    }
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    s4lConnector.saveFormData(KeystoreKeys.backLinkHadRFI, routes.HadPreviousRFIController.show().url)
+    hadPreviousRFIForm.bindFromRequest().fold(
+      formWithErrors => {
+        Future.successful(BadRequest(HadPreviousRFI(formWithErrors)))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.hadPreviousRFI, validFormData)
+        Future.successful(Redirect(routes.HadOtherInvestmentsController.show()))
+      }
+    )
   }
 }

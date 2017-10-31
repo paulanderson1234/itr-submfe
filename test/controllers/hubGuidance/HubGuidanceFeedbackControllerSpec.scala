@@ -16,7 +16,7 @@
 
 package controllers.hubGuidance
 
-import auth.{MockAuthConnector, MockConfig, MockConfigEISFlow, MockConfigSingleFlow}
+import auth.{MockAuthConnector, MockConfig}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.CheckDocumentsController
@@ -41,11 +41,11 @@ class HubGuidanceFeedbackControllerSpec extends BaseSpec {
   }
 
   object TestControllerSingle extends TestController {
-    override lazy val applicationConfig = MockConfigSingleFlow
+    override lazy val applicationConfig = MockConfig
   }
 
   object TestControllerEIS extends TestController {
-    override lazy val applicationConfig = MockConfigEISFlow
+    override lazy val applicationConfig = MockConfig
   }
 
   "HubGuidanceFeedbackController" should {
@@ -73,7 +73,7 @@ class HubGuidanceFeedbackControllerSpec extends BaseSpec {
   }
 
   "Post to the HubGuidanceFeedbackController when authenticated and enrolled" should {
-    "redirect to 'scheme selections' page if eisSeisFlowEnabled is enabled" in {
+    "redirect to 'scheme selections' page" in {
       when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(CacheMap("", Map())))
       mockEnrolledRequest(None)
@@ -81,34 +81,6 @@ class HubGuidanceFeedbackControllerSpec extends BaseSpec {
         result => {
           status(result) shouldBe SEE_OTHER
           redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SchemeSelectionController.show().url)
-        }
-      )
-    }
-  }
-
-  "Post to the HubGuidanceFeedbackController when authenticated and enrolled" should {
-    "redirect to 'scheme selection' page if eisSeisFlowEnabled is disabled but seisFlowEnabled is enabled" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
-      mockEnrolledRequest(None)
-      submitWithSessionAndAuth(TestControllerSingle.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.schemeSelection.routes.SingleSchemeSelectionController.show().url)
-        }
-      )
-    }
-  }
-
-  "Post to the HubGuidanceFeedbackController when authenticated and enrolled" should {
-    "redirect to 'nature of business' page in EIS flow if neither seisFlowEnabled or eisSeisFlowEnabled are true" in {
-      when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
-        .thenReturn(Future.successful(CacheMap("", Map())))
-      mockEnrolledRequest(None)
-      submitWithSessionAndAuth(TestControllerEIS.submit)(
-        result => {
-          status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.eis.routes.NatureOfBusinessController.show().url)
         }
       )
     }

@@ -20,7 +20,6 @@ import auth.{AuthorisedAndEnrolledForTAVC,SEIS, EIS, TAVCUser, VCT}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import controllers.predicates.FeatureSwitch
 import forms.PreviousBeforeDOFCSForm._
 import models.{CommercialSaleModel, KiProcessingModel, PreviousBeforeDOFCSModel, SubsidiariesModel}
 import org.joda.time.DateTime
@@ -42,61 +41,57 @@ object  PreviousBeforeDOFCSController extends PreviousBeforeDOFCSController {
   override lazy val enrolmentConnector = EnrolmentConnector
 }
 
-trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with FeatureSwitch with DateFormatter {
+trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAndEnrolledForTAVC with DateFormatter {
 
-  override val acceptedFlows = Seq(Seq(EIS,SEIS,VCT),Seq(SEIS,VCT), Seq(EIS,SEIS))
+  override val acceptedFlows = Seq(Seq(EIS, SEIS, VCT), Seq(SEIS, VCT), Seq(EIS, SEIS))
 
-  val show = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
-      createResponse(None)
-    }
+  val show = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    createResponse(None)
   }
 
-  val submit = featureSwitch(applicationConfig.eisseisFlowEnabled) {
-    AuthorisedAndEnrolled.async { implicit user => implicit request =>
+  val submit = AuthorisedAndEnrolled.async { implicit user => implicit request =>
 
-      def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
-        date match {
-          case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
-            s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().url)
-            Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
-          case Some(_) =>
-            s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().url)
-            Future.successful(Redirect(routes.InvestmentGrowController.show()))
-          case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
+    def routeRequest(date: Option[SubsidiariesModel]): Future[Result] = {
+      date match {
+        case Some(data) if data.ownSubsidiaries == Constants.StandardRadioButtonYesValue =>
+          s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment, routes.PreviousBeforeDOFCSController.show().url)
+          Future.successful(Redirect(routes.SubsidiariesSpendingInvestmentController.show()))
+        case Some(_) =>
+          s4lConnector.saveFormData(KeystoreKeys.backLinkInvestmentGrow, routes.PreviousBeforeDOFCSController.show().url)
+          Future.successful(Redirect(routes.InvestmentGrowController.show()))
+        case None => Future.successful(Redirect(routes.SubsidiariesController.show()))
+      }
+    }
+
+    previousBeforeDOFCSForm.bindFromRequest().fold(
+      formWithErrors => {
+        createResponse(Some(formWithErrors))
+      },
+      validFormData => {
+        s4lConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
+        validFormData.previousBeforeDOFCS match {
+          case Constants.StandardRadioButtonNoValue => {
+            s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().url)
+            Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
+          }
+          case Constants.StandardRadioButtonYesValue => for {
+            subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
+            route <- routeRequest(subsidiaries)
+          } yield route
         }
       }
-
-      previousBeforeDOFCSForm.bindFromRequest().fold(
-        formWithErrors => {
-          createResponse(Some(formWithErrors))
-        },
-        validFormData => {
-          s4lConnector.saveFormData(KeystoreKeys.previousBeforeDOFCS, validFormData)
-          validFormData.previousBeforeDOFCS match {
-            case Constants.StandardRadioButtonNoValue => {
-              s4lConnector.saveFormData(KeystoreKeys.backLinkNewGeoMarket, routes.PreviousBeforeDOFCSController.show().url)
-              Future.successful(Redirect(routes.NewGeographicalMarketController.show()))
-            }
-            case Constants.StandardRadioButtonYesValue => for {
-              subsidiaries <- s4lConnector.fetchAndGetFormData[SubsidiariesModel](KeystoreKeys.subsidiaries)
-              route <- routeRequest(subsidiaries)
-            } yield route
-          }
-        }
-      )
-    }
+    )
   }
 
   private def generatePage(day: Int, month: Int, year: Int, difference: Int, formWithErrors: Option[Form[PreviousBeforeDOFCSModel]])
                           (implicit request: Request[Any], user: TAVCUser): Future[Result] = {
-    val newDate = new DateTime(year,month,day,0,0).plusYears(difference)
-    val convertedNewDate = toDateString(newDate.getDayOfMonth,newDate.getMonthOfYear,newDate.getYear)
-    val commercialDate = toDateString(day,month,year)
-    val question = Messages("page.previousInvestment.previousBeforeDOFCS.heading",commercialDate,convertedNewDate)
-    val description = Messages("page.previousInvestment.previousBeforeDOFCS.description",difference)
-    if(formWithErrors.isDefined) {
-      Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors.get,question,description)))
+    val newDate = new DateTime(year, month, day, 0, 0).plusYears(difference)
+    val convertedNewDate = toDateString(newDate.getDayOfMonth, newDate.getMonthOfYear, newDate.getYear)
+    val commercialDate = toDateString(day, month, year)
+    val question = Messages("page.previousInvestment.previousBeforeDOFCS.heading", commercialDate, convertedNewDate)
+    val description = Messages("page.previousInvestment.previousBeforeDOFCS.description", difference)
+    if (formWithErrors.isDefined) {
+      Future.successful(BadRequest(PreviousBeforeDOFCS(formWithErrors.get, question, description)))
     } else {
       s4lConnector.fetchAndGetFormData[PreviousBeforeDOFCSModel](KeystoreKeys.previousBeforeDOFCS).map {
         case Some(data) => Ok(PreviousBeforeDOFCS(previousBeforeDOFCSForm.fill(data), question, description))
@@ -112,33 +107,30 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
       kiProcessingModel.fold(true)(kiModel => kiModel.dateConditionMet.isEmpty || kiModel.companyAssertsIsKi.isEmpty)
 
     def isMissingCommercialSale: Boolean =
-    commercialSaleModel.fold(true)(commercialModel => commercialModel.commercialSaleDay.isEmpty
-      || commercialModel.commercialSaleMonth.isEmpty
-      || commercialModel.commercialSaleYear.isEmpty)
+      commercialSaleModel.fold(true)(commercialModel => commercialModel.commercialSaleDay.isEmpty
+        || commercialModel.commercialSaleMonth.isEmpty
+        || commercialModel.commercialSaleYear.isEmpty)
 
     (isMissingCommercialSale, isMissingKiData) match {
-      case (false, false) => {
-        (kiProcessingModel.get.isKi,formWithErrors.isDefined) match {
-          case (true,false) => {
+      case (false, false) =>
+        (kiProcessingModel.get.isKi, formWithErrors.isDefined) match {
+          case (true, false) =>
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
               Constants.IsKnowledgeIntensiveYears, None)
-          }
-          case (true,true) => {
+          case (true, true) =>
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
               Constants.IsKnowledgeIntensiveYears,
               formWithErrors)
-          }
-          case (false,false) => {
+          case (false, false) =>
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
               Constants.IsNotKnowledgeIntensiveYears, None)
-          }
-          case (false,true) => {
+          case (false, true) => {
             generatePage(commercialSaleModel.get.commercialSaleDay.get,
               commercialSaleModel.get.commercialSaleMonth.get,
               commercialSaleModel.get.commercialSaleYear.get,
@@ -146,7 +138,6 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
               formWithErrors)
           }
         }
-      }
       case (true, _) => Future.successful(Redirect(routes.CommercialSaleController.show()))
       case (_, true) => Future.successful(Redirect(routes.DateOfIncorporationController.show()))
     }
@@ -156,7 +147,7 @@ trait PreviousBeforeDOFCSController extends FrontendController with AuthorisedAn
     for {
       kiModel <- s4lConnector.fetchAndGetFormData[KiProcessingModel](KeystoreKeys.kiProcessingModel)
       commercialSale <- s4lConnector.fetchAndGetFormData[CommercialSaleModel](KeystoreKeys.commercialSale)
-      result <- handleResponse(kiModel,commercialSale,formWithErrors)
+      result <- handleResponse(kiModel, commercialSale, formWithErrors)
     } yield result
   }
 }
