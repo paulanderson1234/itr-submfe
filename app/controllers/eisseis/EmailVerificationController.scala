@@ -95,7 +95,7 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
                                           (implicit request: Request[AnyContent]): Future[Result] ={
     result.flatMap {
       case (_,Constants.EmailVerified) => Future.successful(Redirect(routes.ConfirmCorrespondAddressController.show()))
-      case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data))))
+      case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data), Constants.ContactDetailsReturnUrl)))
       case _ => Future.successful(InternalServerError(FrontendGlobal.internalServerErrorTemplate))
     }
   }
@@ -103,7 +103,7 @@ trait EmailVerificationController extends FrontendController with AuthorisedAndE
                                             (implicit request: Request[AnyContent]): Future[Result] ={
     result.flatMap {
       case (_,Constants.EmailVerified) => Future.successful(Redirect(routes.CheckAnswersController.show()))
-      case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data))))
+      case (data,Constants.EmailNotVerified) => Future.successful(Ok(EmailVerification(EmailVerificationModel(data), Constants.CheckAnswersReturnUrl)))
       case _ => Future.successful(InternalServerError(FrontendGlobal.internalServerErrorTemplate))
     }
   }

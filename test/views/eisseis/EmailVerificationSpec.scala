@@ -16,39 +16,28 @@
 
 package views.eisseis
 
-import auth.{MockAuthConnector, MockConfigEISFlow}
-import controllers.eis.EmailVerificationController
 import models.EmailVerificationModel
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
 import play.api.test.Helpers.{contentAsString, _}
-import services.EmailVerificationService
 import views.helpers.ViewSpec
-import views.html.eisseis.verification.EmailVerification
+import views.html.eis.verification.EmailVerification
 
 class EmailVerificationSpec extends ViewSpec {
-  
-  object TestController extends EmailVerificationController {
-    override lazy val applicationConfig = MockConfigEISFlow
-    override lazy val authConnector = MockAuthConnector
-    override lazy val s4lConnector = mockS4lConnector
-    override lazy val enrolmentConnector = mockEnrolmentConnector
-    override val emailVerificationService = mock[EmailVerificationService]
-  }
 
   val email = "test@test.com"
-  lazy val page = EmailVerification(EmailVerificationModel(email))(fakeRequest,applicationMessages)
+  val emailRedirectOption = 123
+
+  lazy val page = EmailVerification(EmailVerificationModel(email), emailRedirectOption)(fakeRequest,applicationMessages)
   lazy val document = Jsoup.parse(contentAsString(page))
 
   "Email verification page" should {
-
     "show when contact details passed" in {
-
       document.title() shouldBe Messages("page.verification.EmailVerification.title")
       document.getElementById("main-heading").text() shouldBe Messages("page.verification.EmailVerification.heading")
       document.body.getElementById("email-one").text shouldBe Messages("page.verification.EmailVerification.info.one") +
-        s" ${email}" + Messages("page.verification.EmailVerification.info.two")
+        s" $email" + Messages("page.verification.EmailVerification.info.two")
       document.body.getElementById("help").text shouldBe Messages("page.verification.EmailVerification.help.link")
 
       document.body.getElementById("help-text-one").text shouldBe Messages("page.verification.EmailVerification.help.text.one") +
@@ -58,7 +47,12 @@ class EmailVerificationSpec extends ViewSpec {
 
       document.body.getElementById("email-help-link-one").text shouldBe Messages("page.verification.EmailVerification.help.text.two")
       document.body.getElementById("email-help-link-two").text shouldBe Messages("page.verification.EmailVerification.help.text.four")
-    }
 
+      document.body.getElementById("email-help-link-one").attr("href") shouldEqual
+        controllers.eis.routes.ContactDetailsController.show().url
+
+      document.body.getElementById("email-help-link-two").attr("href") shouldEqual
+        controllers.eis.routes.EmailVerificationController.verify(emailRedirectOption).url
+    }
   }
 }
