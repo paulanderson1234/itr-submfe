@@ -1,0 +1,4 @@
+# microservice specific routes
+
+
+GET       /:internalId/aa-application-in-progress                 controllers.internal.InternalController.getApplicationInProgress(internalId: String)
