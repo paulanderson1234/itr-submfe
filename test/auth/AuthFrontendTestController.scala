@@ -14,36 +14,31 @@
  * limitations under the License.
  */
 
-package services.internal
+package auth
 
-import auth.authModels.UserIDs
-import common.KeystoreKeys
-import config.FrontendAuthConnector
-import connectors.S4LConnector
-import uk.gov.hmrc.play.frontend.auth.AuthContext
+import connectors.{EnrolmentConnector, S4LConnector}
+import org.scalatest.mock.MockitoSugar
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
+import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-trait InternalService {
+object AuthFrontendTestController extends AuthFrontendTestController with MockitoSugar{
+  override lazy val authConnector = mock[AuthConnector]
+}
 
-  val authConnector: AuthConnector
-  val s4LConnector: S4LConnector
+trait AuthFrontendTestController extends FrontendController with FrontendAuthorisedForTAVC {
 
-  def getApplicationInProgress(authority: Authority)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
-    authConnector.getIds[UserIDs](AuthContext(authority)).flatMap{
-      userIDs => {
-        s4LConnector.fetchAndGetFormData[Boolean](userIDs.internalId, KeystoreKeys.applicationInProgress)
-      }
-    }
+  val authorisedAsyncAction = FrontendAuthorised.async {
+    implicit userIds =>  implicit request => Future.successful(Ok)
   }
+
+  val authorisedAction = FrontendAuthorised {
+    implicit userIds =>  implicit request => Ok
+  }
+
 }
 
-object InternalService extends InternalService {
-  val authConnector = FrontendAuthConnector
-  val s4LConnector = S4LConnector
-}
 
