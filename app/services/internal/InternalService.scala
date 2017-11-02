@@ -16,7 +16,6 @@
 
 package services.internal
 
-import auth.TAVCUser
 import auth.authModels.UserIDs
 import common.KeystoreKeys
 import config.FrontendAuthConnector
@@ -44,7 +43,7 @@ trait InternalService {
     }
   }
 
-  def getCSApplicationInProgress()(implicit hc: HeaderCarrier): Future[CSApplicationModel] = {
+  def getCSApplicationInProgress()(implicit hc: HeaderCarrier, user: T): Future[CSApplicationModel] = {
     csConnector.getComplianceStatementApplication()
   }
 }
