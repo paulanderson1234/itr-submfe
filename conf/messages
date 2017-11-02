@@ -44,6 +44,7 @@ common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
 common.back.dashboard=Dashboard
 common.application.types.advanceAssurance=Advance Assurance
+common.or=or
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -909,9 +910,9 @@ page.throttlingGuidance.whoCanUseNewService.apply.if=At the moment, you can only
 page.throttlingGuidance.whoCanUseNewService.apply.if.one=is applying for the Enterprise Investment Scheme, Seed Enterprise Investment Scheme or for investment from a Venture Capital Trust
 page.throttlingGuidance.whoCanUseNewService.apply.if.two=isn''t using an agent to apply
 page.throttlingGuidance.whoCanUseNewService.apply.if.three=didn''t acquire the trade you want to raise investment for
-page.throttlingGuidance.whoCanUseNewService.still.apply=If you don’t meet these conditions, you can still apply for Advance Assurance or submit a Compliance Statement.
-page.throttlingGuidance.whoCanUseNewService.existing=Find out how to use our existing service.
-
+page.throttlingGuidance.whoCanUseNewService.still.apply=If you don’t meet these conditions, you can use our existing services to
+page.throttlingGuidance.whoCanUseNewService.advancedAssurance=apply for Advanced Assurance
+page.throttlingGuidance.whoCanUseNewService.complianceStatement=submit a Compliance Statement.
 
 page.throttlingGuidance.ourServiceChange.title=Our service is changing
 page.throttlingGuidance.ourServiceChange.heading=Our service is changing

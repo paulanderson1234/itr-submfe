@@ -17,10 +17,14 @@
                 <li id="reason-two"><span>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.two")</span></li>
                 <li id="reason-three"><span>@Messages("page.throttlingGuidance.whoCanUseNewService.apply.if.three")</span></li>
             </ul>
+
             <div class="form-group">
-                <span id="still-apply">@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
-                    <a href="@Constants.guidanceRedirectUrl" class="link-style" id="change-answers">
-                        @Messages("page.throttlingGuidance.whoCanUseNewService.existing")</a></span>
+                <span id=still-apply>@Messages("page.throttlingGuidance.whoCanUseNewService.still.apply")
+                    <a href="@Constants.guidanceRedirectUrl" class="link-style" id="aa-guidance">
+                        @Messages("page.throttlingGuidance.whoCanUseNewService.advancedAssurance")</a>
+                        @Messages("common.or")
+                    <a href="@Constants.guidanceCsRedirectUrl" class="link-style" id="cs-guidance">
+                        @Messages("page.throttlingGuidance.whoCanUseNewService.complianceStatement")</a></span>
 
                 @form(action = controllers.throttlingGuidance.routes.WhoCanUseNewServiceController.submit()) {
 
