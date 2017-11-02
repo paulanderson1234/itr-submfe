@@ -30,6 +30,7 @@ trait FakeRequestHelper{
   lazy val fakeRequest = FakeRequest()
   lazy val fakeRequestWithSession = fakeRequest.withSession(SessionKeys.sessionId -> s"session-$sessionId")
   lazy val authorisedFakeRequest = authenticatedFakeRequest()
+  lazy val authorisedFakeFrontendRequest = authenticatedFakeFrontendRequest
   lazy val timedOutFakeRequest = timeoutFakeRequest()
 
   def fakeRequestToPOST (input: (String, String)*): FakeRequest[AnyContentAsFormUrlEncoded] = {

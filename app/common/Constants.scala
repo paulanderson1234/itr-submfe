@@ -60,6 +60,7 @@ trait Constants {
   val standardIgnoreYearValue = "9999-12-31"
 
   val guidanceRedirectUrl = "https://www.gov.uk/guidance/venture-capital-schemes-apply-for-advance-assurance"
+  val guidanceCsRedirectUrl = "https://www.gov.uk/government/publications/enterprise-investment-scheme-compliance-statement-eis1"
 
 
 

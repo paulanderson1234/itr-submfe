@@ -15,44 +15,31 @@
  */
 
 package controllers.internal
-import auth.AuthorisedAndEnrolledForTAVC
-import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
-import play.api.Logger
+import auth.FrontendAuthorisedForTAVC
+import common.KeystoreKeys
+import config.FrontendAuthConnector
+import connectors.S4LConnector
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent}
-import services.internal.InternalService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 
 object InternalController extends InternalController{
-  override val internalService = InternalService
+  override val authConnector = FrontendAuthConnector
+  override val s4LConnector = S4LConnector
 }
 
 
-trait InternalController extends FrontendController{
+trait InternalController extends FrontendController with FrontendAuthorisedForTAVC{
 
-  val internalService: InternalService
+  val s4LConnector: S4LConnector
 
-  /* TODO Currently stubbed implementation */
-  def getApplicationInProgress: Action[AnyContent] = Action.async {
-    implicit request =>{
-
-      implicit val hc = HeaderCarrier.fromHeadersAndSession(request.headers)
-
-      FrontendAuthConnector.currentAuthority.flatMap{
-        case Some(authority) => {
-          internalService.getApplicationInProgress(authority).map{
-            case Some(appInProgress) => Ok(Json.toJson(appInProgress))
-            case None => Ok(Json.toJson(false))
-          }
-        }
-        case None => {
-          Logger.warn(s"[InternalController] [getApplicationInProgress] - Can't get the Authority")
-          Future.successful(Unauthorized)
-        }
+  def getApplicationInProgress: Action[AnyContent] = FrontendAuthorised.async {
+    implicit userIds => implicit request =>{
+      s4LConnector.fetchAndGetFormData[Boolean](userIds.internalId, KeystoreKeys.applicationInProgress).map{
+        case Some(appInProgress) => Ok(Json.toJson(appInProgress))
+        case None => Ok(Json.toJson(false))
       }
     }
   }

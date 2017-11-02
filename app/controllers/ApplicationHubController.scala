@@ -20,7 +20,7 @@ import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
 import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{ComplianceStatementConnector, EnrolmentConnector, S4LConnector}
 import controllers.Helpers.ControllerHelpers
 import models.ApplicationHubModel
 import models.submission.SchemeTypesModel
@@ -34,7 +34,6 @@ import views.html.hubPartials.{ApplicationHubExisting, _}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
-import services.internal.InternalService
 
 import scala.concurrent.Future
 
@@ -46,13 +45,13 @@ object ApplicationHubController extends ApplicationHubController{
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
   val submissionService: SubmissionService = SubmissionService
-  override lazy val internalService = InternalService
+  override lazy val complianceStatementConnector: ComplianceStatementConnector = ComplianceStatementConnector
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
-  val internalService: InternalService
+  val complianceStatementConnector: ComplianceStatementConnector
 
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
@@ -67,7 +66,7 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
             Some(ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes)))
           case _ =>
             for{
-              csApplication <- internalService.getCSApplicationInProgress()
+              csApplication <- complianceStatementConnector.getComplianceStatementApplication()
             }yield (csApplication.inProgress, Constants.complianceStatement, csApplication.schemeType)
         }
 
