@@ -16,11 +16,12 @@
 
 package controllers
 
-import auth.{MockConfig, MockAuthConnector}
-import common.KeystoreKeys
+import auth.{MockAuthConnector, MockConfig}
+import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -53,9 +54,10 @@ class ApplicationHubControllerSpec extends BaseSpec{
   }
 
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+  val cSApplicationModelWithNoApplications = CSApplicationModel(false, None)
 
-
-  def setupMocks(applicationIsInProgress: Option[Boolean], hasPreviousSubmissions:Boolean = hasPreviousSubmissions): Unit = {
+  def setupMocks(applicationIsInProgress: Option[Boolean], hasPreviousSubmissions:Boolean = hasPreviousSubmissions,
+                 cSApplication: CSApplicationModel = cSApplicationModel): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
     when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
@@ -69,7 +71,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
     when(TestControllerCombined.internalService.getCSApplicationInProgress()(Matchers.any()))
-      .thenReturn(cSApplicationModel)
+      .thenReturn(cSApplication)
   }
 
   def setupMocksNotAvailable(): Unit = {
@@ -120,6 +122,29 @@ class ApplicationHubControllerSpec extends BaseSpec{
           result => {
             status(result) shouldBe OK
             contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from keystore no AA applications but having CS application" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModel)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(None))(
+          result => {
+            status(result) shouldBe OK
+            contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from keystore no AA applications and CS applications" in {
+        setupMocks(Some(false), hasNoPreviousSubmissions, cSApplication = cSApplicationModelWithNoApplications)
+        mockEnrolledRequest(eisSchemeTypesModel)
+        showWithSessionAndAuth(TestControllerCombined.show(None))(
+          result => {
+            status(result) shouldBe OK
+            val document = Jsoup.parse(contentAsString(result))
+            contentAsString(result) contains ApplicationHubNew
           }
         )
       }
@@ -202,6 +227,30 @@ class ApplicationHubControllerSpec extends BaseSpec{
           result => {
             status(result) shouldBe OK
             contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from AA application keystore with token passed but having existing CS application" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModel)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+          result => {
+            status(result) shouldBe OK
+            contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from AA application keystore and CS application keystore " +
+        "with token passed" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModelWithNoApplications)
+        mockEnrolledRequest(eisSchemeTypesModel)
+        showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+          result => {
+            status(result) shouldBe OK
+            val document = Jsoup.parse(contentAsString(result))
+            contentAsString(result) contains ApplicationHubNew
           }
         )
       }

@@ -62,21 +62,20 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
 
     def routeRequest(applicationHubModel: Option[ApplicationHubModel], hasPreviousSubmissions: Boolean): Future[Result] = {
       if (applicationHubModel.nonEmpty) {
-
         val statusInfo = s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).flatMap {
           case Some(true) => Future.successful(true, Constants.advanceAssurance,
-            ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))
+            Some(ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes)))
           case _ =>
             for{
               csApplication <- internalService.getCSApplicationInProgress()
-            }yield (csApplication.inProgress, Constants.complianceStatement, csApplication.schemeType.get)
+            }yield (csApplication.inProgress, Constants.complianceStatement, csApplication.schemeType)
         }
 
         statusInfo.map{
-          case (true, Constants.advanceAssurance, desc) => Ok(ApplicationHub(applicationHubModel.get,
+          case (true, Constants.advanceAssurance, Some(desc)) => Ok(ApplicationHub(applicationHubModel.get,
             ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)
             (ControllerHelpers.routeToScheme), desc, None), hasPreviousSubmissions))
-          case (true, Constants.complianceStatement, desc) => Ok(ApplicationHub(applicationHubModel.get,
+          case (true, Constants.complianceStatement, Some(desc)) => Ok(ApplicationHub(applicationHubModel.get,
             ApplicationHubExisting(ControllerHelpers.routeToCSScheme(desc), ControllerHelpers.schemeDescriptionFromCSTypes(desc), Some(desc)),
             hasPreviousSubmissions))
           case (false, _, _) => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew(), hasPreviousSubmissions))
