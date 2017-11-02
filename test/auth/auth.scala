@@ -30,6 +30,7 @@ package object auth {
 
   val mockUsername = "mockuser"
   val mockUserId = "/auth/oid/" + mockUsername
+  val mockBearerToken = " Bearer XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
   val mockConfig: AppConfig = MockConfig
   val mockAuthConnector = MockAuthConnector
   lazy val fakeRequest = FakeRequest()
@@ -55,7 +56,7 @@ package object auth {
       confidenceLevel = ConfidenceLevel.L50,
       userDetailsLink = None,
       enrolments = None,
-      ids = None,
+      ids = Some(mockUserId),
       legacyOid = ""
     )
 
@@ -75,6 +76,13 @@ package object auth {
       SessionKeys.lastRequestTimestamp -> DateTimeUtils.now.getMillis.toString,
       SessionKeys.token -> "ANYOLDTOKEN",
       SessionKeys.authProvider -> provider
+    )
+
+  def authenticatedFakeFrontendRequest: FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest().withSession(
+      SessionKeys.authToken -> mockBearerToken,
+      SessionKeys.sessionId -> s"session-${UUID.randomUUID()}",
+      SessionKeys.lastRequestTimestamp -> DateTimeUtils.now.getMillis.toString
     )
 
   def timeoutFakeRequest(provider: String = AuthenticationProviderIds.GovernmentGatewayId,

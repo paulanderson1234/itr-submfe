@@ -4,6 +4,7 @@
 ->         /investment-tax-relief/eis               eis.Routes
 ->         /investment-tax-relief/eisseis           eisseis.Routes
 ->         /                          health.Routes
+->         /internal                  internal.Routes
 ->     	   /template                  template.Routes
 
 GET        /admin/metrics             @com.kenshoo.play.metrics.MetricsController.metrics
