@@ -16,10 +16,12 @@
 
 package services.internal
 
+import auth.TAVCUser
 import auth.authModels.UserIDs
 import common.KeystoreKeys
 import config.FrontendAuthConnector
-import connectors.S4LConnector
+import connectors.{ComplianceStatementConnector, S4LConnector}
+import models.internal.CSApplicationModel
 import uk.gov.hmrc.play.frontend.auth.AuthContext
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Authority
@@ -32,6 +34,7 @@ trait InternalService {
 
   val authConnector: AuthConnector
   val s4LConnector: S4LConnector
+  val csConnector: ComplianceStatementConnector
 
   def getApplicationInProgress(authority: Authority)(implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
     authConnector.getIds[UserIDs](AuthContext(authority)).flatMap{
@@ -40,10 +43,16 @@ trait InternalService {
       }
     }
   }
+
+  def getCSApplicationInProgress()(implicit hc: HeaderCarrier): Future[CSApplicationModel] = {
+    csConnector.getComplianceStatementApplication()
+  }
 }
 
 object InternalService extends InternalService {
   val authConnector = FrontendAuthConnector
   val s4LConnector = S4LConnector
+  val csConnector = ComplianceStatementConnector
+
 }
 

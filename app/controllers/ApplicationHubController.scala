@@ -17,7 +17,7 @@
 package controllers
 
 import auth.{AuthorisedAndEnrolledForTAVC, TAVCUser}
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import config.FrontendGlobal.internalServerErrorTemplate
 import connectors.{EnrolmentConnector, S4LConnector}
@@ -29,11 +29,12 @@ import services.{RegistrationDetailsService, SubmissionService, SubscriptionServ
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrier
-import views.html.introduction._
-import views.html.hubPartials._
+import views.html.introduction.{ApplicationHub, _}
+import views.html.hubPartials.{ApplicationHubExisting, _}
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
+import services.internal.InternalService
 
 import scala.concurrent.Future
 
@@ -45,11 +46,13 @@ object ApplicationHubController extends ApplicationHubController{
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
   val submissionService: SubmissionService = SubmissionService
+  override lazy val internalService = InternalService
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
+  val internalService: InternalService
 
   val subscriptionService: SubscriptionService
   val registrationDetailsService: RegistrationDetailsService
@@ -60,11 +63,23 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     def routeRequest(applicationHubModel: Option[ApplicationHubModel], hasPreviousSubmissions: Boolean): Future[Result] = {
       if (applicationHubModel.nonEmpty) {
 
-        s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).map {
-          case Some(true) => Ok(ApplicationHub(applicationHubModel.get,
+        val statusInfo = s4lConnector.fetchAndGetFormData[Boolean](KeystoreKeys.applicationInProgress).flatMap {
+          case Some(true) => Future.successful(true, Constants.advanceAssurance,
+            ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes))
+          case _ =>
+            for{
+              csApplication <- internalService.getCSApplicationInProgress()
+            }yield (csApplication.inProgress, Constants.complianceStatement, csApplication.schemeType.get)
+        }
+
+        statusInfo.map{
+          case (true, Constants.advanceAssurance, desc) => Ok(ApplicationHub(applicationHubModel.get,
             ApplicationHubExisting(applicationHubModel.get.schemeTypes.fold(controllers.eis.routes.NatureOfBusinessController.show().url)
-            (ControllerHelpers.routeToScheme),ControllerHelpers.schemeDescriptionFromTypes(applicationHubModel.get.schemeTypes)),hasPreviousSubmissions))
-          case _ => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew(), hasPreviousSubmissions))
+            (ControllerHelpers.routeToScheme), desc, None), hasPreviousSubmissions))
+          case (true, Constants.complianceStatement, desc) => Ok(ApplicationHub(applicationHubModel.get,
+            ApplicationHubExisting(ControllerHelpers.routeToCSScheme(desc), ControllerHelpers.schemeDescriptionFromCSTypes(desc), Some(desc)),
+            hasPreviousSubmissions))
+          case (false, _, _) => Ok(ApplicationHub(applicationHubModel.get, ApplicationHubNew(), hasPreviousSubmissions))
         }
       }
       else Future.successful(InternalServerError(internalServerErrorTemplate))

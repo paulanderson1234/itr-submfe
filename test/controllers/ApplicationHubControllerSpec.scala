@@ -45,6 +45,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     override lazy val subscriptionService = mockSubscriptionService
     override lazy val registrationDetailsService = mockRegistrationDetailsService
     override lazy val submissionService = mockSubmissionService
+    override lazy val internalService = mockInternalService
   }
 
   object TestControllerCombined extends TestController {
@@ -67,6 +68,8 @@ class ApplicationHubControllerSpec extends BaseSpec{
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
+    when(TestControllerCombined.internalService.getCSApplicationInProgress()(Matchers.any()))
+      .thenReturn(cSApplicationModel)
   }
 
   def setupMocksNotAvailable(): Unit = {
