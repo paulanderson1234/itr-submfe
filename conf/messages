@@ -44,6 +44,7 @@ common.address.postcode=Postcode
 common.address.findUKAddress=Find UK address
 common.back.dashboard=Dashboard
 common.application.types.advanceAssurance=Advance Assurance
+common.application.types.complianceStatement=Compliance Statement
 
 ## Common date Messages ##
 common.date.fields.day=Day
@@ -708,10 +709,12 @@ page.introduction.hub.existing.compliance.statement.seis.type=Compliance Stateme
 #hub delete application
 page.deleteApplication.title=Confirm that you want to remove this application for {0}
 page.deleteApplication.heading=Confirm that you want to remove this application for {0}
+page.deleteApplication.title.cs=Confirm you want to remove this {0}
+page.deleteApplication.heading.cs=Confirm you want to remove this {0}
 page.deleteApplication.hint=This will remove your Advance Assurance application for the Enterprise Investment Scheme.
 page.deleteApplication.appType.AdvancedAssurance=AdvanceAssurance
 page.deleteApplication.confirm=Remove
-page.deleteApplication.cancel=Cancel remove and go back
+page.deleteApplication.cancel=Cancel and go back
 
 # delete message for types
 page.deleteApplication.hub.advanced.assurance.type=This will remove your Advance Assurance application for the Enterprise Investment Scheme.
@@ -721,8 +724,7 @@ page.deleteApplication.hub.eis-seis.type=This will remove your Advance Assurance
 page.deleteApplication.hub.eis-vct.type=This will remove your Advance Assurance application for the Enterprise Investment Scheme and Venture Capital Trust Scheme.
 page.deleteApplication.hub.seis-vct.type=This will remove your Advance Assurance application for the Seed Enterprise Investment Scheme and Venture Capital Trust Scheme.
 page.deleteApplication.hub.eis-seis-vct.type=This will remove your Advance Assurance application for the  Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme.
-
-
+page.deleteApplication.hub.compliance.statement.type=This will permanently remove your Compliance Statement for the {0}.
 
 
 #hub temp link to advanced assurance history

@@ -54,6 +54,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockEmailVerificationService = mock[EmailVerificationService]
   val mockSubmissionService = mock[SubmissionService]
   val mockInternalService = mock[InternalService]
+  val mockComplianceStatementConnector = mock[ComplianceStatementConnector]
 
   override def beforeEach() {
     reset(mockS4lConnector)

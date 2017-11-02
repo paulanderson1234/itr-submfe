@@ -29,6 +29,9 @@ POST       /hub-delete                              controllers.ApplicationHubCo
 GET        /delete-application                      controllers.ConfirmDeleteApplicationController.show()
 POST       /delete-application                      controllers.ConfirmDeleteApplicationController.delete
 
+GET        /delete-cs-application                   controllers.ConfirmDeleteCSApplicationController.show()
+POST       /delete-cs-application                   controllers.ConfirmDeleteCSApplicationController.delete
+
 GET        /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.show
 POST       /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.finish
 
