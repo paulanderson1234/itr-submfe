@@ -19,7 +19,7 @@ package controllers
 import auth.{MockAuthConnector, MockConfig}
 import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{ComplianceStatementConnector, EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
 import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
@@ -46,7 +46,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     override lazy val subscriptionService = mockSubscriptionService
     override lazy val registrationDetailsService = mockRegistrationDetailsService
     override lazy val submissionService = mockSubmissionService
-    override lazy val internalService = mockInternalService
+    override lazy val complianceStatementConnector = mockComplianceStatementConnector
   }
 
   object TestControllerCombined extends TestController {
@@ -70,7 +70,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
-    when(TestControllerCombined.internalService.getCSApplicationInProgress()(Matchers.any()))
+    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
       .thenReturn(cSApplication)
   }
 

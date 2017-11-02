@@ -18,7 +18,7 @@ package controllers.helpers
 
 import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
-import connectors._
+import connectors.{ComplianceStatementConnector, _}
 import fixtures.SubmissionFixture
 import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
@@ -31,7 +31,6 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.Json
 import services._
-import services.internal.InternalService
 import uk.gov.hmrc.http.cache.client.CacheMap
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.play.http.HeaderCarrier
@@ -53,7 +52,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockEmailConfirmationService = mock[EmailConfirmationService]
   val mockEmailVerificationService = mock[EmailVerificationService]
   val mockSubmissionService = mock[SubmissionService]
-  val mockInternalService = mock[InternalService]
+  val mockComplianceStatementConnector = mock[ComplianceStatementConnector]
 
   override def beforeEach() {
     reset(mockS4lConnector)
