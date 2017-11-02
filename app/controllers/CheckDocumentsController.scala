@@ -21,6 +21,7 @@ import common.KeystoreKeys
 import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
+import models.fileUpload.EnvelopeFile
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
@@ -50,8 +51,11 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
       s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId)
       for {
         files <- fileUploadService.getEnvelopeFiles(envelopeId)
-      } yield (files, envelopeId) match {
-        case (_, _) => Ok(CheckDocuments(files, envelopeId))
+        status <- fileUploadService.checkEnvelopeStatus(envelopeId)
+      } yield (files, envelopeId, status) match {
+        case (_, _, _) => {
+          Ok(CheckDocuments(files, envelopeId))
+        }
       }
   }
 

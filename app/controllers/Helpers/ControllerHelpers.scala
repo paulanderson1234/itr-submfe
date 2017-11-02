@@ -17,6 +17,8 @@
 package controllers.Helpers
 
 import auth.TAVCUser
+import common.Constants
+import config.FrontendAppConfig
 import models.submission.SchemeTypesModel
 import uk.gov.hmrc.play.http.HeaderCarrier
 import play.api.i18n.Messages
@@ -106,4 +108,26 @@ trait ControllerHelpers {
     }
   }
 
+  def routeToCSScheme(schemeType: String)(implicit request: Request[AnyContent]): String = {
+    schemeType match {
+      //EIS Flow
+      case Constants.schemeTypeEis => FrontendAppConfig.submissionCSFrontendServiceEISBaseUrl
+      //SEIS Flow
+      case Constants.schemeTypeSeis => FrontendAppConfig.submissionCSFrontendServiceSEISBaseUrl
+      //Assume EIS
+      case _ => FrontendAppConfig.submissionCSFrontendServiceEISBaseUrl
+    }
+  }
+
+
+  def schemeDescriptionFromCSTypes(schemeType: String)(implicit request: Request[AnyContent], messages: Messages): String = {
+    schemeType match {
+      //EIS Flow
+      case Constants.schemeTypeEis => Messages("page.introduction.hub.existing.compliance.statement.type")
+      //SEIS Flow
+      case Constants.schemeTypeSeis => Messages("page.introduction.hub.existing.compliance.statement.seis.type")
+      //Assume EIS
+      case _ => Messages("page.introduction.hub.existing.compliance.statement.type")
+    }
+  }
 }
