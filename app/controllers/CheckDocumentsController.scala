@@ -51,9 +51,8 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
       s4lConnector.saveFormData(KeystoreKeys.envelopeId, envelopeId)
       for {
         files <- fileUploadService.getEnvelopeFiles(envelopeId)
-        status <- fileUploadService.checkEnvelopeStatus(envelopeId)
-      } yield (files, envelopeId, status) match {
-        case (_, _, _) => {
+      } yield (files, envelopeId) match {
+        case (_, _) => {
           Ok(CheckDocuments(files, envelopeId))
         }
       }
