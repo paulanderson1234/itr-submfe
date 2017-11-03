@@ -37,13 +37,14 @@ import common.Constants
 import config.WSHttp
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
+import play.api.test.Helpers._
 import models.internal.CSApplicationModel
 import org.mockito.Matchers
 import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.play.http.HeaderCarrier
+import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
@@ -77,6 +78,22 @@ class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with B
           (Matchers.any(), Matchers.any())).thenReturn(Future.successful(cSApplicationModel))
         await(result) match {
           case response => response shouldBe cSApplicationModel
+          case _ => fail("No response was received, when one was expected")
+        }
+      }
+    }
+  }
+
+
+  "Calling deleteCSApplication" when {
+    "expecting a successful response" should {
+      lazy val result = TestComplianceStatementConnector.deleteComplianceStatementApplication()
+      "return a valid http response" in {
+        when(TestComplianceStatementConnector.http.POSTEmpty[HttpResponse](
+          Matchers.eq(s"${TestComplianceStatementConnector.serviceUrl}/internal/delete-cs-application"))
+          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+        await(result) match {
+          case response => response.status shouldBe NO_CONTENT
           case _ => fail("No response was received, when one was expected")
         }
       }

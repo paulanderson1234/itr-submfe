@@ -25,9 +25,13 @@ GET        /signed-out                              controllers.SignOutControlle
 GET        /hub                                     controllers.ApplicationHubController.show(tokenId: Option[String]?=None)
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
+POST       /hub-delete-cs                           controllers.ApplicationHubController.deleteComplianceStatement
 
 GET        /delete-application                      controllers.ConfirmDeleteApplicationController.show()
 POST       /delete-application                      controllers.ConfirmDeleteApplicationController.delete
+
+GET        /delete-cs-application                   controllers.ConfirmDeleteCSApplicationController.show()
+POST       /delete-cs-application                   controllers.ConfirmDeleteCSApplicationController.delete
 
 GET        /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.show
 POST       /fileUpload-acknowledgement              controllers.FileUploadAcknowledgementController.finish

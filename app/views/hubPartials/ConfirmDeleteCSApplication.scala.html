@@ -1,0 +1,28 @@
+@import uk.gov.hmrc.play.views.html.helpers.{form}
+@import helpers.backButton
+
+@(applicationType: String, removeDescription:String)(implicit request: Request[_], messages: Messages)
+
+@main_template(Messages("page.deleteApplication.title.cs", applicationType)) {
+
+@backButton(controllers.routes.ApplicationHubController.show().url)
+
+<h1 id="main-heading" class="form-title heading-xlarge">@Messages("page.deleteApplication.heading.cs", applicationType)</h1>
+
+
+<div class="form-group panel panel-border-wide">
+    <p id="application-delete-hint">@removeDescription</p>
+</div>
+
+@form(action = controllers.routes.ConfirmDeleteCSApplicationController.delete()){
+
+<div class="form-group">
+    <button id="application-remove" class="button button--alert" type="submit">@Messages("page.deleteApplication.confirm")</button>
+</div>
+}
+
+<div class="form-group">
+    <a id="application-cancel" href="@controllers.routes.ApplicationHubController.show()">@Messages("page.deleteApplication.cancel")</a>
+</div>
+
+}
