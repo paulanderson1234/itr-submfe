@@ -17,9 +17,9 @@
 package controllers.schemeSelection
 
 import auth.AuthorisedAndEnrolledForTAVC
-import common.KeystoreKeys
+import common.{Constants, KeystoreKeys}
 import config.{FrontendAppConfig, FrontendAuthConnector}
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{ComplianceStatementConnector, EnrolmentConnector, S4LConnector}
 import play.api.mvc.{Action, AnyContent, Request, Result}
 import forms.schemeSelection.SchemeSelectionForm._
 import models.submission.SchemeTypesModel
@@ -36,16 +36,28 @@ object SchemeSelectionController extends SchemeSelectionController {
   override lazy val applicationConfig = FrontendAppConfig
   override lazy val authConnector = FrontendAuthConnector
   override lazy val s4lConnector = S4LConnector
+  val complianceStatementConnector: ComplianceStatementConnector = ComplianceStatementConnector
 }
 
 trait SchemeSelectionController extends FrontendController with AuthorisedAndEnrolledForTAVC {
 
   override val acceptedFlows = Seq()
+  val complianceStatementConnector: ComplianceStatementConnector
 
   def show(): Action[AnyContent] = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).map {
-      case Some(scheme) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
-      case _ => Ok(SchemeSelection(schemeSelectionForm))
+
+    val fteStatus = s4lConnector.fetchAndGetFormData[SchemeTypesModel](KeystoreKeys.selectedSchemes).flatMap (selectedSchemes => {
+      selectedSchemes match {
+        case Some(scheme) => Future.successful(Some(scheme), false)
+        case _ => complianceStatementConnector.getComplianceStatementApplication().map{
+        csAppStatus => (None, csAppStatus.inProgress)
+      }}
+    })
+
+    fteStatus.map{
+      case (Some(scheme), _) => Ok(SchemeSelection(schemeSelectionForm.fill(scheme)))
+      case (None, true) => Redirect(controllers.routes.ApplicationHubController.show())
+      case (None, false) => Ok(SchemeSelection(schemeSelectionForm))
     }
   }
 

@@ -64,7 +64,7 @@ trait MockConfig extends AppConfig {
 
   override lazy val internalCSSubmissionUrl = "http://localhost:9645"
   override lazy val submissionCSFrontendServiceBaseUrl: String =
-    "http://localhost:9645/investment-tax-relief-cs/select-schemes"
+    "http://localhost:9645/investment-tax-relief-cs/select-scheme"
   override lazy val submissionCSFrontendServiceEISBaseUrl: String =
     "http://localhost:9645/investment-tax-relief-cs/eis/initial-declaration"
   override lazy val submissionCSFrontendServiceSEISBaseUrl: String =

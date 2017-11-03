@@ -45,7 +45,7 @@ object ApplicationHubController extends ApplicationHubController{
   val subscriptionService: SubscriptionService = SubscriptionService
   val registrationDetailsService: RegistrationDetailsService = RegistrationDetailsService
   val submissionService: SubmissionService = SubmissionService
-  override lazy val complianceStatementConnector: ComplianceStatementConnector = ComplianceStatementConnector
+  val complianceStatementConnector: ComplianceStatementConnector = ComplianceStatementConnector
 }
 
 trait ApplicationHubController extends FrontendController with AuthorisedAndEnrolledForTAVC {
@@ -113,5 +113,9 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
 
   val delete = AuthorisedAndEnrolled.async { implicit user => implicit request =>
     Future.successful(Redirect(routes.ConfirmDeleteApplicationController.show()))
+  }
+
+  val newCSApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(FrontendAppConfig.submissionCSFrontendServiceBaseUrl))
   }
 }

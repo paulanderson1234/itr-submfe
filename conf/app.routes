@@ -25,6 +25,7 @@ GET        /signed-out                              controllers.SignOutControlle
 GET        /hub                                     controllers.ApplicationHubController.show(tokenId: Option[String]?=None)
 POST       /hub                                     controllers.ApplicationHubController.newApplication
 POST       /hub-delete                              controllers.ApplicationHubController.delete
+POST       /hub-cs                                  controllers.ApplicationHubController.newCSApplication
 
 GET        /delete-application                      controllers.ConfirmDeleteApplicationController.show()
 POST       /delete-application                      controllers.ConfirmDeleteApplicationController.delete

@@ -29,7 +29,8 @@ class ApplicationHubNewSpec extends ViewSpec{
       lazy val view = ApplicationHubNew()(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.getElementById("hub-application-heading").text() shouldBe Messages("page.introduction.hub.new.heading")
-      document.getElementById("create-new-application").text() shouldBe Messages("page.introduction.hub.button")
+      document.getElementById("create-new-application").text() shouldBe Messages("page.introduction.hub.createAA.button")
+      document.getElementById("create-new-cs-application").text() shouldBe Messages("page.introduction.hub.createCS.button")
     }
   }
 

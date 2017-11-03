@@ -22,6 +22,7 @@ import common.KeystoreKeys
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
@@ -42,6 +43,7 @@ class SchemeSelectionControllerSpec extends BaseSpec {
     override lazy val enrolmentConnector = mockEnrolmentConnector
     override lazy val applicationConfig = MockConfig
     override lazy val authConnector = MockAuthConnector
+    override lazy val complianceStatementConnector = mockComplianceStatementConnector
   }
 
   "SchemeSelectionController" should {
@@ -84,12 +86,30 @@ class SchemeSelectionControllerSpec extends BaseSpec {
 
     }
 
-    "s4lConnector does not retrieve a SchemeSelectionModel" should {
+    "s4lConnector does not retrieve a SchemeSelectionModel but having existing CS application" should {
+
+      "redirect to the hub page" in {
+        mockEnrolledRequest()
+        when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+          .thenReturn(cSApplicationModel)
+        showWithSessionAndAuth(TestController.show()) {
+          result =>
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(controllers.routes.ApplicationHubController.show().url)
+        }
+      }
+    }
+
+    "s4lConnector does not retrieve a SchemeSelectionModel and no CS applications" should {
 
       "pass an empty form to the page" in {
         mockEnrolledRequest()
         when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
+        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+          .thenReturn(CSApplicationModel(false, None))
         showWithSessionAndAuth(TestController.show()) {
           result =>
             val document = Jsoup.parse(bodyOf(result))
@@ -101,7 +121,6 @@ class SchemeSelectionControllerSpec extends BaseSpec {
       }
 
     }
-
   }
 
   "Sending an authenticated and enrolled POST request with a session to the SchemeSelectionController" when {
