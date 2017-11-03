@@ -24,16 +24,15 @@
 
 @main_template(title = Messages("page.introduction.hub.title"), bodyClasses = None, sidebarLinks = Some(sidebar)) {
 
-<div class="section--blue-top"></div>
 <div class="grid-column">
     <div class="column-two-thirds">
         <div class="form-group">
-            <h2 class="heading-small" id="hub-main-heading">@Messages("page.introduction.hub.heading")</h2>
+            <h1 class="heading-xlarge">@Messages("page.introduction.hub.heading")</h1>
             @partial
         </div>
     </div>
 </div>
-<div class="section--blue-top"></div>
+
 <!--<div class="form-group">-->
     <!--<h2 id="aa-historic-heading" class="heading-small">@Messages("page.PreviouslySubmitted.heading")</h2>-->
     <!--<a id="aa-historic-link" href="@routes.HistoricAASubmissionController.show">@Messages("page.introduction.hub.viewPrevious.AdvancedAssurance")</a>-->

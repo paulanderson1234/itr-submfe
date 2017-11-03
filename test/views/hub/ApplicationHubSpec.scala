@@ -38,8 +38,7 @@ class ApplicationHubSpec extends ViewSpec {
       lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubNew()(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
       //registered address
@@ -69,8 +68,7 @@ class ApplicationHubSpec extends ViewSpec {
         hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
       //registered address
@@ -95,8 +93,7 @@ class ApplicationHubSpec extends ViewSpec {
       lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType, None)(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMax.organisationName
       //registered address
@@ -124,8 +121,7 @@ class ApplicationHubSpec extends ViewSpec {
       lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubNew()(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
       //registered address
@@ -149,8 +145,7 @@ class ApplicationHubSpec extends ViewSpec {
       (fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
       //registered address
@@ -174,8 +169,7 @@ class ApplicationHubSpec extends ViewSpec {
         applicationMessages),hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
-      //document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
-      document.body.getElementById("hub-main-heading").text() shouldEqual Messages("page.introduction.hub.heading")
+      document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
       //organisation name
       document.body.getElementById("organisation-name").text() shouldEqual applicationHubModelMin.organisationName
       //registered address
