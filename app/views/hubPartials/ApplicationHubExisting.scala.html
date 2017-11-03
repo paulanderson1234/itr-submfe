@@ -18,7 +18,7 @@
             <td id="hub-application">@schemeTypeDescription</td>
             <td id="continue"><a id="continue-ref" href=@applicationContinueUrl>@Messages("common.button.continue")</a></td>
             @if(scheme.isDefined){
-            <td id="delete-cs"> @form(action = controllers.routes.ApplicationHubController.newApplication) {
+            <td id="delete-cs"> @form(action = controllers.routes.ApplicationHubController.deleteComplianceStatement) {
                 <button class="button--link-style font-xsmall removeLink" type="submit" id="delete-link-cs"> @Messages("common.button.delete")</button>
                 }</td>
             }else{

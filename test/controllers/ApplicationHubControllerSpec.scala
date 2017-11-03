@@ -339,7 +339,6 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
     "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
       "redirect to the delete confirmation controller" in {
-        when(mockS4lConnector.clearCache()(Matchers.any(), Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
         mockEnrolledRequest()
         submitWithSessionAndAuth(TestControllerCombined.delete)(
           result => {
@@ -359,6 +358,18 @@ class ApplicationHubControllerSpec extends BaseSpec{
           result => {
             status(result) shouldBe SEE_OTHER
             redirectLocation(result) shouldBe Some(MockConfig.submissionCSFrontendServiceBaseUrl)
+          }
+        )
+      }
+    }
+
+    "Sending a POST request to ApplicationHubController compliance statement delete method when authenticated and enrolled" should {
+      "redirect to the delete compliance statement confirmation controller" in {
+        mockEnrolledRequest()
+        submitWithSessionAndAuth(TestControllerCombined.deleteComplianceStatement)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(routes.ConfirmDeleteCSApplicationController.show().url)
           }
         )
       }

@@ -115,7 +115,12 @@ trait ApplicationHubController extends FrontendController with AuthorisedAndEnro
     Future.successful(Redirect(routes.ConfirmDeleteApplicationController.show()))
   }
 
-  val newCSApplication = AuthorisedAndEnrolled.async { implicit user => implicit request =>
-    Future.successful(Redirect(FrontendAppConfig.submissionCSFrontendServiceBaseUrl))
+  val newCSApplication = AuthorisedAndEnrolled.async { implicit user =>
+    implicit request =>
+      Future.successful(Redirect(FrontendAppConfig.submissionCSFrontendServiceBaseUrl))
+  }
+
+  val deleteComplianceStatement = AuthorisedAndEnrolled.async { implicit user => implicit request =>
+    Future.successful(Redirect(routes.ConfirmDeleteCSApplicationController.show()))
   }
 }

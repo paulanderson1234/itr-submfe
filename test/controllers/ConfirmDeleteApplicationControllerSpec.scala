@@ -66,19 +66,19 @@ class ConfirmDeleteApplicationControllerSpec extends BaseSpec {
 
   "ConfirmDeleteApplicationController" should {
     "use the correct auth connector" in {
-      ApplicationHubController.authConnector shouldBe FrontendAuthConnector
+      ConfirmDeleteApplicationController.authConnector shouldBe FrontendAuthConnector
     }
     "use the correct keystore connector" in {
-      ApplicationHubController.s4lConnector shouldBe S4LConnector
+      ConfirmDeleteApplicationController.s4lConnector shouldBe S4LConnector
     }
     "use the correct enrolment connector" in {
-      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+      ConfirmDeleteApplicationController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "use the correct registration service" in {
-      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+      ConfirmDeleteApplicationController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "use the correct service service" in {
-      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+      ConfirmDeleteApplicationController.enrolmentConnector shouldBe EnrolmentConnector
     }
   }
 

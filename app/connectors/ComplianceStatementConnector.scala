@@ -20,6 +20,7 @@ import config.{FrontendAppConfig, WSHttp}
 import models.internal.CSApplicationModel
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.http.ws.WSDelete
 
 import scala.concurrent.Future
 
@@ -31,10 +32,15 @@ object ComplianceStatementConnector extends ComplianceStatementConnector with Se
 trait ComplianceStatementConnector {
 
   val serviceUrl: String
-  val http: HttpGet
+  val http: HttpGet with HttpPost
 
   def getComplianceStatementApplication()(implicit hc: HeaderCarrier): Future[CSApplicationModel] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
     http.GET[CSApplicationModel](s"$serviceUrl/internal/cs-application-in-progress")(implicitly[HttpReads[CSApplicationModel]], headerCarrier)
+  }
+
+  def deleteComplianceStatementApplication()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("Csrf-Token" -> "nocheck"))
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/internal/delete-cs-application")(HttpReads.readRaw, headerCarrier)
   }
 }
