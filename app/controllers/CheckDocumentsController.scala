@@ -18,10 +18,8 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
-import models.fileUpload.EnvelopeFile
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
