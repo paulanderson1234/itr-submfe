@@ -18,8 +18,9 @@ package controllers.helpers
 
 import auth.{Enrolment, Identifier}
 import common.{Constants, KeystoreKeys}
-import connectors._
+import connectors.{ComplianceStatementConnector, _}
 import fixtures.SubmissionFixture
+import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
 import models.throttlingGuidance.{AcquiredTradeEligibilityModel, GroupsAndSubsEligibilityModel, IsAgentModel}
 import models.{UsedInvestmentReasonBeforeModel, YourCompanyNeedModel, _}
@@ -51,7 +52,7 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   val mockEmailConfirmationService = mock[EmailConfirmationService]
   val mockEmailVerificationService = mock[EmailVerificationService]
   val mockSubmissionService = mock[SubmissionService]
-
+  val mockComplianceStatementConnector = mock[ComplianceStatementConnector]
 
   override def beforeEach() {
     reset(mockS4lConnector)
@@ -221,4 +222,6 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
 
   val acquiredTradeYes = AcquiredTradeEligibilityModel("Yes")
   val acquiredTradeNo = AcquiredTradeEligibilityModel("No")
+
+  val cSApplicationModel = CSApplicationModel(true, Some(Constants.schemeTypeEis))
 }

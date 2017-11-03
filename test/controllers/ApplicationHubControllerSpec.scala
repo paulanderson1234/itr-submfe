@@ -16,19 +16,21 @@
 
 package controllers
 
-import auth.{MockConfig, MockAuthConnector}
-import common.KeystoreKeys
+import auth.{MockAuthConnector, MockConfig}
+import common.{Constants, KeystoreKeys}
 import config.FrontendAuthConnector
-import connectors.{EnrolmentConnector, S4LConnector}
+import connectors.{ComplianceStatementConnector, EnrolmentConnector, S4LConnector}
 import controllers.helpers.BaseSpec
+import models.internal.CSApplicationModel
 import models.submission.SchemeTypesModel
 import org.jsoup.Jsoup
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
+import services.{RegistrationDetailsService, SubmissionService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
+import uk.gov.hmrc.play.http.{HttpResponse, Upstream5xxResponse}
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
 import scala.concurrent.Future
@@ -45,6 +47,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     override lazy val subscriptionService = mockSubscriptionService
     override lazy val registrationDetailsService = mockRegistrationDetailsService
     override lazy val submissionService = mockSubmissionService
+    override lazy val complianceStatementConnector = mockComplianceStatementConnector
   }
 
   object TestControllerCombined extends TestController {
@@ -52,9 +55,10 @@ class ApplicationHubControllerSpec extends BaseSpec{
   }
 
   val cacheMapSchemeTypes: CacheMap = CacheMap("", Map("" -> Json.toJson(SchemeTypesModel(eis = true))))
+  val cSApplicationModelWithNoApplications = CSApplicationModel(false, None)
 
-
-  def setupMocks(applicationIsInProgress: Option[Boolean], hasPreviousSubmissions:Boolean = hasPreviousSubmissions): Unit = {
+  def setupMocks(applicationIsInProgress: Option[Boolean], hasPreviousSubmissions:Boolean = hasPreviousSubmissions,
+                 cSApplication: CSApplicationModel = cSApplicationModel): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
     when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
@@ -67,6 +71,8 @@ class ApplicationHubControllerSpec extends BaseSpec{
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
+    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+      .thenReturn(cSApplication)
   }
 
   def setupMocksNotAvailable(): Unit = {
@@ -90,10 +96,13 @@ class ApplicationHubControllerSpec extends BaseSpec{
       ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
     }
     "use the correct registration service" in {
-      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+      ApplicationHubController.registrationDetailsService shouldBe RegistrationDetailsService
     }
-    "use the correct service service" in {
-      ApplicationHubController.enrolmentConnector shouldBe EnrolmentConnector
+    "use the correct submission service" in {
+      ApplicationHubController.submissionService shouldBe SubmissionService
+    }
+    "use the correct " in {
+      ApplicationHubController.complianceStatementConnector shouldBe ComplianceStatementConnector
     }
   }
 
@@ -121,9 +130,32 @@ class ApplicationHubControllerSpec extends BaseSpec{
         )
       }
 
+      "return a 200 when false is fetched from keystore no AA applications but having CS application" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModel)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(None))(
+          result => {
+            status(result) shouldBe OK
+            contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from keystore no AA applications and CS applications" in {
+        setupMocks(Some(false), hasNoPreviousSubmissions, cSApplication = cSApplicationModelWithNoApplications)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(None))(
+          result => {
+            status(result) shouldBe OK
+            val document = Jsoup.parse(contentAsString(result))
+            contentAsString(result) contains ApplicationHubNew
+          }
+        )
+      }
+
       "return a 200 when false is fetched from keystore" in {
         setupMocks(Some(false))
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(
           result => {
             status(result) shouldBe OK
@@ -135,7 +167,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when false is fetched from keystore and there are no previous submissions" in {
         setupMocks(Some(false), hasNoPreviousSubmissions)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(
           result => {
             status(result) shouldBe OK
@@ -147,7 +179,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when nothing is fetched from keystore" in {
         setupMocks(None)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(
           result => {
             status(result) shouldBe OK
@@ -159,7 +191,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when nothing is fetched from keystore and there are no previous submissions" in {
         setupMocks(None, hasNoPreviousSubmissions)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(
           result => {
             status(result) shouldBe OK
@@ -170,8 +202,11 @@ class ApplicationHubControllerSpec extends BaseSpec{
       }
 
       "return a 500 when an ApplicationHubModel cannot be composed" in {
-        setupMocksNotAvailable()
-        mockEnrolledRequest(eisSchemeTypesModel)
+        setupMocks(None, hasNoPreviousSubmissions)
+        /*Override call in setupMocks to throw exception*/
+        when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
+          .thenReturn(Future.failed(Upstream5xxResponse("Error", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(
           result => {
             status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -203,9 +238,33 @@ class ApplicationHubControllerSpec extends BaseSpec{
         )
       }
 
+      "return a 200 when false is fetched from AA application keystore with token passed but having existing CS application" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModel)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+          result => {
+            status(result) shouldBe OK
+            contentAsString(result) contains ApplicationHubExisting
+          }
+        )
+      }
+
+      "return a 200 when false is fetched from AA application keystore and CS application keystore " +
+        "with token passed" in {
+        setupMocks(Some(false), cSApplication = cSApplicationModelWithNoApplications)
+        mockEnrolledRequest()
+        showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
+          result => {
+            status(result) shouldBe OK
+            val document = Jsoup.parse(contentAsString(result))
+            contentAsString(result) contains ApplicationHubNew
+          }
+        )
+      }
+
       "return a 200 when false is fetched from keystore with token passed" in {
         setupMocks(Some(false))
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
           result => {
             status(result) shouldBe OK
@@ -217,7 +276,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when false is fetched from keystore with token passed and there are no previous submissions" in {
         setupMocks(Some(false), hasNoPreviousSubmissions)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
           result => {
             status(result) shouldBe OK
@@ -229,7 +288,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when nothing is fetched from keystore with token passed" in {
         setupMocks(None)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
           result => {
             status(result) shouldBe OK
@@ -241,7 +300,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 200 when nothing is fetched from keystore with token passed and there are no previous submissions" in {
         setupMocks(None, hasNoPreviousSubmissions)
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
           result => {
             status(result) shouldBe OK
@@ -254,7 +313,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
 
       "return a 500 when an ApplicationHubModel cannot be composed with token passed" in {
         setupMocksNotAvailable()
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(Some(tokenId)))(
           result => {
             status(result) shouldBe INTERNAL_SERVER_ERROR
@@ -281,7 +340,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
     "Sending a POST request to ApplicationHubController delete method when authenticated and enrolled" should {
       "redirect to the delete confirmation controller" in {
         when(mockS4lConnector.clearCache()(Matchers.any(), Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
-        mockEnrolledRequest(eisSchemeTypesModel)
+        mockEnrolledRequest()
         submitWithSessionAndAuth(TestControllerCombined.delete)(
           result => {
             status(result) shouldBe SEE_OTHER

@@ -18,7 +18,6 @@ package controllers
 
 import auth.AuthorisedAndEnrolledForTAVC
 import common.KeystoreKeys
-import config.FrontendGlobal.internalServerErrorTemplate
 import config.{FrontendAppConfig, FrontendAuthConnector}
 import connectors.{EnrolmentConnector, S4LConnector}
 import play.api.Play.current
@@ -51,7 +50,9 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
       for {
         files <- fileUploadService.getEnvelopeFiles(envelopeId)
       } yield (files, envelopeId) match {
-        case (_, _) => Ok(CheckDocuments(files, envelopeId))
+        case (_, _) => {
+          Ok(CheckDocuments(files, envelopeId))
+        }
       }
   }
 

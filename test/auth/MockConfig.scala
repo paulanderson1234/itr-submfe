@@ -16,6 +16,7 @@
 
 package auth
 
+import config.FrontendAppConfig.baseUrl
 import config.{AppConfig, FrontendAppConfig}
 
 trait MockConfig extends AppConfig {
@@ -60,6 +61,14 @@ trait MockConfig extends AppConfig {
   override lazy val sendVerificationEmailURL = "http://localhost:9640/email-verification/verification-requests"
   override lazy val checkVerifiedEmailURL = "http://localhost:9640/email-verification/verified-email-addresses"
   override lazy val emailVerificationTemplate = "verifyEmailAddress"
+
+  override lazy val internalCSSubmissionUrl = "http://localhost:9645"
+  override lazy val submissionCSFrontendServiceBaseUrl: String =
+    "http://localhost:9645/investment-tax-relief-cs/select-schemes"
+  override lazy val submissionCSFrontendServiceEISBaseUrl: String =
+    "http://localhost:9645/investment-tax-relief-cs/eis/initial-declaration"
+  override lazy val submissionCSFrontendServiceSEISBaseUrl: String =
+    "http://localhost:9645/investment-tax-relief-cs/seis/initial-declaration"
 }
 
 object MockConfig extends MockConfig

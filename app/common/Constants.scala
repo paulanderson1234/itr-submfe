@@ -76,4 +76,6 @@ trait Constants {
   val EmailNotVerified = "SEND_EMAIL"
   val EmailVerificationError = "ERROR"
 
+  val advanceAssurance = "AA"
+  val complianceStatement = "CS"
 }

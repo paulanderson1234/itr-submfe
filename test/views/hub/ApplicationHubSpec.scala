@@ -90,7 +90,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the max amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
+      lazy val view = ApplicationHub(applicationHubModelMax, ApplicationHubExisting(continueUrl, schemeType, None)(fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
       document.body.getElementsByTag("h1").text() shouldEqual Messages("page.introduction.hub.heading")
@@ -141,7 +141,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "Verify that hub page contains the correct elements when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType, None)
       (fakeRequest, applicationMessages), hasPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")
@@ -165,7 +165,7 @@ class ApplicationHubSpec extends ViewSpec {
 
     "verify the outside flow upload link not present when a 'hub existing' partial is passed to it and" +
       "the model used contains the min amount of fields" in {
-      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType)(fakeRequest,
+      lazy val view = ApplicationHub(applicationHubModelMin, ApplicationHubExisting(continueUrl, schemeType, None)(fakeRequest,
         applicationMessages),hasNoPreviousSubmissions)(fakeRequest, applicationMessages)
       val document = Jsoup.parse(view.body)
       document.title shouldEqual Messages("page.introduction.hub.title")

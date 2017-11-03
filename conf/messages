@@ -702,6 +702,9 @@ page.introduction.hub.existing.eis-seis.type=Advance Assurance - Enterprise Inve
 page.introduction.hub.existing.eis-vct.type=Advance Assurance - Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.seis-vct.type=Advance Assurance - Seed Enterprise Investment Scheme and Venture Capital Trust Scheme
 page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise Investment Scheme, Seed Enterprise Investment Scheme and Venture Capital Trust scheme
+#CS application
+page.introduction.hub.existing.compliance.statement.type=Compliance Statement - Enterprise Investment Scheme
+page.introduction.hub.existing.compliance.statement.seis.type=Compliance Statement - Seed Enterprise Investment Scheme
 
 #hub delete application
 page.deleteApplication.title=Confirm that you want to remove this application for {0}
