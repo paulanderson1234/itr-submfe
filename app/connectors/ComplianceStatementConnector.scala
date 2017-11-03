@@ -32,7 +32,7 @@ object ComplianceStatementConnector extends ComplianceStatementConnector with Se
 trait ComplianceStatementConnector {
 
   val serviceUrl: String
-  val http: HttpGet with HttpPost with WSDelete
+  val http: HttpGet with HttpPost
 
   def getComplianceStatementApplication()(implicit hc: HeaderCarrier): Future[CSApplicationModel] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
