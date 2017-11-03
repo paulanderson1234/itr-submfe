@@ -37,7 +37,6 @@ class ApplicationHubExistingSpec extends ViewSpec{
       document.getElementById("continue").text() shouldBe Messages("common.button.continue")
       document.getElementById("continue-ref").attr("href") shouldEqual continueUrl
       document.getElementById("delete-link-aa").text() shouldBe Messages("common.button.delete")
-
     }
   }
 
@@ -51,7 +50,6 @@ class ApplicationHubExistingSpec extends ViewSpec{
       document.getElementById("continue").text() shouldBe Messages("common.button.continue")
       document.getElementById("continue-ref").attr("href") shouldEqual continueUrl
       document.getElementById("delete-link-cs").text() shouldBe Messages("common.button.delete")
-
     }
   }
 }

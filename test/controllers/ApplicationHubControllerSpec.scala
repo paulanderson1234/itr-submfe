@@ -349,6 +349,20 @@ class ApplicationHubControllerSpec extends BaseSpec{
       }
     }
 
+    "Posting to the 'Submit a Compliance Statement' button on the ApplicationHubController when authenticated and enrolled" should {
+      "redirect to CS scheme selection page" in {
+        when(mockS4lConnector.saveFormData(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+          .thenReturn(Future.successful(CacheMap("", Map())))
+        mockEnrolledRequest(None)
+        submitWithSessionAndAuth(TestControllerCombined.newCSApplication)(
+          result => {
+            status(result) shouldBe SEE_OTHER
+            redirectLocation(result) shouldBe Some(MockConfig.submissionCSFrontendServiceBaseUrl)
+          }
+        )
+      }
+    }
+
     "Sending a POST request to ApplicationHubController compliance statement delete method when authenticated and enrolled" should {
       "redirect to the delete compliance statement confirmation controller" in {
         mockEnrolledRequest()

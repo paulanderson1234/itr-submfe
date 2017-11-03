@@ -692,6 +692,7 @@ page.signout.SignedOut.explore = Explore GOV.UK
 #hub page
 page.introduction.hub.title=Applications overview
 page.introduction.hub.heading=Applications overview
+page.introduction.hub.applications.heading=Applications in progress
 page.introduction.hub.button=Create a new application
 page.introduction.hub.existing.heading=Applications in progress
 page.introduction.hub.existing.table.heading=Application type
@@ -706,6 +707,8 @@ page.introduction.hub.existing.eis-seis-vct.type=Advance Assurance - Enterprise 
 #CS application
 page.introduction.hub.existing.compliance.statement.type=Compliance Statement - Enterprise Investment Scheme
 page.introduction.hub.existing.compliance.statement.seis.type=Compliance Statement - Seed Enterprise Investment Scheme
+page.introduction.hub.createAA.button=Apply for Advance Assurance
+page.introduction.hub.createCS.button=Submit a Compliance Statement
 
 #hub delete application
 page.deleteApplication.title=Confirm that you want to remove this application for {0}
