@@ -51,6 +51,11 @@ trait CheckDocumentsController extends FrontendController with AuthorisedAndEnro
         files <- fileUploadService.getEnvelopeFiles(envelopeId)
       } yield (files, envelopeId) match {
         case (_, _) => {
+          files.foreach(x => {
+            print(s" ********************** READ FILE ************** ${x.name} ::::: ${x.status}")
+            fileUploadService.getFileData(envelopeId, x.id)
+
+          })
           Ok(CheckDocuments(files, envelopeId))
         }
       }

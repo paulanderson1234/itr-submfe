@@ -72,4 +72,15 @@ trait FileUploadService {
       case _ => Seq()
     }
   }
+
+  def getFileData(envelopeID: String, fileId: String)(implicit hc: HeaderCarrier, ex: ExecutionContext): Future[String] = {
+    attachmentsConnector.getFileData(envelopeID, fileId).map {
+      result => result.status match {
+        case OK => result.body
+        case _ =>
+          Logger.warn(s"[FileUploadConnector][checkEnvelopeStatus] Error ${result.status} received.")
+          result.body
+      }
+    }
+  }
 }

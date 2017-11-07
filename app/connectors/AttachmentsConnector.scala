@@ -37,4 +37,7 @@ trait AttachmentsConnector {
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/get-envelope-status")
   }
 
+  def getFileData(envelopeId: String, fileId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/file/$fileId/get-file-data")
+  }
 }
