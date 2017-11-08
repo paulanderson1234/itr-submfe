@@ -91,7 +91,6 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
     s"/$schemeType/check-your-answers&backUrl=$submissionFrontendServiceBaseUrl/$schemeType/supporting-documents-upload"
 
   }
-  override lazy val internalCSSubmissionUrl = baseUrl("internal-submission-cs")
 
   override lazy val attachmentsServiceUrl: String = baseUrl("investment-tax-relief-attachments")
 
@@ -115,10 +114,11 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val checkVerifiedEmailURL = baseUrl("email-verification") + loadConfig("email-vs.checkVerifiedEmailURL")
   override lazy val emailVerificationTemplate = loadConfig("email.emailVerificationTemplate")
 
+  override lazy val internalCSSubmissionUrl = baseUrl("internal-submission-cs")
   override lazy val submissionCSFrontendServiceBaseUrl: String =
-    internalCSSubmissionUrl + loadConfig(s"investment-tax-relief-cs-submission-flow.schemeSelection")
+    loadConfig(s"investment-tax-relief-cs-submission-flow.schemeSelection")
   override lazy val submissionCSFrontendServiceEISBaseUrl: String =
-    internalCSSubmissionUrl + loadConfig(s"investment-tax-relief-cs-submission-flow.eisApplication")
+    loadConfig(s"investment-tax-relief-cs-submission-flow.eisApplication")
   override lazy val submissionCSFrontendServiceSEISBaseUrl: String =
-    internalCSSubmissionUrl + loadConfig(s"investment-tax-relief-cs-submission-flow.seisApplication")
+    loadConfig(s"investment-tax-relief-cs-submission-flow.seisApplication")
 }
