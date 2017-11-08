@@ -21,14 +21,14 @@ import connectors.{KeystoreConnector, ThrottleConnector}
 import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, Upstream5xxResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class ThrottleServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest  {

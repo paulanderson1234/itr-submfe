@@ -20,10 +20,10 @@ import auth.TAVCUser
 import common.{Constants, KeystoreKeys}
 import connectors.S4LConnector
 import models.{PreviousSchemeModel, ProposedInvestmentModel}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object LifetimeLimitHelper extends LifetimeLimitHelper {
   override lazy val s4lConnector = S4LConnector

@@ -24,11 +24,11 @@ import models.registration.RegistrationDetailsModel
 import models.{ContactDetailsModel, EmailConfirmationModel}
 import models.submission.SubmissionResponse
 import play.api.Logger
-import uk.gov.hmrc.play.http.{HttpResponse, HeaderCarrier}
 import play.mvc.Http.Status._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 trait EmailConfirmationService {
 

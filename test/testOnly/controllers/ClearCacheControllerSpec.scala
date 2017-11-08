@@ -23,9 +23,9 @@ import controllers.helpers.BaseSpec
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ClearCacheControllerSpec extends BaseSpec {
 

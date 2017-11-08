@@ -29,7 +29,6 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 

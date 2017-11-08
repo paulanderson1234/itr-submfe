@@ -27,9 +27,9 @@ import org.mockito.Matchers
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import play.api.libs.json.{Json, JsString}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPerSuite{
 

@@ -25,18 +25,18 @@ import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.ConfidenceLevel.{L50, L500}
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.{Accounts, Authority, CredentialStrength}
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.HeaderCarrier
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 
 object MockAuthConnector extends AuthConnector with MockitoSugar {
   override val http = mock[WSHttp]
   override val serviceUrl: String = ""
   override def getIds[T](authContext : uk.gov.hmrc.play.frontend.auth.AuthContext)
-                        (implicit hc : uk.gov.hmrc.play.http.HeaderCarrier,
-                         reads : uk.gov.hmrc.play.http.HttpReads[T]) : scala.concurrent.Future[T] = {
+                        (implicit hc : _root_.uk.gov.hmrc.http.HeaderCarrier,
+                         reads : _root_.uk.gov.hmrc.http.HttpReads[T]) : scala.concurrent.Future[T] = {
     when(http.GET[UserIDs](Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future(UserIDs("Int-312e5e92-762e-423b-ac3d-8686af27fdb5", "Ext-312e5e92-762e-423b-ac3d-8686af27fdb5")))
     http.GET[T]("/")

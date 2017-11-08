@@ -36,9 +36,9 @@ import java.util.UUID
 
 import play.api.mvc.{Action, AnyContent}
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.{HeaderCarrier, SessionKeys}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, SessionKeys }
 
 object StartGuidanceController extends StartGuidanceController
 
@@ -47,7 +47,7 @@ trait StartGuidanceController extends FrontendController {
   def start: Action[AnyContent] = Action.async { implicit request =>
     if (request.session.get(SessionKeys.sessionId).isEmpty) {
       val sessionId = UUID.randomUUID.toString
-      implicit val hc = new HeaderCarrier(sessionId = Some(uk.gov.hmrc.play.http.logging.SessionId(s"session-$sessionId")))
+      implicit val hc = new HeaderCarrier(sessionId = Some(_root_.uk.gov.hmrc.http.logging.SessionId(s"session-$sessionId")))
       Future.successful(Redirect(routes.FirstTimeUsingServiceController.show()).withSession(request.session + (SessionKeys.sessionId -> s"session-$sessionId")))
     }
     else {

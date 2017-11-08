@@ -25,12 +25,12 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.http.Status.{CONFLICT, CREATED, OK}
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, NotFoundException}
 import uk.gov.hmrc.play.test.UnitSpec
 import utils.WSHTTPMock
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, NotFoundException }
+import uk.gov.hmrc.http.logging.SessionId
 
 class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with WSHTTPMock {
 

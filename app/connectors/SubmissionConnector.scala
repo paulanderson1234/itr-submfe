@@ -21,8 +21,9 @@ import models.submission.{DesSubmitAdvancedAssuranceModel, Submission}
 import play.api.Logger
 import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse, HttpPut }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object SubmissionConnector extends SubmissionConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl

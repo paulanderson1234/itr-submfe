@@ -22,10 +22,10 @@ import connectors.{S4LConnector, SubscriptionConnector}
 import models.{AddressModel, ContactDetailsModel, EtmpSubscriptionDetailsModel, SubscriptionDetailsModel}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait SubscriptionService {
 

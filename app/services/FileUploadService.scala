@@ -22,9 +22,9 @@ import connectors.{AttachmentsConnector, AttachmentsFrontEndConnector}
 import models.fileUpload.{Envelope, EnvelopeFile}
 import play.Logger
 import play.mvc.Http.Status._
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 object FileUploadService extends FileUploadService {
   override val attachmentsFrontEndConnector = AttachmentsFrontEndConnector

@@ -22,9 +22,9 @@ import connectors.{S4LConnector, SubmissionConnector}
 import models.registration.{ETMPRegistrationDetailsModel, RegistrationDetailsModel}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 object RegistrationDetailsService extends RegistrationDetailsService {
   override lazy val submissionConnector = SubmissionConnector

@@ -44,12 +44,12 @@ import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 

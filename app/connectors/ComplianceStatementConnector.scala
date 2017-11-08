@@ -19,10 +19,11 @@ package connectors
 import config.{FrontendAppConfig, WSHttp}
 import models.internal.CSApplicationModel
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.WSDelete
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
 object ComplianceStatementConnector extends ComplianceStatementConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.internalCSSubmissionUrl
@@ -34,13 +35,13 @@ trait ComplianceStatementConnector {
   val serviceUrl: String
   val http: HttpGet with HttpPost
 
-  def getComplianceStatementApplication()(implicit hc: HeaderCarrier): Future[CSApplicationModel] = {
+  def getComplianceStatementApplication()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[CSApplicationModel] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
-    http.GET[CSApplicationModel](s"$serviceUrl/internal/cs-application-in-progress")(implicitly[HttpReads[CSApplicationModel]], headerCarrier)
+    http.GET[CSApplicationModel](s"$serviceUrl/internal/cs-application-in-progress")(implicitly[HttpReads[CSApplicationModel]], headerCarrier, ec)
   }
 
-  def deleteComplianceStatementApplication()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def deleteComplianceStatementApplication()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("Csrf-Token" -> "nocheck"))
-    http.POSTEmpty[HttpResponse](s"$serviceUrl/internal/delete-cs-application")(HttpReads.readRaw, headerCarrier)
+    http.POSTEmpty[HttpResponse](s"$serviceUrl/internal/delete-cs-application")(HttpReads.readRaw, headerCarrier, ec)
   }
 }

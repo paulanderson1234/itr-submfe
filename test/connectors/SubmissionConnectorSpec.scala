@@ -48,10 +48,11 @@ import play.api.libs.json.JsValue
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 class SubmissionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 

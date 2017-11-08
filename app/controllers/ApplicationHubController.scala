@@ -28,7 +28,6 @@ import play.api.mvc.Result
 import services.{RegistrationDetailsService, SubmissionService, SubscriptionService}
 import play.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.introduction.{ApplicationHub, _}
 import views.html.hubPartials.{ApplicationHubExisting, _}
 import play.api.i18n.Messages.Implicits._
@@ -36,6 +35,7 @@ import play.api.Play.current
 import play.api.mvc.{Action, AnyContent}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object ApplicationHubController extends ApplicationHubController{
   override lazy val applicationConfig = FrontendAppConfig

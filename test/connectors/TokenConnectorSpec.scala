@@ -27,12 +27,12 @@ import org.scalatestplus.play.OneAppPerTest
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 

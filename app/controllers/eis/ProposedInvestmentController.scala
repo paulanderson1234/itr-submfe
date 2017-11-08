@@ -27,13 +27,13 @@ import common.{Constants, KeystoreKeys}
 import config.FrontendGlobal._
 import forms.ProposedInvestmentForm._
 import play.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
 import views.html.eis.investment.ProposedInvestment
+import uk.gov.hmrc.http.HeaderCarrier
 
 object ProposedInvestmentController extends ProposedInvestmentController
 {

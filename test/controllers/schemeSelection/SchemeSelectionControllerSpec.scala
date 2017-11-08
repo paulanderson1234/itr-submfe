@@ -29,9 +29,9 @@ import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.Upstream5xxResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 class SchemeSelectionControllerSpec extends BaseSpec {
 

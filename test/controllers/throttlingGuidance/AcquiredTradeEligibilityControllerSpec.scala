@@ -24,7 +24,6 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.TokenService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 

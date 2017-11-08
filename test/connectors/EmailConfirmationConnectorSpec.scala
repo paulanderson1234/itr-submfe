@@ -20,8 +20,6 @@ import auth.{MockConfig, TAVCUser, ggUser}
 import controllers.helpers.{BaseSpec, FakeRequestHelper}
 import models.EmailConfirmationModel
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.SessionId
 import config.WSHttp
 import fixtures.SubmissionFixture
 import org.mockito.Matchers
@@ -34,6 +32,8 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 

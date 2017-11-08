@@ -20,9 +20,10 @@ import auth.TAVCUser
 import config.TAVCShortLivedCache
 import play.api.libs.json.Format
 import uk.gov.hmrc.http.cache.client.{CacheMap, ShortLivedCache}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 
 object S4LConnector extends S4LConnector {
   override val shortLivedCache = TAVCShortLivedCache

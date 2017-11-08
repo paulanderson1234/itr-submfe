@@ -25,6 +25,8 @@ import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.mvc.Http.Status._
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse, HttpPut }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object EmailConfirmationConnector extends EmailConfirmationConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.emailUrl

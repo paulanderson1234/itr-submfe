@@ -22,6 +22,8 @@ import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpResponse, HttpPut }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object SubscriptionConnector extends SubscriptionConnector with ServicesConfig {
   val serviceUrl = baseUrl("investment-tax-relief-subscription")

@@ -28,11 +28,11 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
-import uk.gov.hmrc.play.http.HttpResponse
 import auth.AuthEnrolledTestController.{ACCEPTED => _, INTERNAL_SERVER_ERROR => _, OK => _, SEE_OTHER => _, NO_CONTENT => _, _}
 import models.submission.{SchemeTypesModel, SubmissionResponse}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class AcknowledgementControllerSpec extends BaseSpec {
 

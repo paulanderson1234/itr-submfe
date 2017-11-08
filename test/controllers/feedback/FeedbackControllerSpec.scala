@@ -25,10 +25,10 @@ import play.api.mvc.{AnyContent, Request, RequestHeader}
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.http.ws.WSHttp
-import uk.gov.hmrc.play.http.{HttpGet, HttpPost, HttpResponse}
 import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever, HtmlPartial}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HttpGet, HttpPost, HttpResponse }
 
 class FeedbackControllerSpec extends BaseSpec {
 

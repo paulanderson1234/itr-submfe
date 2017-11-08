@@ -31,11 +31,12 @@ import org.scalatestplus.play.OneAppPerTest
 import play.api.test.Helpers._
 
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {

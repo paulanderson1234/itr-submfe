@@ -19,10 +19,10 @@ package services
 import common.KeystoreKeys
 import connectors.{KeystoreConnector, ThrottleConnector}
 import play.api.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.http.HeaderCarrier
 
 
 object ThrottleService extends ThrottleService {

@@ -30,10 +30,10 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.{RegistrationDetailsService, SubmissionService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HttpResponse, Upstream5xxResponse}
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 class ApplicationHubControllerSpec extends BaseSpec{
 

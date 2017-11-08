@@ -19,9 +19,10 @@ package connectors
 import config.TAVCSessionCache
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http.cache.client.{CacheMap, SessionCache}
-import uk.gov.hmrc.play.http.{HttpResponse, HeaderCarrier}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse, HttpPut }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object KeystoreConnector extends KeystoreConnector{
    val sessionCache: SessionCache = TAVCSessionCache

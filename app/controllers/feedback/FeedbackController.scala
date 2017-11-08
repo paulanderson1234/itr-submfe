@@ -30,12 +30,14 @@ import views.html.feedback.feedback_thankyou
 import uk.gov.hmrc.play.frontend.auth.connectors.AuthConnector
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.frontend.filters.SessionCookieCryptoFilter
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpGet, HttpPost, _}
+import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.partials._
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object FeedbackController extends FeedbackController with PartialRetriever {
 
@@ -96,7 +98,7 @@ trait FeedbackController extends FrontendController with AuthorisedAndEnrolledFo
   def submit: Action[AnyContent] = AuthorisedAndEnrolled.async {
     implicit user => implicit request =>
       request.body.asFormUrlEncoded.map { formData =>
-        httpPost.POSTForm[HttpResponse](feedbackHmrcSubmitPartialUrl, formData)(rds = readPartialsForm, hc = partialsReadyHeaderCarrier).map {
+        httpPost.POSTForm[HttpResponse](feedbackHmrcSubmitPartialUrl, formData)(readPartialsForm, partialsReadyHeaderCarrier).map {
           resp =>
             resp.status match {
               case HttpStatus.OK => Redirect(routes.FeedbackController.thankyou()).withSession(request.session + (TICKET_ID -> resp.body))

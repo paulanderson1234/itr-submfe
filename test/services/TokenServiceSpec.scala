@@ -24,13 +24,13 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
 import play.api.libs.json.{JsObject, JsString, Json}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {

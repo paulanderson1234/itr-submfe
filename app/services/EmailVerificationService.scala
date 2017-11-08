@@ -18,10 +18,10 @@ package services
 
 import connectors.{EmailVerificationConnector, KeystoreConnector, S4LConnector}
 import models._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait EmailVerificationService {
 

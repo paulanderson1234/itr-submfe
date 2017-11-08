@@ -21,9 +21,9 @@ import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.play.http.{Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ Upstream4xxResponse, Upstream5xxResponse }
 
 
 class TAVCAuthFrontendSpec extends BaseSpec {

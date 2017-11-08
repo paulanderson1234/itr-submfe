@@ -30,13 +30,14 @@ import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 import data.SubscriptionTestData._
 import models.SubscriptionDetailsModel
 import play.api.http.Status._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
