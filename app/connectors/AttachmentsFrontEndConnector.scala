@@ -19,11 +19,9 @@ package connectors
 import auth.TAVCUser
 import config.{FrontendAppConfig, WSHttp}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
 object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with ServicesConfig {
   val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl

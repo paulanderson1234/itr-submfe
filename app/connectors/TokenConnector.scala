@@ -17,9 +17,7 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
-import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse }
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._

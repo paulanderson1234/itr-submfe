@@ -19,10 +19,8 @@ package connectors
 import config.{FrontendAppConfig, WSHttp}
 import models.internal.CSApplicationModel
 import uk.gov.hmrc.play.config.ServicesConfig
-
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse}
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 
 object ComplianceStatementConnector extends ComplianceStatementConnector with ServicesConfig {

@@ -20,13 +20,11 @@ import config.{FrontendAppConfig, WSHttp}
 import models.EmailVerificationRequest
 import play.api.Logger
 import play.api.http.Status._
-import uk.gov.hmrc.play.http._
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.control.NoStackTrace
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse, BadGatewayException, BadRequestException, HttpDelete, HttpErrorFunctions, HttpException, HttpPut, InternalServerException, NotFoundException }
-import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
 private[connectors] class EmailErrorResponse(s: String) extends NoStackTrace
 
