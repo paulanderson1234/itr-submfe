@@ -71,7 +71,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
-    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any(), Matchers.any()))
       .thenReturn(cSApplication)
   }
 

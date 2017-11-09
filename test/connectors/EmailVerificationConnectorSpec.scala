@@ -79,7 +79,7 @@ class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with Bef
     }
 
     "return false when passed an email either not valid or not verified yet" in {
-      when(mockWSHttp.GET[HttpResponse](Matchers.anyString())(Matchers.any(), Matchers.any[HeaderCarrier]()))
+      when(mockWSHttp.GET[HttpResponse](Matchers.anyString())(Matchers.any(), Matchers.any[HeaderCarrier](), Matchers.any()))
         .thenReturn(Future.failed(new NotFoundException("error")))
 
       await(TestEmailVerificationConnector.checkVerifiedEmail(verifiedEmail)) shouldBe false

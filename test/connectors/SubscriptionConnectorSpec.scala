@@ -107,7 +107,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
   def setupMockedResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
     when(TargetSubscriptionConnector.http.GET[HttpResponse](
       Matchers.eq(s"${TargetSubscriptionConnector.serviceUrl}/investment-tax-relief-subscription/$validTavcReference/subscription"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

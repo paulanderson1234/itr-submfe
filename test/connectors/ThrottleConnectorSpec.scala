@@ -43,7 +43,7 @@ class ThrottleConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTes
   def setupMockedCheckUserAccess(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestThrottleConnector.http.GET[Option[Boolean]](
       Matchers.eq(s"${TestThrottleConnector.serviceUrl}/investment-tax-relief/throttle/check-user-access"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

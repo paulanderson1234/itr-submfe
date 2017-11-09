@@ -32,7 +32,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
 
 class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {

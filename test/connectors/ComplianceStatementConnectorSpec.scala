@@ -50,6 +50,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
@@ -75,7 +76,7 @@ class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a valid boolean response" in {
         when(TestComplianceStatementConnector.http.GET[CSApplicationModel](
           Matchers.eq(s"${TestComplianceStatementConnector.serviceUrl}/internal/cs-application-in-progress"))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(cSApplicationModel))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(cSApplicationModel))
         await(result) match {
           case response => response shouldBe cSApplicationModel
           case _ => fail("No response was received, when one was expected")
@@ -91,7 +92,7 @@ class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a valid http response" in {
         when(TestComplianceStatementConnector.http.POSTEmpty[HttpResponse](
           Matchers.eq(s"${TestComplianceStatementConnector.serviceUrl}/internal/delete-cs-application"))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(NO_CONTENT)))
         await(result) match {
           case response => response.status shouldBe NO_CONTENT
           case _ => fail("No response was received, when one was expected")

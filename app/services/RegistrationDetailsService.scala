@@ -26,6 +26,7 @@ import play.api.libs.json.{JsError, JsSuccess}
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 
+
 object RegistrationDetailsService extends RegistrationDetailsService {
   override lazy val submissionConnector = SubmissionConnector
   override lazy val s4lConnector = S4LConnector

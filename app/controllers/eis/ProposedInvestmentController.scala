@@ -31,7 +31,7 @@ import utils.Validation
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import views.html.eis.investment.ProposedInvestment
 import uk.gov.hmrc.http.HeaderCarrier
 
@@ -156,7 +156,7 @@ trait ProposedInvestmentController extends FrontendController with AuthorisedAnd
     else Constants.IsNotKnowledgeIntensiveYears
   }
 
-  def subsidiariesCheck(hasSub: Option[SubsidiariesModel])(implicit hc: HeaderCarrier, user: TAVCUser): Future[Result] = {
+  def subsidiariesCheck(hasSub: Option[SubsidiariesModel])(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Result] = {
     hasSub match {
       case Some(data) => if (data.ownSubsidiaries.equals(Constants.StandardRadioButtonYesValue)) {
         s4lConnector.saveFormData(KeystoreKeys.backLinkSubSpendingInvestment,

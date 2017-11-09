@@ -59,7 +59,7 @@ class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with One
       lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier)
       "return a Status Accepted (202) response" in {
         when(TestEmailConfirmationConnector.http.POST[JsValue, HttpResponse](Matchers.anyString(), Matchers.any(),
-          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(HttpResponse(ACCEPTED))
+          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(HttpResponse(ACCEPTED))
         await(result) match {
           case response => response.status shouldBe ACCEPTED
           case _ => fail("No response was received, when one was expected")
@@ -71,7 +71,7 @@ class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with One
       lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier)
       "return a Status INTERNAL_SERVER_ERROR (500) response" in {
         when(TestEmailConfirmationConnector.http.POST[JsValue, HttpResponse](Matchers.anyString(), Matchers.any(),
-          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
+          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.failed(Upstream5xxResponse("", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
         await(result) match {
           case response => response.status shouldBe INTERNAL_SERVER_ERROR

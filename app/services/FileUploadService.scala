@@ -17,7 +17,6 @@
 package services
 
 import auth.TAVCUser
-import config.FrontendAppConfig
 import connectors.{AttachmentsConnector, AttachmentsFrontEndConnector}
 import models.fileUpload.{Envelope, EnvelopeFile}
 import play.Logger

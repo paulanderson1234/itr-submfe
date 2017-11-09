@@ -29,11 +29,8 @@ import org.mockito.Mockito._
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
 import play.api.test.Helpers._
-
-import uk.gov.hmrc.play.http._
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
 import uk.gov.hmrc.http.logging.SessionId

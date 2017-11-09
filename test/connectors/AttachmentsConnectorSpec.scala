@@ -57,7 +57,7 @@ class AttachmentsConnectorSpec extends UnitSpec with MockitoSugar with BeforeAnd
       "return a Status OK (200) response" in {
         when(TestAttachmentsConnector.http.GET[HttpResponse](
           Matchers.eq(s"${TestAttachmentsConnector.serviceUrl}/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/get-envelope-status"))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         await(result) match {
           case response => response.status shouldBe OK
           case _ => fail("No response was received, when one was expected")

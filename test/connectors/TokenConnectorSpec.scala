@@ -60,14 +60,14 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   def setupMockedGenerateTempTokenResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
     when(TestTokenConnector.http.POSTEmpty[HttpResponse](
       Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/generate-temporary-token"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 
   def setupMockedValidateTempTokenResponse(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestTokenConnector.http.GET[Option[Boolean]](
       Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/validate-temporary-token/$tokenId"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

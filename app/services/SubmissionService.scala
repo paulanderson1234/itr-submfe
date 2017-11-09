@@ -22,16 +22,14 @@ import models.submission.SubmissionDetailsModel
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 
 trait SubmissionService {
 
   val submissionConnector: SubmissionConnector
 
-  def getEtmpReturnsSummary(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubmissionDetailsModel]] = {
+  def getEtmpReturnsSummary(tavcRef: String)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[SubmissionDetailsModel]] = {
     submissionConnector.getReturnsSummary(tavcRef) map {
       submissionDetails =>
         submissionDetails.json.validate[SubmissionDetailsModel] match {
@@ -44,7 +42,7 @@ trait SubmissionService {
     }
   }
 
-  def hasPreviousSubmissions(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+  def hasPreviousSubmissions(tavcRef: String)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Boolean] = {
     getEtmpReturnsSummary(tavcRef) map {
       result => result.nonEmpty && result.get.submissions.fold(0)(_.length) > 0
     }

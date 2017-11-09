@@ -25,10 +25,9 @@ import models.{ContactDetailsModel, EmailConfirmationModel}
 import models.submission.SubmissionResponse
 import play.api.Logger
 import play.mvc.Http.Status._
-import scala.concurrent.ExecutionContext.Implicits.global
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 trait EmailConfirmationService {
 
@@ -37,7 +36,7 @@ trait EmailConfirmationService {
   val registrationDetailsService: RegistrationDetailsService
   val emailConfirmationConnector: EmailConfirmationConnector
 
-  def sendEmailConfirmation(tavcRef: String, submissionResponse: SubmissionResponse)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
+  def sendEmailConfirmation(tavcRef: String, submissionResponse: SubmissionResponse)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[HttpResponse] = {
     (for {
       registrationDetailsModel <- registrationDetailsService.getRegistrationDetails(tavcRef)
       emailConfirmationModel <- getEmailConfirmationModel(registrationDetailsModel.get, submissionResponse.processingDate, submissionResponse.formBundleNumber)
@@ -54,7 +53,7 @@ trait EmailConfirmationService {
   }
 
   private def getEmailConfirmationModel(registrationDetailsModel: RegistrationDetailsModel, date: String, formBundleReferenceNumber: String)
-                                       (implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[EmailConfirmationModel]] = {
+                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[EmailConfirmationModel]] = {
     (for{
       contactDetails <- s4LConnector.fetchAndGetFormData[ContactDetailsModel](KeystoreKeys.contactDetails)
     }yield Some(EmailConfirmationModel(Array(contactDetails.get.email),

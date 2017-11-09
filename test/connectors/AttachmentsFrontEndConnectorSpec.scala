@@ -28,11 +28,11 @@ import org.scalatestplus.play.OneAppPerSuite
 import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.http.ws.WSHttp
 
 class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
@@ -62,7 +62,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a Status OK (200) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
           s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
-          (Matchers.any(),Matchers.any())).thenReturn(successResponse)
+          (Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(successResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe successResponse
@@ -76,7 +76,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a Status BAD_REQUEST (400) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
           s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
-          (Matchers.any(),Matchers.any())).thenReturn(failedResponse)
+          (Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(failedResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe failedResponse

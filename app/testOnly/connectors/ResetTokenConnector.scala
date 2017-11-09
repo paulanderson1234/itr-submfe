@@ -22,11 +22,9 @@ import config.{FrontendAppConfig, WSHttp}
 import play.api.Logger
 import play.api.http.Status._
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import scala.concurrent.ExecutionContext.Implicits.global
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpResponse }
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 
 object ResetTokenConnector extends ResetTokenConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -37,7 +35,7 @@ trait ResetTokenConnector {
   val serviceUrl: String
   val http: HttpGet
 
-  def resetTokens()(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+  def resetTokens()(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
 
     lazy val tokenResetUrl = s"$serviceUrl/investment-tax-relief/test-only/reset-tokens"
 

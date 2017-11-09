@@ -31,7 +31,6 @@ import services.{ThrottleService, TokenService}
 import views.helpers.ViewSpec
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class FirstTimeUsingServiceSpec extends ViewSpec {
 

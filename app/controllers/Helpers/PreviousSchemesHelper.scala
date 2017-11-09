@@ -22,8 +22,7 @@ import models.{PreviousSchemeModel, TradeStartDateModel}
 import uk.gov.hmrc.http.cache.client.CacheMap
 import utils.Validation
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 
 object PreviousSchemesHelper extends PreviousSchemesHelper {
@@ -34,7 +33,7 @@ trait PreviousSchemesHelper {
 
   def getExistingInvestmentFromKeystore(s4lConnector: connectors.S4LConnector,
                                         modelProcessingIdToRetrieve: Int)
-                                       (implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[PreviousSchemeModel]] = {
+                                       (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[PreviousSchemeModel]] = {
 
     val idNotFound: Int = -1
 
@@ -55,7 +54,7 @@ trait PreviousSchemesHelper {
   }
 
   def getAllInvestmentFromKeystore(s4lConnector: connectors.S4LConnector)
-                                  (implicit hc: HeaderCarrier, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {
+                                  (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {
 
     val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data
@@ -68,7 +67,7 @@ trait PreviousSchemesHelper {
 
 
   def previousInvestmentsExist(s4lConnector: connectors.S4LConnector)
-                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+                              (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Boolean] = {
 
     val result: Future[Boolean] = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).flatMap {
       case Some(data) if data.nonEmpty => Future(true)
@@ -82,7 +81,7 @@ trait PreviousSchemesHelper {
 
 
   def getPreviousInvestmentTotalFromKeystore(s4lConnector: connectors.S4LConnector)
-                                            (implicit hc: HeaderCarrier, user: TAVCUser): Future[Long] = {
+                                            (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Long] = {
 
     val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
       case Some(data) => data.foldLeft(0.toLong)(_ + _.investmentAmount.toLong)
@@ -93,7 +92,7 @@ trait PreviousSchemesHelper {
   }
 
   def getPreviousInvestmentsFromStartDateTotal(s4lConnector: connectors.S4LConnector)
-                                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[Int] = {
+                                              (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Int] = {
 
     def calculateAmount(dateTradeStarted: Option[TradeStartDateModel],
                         previousInvestments: Option[Vector[PreviousSchemeModel]]): Int = {
@@ -125,7 +124,7 @@ trait PreviousSchemesHelper {
 
   def addPreviousInvestmentToKeystore(s4lConnector: connectors.S4LConnector,
                                       previousSchemeModelToAdd: PreviousSchemeModel)
-                                     (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                                     (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
     val defaultId: Int = 1
 
     val result = s4lConnector.fetchAndGetFormData[Vector[PreviousSchemeModel]](KeystoreKeys.previousSchemes).map {
@@ -141,7 +140,7 @@ trait PreviousSchemesHelper {
 
   def updateKeystorePreviousInvestment(s4lConnector: connectors.S4LConnector,
                                        previousSchemeModelToUpdate: PreviousSchemeModel)
-                                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
     val idNotFound: Int = -1
 
     require(previousSchemeModelToUpdate.processingId.getOrElse(0) > 0,
@@ -162,7 +161,7 @@ trait PreviousSchemesHelper {
   }
 
   def removeKeystorePreviousInvestment(s4lConnector: connectors.S4LConnector, modelProcessingIdToremove: Int)
-                                      (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                                      (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
 
     require(modelProcessingIdToremove > 0, "The modelProcessingIdToremove must be an integer > 0")
 
@@ -174,7 +173,7 @@ trait PreviousSchemesHelper {
   }
 
   def clearPreviousInvestments(s4lConnector: connectors.S4LConnector)
-                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                              (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
     s4lConnector.saveFormData(KeystoreKeys.previousSchemes, Vector[PreviousSchemeModel]())
   }
 
