@@ -16,7 +16,7 @@
 
 package connectors
 
-import auth.{ggUser, TAVCUser}
+import auth.{TAVCUser, ggUser}
 import config.FrontendAppConfig
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
@@ -29,7 +29,7 @@ import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
 import uk.gov.hmrc.play.test.UnitSpec
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import uk.gov.hmrc.play.http.ws.WSHttp
@@ -38,7 +38,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
 
   object TargetAttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with FrontendController with FakeRequestHelper with ServicesConfig {
     override val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpPost]
   }
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"

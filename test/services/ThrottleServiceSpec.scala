@@ -29,6 +29,7 @@ import uk.gov.hmrc.http.cache.client.CacheMap
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{ HeaderCarrier, Upstream5xxResponse }
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 
 class ThrottleServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest  {

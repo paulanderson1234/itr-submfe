@@ -31,7 +31,7 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
 
 class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
@@ -51,10 +51,10 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val failedResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR)
 
-
+  trait mockHttp extends HttpGet with HttpPost
   object TestTokenConnector extends TokenConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
-    override val http = mock[WSHttp]
+    override val http = mock[mockHttp]
   }
 
   def setupMockedGenerateTempTokenResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {

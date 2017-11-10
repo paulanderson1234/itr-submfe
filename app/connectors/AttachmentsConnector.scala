@@ -30,7 +30,7 @@ object AttachmentsConnector extends AttachmentsConnector with ServicesConfig {
 
 trait AttachmentsConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut with HttpDelete
+  val http: HttpGet
 
   def getEnvelopeStatus(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/get-envelope-status")

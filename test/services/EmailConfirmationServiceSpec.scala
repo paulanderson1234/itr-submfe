@@ -34,6 +34,7 @@ import uk.gov.hmrc.play.test.UnitSpec
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 
 class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
@@ -102,7 +103,7 @@ class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAp
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(registrationDetailsModel)))
         when(TestEmailConfirmationService.s4LConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(contactDetailsValid)))
-        when(TestEmailConfirmationService.emailConfirmationConnector.sendEmailConfirmation(Matchers.any())(Matchers.any())).
+        when(TestEmailConfirmationService.emailConfirmationConnector.sendEmailConfirmation(Matchers.any())(Matchers.any(), Matchers.any())).
           thenReturn(Future.successful(HttpResponse(ACCEPTED)))
         await(result).status shouldBe ACCEPTED
       }
@@ -135,7 +136,7 @@ class EmailConfirmationServiceSpec extends UnitSpec with MockitoSugar with OneAp
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(registrationDetailsModel)))
         when(TestEmailConfirmationService.s4LConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(contactDetailsValid)))
-        when(TestEmailConfirmationService.emailConfirmationConnector.sendEmailConfirmation(Matchers.any())(Matchers.any()))
+        when(TestEmailConfirmationService.emailConfirmationConnector.sendEmailConfirmation(Matchers.any())(Matchers.any(), Matchers.any()))
           .thenReturn(Future.failed(Upstream5xxResponse("", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
         await(result).status shouldBe INTERNAL_SERVER_ERROR
       }

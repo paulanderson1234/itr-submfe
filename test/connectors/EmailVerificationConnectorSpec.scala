@@ -29,15 +29,17 @@ import uk.gov.hmrc.play.test.UnitSpec
 import utils.WSHTTPMock
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, NotFoundException }
+import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with WSHTTPMock {
 
+  trait mockHttp extends HttpGet with HttpPost with HttpPut with HttpDelete
   object TestEmailVerificationConnector extends EmailVerificationConnector with FakeRequestHelper{
     override val checkVerifiedEmailURL: String = MockConfig.checkVerifiedEmailURL
     override val sendVerificationEmailURL: String = MockConfig.sendVerificationEmailURL
-    override val http = mockWSHttp
+    override val http = mock[mockHttp]
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))

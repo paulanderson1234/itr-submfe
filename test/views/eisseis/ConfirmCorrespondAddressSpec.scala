@@ -34,6 +34,7 @@ import play.api.test.Helpers._
 import services.SubscriptionService
 import views.helpers.ViewSpec
 
+
 import scala.concurrent.Future
 
 class ConfirmCorrespondAddressSpec extends ViewSpec with BaseSpec {
@@ -60,7 +61,7 @@ class ConfirmCorrespondAddressSpec extends ViewSpec with BaseSpec {
   }
 
   def mockSubscriptionServiceResponse(address: Option[AddressModel] = None): Unit =
-    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(address))
 
 

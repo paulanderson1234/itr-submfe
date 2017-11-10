@@ -29,7 +29,7 @@ object TokenConnector extends TokenConnector with ServicesConfig {
 
 trait TokenConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut with HttpDelete
+  val http: HttpGet with HttpPost
 
   def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/token/generate-temporary-token")

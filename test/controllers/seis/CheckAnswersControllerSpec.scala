@@ -113,7 +113,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     "redirect to the acknowledgement page when authenticated and enrolled" in {
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some("test")))
-      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any()))
+      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(true)))
       when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
         (Matchers.any(), Matchers.any(),Matchers.any()))
@@ -133,7 +133,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     "redirect to the acknowledgement page when authenticated and enrolled" in {
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any()))
+      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(true)))
       when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
         (Matchers.any(), Matchers.any(),Matchers.any()))
@@ -153,7 +153,7 @@ class CheckAnswersControllerSpec extends BaseSpec with CheckAnswersSpec {
     "redirect to the email verification instructions page" in {
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any()))
+      when(TestController.emailVerificationService.verifyEmailAddress(Matchers.any())(Matchers.any(), Matchers.any()))
         .thenReturn(Future.successful(Some(false)))
       when(mockS4lConnector.fetchAndGetFormData[ContactDetailsModel](Matchers.eq(KeystoreKeys.contactDetails))
         (Matchers.any(), Matchers.any(),Matchers.any()))

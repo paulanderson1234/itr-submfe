@@ -57,7 +57,7 @@ class ConfirmDeleteApplicationControllerSpec extends BaseSpec {
   def setupMocksNotAvailable(): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
   }
 

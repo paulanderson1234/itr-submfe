@@ -18,7 +18,6 @@ package controllers.feedback
 
 import auth.{MockAuthConnector, MockConfig}
 import controllers.helpers.BaseSpec
-import org.apache.http.client.methods.HttpPost
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.http.Status
@@ -26,14 +25,14 @@ import play.api.mvc.{AnyContent, Request, RequestHeader}
 import play.api.test.Helpers._
 import play.twirl.api.Html
 import uk.gov.hmrc.play.partials.{CachedStaticHtmlPartialRetriever, FormPartialRetriever, HtmlPartial}
-import uk.gov.hmrc.play.http.ws.WSHttp
+
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.{HttpGet, HttpPost, HttpResponse}
 
 class FeedbackControllerSpec extends BaseSpec {
 
-  val mockHttp = mock[WSHttp]
+  val mockHttp = mock[HttpPost]
 
   object TestController extends FeedbackController {
     override implicit val cachedStaticHtmlPartialRetriever: CachedStaticHtmlPartialRetriever = new CachedStaticHtmlPartialRetriever {

@@ -31,7 +31,7 @@ object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with Se
 trait AttachmentsFrontEndConnector {
 
   val internalAttachmentsUrl: String
-  val http: HttpGet with HttpPost
+  val http: HttpPost
 
   def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser, ec: ExecutionContext): Future[HttpResponse] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))

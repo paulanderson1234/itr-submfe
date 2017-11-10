@@ -28,9 +28,10 @@ import uk.gov.hmrc.play.test.UnitSpec
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 
-import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 
 class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
@@ -55,7 +56,7 @@ class TokenServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
   def mockGenerateTokenFunction(res: Future[HttpResponse]): String = {
     when(TestTokenService.tokenConnector.generateTemporaryToken(Matchers.any())).thenReturn(res)
 
-    lazy val result = TestTokenService.generateTemporaryToken(hc)
+    lazy val result = TestTokenService.generateTemporaryToken(hc,  ExecutionContext.global)
     await(result)
   }
 

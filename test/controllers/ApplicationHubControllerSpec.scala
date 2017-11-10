@@ -61,11 +61,11 @@ class ApplicationHubControllerSpec extends BaseSpec{
                  cSApplication: CSApplicationModel = cSApplicationModel): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(contactDetailsModel)))
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(applicationIsInProgress))
-    when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hasPreviousSubmissions))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(seisSchemeTypesModel))
@@ -78,7 +78,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
   def setupMocksNotAvailable(): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
   }
 
@@ -204,7 +204,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
       "return a 500 when an ApplicationHubModel cannot be composed" in {
         setupMocks(None, hasNoPreviousSubmissions)
         /*Override call in setupMocks to throw exception*/
-        when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
+        when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.failed(Upstream5xxResponse("Error", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
         mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(

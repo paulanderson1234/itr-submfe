@@ -78,7 +78,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       thenReturn(Future(HttpResponse(OK)))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(HttpResponse(ACCEPTED))
     when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
@@ -103,7 +103,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
     "return a 200 and delete the current application and send an email when a valid submission data is submitted" in new SetupPageFull {
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
@@ -245,7 +245,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController" should {
     "return a 200 if KI is set to false" in {
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),

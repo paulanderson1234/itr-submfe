@@ -53,7 +53,7 @@ class ConfirmContactDetailsControllerSpec extends BaseSpec {
   }
 
   def mockSubscriptionServiceResponse(contactDetails: Option[ContactDetailsModel] = None): Unit =
-    when(TestController.subscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any()))
+    when(TestController.subscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any()))
       .thenReturn(contactDetails)
 
   "ConfirmContactDetailsController" should {

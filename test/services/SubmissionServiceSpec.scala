@@ -16,7 +16,6 @@
 
 package services
 
-import auth.TAVCUser
 import models.submission.{Scheme, AASubmissionDetailsModel, SubmissionDetailsModel}
 
 import org.scalatestplus.play.OneServerPerSuite
@@ -30,6 +29,8 @@ import play.api.libs.json.{Json, JsString}
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 
 class SubmissionServiceSpec extends UnitSpec with MockitoSugar with OneServerPerSuite{
 

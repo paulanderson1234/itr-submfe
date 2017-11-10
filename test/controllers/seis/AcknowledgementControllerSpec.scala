@@ -80,7 +80,7 @@ class AcknowledgementControllerSpec extends BaseSpec {
       thenReturn(Future(HttpResponse(OK)))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(HttpResponse(ACCEPTED))
     when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
@@ -117,7 +117,7 @@ class AcknowledgementControllerSpec extends BaseSpec {
   "Sending an Authenticated and Enrolled GET request with a session to AcknowledgementController" should {
     "return a 200 and delete the current application and send an email confirmation" +
       " when a valid submission data is submitted with minimum expected data" in new SetupPageMinimum {
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()

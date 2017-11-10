@@ -27,9 +27,9 @@ import play.api.http.Status.OK
 import play.api.test.Helpers._
 import services.{ThrottleService, TokenService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.http.logging.SessionId
 
@@ -45,7 +45,7 @@ class FirstTimeUsingServiceControllerSpec extends BaseSpec {
   object MyThrottleService extends ThrottleService {
     override val throttleConnector = mock[ThrottleConnector]
     override val keystoreConnector = mock[KeystoreConnector]
-    override def checkUserAccess(implicit hc: HeaderCarrier) : Future[Boolean] = {
+    override def checkUserAccess(implicit hc: HeaderCarrier, ec: ExecutionContext) : Future[Boolean] = {
       true
     }
   }

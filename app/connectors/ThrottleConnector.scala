@@ -29,7 +29,7 @@ object ThrottleConnector extends ThrottleConnector with ServicesConfig {
 
 trait ThrottleConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpGet
 
   def checkUserAccess()(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/throttle/check-user-access")

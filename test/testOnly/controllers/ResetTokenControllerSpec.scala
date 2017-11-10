@@ -24,6 +24,7 @@ import testOnly.connectors.ResetTokenConnector
 import scala.concurrent.Future
 import uk.gov.hmrc.http.HttpResponse
 
+
 class ResetTokenControllerSpec extends BaseSpec {
 
   val mockResetTokenConnector = mock[ResetTokenConnector]
@@ -40,7 +41,7 @@ class ResetTokenControllerSpec extends BaseSpec {
 
   def setupMocks(result: Int) : Unit = {
     when(TestController.resetTokenConnector.resetTokens()
-    (Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
   }
 
   "resetTokenController.resetToken" when {

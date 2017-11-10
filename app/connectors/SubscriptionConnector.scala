@@ -31,7 +31,7 @@ object SubscriptionConnector extends SubscriptionConnector with ServicesConfig {
 
 trait SubscriptionConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpGet
 
   def getSubscriptionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HttpResponse]] =
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-subscription/$tavcReferenceNumber/subscription").map(Some(_)).recover {

@@ -30,14 +30,14 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
 import uk.gov.hmrc.http.logging.SessionId
 
 class AttachmentsConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
   object TestAttachmentsConnector extends AttachmentsConnector with FakeRequestHelper{
     override val serviceUrl: String = MockConfig.attachmentsServiceUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpGet]
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))

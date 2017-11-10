@@ -62,16 +62,16 @@ trait BaseSpec extends UnitSpec with OneAppPerSuite with MockitoSugar with FakeR
   }
 
   def mockEnrolledRequest(selectedSchemes: Option[SchemeTypesModel] = None): Unit = {
-    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any()))
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(Option(Enrolment("HMRC-TAVC-ORG", Seq(Identifier("TavcReference", "1234")), "Activated"))))
-    when(mockEnrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any()))
+    when(mockEnrolmentConnector.getTavcReferenceNumber(Matchers.any())(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(tavcReferenceId))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(selectedSchemes))
   }
 
   def mockNotEnrolledRequest(): Unit = {
-    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(mockEnrolmentConnector.getTAVCEnrolment(Matchers.any())(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
       (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
   }

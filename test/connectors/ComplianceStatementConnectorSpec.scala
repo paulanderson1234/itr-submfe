@@ -44,19 +44,19 @@ import org.mockito.Mockito.when
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
 import uk.gov.hmrc.http.logging.SessionId
 import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 class ComplianceStatementConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
+  trait mockHttp extends HttpGet with HttpPost
   object TestComplianceStatementConnector extends ComplianceStatementConnector with FakeRequestHelper{
     override val serviceUrl: String = MockConfig.internalCSSubmissionUrl
-    override val http = mock[WSHttp]
+    override val http = mock[mockHttp]
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))

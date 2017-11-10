@@ -35,7 +35,7 @@ object EmailConfirmationConnector extends EmailConfirmationConnector with Servic
 trait EmailConfirmationConnector {
   val serviceUrl: String
   val domain: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpPost
 
   def sendEmailConfirmation(emailConfirmationModel: EmailConfirmationModel)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResponse] = {
     http.POST[JsValue, HttpResponse](s"$serviceUrl/${domain}/email", Json.toJson(emailConfirmationModel)).recover {

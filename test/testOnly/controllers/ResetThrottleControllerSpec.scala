@@ -40,7 +40,7 @@ class ResetThrottleControllerSpec extends BaseSpec {
 
   def setupMocks(result: Int) : Unit = {
     when(TestController.resetThrottleConnector.resetThrottle()
-    (Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
   }
 
   "resetThrottleController.resetThrottle" when {
