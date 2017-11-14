@@ -30,10 +30,10 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.{RegistrationDetailsService, SubmissionService}
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.{HttpResponse, Upstream5xxResponse}
 import views.html.hubPartials.{ApplicationHubExisting, ApplicationHubNew}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 class ApplicationHubControllerSpec extends BaseSpec{
 
@@ -61,24 +61,24 @@ class ApplicationHubControllerSpec extends BaseSpec{
                  cSApplication: CSApplicationModel = cSApplicationModel): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(registrationDetailsModel)))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(Some(contactDetailsModel)))
     when(mockS4lConnector.fetchAndGetFormData[Boolean](Matchers.eq(KeystoreKeys.applicationInProgress))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(applicationIsInProgress))
-    when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(hasPreviousSubmissions))
     when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(Future.successful(seisSchemeTypesModel))
     when(mockS4lConnector.saveFormData(Matchers.eq(KeystoreKeys.selectedSchemes), Matchers.any())(Matchers.any(), Matchers.any(),Matchers.any()))
       .thenReturn(cacheMapSchemeTypes)
-    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+    when(TestControllerCombined.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any(), Matchers.any()))
       .thenReturn(cSApplication)
   }
 
   def setupMocksNotAvailable(): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
   }
 
@@ -204,7 +204,7 @@ class ApplicationHubControllerSpec extends BaseSpec{
       "return a 500 when an ApplicationHubModel cannot be composed" in {
         setupMocks(None, hasNoPreviousSubmissions)
         /*Override call in setupMocks to throw exception*/
-        when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any()))
+        when(TestControllerCombined.submissionService.hasPreviousSubmissions(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
           .thenReturn(Future.failed(Upstream5xxResponse("Error", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
         mockEnrolledRequest()
         showWithSessionAndAuth(TestControllerCombined.show(None))(

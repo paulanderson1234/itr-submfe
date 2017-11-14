@@ -21,10 +21,9 @@ import connectors.{KeystoreConnector, TokenConnector}
 import models.throttling.TokenModel
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 object TokenService  extends TokenService{
   val tokenConnector = TokenConnector
@@ -35,7 +34,7 @@ trait TokenService {
   val tokenConnector: TokenConnector
   val keystoreConnector: KeystoreConnector
 
-  def generateTemporaryToken(implicit hc: HeaderCarrier): Future[String] = {
+  def generateTemporaryToken(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
 
     val noToken = ""
 
@@ -57,7 +56,7 @@ trait TokenService {
     }
   }
 
-  def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def validateTemporaryToken(tokenId: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"[TokenService][validateTemporaryToken] - START tokenId=${tokenId.getOrElse("")}")
     def hasValidToken(token: Option[String]): Future[Boolean] = {
       tokenConnector.validateTemporaryToken(tokenId).map {

@@ -19,9 +19,10 @@ package connectors
 import config.WSHttp
 import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpPut, HttpResponse}
+
 
 object SubscriptionConnector extends SubscriptionConnector with ServicesConfig {
   val serviceUrl = baseUrl("investment-tax-relief-subscription")
@@ -30,9 +31,9 @@ object SubscriptionConnector extends SubscriptionConnector with ServicesConfig {
 
 trait SubscriptionConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpGet
 
-  def getSubscriptionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier): Future[Option[HttpResponse]] =
+  def getSubscriptionDetails(tavcReferenceNumber: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[HttpResponse]] =
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-subscription/$tavcReferenceNumber/subscription").map(Some(_)).recover {
       case _ =>
         Logger.warn(s"[SubscriptionConnector][getSubscriptionDetails] - Upstream HTTP GET error")

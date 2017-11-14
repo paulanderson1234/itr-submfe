@@ -22,13 +22,13 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 import config.AppConfig
 import uk.gov.hmrc.play.frontend.auth.connectors.domain.Accounts
 import uk.gov.hmrc.play.frontend.auth.{Actions, AuthContext, AuthenticationProvider, TaxRegime}
-import uk.gov.hmrc.play.http.HeaderCarrier
 import controllers.throttlingGuidance.routes
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import connectors.{EnrolmentConnector, S4LConnector}
-
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.HeaderCarrierConverter
 
 trait AuthorisedAndEnrolledForTAVC extends Actions {
 
@@ -68,7 +68,7 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
               action(TAVCUser(authContext, internalId))(request)
             }
             case NotEnrolled => {
-              enrolmentConnector.validateToken(Some(tokenId.getOrElse("")))(hc).flatMap {
+              enrolmentConnector.validateToken(Some(tokenId.getOrElse("")))(hc, ExecutionContext.global).flatMap {
                 case validate if validate => {
                   Future.successful(Redirect(notEnrolledRedirectUrl + s"?tokenId=${tokenId.getOrElse("")}"))
                 }
@@ -114,6 +114,6 @@ trait AuthorisedAndEnrolledForTAVC extends Actions {
     case _ => NotEnrolled
   }
 
-  implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrier.fromHeadersAndSession(request.headers, Some(request.session))
+  implicit private def hc(implicit request: Request[_]): HeaderCarrier = HeaderCarrierConverter.fromHeadersAndSession(request.headers, Some(request.session))
 
 }

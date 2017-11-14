@@ -20,11 +20,10 @@ import config.{FrontendAppConfig, WSHttp}
 import models.EmailVerificationRequest
 import play.api.Logger
 import play.api.http.Status._
-import uk.gov.hmrc.play.http._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.control.NoStackTrace
+import uk.gov.hmrc.http.{BadGatewayException, BadRequestException, HeaderCarrier, HttpDelete, HttpErrorFunctions, HttpException, HttpGet, HttpPost, HttpPut, HttpReads, HttpResponse, InternalServerException, NotFoundException}
 
 private[connectors] class EmailErrorResponse(s: String) extends NoStackTrace
 
@@ -37,7 +36,7 @@ trait EmailVerificationConnector extends HttpErrorFunctions{
     def read(http: String, url: String, res: HttpResponse) = customRead(http, url, res)
   }
 
-  def checkVerifiedEmail(email: String)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def checkVerifiedEmail(email: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     def errorMsg(status: String) = {
       Logger.warn(s"[EmailVerificationConnector] [checkVerifiedEmail] request to check verified email returned a " +
         s"$status - email not found / not verified")
@@ -56,7 +55,7 @@ trait EmailVerificationConnector extends HttpErrorFunctions{
     }
   }
 
-  def requestVerificationEmail(emailRequest: EmailVerificationRequest)(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def requestVerificationEmail(emailRequest: EmailVerificationRequest)(implicit hc: HeaderCarrier,  ec: ExecutionContext): Future[Boolean] = {
     def errorMsg(status: String, ex: HttpException) = {
       Logger.warn(s"[EmailVerificationConnector] [requestVerificationEmail] request to send verification " +
         s"email returned a $status - email not sent - reason = ${ex.getMessage}")

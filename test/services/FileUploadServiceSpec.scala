@@ -30,12 +30,12 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
 
 
 class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
@@ -91,7 +91,7 @@ class FileUploadServiceSpec extends UnitSpec with MockitoSugar with OneAppPerTes
     lazy val response = await(result)
 
      "return the response code if any response code is received" in {
-       when(FileUploadServiceSpec.attachmentsFrontEndConnector.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any())).
+       when(FileUploadServiceSpec.attachmentsFrontEndConnector.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).
          thenReturn(Future(HttpResponse(CREATED)))
         response.status shouldBe CREATED
       }

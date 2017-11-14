@@ -30,10 +30,10 @@ import play.api.i18n.Messages.Implicits._
 import play.api.mvc.{Action, AnyContent}
 import services.EmailVerificationService
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.eisseis.checkAndSubmit.CheckAnswers
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object CheckAnswersController extends CheckAnswersController{
   override lazy val s4lConnector = S4LConnector

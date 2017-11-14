@@ -19,10 +19,9 @@ package services
 import common.KeystoreKeys
 import connectors.{KeystoreConnector, ThrottleConnector}
 import play.api.Logger
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 
 object ThrottleService extends ThrottleService {
@@ -35,10 +34,10 @@ trait ThrottleService {
   val throttleConnector: ThrottleConnector
   val keystoreConnector: KeystoreConnector
 
-  def checkUserAccess(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def checkUserAccess(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
 
-    def checkAccess(implicit hc: HeaderCarrier):Future[Boolean] = {
-      throttleSessionCheck(hc).flatMap {
+    def checkAccess(implicit hc: HeaderCarrier, ec: ExecutionContext):Future[Boolean] = {
+      throttleSessionCheck(hc, ec).flatMap {
         case exists if exists => Future(true)
         case notExists => {
           throttleConnector.checkUserAccess() map {
@@ -67,7 +66,7 @@ trait ThrottleService {
     }
   }
 
-  private def throttleSessionCheck(implicit hc: HeaderCarrier): Future[Boolean] = {
+  private def throttleSessionCheck(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     keystoreConnector.fetchAndGetFormData[Boolean](KeystoreKeys.throttleCheckPassed).map {
       case data => {
         data.fold(false)(_.self)

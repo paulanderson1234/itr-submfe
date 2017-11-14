@@ -25,9 +25,9 @@ import models.internal.CSApplicationModel
 import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ConfirmDeleteCSApplicationControllerSpec extends BaseSpec {
 
@@ -65,7 +65,7 @@ class ConfirmDeleteCSApplicationControllerSpec extends BaseSpec {
     "return a OK when CS Application in progress for a eis scheme fetched from storage" in {
       mockEnrolledRequest()
       when(TestController.complianceStatementConnector.getComplianceStatementApplication()
-      (Matchers.any())).thenReturn(Future.successful(CSApplicationModel(true, Some(Constants.schemeTypeEis))))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(CSApplicationModel(true, Some(Constants.schemeTypeEis))))
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
@@ -78,7 +78,7 @@ class ConfirmDeleteCSApplicationControllerSpec extends BaseSpec {
     "return a OK when CS Application in progress for a seis scheme fetched from storage" in {
       mockEnrolledRequest()
       when(TestController.complianceStatementConnector.getComplianceStatementApplication()
-      (Matchers.any())).thenReturn(Future.successful(CSApplicationModel(true, Some(Constants.schemeTypeSeis))))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(CSApplicationModel(true, Some(Constants.schemeTypeSeis))))
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe OK
@@ -91,7 +91,7 @@ class ConfirmDeleteCSApplicationControllerSpec extends BaseSpec {
     "REDIRECT when no cs application is found to be in progress" in {
       mockEnrolledRequest()
       when(TestController.complianceStatementConnector.getComplianceStatementApplication()
-      (Matchers.any())).thenReturn(Future.successful(CSApplicationModel(false, None)))
+      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(CSApplicationModel(false, None)))
       showWithSessionAndAuth(TestController.show())(
         result => {
           status(result) shouldBe SEE_OTHER
@@ -104,7 +104,7 @@ class ConfirmDeleteCSApplicationControllerSpec extends BaseSpec {
   "Posting the confirm delete button on the ConfirmDeleteApplicationController" should {
     "redirect to hub page" in {
       when(mockComplianceStatementConnector.deleteComplianceStatementApplication()
-      (Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
+      (Matchers.any(), Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       mockEnrolledRequest()
       submitWithSessionAndAuth(TestController.delete)(
         result => {

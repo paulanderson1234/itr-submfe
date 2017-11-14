@@ -21,9 +21,9 @@ import controllers.helpers.BaseSpec
 import play.api.test.Helpers._
 import org.mockito.Matchers
 import org.mockito.Mockito._
-import uk.gov.hmrc.play.http.{Upstream4xxResponse, Upstream5xxResponse}
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ Upstream4xxResponse, Upstream5xxResponse }
 
 
 class TAVCAuthFrontendSpec extends BaseSpec {
@@ -37,9 +37,9 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated async action with frontend authentication" should {
     "respond with OK" in {
       lazy val result = AuthFrontendTestController.authorisedAsyncAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
       when(AuthFrontendTestController.authConnector.getIds[UserIDs](Matchers.any())(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(mockUserIds))
+        Matchers.any(), Matchers.any())).thenReturn(Future.successful(mockUserIds))
       status(result) shouldBe OK
     }
   }
@@ -47,7 +47,7 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated async action with browser authentication" should {
     "respond with InternalServerError" in {
       lazy val result = AuthFrontendTestController.authorisedAsyncAction(authorisedFakeRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.failed(failedResponseAuth))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.failed(failedResponseAuth))
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
@@ -55,7 +55,7 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated async action with frontend authentication" should {
     "respond with Unauthorised if an auth record cannot be found" in {
       lazy val result = AuthFrontendTestController.authorisedAsyncAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       status(result) shouldBe UNAUTHORIZED
     }
   }
@@ -63,9 +63,9 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated async action with frontend authentication" should {
     "respond with InternalServerError no UserIds can be found" in {
       lazy val result = AuthFrontendTestController.authorisedAsyncAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
       when(AuthFrontendTestController.authConnector.getIds[UserIDs](Matchers.any())(Matchers.any(),
-        Matchers.any())).thenReturn(Future.failed(failedResponseConversion))
+        Matchers.any(), Matchers.any())).thenReturn(Future.failed(failedResponseConversion))
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
@@ -73,9 +73,9 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated action with frontend authentication" should {
     "respond with OK" in {
       lazy val result = AuthFrontendTestController.authorisedAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
       when(AuthFrontendTestController.authConnector.getIds[UserIDs](Matchers.any())(Matchers.any(),
-        Matchers.any())).thenReturn(Future.successful(mockUserIds))
+        Matchers.any(), Matchers.any())).thenReturn(Future.successful(mockUserIds))
       status(result) shouldBe OK
     }
   }
@@ -83,7 +83,7 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated action with browser authentication" should {
     "respond with InternalServerError" in {
       lazy val result = AuthFrontendTestController.authorisedAction(authorisedFakeRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.failed(failedResponseAuth))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.failed(failedResponseAuth))
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }
@@ -91,7 +91,7 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated action with frontend authentication" should {
     "respond with Unauthorised if an auth record cannot be found" in {
       lazy val result = AuthFrontendTestController.authorisedAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(None))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
       status(result) shouldBe UNAUTHORIZED
     }
   }
@@ -99,9 +99,9 @@ class TAVCAuthFrontendSpec extends BaseSpec {
   "Calling authenticated action with frontend authentication" should {
     "respond with InternalServerError no UserIds can be found" in {
       lazy val result = AuthFrontendTestController.authorisedAction(authorisedFakeFrontendRequest)
-      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
+      when(AuthFrontendTestController.authConnector.currentAuthority(Matchers.any(), Matchers.any())).thenReturn(Future.successful(Some(mockAuthority)))
       when(AuthFrontendTestController.authConnector.getIds[UserIDs](Matchers.any())(Matchers.any(),
-        Matchers.any())).thenReturn(Future.failed(failedResponseConversion))
+        Matchers.any(), Matchers.any())).thenReturn(Future.failed(failedResponseConversion))
       status(result) shouldBe INTERNAL_SERVER_ERROR
     }
   }

@@ -26,7 +26,6 @@ import models.{ContactDetailsModel, _}
 import models.submission.SchemeTypesModel
 import play.api.Logger
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.HeaderCarrier
 import views.html.eis.checkAndSubmit.CheckAnswers
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
@@ -34,6 +33,7 @@ import play.api.mvc.{Action, AnyContent}
 import services.EmailVerificationService
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object CheckAnswersController extends CheckAnswersController{
   override lazy val s4lConnector = S4LConnector

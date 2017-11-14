@@ -18,16 +18,15 @@ package connectors
 
 import config.WSHttp
 import play.api.http.Status._
-import uk.gov.hmrc.play.http.HeaderCarrier
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
 import auth.Enrolment
 import common.Constants
 import play.api.Logger
 import services.TokenService
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpResponse}
+
 
 trait EnrolmentConnector extends ServicesConfig {
 
@@ -37,7 +36,7 @@ trait EnrolmentConnector extends ServicesConfig {
 
   def http: HttpGet with HttpPost
 
-  def getTAVCEnrolment(uri: String)(implicit hc: HeaderCarrier): Future[Option[Enrolment]] = {
+  def getTAVCEnrolment(uri: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Enrolment]] = {
     val getUrl = s"$serviceUrl$uri/enrolments"
     http.GET[HttpResponse](getUrl).map {
       response =>
@@ -48,16 +47,16 @@ trait EnrolmentConnector extends ServicesConfig {
     }
   }
 
-  def getTavcReferenceNumber(uri: String)(implicit hc: HeaderCarrier): Future[String] = {
+  def getTavcReferenceNumber(uri: String)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] = {
     getTAVCEnrolment(uri).map {
       case Some(enrolment) => enrolment.identifiers.find(_.key == Constants.enrolmentTavcRefKey).fold("")(_.value)
       case _ => ""
     }
   }
 
-  def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier): Future[Boolean] = {
+  def validateToken(tokenId: Option[String])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     Logger.info(s"[EnrolmentConnector][validateToken] - START tokenId=${tokenId.getOrElse("")}")
-    TokenService.validateTemporaryToken(tokenId)(hc)
+    TokenService.validateTemporaryToken(tokenId)(hc, ec)
   }
 }
 

@@ -30,9 +30,9 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
@@ -80,7 +80,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       thenReturn(Future(HttpResponse(OK)))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(HttpResponse(ACCEPTED))
     when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
@@ -109,7 +109,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       when(mockFileUploadService.closeEnvelope(Matchers.any(), Matchers.any())(Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(Future(HttpResponse(OK)))
       when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
         (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()
@@ -120,7 +120,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
   }
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController for SEIS" should {
     "return a 200 and delete the current application and send an email when a valid submission data is submitted with minimum data" in new SetupPageMinimum {
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setupMocks()

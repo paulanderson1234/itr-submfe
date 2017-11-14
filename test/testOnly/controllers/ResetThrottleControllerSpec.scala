@@ -21,8 +21,8 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import testOnly.connectors.ResetThrottleConnector
-import uk.gov.hmrc.play.http.HttpResponse
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ResetThrottleControllerSpec extends BaseSpec {
 
@@ -40,7 +40,7 @@ class ResetThrottleControllerSpec extends BaseSpec {
 
   def setupMocks(result: Int) : Unit = {
     when(TestController.resetThrottleConnector.resetThrottle()
-    (Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
   }
 
   "resetThrottleController.resetThrottle" when {

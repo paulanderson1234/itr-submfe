@@ -27,12 +27,12 @@ import org.scalatestplus.play.OneAppPerTest
 import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
 
 class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
@@ -51,23 +51,23 @@ class TokenConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
   val failedResponse = HttpResponse(Status.INTERNAL_SERVER_ERROR)
 
-
+  trait mockHttp extends HttpGet with HttpPost
   object TestTokenConnector extends TokenConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
-    override val http = mock[WSHttp]
+    override val http = mock[mockHttp]
   }
 
   def setupMockedGenerateTempTokenResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
     when(TestTokenConnector.http.POSTEmpty[HttpResponse](
       Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/generate-temporary-token"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 
   def setupMockedValidateTempTokenResponse(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestTokenConnector.http.GET[Option[Boolean]](
       Matchers.eq(s"${TestTokenConnector.serviceUrl}/investment-tax-relief/token/validate-temporary-token/$tokenId"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

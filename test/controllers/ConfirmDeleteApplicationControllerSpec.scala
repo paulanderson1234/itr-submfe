@@ -27,9 +27,9 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class ConfirmDeleteApplicationControllerSpec extends BaseSpec {
 
@@ -57,7 +57,7 @@ class ConfirmDeleteApplicationControllerSpec extends BaseSpec {
   def setupMocksNotAvailable(): Unit = {
     when(mockRegistrationDetailsService.getRegistrationDetails(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
-    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockSubscriptionService.getSubscriptionContactDetails(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(Future.successful(None))
   }
 

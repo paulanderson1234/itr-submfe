@@ -18,9 +18,9 @@ package connectors
 
 import config.{FrontendAppConfig, WSHttp}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpGet, HttpPost, HttpPut }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object ThrottleConnector extends ThrottleConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -29,7 +29,7 @@ object ThrottleConnector extends ThrottleConnector with ServicesConfig {
 
 trait ThrottleConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut
+  val http: HttpGet
 
   def checkUserAccess()(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
     http.GET[Option[Boolean]](s"$serviceUrl/investment-tax-relief/throttle/check-user-access")

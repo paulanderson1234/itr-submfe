@@ -20,8 +20,6 @@ import auth.{MockConfig, TAVCUser, ggUser}
 import controllers.helpers.{BaseSpec, FakeRequestHelper}
 import models.EmailConfirmationModel
 import play.api.libs.json.JsValue
-import uk.gov.hmrc.play.http.{Upstream5xxResponse, HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.SessionId
 import config.WSHttp
 import fixtures.SubmissionFixture
 import org.mockito.Matchers
@@ -33,13 +31,16 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse, Upstream5xxResponse}
+import uk.gov.hmrc.http.logging.SessionId
+
 
 class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
   object TestEmailConfirmationConnector extends EmailConfirmationConnector with FakeRequestHelper{
     override val serviceUrl: String = MockConfig.emailUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpPost]
     override val domain: String = MockConfig.emailDomain
     val testModel = EmailConfirmationModel(Array("test@test.com"), "test-template",
       EmailConfirmationModel.parameters("Test company", "XATESTREFNUM123456789"))
@@ -56,10 +57,10 @@ class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with One
 
   "Calling sendEmailConfirmation" when {
     "expecting a successful response" should {
-      lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier)
+      lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier, ExecutionContext.global)
       "return a Status Accepted (202) response" in {
         when(TestEmailConfirmationConnector.http.POST[JsValue, HttpResponse](Matchers.anyString(), Matchers.any(),
-          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(HttpResponse(ACCEPTED))
+          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(HttpResponse(ACCEPTED))
         await(result) match {
           case response => response.status shouldBe ACCEPTED
           case _ => fail("No response was received, when one was expected")
@@ -68,10 +69,10 @@ class EmailConfirmationConnectorSpec extends UnitSpec with MockitoSugar with One
     }
 
     "expecting a downstream error" should {
-      lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier)
+      lazy val result = TestEmailConfirmationConnector.sendEmailConfirmation(TestEmailConfirmationConnector.testModel)(headerCarrier, ExecutionContext.global)
       "return a Status INTERNAL_SERVER_ERROR (500) response" in {
         when(TestEmailConfirmationConnector.http.POST[JsValue, HttpResponse](Matchers.anyString(), Matchers.any(),
-          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
+          Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any())).
           thenReturn(Future.failed(Upstream5xxResponse("", INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR)))
         await(result) match {
           case response => response.status shouldBe INTERNAL_SERVER_ERROR

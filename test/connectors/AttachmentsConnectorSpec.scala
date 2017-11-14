@@ -18,8 +18,6 @@ package connectors
 
 import auth.{MockConfig, TAVCUser, ggUser}
 import controllers.helpers.{BaseSpec, FakeRequestHelper}
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.http.logging.SessionId
 import config.WSHttp
 import fixtures.SubmissionFixture
 import org.mockito.Matchers
@@ -32,12 +30,14 @@ import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.http.logging.SessionId
 
 class AttachmentsConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
   object TestAttachmentsConnector extends AttachmentsConnector with FakeRequestHelper{
     override val serviceUrl: String = MockConfig.attachmentsServiceUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpGet]
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))
@@ -57,7 +57,7 @@ class AttachmentsConnectorSpec extends UnitSpec with MockitoSugar with BeforeAnd
       "return a Status OK (200) response" in {
         when(TestAttachmentsConnector.http.GET[HttpResponse](
           Matchers.eq(s"${TestAttachmentsConnector.serviceUrl}/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/get-envelope-status"))
-          (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
+          (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(OK)))
         await(result) match {
           case response => response.status shouldBe OK
           case _ => fail("No response was received, when one was expected")

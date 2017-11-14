@@ -21,10 +21,9 @@ import utils.Validation
 import common.{Constants, KeystoreKeys}
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 object EisSeisHelper extends EisSeisHelper {
 
@@ -37,7 +36,7 @@ trait EisSeisHelper {
     * returns future(True) if already ineligible for SEIS, or Future(false) otherwise.
     */
   def isIneligibleForSeis(s4lConnector: connectors.S4LConnector)
-                         (implicit hc: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+                         (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Boolean] = {
 
     s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
       case Some(data) => data.isSeisIneligible
@@ -51,7 +50,7 @@ trait EisSeisHelper {
     * @param tradeStartConditionIneligible Boolean indicating how the SEIS trade start ineligibility condition should be set.
     */
   def setStartDateCondition(s4lConnector: connectors.S4LConnector, tradeStartConditionIneligible: Boolean)
-                           (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                           (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
 
     // update model (or create first) and set condition
     val result = s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
@@ -70,7 +69,7 @@ trait EisSeisHelper {
     * @param previousSchemeTypeConditionIneligible Boolean indicating how the SEIS previous scheme type ineligibility condition should be set.
     */
   def setIneligiblePreviousSchemeTypeCondition(s4lConnector: connectors.S4LConnector, previousSchemeTypeConditionIneligible: Boolean)
-                                              (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                                              (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
 
     // update model (or create first) and set condition
     val result = s4lConnector.fetchAndGetFormData[EisSeisProcessingModel](KeystoreKeys.eisSeisProcessingModel).map {
@@ -89,7 +88,7 @@ trait EisSeisHelper {
     * @param s4lConnector                          An instance of the Save4Later Connector.
     */
   def updateIneligiblePreviousSchemeTypeCondition(s4lConnector: connectors.S4LConnector)
-                                                 (implicit hc: HeaderCarrier, user: TAVCUser): Future[CacheMap] = {
+                                                 (implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[CacheMap] = {
 
     val result = PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector).map {
       previousSchemes => {

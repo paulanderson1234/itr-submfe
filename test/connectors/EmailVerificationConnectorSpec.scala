@@ -24,20 +24,21 @@ import org.mockito.Mockito._
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerSuite
-import play.api.http.Status.{CONFLICT, CREATED, OK}
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, NotFoundException}
+import play.api.http.Status.{CONFLICT, CREATED, OK, INTERNAL_SERVER_ERROR}
 import uk.gov.hmrc.play.test.UnitSpec
-import utils.WSHTTPMock
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
-class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with WSHTTPMock {
+class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite {
 
+  trait MockHttp extends HttpGet with HttpPost with HttpPut with HttpDelete with HttpResponse
   object TestEmailVerificationConnector extends EmailVerificationConnector with FakeRequestHelper{
     override val checkVerifiedEmailURL: String = MockConfig.checkVerifiedEmailURL
     override val sendVerificationEmailURL: String = MockConfig.sendVerificationEmailURL
-    override val http = mockWSHttp
+    override val http = mock[MockHttp]
   }
 
   implicit val headerCarrier: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1013")))
@@ -57,32 +58,41 @@ class EmailVerificationConnectorSpec extends UnitSpec with MockitoSugar with Bef
 
     "return true with valid email request" in {
 
-      mockHttpPOST(TestEmailVerificationConnector.sendVerificationEmailURL, HttpResponse(CREATED))
+      when(TestEmailVerificationConnector.http.POST[EmailVerificationRequest, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(CREATED)))
 
-      await(TestEmailVerificationConnector.requestVerificationEmail(verificationRequest)) shouldBe true
+      val result = TestEmailVerificationConnector.requestVerificationEmail(verificationRequest)
+      await(result) shouldBe true
     }
 
     "return false with invalid email or verified email request" in {
 
-      mockHttpPOST(TestEmailVerificationConnector.sendVerificationEmailURL, HttpResponse(CONFLICT))
+      when(TestEmailVerificationConnector.http.POST[EmailVerificationRequest, HttpResponse](Matchers.any(), Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(CONFLICT)))
 
-      await(TestEmailVerificationConnector.requestVerificationEmail(verificationRequest)) shouldBe false
+      val result = TestEmailVerificationConnector.requestVerificationEmail(verificationRequest)
+      await(result) shouldBe false
     }
   }
 
   "checkVerifiedEmail" should {
 
     "return true when passed an email that has been verified" in {
-      mockHttpGet(TestEmailVerificationConnector.checkVerifiedEmailURL, HttpResponse(OK))
 
-      await(TestEmailVerificationConnector.checkVerifiedEmail(verifiedEmail)) shouldBe true
+      when(TestEmailVerificationConnector.http.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(OK)))
+
+      val result = TestEmailVerificationConnector.checkVerifiedEmail(verifiedEmail)
+      await(result) shouldBe true
     }
 
     "return false when passed an email either not valid or not verified yet" in {
-      when(mockWSHttp.GET[HttpResponse](Matchers.anyString())(Matchers.any(), Matchers.any[HeaderCarrier]()))
-        .thenReturn(Future.failed(new NotFoundException("error")))
+      when(TestEmailVerificationConnector.http.GET[HttpResponse](Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR)))
 
-      await(TestEmailVerificationConnector.checkVerifiedEmail(verifiedEmail)) shouldBe false
+
+      val result = TestEmailVerificationConnector.checkVerifiedEmail(verifiedEmail)
+      await(result) shouldBe false
     }
   }
 }

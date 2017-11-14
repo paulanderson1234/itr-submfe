@@ -58,7 +58,7 @@ class ConfirmCorrespondAddressControllerSpec extends BaseSpec {
   }
 
   def mockSubscriptionServiceResponse(address: Option[AddressModel] = None): Unit =
-    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any()))
+    when(TestController.subscriptionService.getSubscriptionContactAddress(Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(address))
 
   "ConfirmCorrespondAddressController" should {

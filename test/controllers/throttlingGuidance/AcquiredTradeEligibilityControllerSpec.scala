@@ -24,7 +24,6 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import services.TokenService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
 
@@ -54,7 +53,7 @@ class AcquiredTradeEligibilityControllerSpec extends BaseSpec {
     when(TestController.keystoreConnector.fetchAndGetFormData[GroupsAndSubsEligibilityModel](Matchers.eq(KeystoreKeys.groupsAndSubsEligibility))
       (Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(isGroup))
-    when(TestController.tokenService.generateTemporaryToken(Matchers.any())).thenReturn(Future.successful(tok))
+    when(TestController.tokenService.generateTemporaryToken(Matchers.any(), Matchers.any())).thenReturn(Future.successful(tok))
 
 
   }

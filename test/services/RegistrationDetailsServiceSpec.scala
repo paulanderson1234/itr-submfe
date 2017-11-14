@@ -28,12 +28,12 @@ import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
 import org.scalatestplus.play.OneAppPerSuite
 import play.api.libs.json.Json
-import uk.gov.hmrc.play.http.{HeaderCarrier, HttpResponse, Upstream5xxResponse}
 import uk.gov.hmrc.play.test.UnitSpec
 import play.api.test.Helpers._
 
 import scala.concurrent.Future
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse, Upstream5xxResponse }
 
 class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with OneAppPerSuite {
 
@@ -85,7 +85,7 @@ class RegistrationDetailsServiceSpec extends UnitSpec with MockitoSugar with One
     when(mockS4LConnector.fetchAndGetFormData[RegistrationDetailsModel](Matchers.eq(KeystoreKeys.registrationDetails))
       (Matchers.any(),Matchers.any(),Matchers.any())).thenReturn(Future.successful(registrationDetailsModel1))
     when(mockSubscriptionService.getEtmpSubscriptionDetails(Matchers.eq(tavcRef))
-      (Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscriptionTypeModel))
+      (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(subscriptionTypeModel))
     when(mockSubmissionConnector.getRegistrationDetails(Matchers.any())
       (Matchers.any())).thenReturn(response)
   }

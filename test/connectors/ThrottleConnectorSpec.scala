@@ -24,12 +24,12 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneAppPerTest
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.{HeaderCarrier}
-import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet}
+import uk.gov.hmrc.http.logging.SessionId
+
 
 class ThrottleConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTest {
 
@@ -37,13 +37,13 @@ class ThrottleConnectorSpec extends UnitSpec with MockitoSugar with OneAppPerTes
 
   object TestThrottleConnector extends ThrottleConnector with FrontendController {
     override val serviceUrl = MockConfig.submissionUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpGet]
   }
 
   def setupMockedCheckUserAccess(data: Option[Boolean]): OngoingStubbing[Future[Option[Boolean]]] = {
     when(TestThrottleConnector.http.GET[Option[Boolean]](
       Matchers.eq(s"${TestThrottleConnector.serviceUrl}/investment-tax-relief/throttle/check-user-access"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

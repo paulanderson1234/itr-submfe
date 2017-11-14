@@ -18,10 +18,9 @@ package services
 
 import connectors.{EmailVerificationConnector, KeystoreConnector, S4LConnector}
 import models._
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait EmailVerificationService {
 
@@ -29,7 +28,7 @@ trait EmailVerificationService {
   val emailVerificationConnector: EmailVerificationConnector
 
   def verifyEmailAddress(address: String)
-                        (implicit hc: HeaderCarrier): Future[Option[Boolean]] = {
+                        (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[Boolean]] = {
     emailVerificationConnector.checkVerifiedEmail(address) flatMap {
         case true => Future.successful(Some(true))
         case _ =>
@@ -38,7 +37,7 @@ trait EmailVerificationService {
   }
 
   def sendVerificationLink(address: String, returnUrl: String, template: String)
-                          (implicit hc: HeaderCarrier): Future[Boolean] = {
+                          (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Boolean] = {
     emailVerificationConnector.requestVerificationEmail(generateEmailRequest(address, returnUrl, template)) map {
       sent =>
         val verified = sent // if not sent the it's because the email address was already verified

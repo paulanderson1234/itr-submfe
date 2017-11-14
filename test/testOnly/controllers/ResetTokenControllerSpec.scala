@@ -21,8 +21,9 @@ import org.mockito.Matchers
 import org.mockito.Mockito._
 import play.api.test.Helpers._
 import testOnly.connectors.ResetTokenConnector
-import uk.gov.hmrc.play.http.HttpResponse
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
+
 
 class ResetTokenControllerSpec extends BaseSpec {
 
@@ -40,7 +41,7 @@ class ResetTokenControllerSpec extends BaseSpec {
 
   def setupMocks(result: Int) : Unit = {
     when(TestController.resetTokenConnector.resetTokens()
-    (Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
+    (Matchers.any(), Matchers.any())).thenReturn(Future.successful(HttpResponse(result)))
   }
 
   "resetTokenController.resetToken" when {

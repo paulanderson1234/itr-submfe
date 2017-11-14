@@ -44,18 +44,18 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpResponse}
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
   object TargetSubscriptionConnector extends SubscriptionConnector with FrontendController with FakeRequestHelper with ServicesConfig {
     override val serviceUrl = baseUrl("investment-tax-relief-subscription")
-    override val http = mock[WSHttp]
+    override val http = mock[HttpGet]
   }
 
   implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(SessionId("1234")))
@@ -106,7 +106,7 @@ class SubscriptionConnectorSpec extends UnitSpec with MockitoSugar with BeforeAn
   def setupMockedResponse(data: HttpResponse): OngoingStubbing[Future[HttpResponse]] = {
     when(TargetSubscriptionConnector.http.GET[HttpResponse](
       Matchers.eq(s"${TargetSubscriptionConnector.serviceUrl}/investment-tax-relief-subscription/$validTavcReference/subscription"))
-      (Matchers.any(), Matchers.any()))
+      (Matchers.any(), Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

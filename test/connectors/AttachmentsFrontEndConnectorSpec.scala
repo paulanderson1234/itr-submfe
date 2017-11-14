@@ -16,7 +16,7 @@
 
 package connectors
 
-import auth.{ggUser, TAVCUser}
+import auth.{TAVCUser, ggUser}
 import config.FrontendAppConfig
 import controllers.helpers.FakeRequestHelper
 import fixtures.SubmissionFixture
@@ -28,16 +28,17 @@ import org.scalatestplus.play.OneAppPerSuite
 import play.api.http.Status
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
-import uk.gov.hmrc.play.http.ws.WSHttp
 import uk.gov.hmrc.play.test.UnitSpec
+import uk.gov.hmrc.http.{HeaderCarrier, HttpPost, HttpResponse}
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+import uk.gov.hmrc.play.http.ws.WSHttp
 
 class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneAppPerSuite with SubmissionFixture {
 
   object TargetAttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with FrontendController with FakeRequestHelper with ServicesConfig {
     override val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl
-    override val http = mock[WSHttp]
+    override val http = mock[HttpPost]
   }
 
   val internalId = "Int-312e5e92-762e-423b-ac3d-8686af27fdb5"
@@ -61,7 +62,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a Status OK (200) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
           s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
-          (Matchers.any(),Matchers.any())).thenReturn(successResponse)
+          (Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(successResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe successResponse
@@ -75,7 +76,7 @@ class AttachmentsFrontEndConnectorSpec extends UnitSpec with MockitoSugar with B
       "return a Status BAD_REQUEST (400) response" in {
         when(TargetAttachmentsFrontEndConnector.http.POSTEmpty[HttpResponse](Matchers.eq(s"${TargetAttachmentsFrontEndConnector.internalAttachmentsUrl}" +
           s"/internal/$validTavcReference/${envelopeId.get}/${user.internalId}/close-envelope"))
-          (Matchers.any(),Matchers.any())).thenReturn(failedResponse)
+          (Matchers.any(),Matchers.any(), Matchers.any())).thenReturn(failedResponse)
         val result = TargetAttachmentsFrontEndConnector.closeEnvelope(validTavcReference, envelopeId.get)
         await(result) match {
           case response => response shouldBe failedResponse

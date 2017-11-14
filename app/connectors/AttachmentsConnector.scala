@@ -17,12 +17,11 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
-import play.api.Logger
-import play.api.libs.json.{JsValue, Json}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse }
 
 object AttachmentsConnector extends AttachmentsConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.attachmentsServiceUrl
@@ -31,7 +30,7 @@ object AttachmentsConnector extends AttachmentsConnector with ServicesConfig {
 
 trait AttachmentsConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut with HttpDelete
+  val http: HttpGet
 
   def getEnvelopeStatus(envelopeId: String)(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.GET[HttpResponse](s"$serviceUrl/investment-tax-relief-attachments/file-upload/envelope/$envelopeId/get-envelope-status")

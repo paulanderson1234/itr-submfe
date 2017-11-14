@@ -27,10 +27,10 @@ import uk.gov.hmrc.play.frontend.controller.FrontendController
 import play.api.i18n.Messages.Implicits._
 import play.api.Play.current
 import play.api.mvc.Result
-import uk.gov.hmrc.play.http.HeaderCarrier
 
 import scala.concurrent.Future
 import views.html.eis.previousInvestment
+import uk.gov.hmrc.http.HeaderCarrier
 
 object HadOtherInvestmentsController extends HadOtherInvestmentsController{
   override lazy val s4lConnector = S4LConnector

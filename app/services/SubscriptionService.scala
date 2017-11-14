@@ -22,17 +22,16 @@ import connectors.{S4LConnector, SubscriptionConnector}
 import models.{AddressModel, ContactDetailsModel, EtmpSubscriptionDetailsModel, SubscriptionDetailsModel}
 import play.api.Logger
 import play.api.libs.json.{JsError, JsSuccess}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 trait SubscriptionService {
 
   val subscriptionConnector: SubscriptionConnector
   val s4lConnector: S4LConnector
 
-  def getEtmpSubscriptionDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[SubscriptionDetailsModel]] = {
+  def getEtmpSubscriptionDetails(tavcRef: String)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[SubscriptionDetailsModel]] = {
     s4lConnector.fetchAndGetFormData[SubscriptionDetailsModel](KeystoreKeys.subscriptionDetails).flatMap[Option[SubscriptionDetailsModel]] {
       case Some(subscriptionData) => Future.successful(Some(subscriptionData))
       case _ => subscriptionConnector.getSubscriptionDetails(tavcRef) map {
@@ -52,10 +51,10 @@ trait SubscriptionService {
     }
   }
 
-  def getSubscriptionContactDetails(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[ContactDetailsModel]] =
+  def getSubscriptionContactDetails(tavcRef: String)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[ContactDetailsModel]] =
     getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[ContactDetailsModel]](None)(data => Some(data.contactDetails)))
 
-  def getSubscriptionContactAddress(tavcRef: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[Option[AddressModel]] =
+  def getSubscriptionContactAddress(tavcRef: String)(implicit hc: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Option[AddressModel]] =
     getEtmpSubscriptionDetails(tavcRef).map(_.fold[Option[AddressModel]](None)(data => Some(data.contactAddress)))
 }
 

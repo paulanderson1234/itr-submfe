@@ -20,11 +20,12 @@ import auth.TAVCUser
 import common.KeystoreKeys
 import models._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.HeaderCarrier
 import utils.Validation
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
+
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HeaderCarrier
 
 object KnowledgeIntensiveHelper extends KnowledgeIntensiveHelper {
 

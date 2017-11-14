@@ -29,9 +29,9 @@ import org.mockito.Mockito._
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import services.FileUploadService
-import uk.gov.hmrc.play.http.HttpResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.HttpResponse
 
 class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
@@ -81,7 +81,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       thenReturn(Future(HttpResponse(OK)))
     when(mockS4lConnector.fetchAndGetFormData[String](Matchers.eq(KeystoreKeys.envelopeId))
       (Matchers.any(), Matchers.any(),Matchers.any())).thenReturn(Future.successful(envelopeId))
-    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+    when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
       thenReturn(HttpResponse(ACCEPTED))
     when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
   }
@@ -237,7 +237,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
 
   "Sending an Authenticated and Enrolled GET request with a session to AttachmentsAcknowledgementController for combined" should {
     "return a 200 if KI is set to false" in {
-      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any())).
+      when(mockEmailConfirmationService.sendEmailConfirmation(Matchers.any(), Matchers.any())(Matchers.any(), Matchers.any(), Matchers.any())).
         thenReturn(HttpResponse(ACCEPTED))
       when(mockS4lConnector.clearCache()(Matchers.any(),Matchers.any())).thenReturn(HttpResponse(NO_CONTENT))
       setUpMocksTestMinimumRequiredModels(mockS4lConnector, mockRegistrationDetailsService, Some(kiProcModelValidAssertNo),

@@ -20,10 +20,9 @@ import auth.TAVCUser
 import common.{Constants, KeystoreKeys}
 import connectors.S4LConnector
 import models.{PreviousSchemeModel, ProposedInvestmentModel}
-import uk.gov.hmrc.play.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HeaderCarrier
 
 object LifetimeLimitHelper extends LifetimeLimitHelper {
   override lazy val s4lConnector = S4LConnector
@@ -34,15 +33,15 @@ trait LifetimeLimitHelper {
   val s4lConnector : S4LConnector
 
   //Future of all previous schemes as vector
-  def previousSchemesFut(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {
+  def previousSchemesFut(implicit headerCarrier: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Vector[PreviousSchemeModel]] = {
     PreviousSchemesHelper.getAllInvestmentFromKeystore(s4lConnector)
   }
 
-  def previousSchemesAmount()(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[Int] = {
+  def previousSchemesAmount()(implicit headerCarrier: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Int] = {
     previousSchemesFut.map(previousSchemes => previousSchemes.foldLeft(0)(_ + _.investmentAmount))
   }
 
-  def exceedsLifetimeLogic(isKi: Boolean)(implicit headerCarrier: HeaderCarrier, user: TAVCUser): Future[Boolean] = {
+  def exceedsLifetimeLogic(isKi: Boolean)(implicit headerCarrier: HeaderCarrier, ec: ExecutionContext, user: TAVCUser): Future[Boolean] = {
     // Future of proposed investment,
     val proposedInvestmentAmountFut = s4lConnector.fetchAndGetFormData[ProposedInvestmentModel](KeystoreKeys.proposedInvestment).map {
       case Some(proposedInvestment) => proposedInvestment.investmentAmount

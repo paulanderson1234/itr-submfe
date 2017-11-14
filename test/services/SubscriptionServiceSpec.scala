@@ -29,14 +29,16 @@ import org.scalatest.mock.MockitoSugar
 import org.scalatestplus.play.OneServerPerSuite
 import uk.gov.hmrc.play.config.ServicesConfig
 import uk.gov.hmrc.play.frontend.controller.FrontendController
-import uk.gov.hmrc.play.http._
-import uk.gov.hmrc.play.http.logging.SessionId
+
 import uk.gov.hmrc.play.test.UnitSpec
 import data.SubscriptionTestData._
 import models.SubscriptionDetailsModel
 import play.api.http.Status._
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpResponse }
+import uk.gov.hmrc.http.logging.SessionId
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndAfterEach with OneServerPerSuite with SubmissionFixture {
 
@@ -50,7 +52,7 @@ class SubscriptionServiceSpec extends UnitSpec with MockitoSugar with BeforeAndA
   implicit val user: TAVCUser = TAVCUser(ggUser.allowedAuthContext, internalId)
 
   def setupMockedResponse(data: Option[HttpResponse] = None): OngoingStubbing[Future[Option[HttpResponse]]] = {
-    when(TargetSubscriptionService.subscriptionConnector.getSubscriptionDetails(Matchers.eq(validTavcReference))(Matchers.any()))
+    when(TargetSubscriptionService.subscriptionConnector.getSubscriptionDetails(Matchers.eq(validTavcReference))(Matchers.any(), Matchers.any()))
       .thenReturn(Future.successful(data))
   }
 

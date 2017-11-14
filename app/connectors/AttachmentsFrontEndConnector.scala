@@ -19,8 +19,9 @@ package connectors
 import auth.TAVCUser
 import config.{FrontendAppConfig, WSHttp}
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpGet, HttpPost, HttpReads, HttpResponse}
+
 
 object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with ServicesConfig {
   val internalAttachmentsUrl = FrontendAppConfig.internalAttachmentsUrl
@@ -30,11 +31,11 @@ object AttachmentsFrontEndConnector extends AttachmentsFrontEndConnector with Se
 trait AttachmentsFrontEndConnector {
 
   val internalAttachmentsUrl: String
-  val http: HttpGet with HttpPost
+  val http: HttpPost
 
-  def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser): Future[HttpResponse] = {
+  def closeEnvelope(tavcRef: String, envelopeId: String)(implicit hc: HeaderCarrier, user: TAVCUser, ec: ExecutionContext): Future[HttpResponse] = {
     val headerCarrier = hc.copy(extraHeaders = hc.extraHeaders ++ Seq("CSRF-Token" -> "nocheck"))
     http.POSTEmpty[HttpResponse](s"$internalAttachmentsUrl/internal/$tavcRef/$envelopeId/${user.internalId}/close-envelope")(
-      HttpReads.readRaw,headerCarrier)
+      HttpReads.readRaw,headerCarrier, ec)
   }
 }

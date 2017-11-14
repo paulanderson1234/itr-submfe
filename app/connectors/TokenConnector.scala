@@ -17,10 +17,10 @@
 package connectors
 
 import config.{FrontendAppConfig, WSHttp}
-import play.api.Logger
 import uk.gov.hmrc.play.config.ServicesConfig
-import uk.gov.hmrc.play.http._
 import scala.concurrent.Future
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpDelete, HttpGet, HttpPost, HttpPut, HttpResponse }
+import uk.gov.hmrc.play.http.logging.MdcLoggingExecutionContext._
 
 object TokenConnector extends TokenConnector with ServicesConfig {
   val serviceUrl = FrontendAppConfig.submissionUrl
@@ -29,7 +29,7 @@ object TokenConnector extends TokenConnector with ServicesConfig {
 
 trait TokenConnector {
   val serviceUrl: String
-  val http: HttpGet with HttpPost with HttpPut with HttpDelete
+  val http: HttpGet with HttpPost
 
   def generateTemporaryToken(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     http.POSTEmpty[HttpResponse](s"$serviceUrl/investment-tax-relief/token/generate-temporary-token")

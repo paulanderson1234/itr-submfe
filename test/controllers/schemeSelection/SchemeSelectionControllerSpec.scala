@@ -29,9 +29,9 @@ import org.mockito.Matchers
 import play.api.test.Helpers._
 import org.mockito.Mockito._
 import uk.gov.hmrc.http.cache.client.CacheMap
-import uk.gov.hmrc.play.http.Upstream5xxResponse
 
 import scala.concurrent.Future
+import uk.gov.hmrc.http.Upstream5xxResponse
 
 class SchemeSelectionControllerSpec extends BaseSpec {
 
@@ -92,7 +92,7 @@ class SchemeSelectionControllerSpec extends BaseSpec {
         mockEnrolledRequest()
         when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any(), Matchers.any()))
           .thenReturn(cSApplicationModel)
         showWithSessionAndAuth(TestController.show()) {
           result =>
@@ -108,7 +108,7 @@ class SchemeSelectionControllerSpec extends BaseSpec {
         mockEnrolledRequest()
         when(mockS4lConnector.fetchAndGetFormData[SchemeTypesModel](Matchers.eq(KeystoreKeys.selectedSchemes))
           (Matchers.any(), Matchers.any(), Matchers.any())).thenReturn(Future.successful(None))
-        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any()))
+        when(TestController.complianceStatementConnector.getComplianceStatementApplication()(Matchers.any(), Matchers.any()))
           .thenReturn(CSApplicationModel(false, None))
         showWithSessionAndAuth(TestController.show()) {
           result =>
