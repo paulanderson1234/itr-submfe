@@ -56,6 +56,7 @@ trait AppConfig {
   val submissionCSFrontendServiceEISBaseUrl: String
   val submissionCSFrontendServiceSEISBaseUrl: String
   val submissionCSFrontendServiceBaseUrl: String
+  val feedbackUrl: String
 }
 
 object FrontendAppConfig extends AppConfig with ServicesConfig {
@@ -69,6 +70,7 @@ object FrontendAppConfig extends AppConfig with ServicesConfig {
   override lazy val ggSignInUrl: String = configuration.getString(s"government-gateway-sign-in.host").getOrElse("")
   override lazy val ggSignOutUrl: String = configuration.getString(s"government-gateway-sign-out.host").getOrElse("")
   override lazy val introductionUrl: String = configuration.getString(s"introduction.url").getOrElse("")
+  override lazy val feedbackUrl: String = loadConfig("feedback.initialFeedbackUrl")
 
   override lazy val attachmentsFrontEndServiceBaseUrl: String = loadConfig(s"investment-tax-relief-attachments-frontend.url")
   override lazy val submissionFrontendServiceBaseUrl: String = loadConfig(s"investment-tax-relief-submission-frontend.url")

@@ -72,9 +72,9 @@
         <div class="form-group">
             <h2 id="waiting-time" class="heading-medium">@Messages("page.seis.checkAndSubmit.acknowledgement.waitingTime.heading")</h2>
             <p id="course-of-action">@Messages("page.seis.checkAndSubmit.acknowledgement.courseOfAction")</p>
-        </div>
+        </div>config.FrontendAppConfig.feedbackUrl
         <div class="form-group">
-            <a id="submit" class="button" href="@controllers.feedback.routes.FeedbackController.show().url">@Messages("page.seis.checkAndSubmit.acknowledgement.button.confirm")</a>
+            <a id="submit" class="button" href="@config.FrontendAppConfig.feedbackUrl">@Messages("page.seis.checkAndSubmit.acknowledgement.button.confirm")</a>
         </div>
     </div>
 </div>
