@@ -268,7 +268,7 @@ class AttachmentsAcknowledgementControllerSpec extends BaseSpec {
       submitWithSessionAndAuth(TestController.submit)(
         result => {
           status(result) shouldBe SEE_OTHER
-          redirectLocation(result) shouldBe Some(controllers.feedback.routes.FeedbackController.show().url)
+          redirectLocation(result) shouldBe Some(config.FrontendAppConfig.feedbackUrl)
         }
       )
     }
