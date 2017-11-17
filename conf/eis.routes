@@ -88,7 +88,7 @@ POST       /review-previous-schemes                 controllers.eis.ReviewPrevio
 GET        /review-previous-schemes-add             controllers.eis.ReviewPreviousSchemesController.add
 GET        /review-previous-schemes-change/:Id      controllers.eis.ReviewPreviousSchemesController.change(Id: Int)
 
-GET        /review-previous-schemes-remove/:Id      controllers.eis.ReviewPreviousSchemesController.remove(Id: Int)
+POST        /review-previous-schemes-remove/:Id      controllers.eis.ReviewPreviousSchemesController.remove(Id: Int)
 
 GET        /delete-previous-scheme/:Id              controllers.eis.DeletePreviousSchemeController.show(Id: Int)
 POST       /delete-previous-scheme                  controllers.eis.DeletePreviousSchemeController.submit
