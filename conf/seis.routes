@@ -30,7 +30,7 @@ POST       /review-previous-schemes                 controllers.seis.ReviewPrevi
 GET        /review-previous-schemes-add             controllers.seis.ReviewPreviousSchemesController.add
 GET        /review-previous-schemes-change/:Id      controllers.seis.ReviewPreviousSchemesController.change(Id: Int)
 
-GET        /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
+POST        /review-previous-schemes-remove/:Id      controllers.seis.ReviewPreviousSchemesController.remove(Id: Int)
 
 GET        /delete-previous-scheme/:Id              controllers.seis.DeletePreviousSchemeController.show(Id: Int)
 POST       /delete-previous-scheme                  controllers.seis.DeletePreviousSchemeController.submit
