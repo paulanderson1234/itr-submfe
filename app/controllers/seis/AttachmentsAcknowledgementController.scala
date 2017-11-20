@@ -88,7 +88,7 @@ trait AttachmentsAcknowledgementController extends FrontendController with Autho
   }, None)
 
   def submit: Action[AnyContent] = AuthorisedAndEnrolled.apply({ implicit user => implicit request =>
-    Redirect(feedback.routes.FeedbackController.show().url)
+    Redirect(config.FrontendAppConfig.feedbackUrl)
   }, None)
 
   private def getTradeStartDate(tradeStartDateModel: TradeStartDateModel): String = {

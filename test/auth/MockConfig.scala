@@ -69,6 +69,8 @@ trait MockConfig extends AppConfig {
     "http://localhost:9645/investment-tax-relief-cs/eis/initial-declaration"
   override lazy val submissionCSFrontendServiceSEISBaseUrl: String =
     "http://localhost:9645/investment-tax-relief-cs/seis/initial-declaration"
+
+  override lazy val feedbackUrl: String = "http://localhost:9514/feedback-survey/?origin=TAVC"
 }
 
 object MockConfig extends MockConfig
